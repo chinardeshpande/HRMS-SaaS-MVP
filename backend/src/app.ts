@@ -91,14 +91,15 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Compression middleware
-app.use(compression());
+app.use(compression() as any);
 
 // Request logging
 app.use(requestLogger);
 
 // API Documentation
 if (config.enableSwagger) {
-  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use('/api/docs', swaggerUi.serve as any);
+  app.get('/api/docs', swaggerUi.setup(swaggerSpec) as any);
 }
 
 // Health check endpoint
