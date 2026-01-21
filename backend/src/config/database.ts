@@ -2,11 +2,12 @@ import { DataSource } from 'typeorm';
 import { config } from './config';
 import { logger } from '../utils/logger';
 
-// Import entities (to be created)
-// import { Tenant } from '../models/Tenant';
-// import { User } from '../models/User';
-// import { Employee } from '../models/Employee';
-// ... import other models
+// Import entities
+import { Tenant } from '../models/Tenant';
+import { User } from '../models/User';
+import { Employee } from '../models/Employee';
+import { Department } from '../models/Department';
+import { Designation } from '../models/Designation';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -18,11 +19,11 @@ export const AppDataSource = new DataSource({
   synchronize: config.nodeEnv === 'development', // Auto-sync in development only
   logging: config.nodeEnv === 'development',
   entities: [
-    // Add entity classes here
-    // Tenant,
-    // User,
-    // Employee,
-    // ... other entities
+    Tenant,
+    User,
+    Employee,
+    Department,
+    Designation,
   ],
   migrations: ['src/migrations/*.ts'],
   subscribers: [],
