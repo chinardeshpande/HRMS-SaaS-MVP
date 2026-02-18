@@ -10,11 +10,12 @@ import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
 
 // Import routes (to be created)
-// import authRoutes from './routes/authRoutes';
-// import employeeRoutes from './routes/employeeRoutes';
+import authRoutes from './routes/authRoutes';
+import departmentRoutes from './routes/departmentRoutes';
+import employeeRoutes from './routes/employeeRoutes';
 // import onboardingRoutes from './routes/onboardingRoutes';
-// import attendanceRoutes from './routes/attendanceRoutes';
-// import leaveRoutes from './routes/leaveRoutes';
+import attendanceRoutes from './routes/attendanceRoutes';
+import leaveRoutes from './routes/leaveRoutes';
 // import pmsRoutes from './routes/pmsRoutes';
 // import transferRoutes from './routes/transferRoutes';
 // import confirmationRoutes from './routes/confirmationRoutes';
@@ -118,11 +119,12 @@ app.get('/health', (req: Request, res: Response) => {
 const apiRouter = express.Router();
 
 // Mount routes (uncomment as you create them)
-// apiRouter.use('/auth', authRoutes);
-// apiRouter.use('/employees', employeeRoutes);
+apiRouter.use('/auth', authRoutes);
+apiRouter.use('/departments', departmentRoutes);
+apiRouter.use('/employees', employeeRoutes);
 // apiRouter.use('/onboarding', onboardingRoutes);
-// apiRouter.use('/attendance', attendanceRoutes);
-// apiRouter.use('/leaves', leaveRoutes);
+apiRouter.use('/attendance', attendanceRoutes);
+apiRouter.use('/leave', leaveRoutes);
 // apiRouter.use('/pms', pmsRoutes);
 // apiRouter.use('/transfer', transferRoutes);
 // apiRouter.use('/confirmation', confirmationRoutes);

@@ -19,6 +19,10 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    fs: {
+      // Allow serving files from the parent directory (for shared types)
+      allow: ['..'],
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:3000',

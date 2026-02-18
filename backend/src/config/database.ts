@@ -8,6 +8,12 @@ import { User } from '../models/User';
 import { Employee } from '../models/Employee';
 import { Department } from '../models/Department';
 import { Designation } from '../models/Designation';
+import { LeavePolicy } from '../models/LeavePolicy';
+import { LeaveBalance } from '../models/LeaveBalance';
+import { LeaveRequest } from '../models/LeaveRequest';
+import { AttendancePolicy } from '../models/AttendancePolicy';
+import { Attendance } from '../models/Attendance';
+import { TimeEntryEdit } from '../models/TimeEntryEdit';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -24,6 +30,12 @@ export const AppDataSource = new DataSource({
     Employee,
     Department,
     Designation,
+    LeavePolicy,
+    LeaveBalance,
+    LeaveRequest,
+    AttendancePolicy,
+    Attendance,
+    TimeEntryEdit,
   ],
   migrations: ['src/migrations/*.ts'],
   subscribers: [],

@@ -14,7 +14,9 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "migrate": "ts-node src/database/migrate.ts",
-    "seed": "ts-node src/database/seed.ts"
+    "seed": "ts-node src/scripts/seedTestData.ts",
+    "seed:attendance": "ts-node src/scripts/seedAttendanceData.ts",
+    "seed:all": "npm run seed && npm run seed:attendance"
   },
   "keywords": [
     "hrms",

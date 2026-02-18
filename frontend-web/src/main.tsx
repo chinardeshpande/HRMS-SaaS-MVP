@@ -1,10 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './assets/styles/index.css';
+import './index.css';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+console.log('===== LOADING HRMS APPLICATION =====');
+
+const root = document.getElementById('root');
+
+if (!root) {
+  document.body.innerHTML = '<div style="padding: 50px; color: red;">ERROR: Root element not found!</div>';
+} else {
+  try {
+    const reactRoot = ReactDOM.createRoot(root);
+
+    reactRoot.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+
+    console.log('===== HRMS APPLICATION LOADED =====');
+  } catch (error) {
+    console.error('===== RENDER ERROR =====', error);
+    document.body.innerHTML = `
+      <div style="padding: 50px; color: red; font-family: Arial;">
+        <h1>Render Error</h1>
+        <pre>${error}</pre>
+      </div>
+    `;
+  }
+}

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, AuthTokens } from '../../../shared/types';
+import { User, AuthTokens } from '../types';
+import { api } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -47,35 +48,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string): Promise<void> => {
     try {
-      // TODO: Replace with actual API call
-      // const response = await api.post('/auth/login', { email, password });
-      // const { user, tokens } = response.data.data;
-
-      // Mock data for now
-      const mockUser: User = {
-        userId: '1',
-        tenantId: '1',
+      // Call the actual backend API
+      const response = await api.post<{ user: User; tokens: AuthTokens }>('/auth/login', {
         email,
-        fullName: 'Demo User',
-        role: 'employee' as any,
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+        password
+      });
 
-      const mockTokens: AuthTokens = {
-        token: 'mock-jwt-token',
-        refreshToken: 'mock-refresh-token',
-      };
+      // api.post returns ApiResponse<T>, so response.data contains the actual payload
+      if (!response.success || !response.data) {
+        throw new Error('Login failed');
+      }
 
-      setUser(mockUser);
-      setTokens(mockTokens);
+      const { user: userData, tokens: tokenData } = response.data;
 
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      localStorage.setItem('tokens', JSON.stringify(mockTokens));
-    } catch (error) {
+      // Update state with actual user data from backend
+      setUser(userData);
+      setTokens(tokenData);
+
+      // Store in localStorage
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('tokens', JSON.stringify(tokenData));
+    } catch (error: any) {
       console.error('Login error:', error);
-      throw error;
+      const errorMessage = error.response?.data?.error?.message || 'Invalid email or password';
+      throw new Error(errorMessage);
     }
   };
 

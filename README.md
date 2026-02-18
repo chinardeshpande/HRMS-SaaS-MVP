@@ -52,16 +52,57 @@ HRMS-SaaS-MVP/
 
 ## Core Modules (MVP)
 
-1. **Onboarding** - Pre-joining candidate management
-2. **Employee Master** - Comprehensive employee profiles
-3. **Attendance Management** - Clock in/out tracking
-4. **Leave Management** - Leave application and approval
-5. **Performance Management (PMS)** - Goals and reviews
-6. **Transfer & Promotion** - Internal movement workflows
-7. **Confirmation** - Probation period management
-8. **Exit & Offboarding** - Resignation and clearance
-9. **Reports** - Analytics and insights
-10. **Admin Configuration** - Master data and settings
+### ✅ Implemented Modules
+
+1. **Attendance Management** ✅
+   - Clock in/out tracking with geolocation support
+   - Manual attendance entry and regularization
+   - Biometric device integration
+   - Real-time attendance monitoring
+   - Late arrival and early departure tracking
+   - Overtime calculation
+   - Mass updates and bulk imports
+   - Company-wide, team, and individual views
+   - Export to CSV
+
+2. **Leave Management** ✅
+   - Leave application and approval workflow
+   - Multiple leave types (Annual, Sick, Casual, Maternity, etc.)
+   - Leave balance tracking
+   - Manager approval workflow
+   - Team leave calendar
+   - Company-wide leave analytics
+   - Export to CSV
+
+3. **Performance Management (PMS)** ✅
+   - Goal setting and tracking
+   - Goal approval workflow (employee submits, manager approves)
+   - Multi-dimensional performance reviews
+   - Continuous feedback system
+   - Review cycle management
+   - Team performance dashboard
+   - Company-wide analytics
+
+4. **Employee Master** ✅
+   - Comprehensive employee profiles
+   - Department and designation management
+   - Employee search and filtering
+   - Role-based access control
+
+5. **Dashboard** ✅
+   - Role-specific dashboards
+   - Quick stats and metrics
+   - Recent activity tracking
+   - Pending approvals summary
+
+### 🚧 Planned Modules
+
+6. **Onboarding** - Pre-joining candidate management
+7. **Transfer & Promotion** - Internal movement workflows
+8. **Confirmation** - Probation period management
+9. **Exit & Offboarding** - Resignation and clearance
+10. **Reports** - Advanced analytics and insights
+11. **Admin Configuration** - Master data and settings
 
 ## Getting Started
 
@@ -120,6 +161,42 @@ yarn run dev
 cd mobile-app
 yarn start
 ```
+
+6. Seed test data (optional)
+```bash
+cd backend
+npx ts-node src/scripts/seedTestData.ts
+```
+
+### Test Credentials
+
+After seeding the database, you can login with these credentials:
+
+**System Administrator**
+- Email: `admin.user@acme.com`
+- Password: `password123`
+- Role: SYSTEM_ADMIN
+- Access: All modules and features
+
+**HR Administrator**
+- Email: `sarah.johnson@acme.com`
+- Password: `password123`
+- Role: HR_ADMIN
+- Access: All HR functions, company-wide analytics
+
+**Manager**
+- Email: `john.smith@acme.com`
+- Password: `password123`
+- Role: MANAGER
+- Department: Engineering (VP Engineering)
+- Access: Team management, approvals, team performance reviews
+
+**Employee**
+- Email: `alice.williams@acme.com`
+- Password: `password123`
+- Role: EMPLOYEE
+- Department: Engineering
+- Access: Self-service features (attendance, leave, performance)
 
 ## Features
 

@@ -13,6 +13,7 @@ declare global {
         tenantId: string;
         email: string;
         role: UserRole;
+        employeeId?: string;
       };
       tenantId?: string;
     }
@@ -24,6 +25,7 @@ export interface JWTPayload {
   tenantId: string;
   email: string;
   role: UserRole;
+  employeeId?: string;
 }
 
 /**
@@ -53,6 +55,7 @@ export const authenticate = async (
       tenantId: decoded.tenantId,
       email: decoded.email,
       role: decoded.role,
+      employeeId: decoded.employeeId,
     };
 
     // Also set tenantId separately for easier access
@@ -111,6 +114,7 @@ export const optionalAuth = async (
         tenantId: decoded.tenantId,
         email: decoded.email,
         role: decoded.role,
+        employeeId: decoded.employeeId,
       };
 
       req.tenantId = decoded.tenantId;
