@@ -14,6 +14,19 @@ import { LeaveRequest } from '../models/LeaveRequest';
 import { AttendancePolicy } from '../models/AttendancePolicy';
 import { Attendance } from '../models/Attendance';
 import { TimeEntryEdit } from '../models/TimeEntryEdit';
+// Onboarding & Probation entities
+import { Candidate } from '../models/Candidate';
+import { OnboardingCase } from '../models/OnboardingCase';
+import { ProbationCase } from '../models/ProbationCase';
+import { ProbationReview } from '../models/ProbationReview';
+import { OnboardingTask } from '../models/OnboardingTask';
+import { ProbationTask } from '../models/ProbationTask';
+import { OnboardingDocument } from '../models/OnboardingDocument';
+import { DocumentTemplate } from '../models/DocumentTemplate';
+import { Approval } from '../models/Approval';
+import { StatusTransition } from '../models/StatusTransition';
+import { AuditLog } from '../models/AuditLog';
+import { Notification } from '../models/Notification';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -36,6 +49,19 @@ export const AppDataSource = new DataSource({
     AttendancePolicy,
     Attendance,
     TimeEntryEdit,
+    // Onboarding & Probation
+    Candidate,
+    OnboardingCase,
+    ProbationCase,
+    ProbationReview,
+    OnboardingTask,
+    ProbationTask,
+    OnboardingDocument,
+    DocumentTemplate,
+    Approval,
+    StatusTransition,
+    AuditLog,
+    Notification,
   ],
   migrations: ['src/migrations/*.ts'],
   subscribers: [],
