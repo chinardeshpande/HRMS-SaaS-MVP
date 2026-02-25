@@ -11,7 +11,6 @@ import ModernLeave from './pages/ModernLeave';
 import ModernDepartments from './pages/ModernDepartments';
 import ModernDesignations from './pages/ModernDesignations';
 import ModernPerformance from './pages/ModernPerformance';
-import ModernOnboarding from './pages/ModernOnboarding';
 import CandidateDetails from './pages/CandidateDetails';
 import ProbationCaseDetails from './pages/ProbationCaseDetails';
 import ModernOnboardingDashboard from './pages/ModernOnboardingDashboard';
@@ -45,7 +44,7 @@ function App() {
               <Route path="/attendance" element={<ModernAttendance />} />
               <Route path="/leave" element={<ModernLeave />} />
               <Route path="/performance" element={<ModernPerformance />} />
-              <Route path="/onboarding" element={<ModernOnboarding />} />
+              <Route path="/onboarding" element={<ModernOnboardingDashboard />} />
               <Route path="/onboarding/candidate/:candidateId" element={<CandidateDetails />} />
               <Route path="/probation/case/:probationId" element={<ProbationCaseDetails />} />
               <Route path="/onboarding-dashboard" element={<ModernOnboardingDashboard />} />
