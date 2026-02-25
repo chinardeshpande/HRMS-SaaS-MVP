@@ -82,11 +82,23 @@ The Exit Management module includes:
 ## Troubleshooting
 
 ### If login fails with "invalid credentials":
-1. Make sure backend is running on port 3000
-2. Check frontend `.env` file has: `VITE_API_URL=http://localhost:3000/api/v1`
-3. If you changed `.env`, restart frontend with `Ctrl+C` then `npm run dev`
-4. Use the exact credentials listed above (copy-paste recommended)
-5. Clear browser cache and try again
+
+**STEP 1: Test if backend API is working:**
+Open `/test-login.html` in your browser (from project root directory).
+Click "Test Login" - if you see ✅ SUCCESS, the backend is fine.
+
+**STEP 2: Use Incognito/Private browsing mode (EASIEST FIX):**
+1. Open a new Incognito/Private window in your browser
+2. Go to http://localhost:5173
+3. Login with: sarah.johnson@acme.com / password123
+
+**STEP 3: If you want to use regular browser, clear ALL cache:**
+1. Close ALL browser tabs with localhost:5173
+2. Clear browser cache completely (not just hard refresh)
+3. Chrome: Settings → Privacy → Clear browsing data → Cached files
+4. Firefox: Settings → Privacy → Clear Data → Cached Web Content
+5. Safari: Develop → Empty Caches (enable Develop menu first)
+6. Then go to http://localhost:5173 again
 
 ### If you see "No exit cases found":
 1. Make sure backend is running on port 3000
