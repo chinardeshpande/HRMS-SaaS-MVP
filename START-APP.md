@@ -19,7 +19,23 @@ Frontend will start on: http://localhost:5173
 ### 3. Access Application
 Open your browser to: **http://localhost:5173**
 
-Login with your credentials to access the HRMS system.
+**Default Login Credentials:**
+```
+👑 System Admin:
+   admin.user@acme.com / password123
+
+👤 HR Admin:
+   sarah.johnson@acme.com / password123
+   emily.brown@acme.com / password123
+
+👔 Manager:
+   john.smith@acme.com / password123
+   michael.chen@acme.com / password123
+   jessica.taylor@acme.com / password123
+   matthew.clark@acme.com / password123
+```
+
+**All passwords:** `password123`
 
 ---
 
