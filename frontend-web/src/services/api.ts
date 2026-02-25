@@ -37,7 +37,7 @@ class ApiClient {
     // Response interceptor - Handle errors
     this.client.interceptors.response.use(
       (response) => response,
-      async (error: AxiosError<ApiResponse>) => {
+      async (error: AxiosError<ApiResponse<any>>) => {
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
         // Handle 401 errors (token expired)

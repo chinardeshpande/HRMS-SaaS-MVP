@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ModernLayout } from '../components/layout/ModernLayout';
 import probationService from '../services/probationService';
 import ProbationStatusChip from '../components/probation/ProbationStatusChip';
 
@@ -68,12 +69,13 @@ const ModernProbationTracker: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Probation Tracker</h1>
-        <p className="text-gray-600">Monitor employees in probation period</p>
-      </div>
+    <ModernLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Probation Tracker</h1>
+          <p className="text-gray-600">Monitor employees in probation period</p>
+        </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
@@ -250,7 +252,8 @@ const ModernProbationTracker: React.FC = () => {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </ModernLayout>
   );
 };
 

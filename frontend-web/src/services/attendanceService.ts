@@ -23,6 +23,18 @@ export interface Attendance {
   overrideReason?: string;
   createdAt: Date;
   updatedAt: Date;
+  employee?: {
+    employeeCode: string;
+    firstName: string;
+    lastName: string;
+    department?: {
+      departmentId: string;
+      name: string;
+    };
+    designation?: {
+      name: string;
+    };
+  };
 }
 
 export interface AttendanceStatistics {

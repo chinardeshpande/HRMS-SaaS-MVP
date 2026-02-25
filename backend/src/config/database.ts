@@ -27,6 +27,12 @@ import { Approval } from '../models/Approval';
 import { StatusTransition } from '../models/StatusTransition';
 import { AuditLog } from '../models/AuditLog';
 import { Notification } from '../models/Notification';
+// Exit Management entities
+import { ExitCase } from '../models/ExitCase';
+import { ExitInterview } from '../models/ExitInterview';
+import { AssetReturn } from '../models/AssetReturn';
+import { Clearance } from '../models/Clearance';
+import { FinalSettlement } from '../models/FinalSettlement';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -62,6 +68,12 @@ export const AppDataSource = new DataSource({
     StatusTransition,
     AuditLog,
     Notification,
+    // Exit Management
+    ExitCase,
+    ExitInterview,
+    AssetReturn,
+    Clearance,
+    FinalSettlement,
   ],
   migrations: ['src/migrations/*.ts'],
   subscribers: [],

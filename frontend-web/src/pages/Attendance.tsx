@@ -34,8 +34,6 @@ import {
   Checkbox,
   ListItemText,
   OutlinedInput,
-  Divider,
-  Badge,
   Avatar,
   TablePagination,
   ToggleButtonGroup,
@@ -46,18 +44,12 @@ import {
   Cancel as CheckOutIcon,
   People as PeopleIcon,
   PersonOff as AbsentIcon,
-  EventBusy as LeaveIcon,
   Schedule as HoursIcon,
   Edit as EditIcon,
   WatchLater as LateIcon,
   Assessment as StatsIcon,
-  FilterList as FilterIcon,
   CalendarMonth as CalendarIcon,
-  TrendingUp as TrendingIcon,
   Group as GroupIcon,
-  Person as PersonIcon,
-  CheckCircleOutline as ApproveIcon,
-  HighlightOff as RejectIcon,
   Refresh as RefreshIcon,
   Download as DownloadIcon,
   Upload as UploadIcon,
@@ -67,7 +59,6 @@ import { AppLayout } from '../components/layout/AppLayout';
 import attendanceService, { Attendance as AttendanceRecord, AttendanceStatistics } from '../services/attendanceService';
 import departmentService, { Department } from '../services/departmentService';
 import { useAuth } from '../context/AuthContext';
-import { UserRole } from '../types';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -401,8 +392,8 @@ const Attendance = () => {
   const getStatusColor = (status: string): 'success' | 'warning' | 'info' | 'default' | 'error' => {
     switch (status) {
       case 'present': return 'success';
-      case 'half_day': return 'info';
-      case 'on_leave': return 'warning';
+      case 'half-day': return 'info';
+      case 'on-leave': return 'warning';
       case 'holiday': return 'info';
       case 'weekend': return 'default';
       case 'absent': return 'error';
@@ -462,7 +453,7 @@ const Attendance = () => {
   const todayPresent = todayAttendance.filter(a => a.status === 'present').length;
   const todayAbsent = todayAttendance.filter(a => a.status === 'absent').length;
   const todayLate = todayAttendance.filter(a => a.isLate).length;
-  const todayOnLeave = todayAttendance.filter(a => a.status === 'on_leave').length;
+  const todayOnLeave = todayAttendance.filter(a => a.status === 'on-leave').length;
 
   if (loading && myAttendance.length === 0 && companyAttendance.length === 0) {
     return (
@@ -809,7 +800,7 @@ const Attendance = () => {
                         input={<OutlinedInput label="Status Filter" />}
                         renderValue={(selected) => selected.join(', ')}
                       >
-                        {['present', 'absent', 'half_day', 'on_leave'].map((status) => (
+                        {['present', 'absent', 'half-day', 'on-leave'].map((status) => (
                           <MenuItem key={status} value={status}>
                             <Checkbox checked={selectedStatus.indexOf(status) > -1} />
                             <ListItemText primary={status.replace('_', ' ').toUpperCase()} />
@@ -1144,7 +1135,6 @@ const Attendance = () => {
                         return fullName.includes(searchLower);
                       })
                       .map((record) => {
-                        const today = new Date().toISOString().split('T')[0];
                         const todayRec = todayAttendance.find(r => r.employeeId === record.employeeId);
                         return (
                           <TableRow key={record.employeeId} hover>
@@ -1218,8 +1208,8 @@ const Attendance = () => {
             >
               <MenuItem value="present">Present</MenuItem>
               <MenuItem value="absent">Absent</MenuItem>
-              <MenuItem value="half_day">Half Day</MenuItem>
-              <MenuItem value="on_leave">On Leave</MenuItem>
+              <MenuItem value="half-day">Half Day</MenuItem>
+              <MenuItem value="on-leave">On Leave</MenuItem>
             </TextField>
             <TextField
               label="Reason for Update"
@@ -1264,8 +1254,8 @@ const Attendance = () => {
               >
                 <MenuItem value="present">Present</MenuItem>
                 <MenuItem value="absent">Absent</MenuItem>
-                <MenuItem value="half_day">Half Day</MenuItem>
-                <MenuItem value="on_leave">On Leave</MenuItem>
+                <MenuItem value="half-day">Half Day</MenuItem>
+                <MenuItem value="on-leave">On Leave</MenuItem>
               </TextField>
               <TextField
                 label="Check In Time"

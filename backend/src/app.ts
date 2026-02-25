@@ -15,12 +15,12 @@ import departmentRoutes from './routes/departmentRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 import onboardingRoutes from './routes/onboardingRoutes';
 import probationRoutes from './routes/probationRoutes';
+import exitRoutes from './routes/exitRoutes';
 import attendanceRoutes from './routes/attendanceRoutes';
 import leaveRoutes from './routes/leaveRoutes';
 // import pmsRoutes from './routes/pmsRoutes';
 // import transferRoutes from './routes/transferRoutes';
 // import confirmationRoutes from './routes/confirmationRoutes';
-// import exitRoutes from './routes/exitRoutes';
 // import reportRoutes from './routes/reportRoutes';
 // import adminRoutes from './routes/adminRoutes';
 
@@ -125,12 +125,12 @@ apiRouter.use('/departments', departmentRoutes);
 apiRouter.use('/employees', employeeRoutes);
 apiRouter.use('/onboarding', onboardingRoutes);
 apiRouter.use('/probation', probationRoutes);
+apiRouter.use('/exit', exitRoutes);
 apiRouter.use('/attendance', attendanceRoutes);
 apiRouter.use('/leave', leaveRoutes);
 // apiRouter.use('/pms', pmsRoutes);
 // apiRouter.use('/transfer', transferRoutes);
 // apiRouter.use('/confirmation', confirmationRoutes);
-// apiRouter.use('/exit', exitRoutes);
 // apiRouter.use('/reports', reportRoutes);
 // apiRouter.use('/admin', adminRoutes);
 

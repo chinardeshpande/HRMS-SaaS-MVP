@@ -2,13 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
 // Pages
-import SimpleLogin from './pages/SimpleLogin';
 import ModernLogin from './pages/ModernLogin';
-import Dashboard from './pages/Dashboard';
 import ModernDashboard from './pages/ModernDashboard';
-import Employees from './pages/Employees';
 import ModernEmployees from './pages/ModernEmployees';
-import EmployeeDetail from './pages/EmployeeDetail';
 import ModernEmployeeDetail from './pages/ModernEmployeeDetail';
 import ModernAttendance from './pages/ModernAttendance';
 import ModernLeave from './pages/ModernLeave';
@@ -20,6 +16,8 @@ import CandidateDetails from './pages/CandidateDetails';
 import ProbationCaseDetails from './pages/ProbationCaseDetails';
 import ModernOnboardingDashboard from './pages/ModernOnboardingDashboard';
 import ModernProbationTracker from './pages/ModernProbationTracker';
+import ModernExitDashboard from './pages/ModernExitDashboard';
+import ExitCaseDetails from './pages/ExitCaseDetails';
 import ModernSettings from './pages/ModernSettings';
 
 // Employee Action Pages
@@ -52,6 +50,8 @@ function App() {
               <Route path="/probation/case/:probationId" element={<ProbationCaseDetails />} />
               <Route path="/onboarding-dashboard" element={<ModernOnboardingDashboard />} />
               <Route path="/probation" element={<ModernProbationTracker />} />
+              <Route path="/exit" element={<ModernExitDashboard />} />
+              <Route path="/exit/:exitId" element={<ExitCaseDetails />} />
               <Route path="/settings" element={<ModernSettings />} />
 
               {/* Employee Action routes */}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ModernLayout } from '../components/layout/ModernLayout';
 import onboardingService from '../services/onboardingService';
 import OnboardingStatusChip from '../components/onboarding/OnboardingStatusChip';
 
@@ -58,12 +59,13 @@ const ModernOnboardingDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Onboarding Dashboard</h1>
-        <p className="text-gray-600">Manage candidates through the onboarding process</p>
-      </div>
+    <ModernLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Onboarding Dashboard</h1>
+          <p className="text-gray-600">Manage candidates through the onboarding process</p>
+        </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -212,7 +214,8 @@ const ModernOnboardingDashboard: React.FC = () => {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </ModernLayout>
   );
 };
 

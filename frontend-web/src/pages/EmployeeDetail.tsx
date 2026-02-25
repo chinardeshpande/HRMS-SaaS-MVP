@@ -1229,8 +1229,8 @@ const EmployeeDetail = () => {
 
                   {/* Timeline events */}
                   {employee.organizationalHistory
-                    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                    .map((event, index) => {
+                    .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                    .map((event: any, index: number) => {
                     const getEventIcon = (type: string) => {
                       switch (type) {
                         case 'joining':
