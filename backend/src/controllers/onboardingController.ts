@@ -206,3 +206,97 @@ export const completeTask = async (req: Request, res: Response) => {
     return sendError(res, { code: 'COMPLETE_FAILED', message: error.message }, 400);
   }
 };
+
+export const bulkUploadCandidates = async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.user!.tenantId;
+    const userId = req.user!.userId;
+
+    if (!req.file) {
+      return sendError(res, { code: 'NO_FILE', message: 'No CSV file uploaded' }, 400);
+    }
+
+    const filePath = req.file.path;
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+
+    // Remove BOM if present
+    const cleanContent = fileContent.replace(/^\uFEFF/, '');
+
+    // Parse CSV manually
+    const lines = cleanContent.split('\n').filter(line => line.trim() && !line.trim().startsWith('#'));
+
+    if (lines.length < 2) {
+      fs.unlinkSync(filePath); // Clean up uploaded file
+      return sendError(res, { code: 'INVALID_CSV', message: 'CSV file must contain headers and at least one data row' }, 400);
+    }
+
+    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+    const results = {
+      totalRows: lines.length - 1,
+      successCount: 0,
+      failureCount: 0,
+      errors: [] as Array<{ row: number; error: string; data: any }>,
+      successfulCandidates: [] as Array<{ candidateId: string; name: string; email: string }>,
+    };
+
+    // Process each row
+    for (let i = 1; i < lines.length; i++) {
+      try {
+        const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+        const rowData: any = {};
+
+        headers.forEach((header, index) => {
+          const value = values[index];
+          if (value && value !== '') {
+            rowData[header] = value;
+          }
+        });
+
+        // Validate required fields
+        const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'departmentId', 'designationId', 'offeredSalary', 'expectedJoinDate'];
+        const missingFields = requiredFields.filter(field => !rowData[field]);
+
+        if (missingFields.length > 0) {
+          throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+        }
+
+        // Convert numeric fields
+        if (rowData.offeredSalary) {
+          rowData.offeredSalary = parseFloat(rowData.offeredSalary);
+        }
+
+        // Create candidate
+        const candidate = await onboardingService.createCandidate(tenantId, rowData, userId);
+
+        results.successCount++;
+        results.successfulCandidates.push({
+          candidateId: candidate.candidateId,
+          name: `${candidate.firstName} ${candidate.lastName}`,
+          email: candidate.email,
+        });
+
+      } catch (error: any) {
+        results.failureCount++;
+        results.errors.push({
+          row: i + 1,
+          error: error.message || 'Unknown error',
+          data: lines[i],
+        });
+      }
+    }
+
+    // Clean up uploaded file
+    fs.unlinkSync(filePath);
+
+    return sendSuccess(res, results);
+  } catch (error: any) {
+    logger.error('Bulk upload error:', error);
+
+    // Clean up uploaded file if it exists
+    if (req.file?.path && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+
+    return sendError(res, { code: 'BULK_UPLOAD_FAILED', message: error.message }, 500);
+  }
+};

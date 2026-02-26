@@ -14,6 +14,7 @@ import {
   getOnboardingPipeline,
   getCandidateTasks,
   completeTask,
+  bulkUploadCandidates,
 } from '../controllers/onboardingController';
 
 const router = Router();
@@ -25,6 +26,7 @@ router.use(authenticate);
 router.get('/pipeline', getOnboardingPipeline);
 
 // Candidate routes
+router.post('/candidates/bulk-upload', uploadSingle as any, bulkUploadCandidates);
 router.post('/candidates', createCandidate);
 router.get('/candidates', getAllCandidates);
 router.get('/candidates/:candidateId', getCandidateById);

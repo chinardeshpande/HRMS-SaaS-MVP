@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Force Refresh HRMS</title>
+    <script>
+        // Clear all local storage and cache
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Force navigation with cache bypass
+        const timestamp = new Date().getTime();
+        window.location.href = `http://localhost:5173/?t=${timestamp}`;
+    </script>
+</head>
+<body>
+    <h1>Clearing cache and redirecting...</h1>
+</body>
+</html>

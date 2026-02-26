@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import employeeService, { Employee, EmployeeFilters, EmployeeStats } from '../services/employeeService';
 import departmentService, { Department } from '../services/departmentService';
+import AddEmployeeWizard from '../components/onboarding/AddEmployeeWizard';
+import BulkEmployeeUpload from '../components/onboarding/BulkEmployeeUpload';
 import {
   MagnifyingGlassIcon,
   PlusIcon,
@@ -14,6 +16,8 @@ import {
   XCircleIcon,
   ArrowPathIcon,
   XMarkIcon,
+  UserPlusIcon,
+  DocumentArrowUpIcon,
 } from '@heroicons/react/24/outline';
 
 export default function ModernEmployees() {
@@ -38,6 +42,11 @@ export default function ModernEmployees() {
     message: '',
     type: 'success',
   });
+
+  // Modals
+  const [showAddOptionsModal, setShowAddOptionsModal] = useState(false);
+  const [showAddWizard, setShowAddWizard] = useState(false);
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
 
   // Fetch data on mount
   useEffect(() => {
@@ -142,6 +151,21 @@ export default function ModernEmployees() {
   const showNotification = (message: string, type: 'success' | 'error') => {
     setNotification({ show: true, message, type });
     setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 5000);
+  };
+
+  const handleAddEmployeeSuccess = () => {
+    showNotification('Employee created successfully and added to onboarding workflow', 'success');
+    fetchEmployees();
+    fetchStats();
+  };
+
+  const handleBulkUploadSuccess = (results: any) => {
+    showNotification(
+      `Bulk upload completed: ${results.successCount} employees added successfully`,
+      results.successCount > 0 ? 'success' : 'error'
+    );
+    fetchEmployees();
+    fetchStats();
   };
 
   const getStatusBadge = (status: string) => {
@@ -273,7 +297,7 @@ export default function ModernEmployees() {
             <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
             Export
           </button>
-          <button onClick={() => navigate('/onboarding')} className="btn btn-primary">
+          <button onClick={() => setShowAddOptionsModal(true)} className="btn btn-primary">
             <PlusIcon className="h-5 w-5 mr-2" />
             Add Employee
           </button>
@@ -333,7 +357,7 @@ export default function ModernEmployees() {
             <div className="text-center py-12">
               <UsersIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500">No employees found</p>
-              <button onClick={() => navigate('/onboarding')} className="btn btn-primary mt-4">
+              <button onClick={() => setShowAddOptionsModal(true)} className="btn btn-primary mt-4">
                 <PlusIcon className="h-5 w-5 mr-2" />
                 Add First Employee
               </button>
@@ -396,6 +420,80 @@ export default function ModernEmployees() {
           )}
         </div>
       </div>
+
+      {/* Add Options Modal */}
+      {showAddOptionsModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-center justify-center p-4">
+            <div className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" onClick={() => setShowAddOptionsModal(false)} />
+
+            <div className="relative w-full max-w-md transform overflow-hidden rounded-xl bg-white shadow-2xl transition-all">
+              <div className="border-b border-gray-200 bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-white">Add Employee</h2>
+                  <button onClick={() => setShowAddOptionsModal(false)} className="text-white hover:text-gray-200">
+                    <XMarkIcon className="h-6 w-6" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-3">
+                <button
+                  onClick={() => {
+                    setShowAddOptionsModal(false);
+                    setShowAddWizard(true);
+                  }}
+                  className="w-full flex items-center p-4 rounded-lg border-2 border-gray-200 hover:border-primary-500 hover:bg-primary-50 transition-all group"
+                >
+                  <div className="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center group-hover:bg-primary-200">
+                    <UserPlusIcon className="h-6 w-6 text-primary-600" />
+                  </div>
+                  <div className="ml-4 text-left">
+                    <h3 className="text-sm font-semibold text-gray-900">Add Single Employee</h3>
+                    <p className="text-xs text-gray-500 mt-1">Use wizard to add one employee at a time</p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowAddOptionsModal(false);
+                    setShowBulkUpload(true);
+                  }}
+                  className="w-full flex items-center p-4 rounded-lg border-2 border-gray-200 hover:border-primary-500 hover:bg-primary-50 transition-all group"
+                >
+                  <div className="flex-shrink-0 w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center group-hover:bg-success-200">
+                    <DocumentArrowUpIcon className="h-6 w-6 text-success-600" />
+                  </div>
+                  <div className="ml-4 text-left">
+                    <h3 className="text-sm font-semibold text-gray-900">Bulk Upload (CSV)</h3>
+                    <p className="text-xs text-gray-500 mt-1">Upload multiple employees using CSV file</p>
+                  </div>
+                </button>
+              </div>
+
+              <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
+                <button onClick={() => setShowAddOptionsModal(false)} className="btn btn-secondary w-full">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Employee Wizard */}
+      <AddEmployeeWizard
+        isOpen={showAddWizard}
+        onClose={() => setShowAddWizard(false)}
+        onSuccess={handleAddEmployeeSuccess}
+      />
+
+      {/* Bulk Upload Modal */}
+      <BulkEmployeeUpload
+        isOpen={showBulkUpload}
+        onClose={() => setShowBulkUpload(false)}
+        onSuccess={handleBulkUploadSuccess}
+      />
     </ModernLayout>
   );
 }

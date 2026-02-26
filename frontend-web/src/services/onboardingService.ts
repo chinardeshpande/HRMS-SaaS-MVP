@@ -58,6 +58,17 @@ export const onboardingService = {
   async completeTask(taskId: string, notes?: string) {
     return api.post(`/onboarding/tasks/${taskId}/complete`, { notes });
   },
+
+  async bulkUploadEmployees(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return api.post('/onboarding/candidates/bulk-upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
 };
 
 export default onboardingService;
