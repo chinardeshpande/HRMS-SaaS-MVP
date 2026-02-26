@@ -224,7 +224,12 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
       }
     } catch (err: any) {
       console.error('Error creating employee:', err);
-      setError(err.response?.data?.message || 'Failed to create employee. Please try again.');
+      console.error('Error response:', err.response);
+      const errorMessage = err.response?.data?.error?.message
+        || err.response?.data?.message
+        || err.message
+        || 'Failed to create employee. Please try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

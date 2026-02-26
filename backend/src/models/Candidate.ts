@@ -39,6 +39,12 @@ export class Candidate {
   @Column({ length: 20, nullable: true })
   phone?: string;
 
+  @Column({ type: 'date', nullable: true })
+  dateOfBirth?: Date;
+
+  @Column({ length: 50, nullable: true })
+  gender?: string;
+
   @Column({
     type: 'enum',
     enum: OnboardingState,
@@ -78,6 +84,33 @@ export class Candidate {
 
   @Column({ type: 'uuid', nullable: true })
   employeeId?: string;
+
+  @Column({ length: 50, nullable: true })
+  employmentType?: string;
+
+  @Column({ length: 255, nullable: true })
+  workLocation?: string;
+
+  @Column({ type: 'text', nullable: true })
+  address?: string;
+
+  @Column({ length: 100, nullable: true })
+  city?: string;
+
+  @Column({ length: 100, nullable: true })
+  state?: string;
+
+  @Column({ length: 20, nullable: true })
+  pincode?: string;
+
+  @Column({ length: 255, nullable: true })
+  emergencyContactName?: string;
+
+  @Column({ length: 20, nullable: true })
+  emergencyContactPhone?: string;
+
+  @Column({ length: 100, nullable: true })
+  emergencyContactRelation?: string;
 
   @Column({ type: 'text', nullable: true })
   remarks?: string;
