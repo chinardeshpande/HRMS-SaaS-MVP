@@ -2,11 +2,9 @@ import api from './api';
 
 export interface Designation {
   designationId: string;
-  title: string;
+  name: string;
   tenantId: string;
   level?: number;
-  departmentId?: string;
-  isActive?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

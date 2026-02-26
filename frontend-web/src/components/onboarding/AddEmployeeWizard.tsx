@@ -5,6 +5,7 @@ import {
   CheckIcon,
   ArrowRightIcon,
   ArrowLeftIcon,
+  PlusIcon,
 } from '@heroicons/react/24/outline';
 import departmentService, { Department } from '../../services/departmentService';
 import designationService, { Designation } from '../../services/designationService';
@@ -23,6 +24,12 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
   const [designations, setDesignations] = useState<Designation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Inline create designation
+  const [showAddDesignation, setShowAddDesignation] = useState(false);
+  const [newDesignationName, setNewDesignationName] = useState('');
+  const [newDesignationLevel, setNewDesignationLevel] = useState<number>(6);
+  const [creatingDesignation, setCreatingDesignation] = useState(false);
 
   const [formData, setFormData] = useState({
     // Step 1: Basic Information
@@ -73,6 +80,39 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
       setDesignations(data);
     } catch (err) {
       console.error('Error fetching designations:', err);
+    }
+  };
+
+  const handleCreateDesignation = async () => {
+    if (!newDesignationName.trim()) {
+      setError('Designation name is required');
+      return;
+    }
+
+    setCreatingDesignation(true);
+    setError(null);
+
+    try {
+      const newDesignation = await designationService.create({
+        name: newDesignationName.trim(),
+        level: newDesignationLevel,
+      });
+
+      // Refresh designations list
+      await fetchDesignations();
+
+      // Auto-select the newly created designation
+      setFormData(prev => ({ ...prev, designationId: newDesignation.designationId }));
+
+      // Close modal and reset
+      setShowAddDesignation(false);
+      setNewDesignationName('');
+      setNewDesignationLevel(6);
+    } catch (err: any) {
+      console.error('Error creating designation:', err);
+      setError(err.response?.data?.message || 'Failed to create designation');
+    } finally {
+      setCreatingDesignation(false);
     }
   };
 
@@ -417,19 +457,29 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Designation <span className="text-danger-500">*</span>
                     </label>
-                    <select
-                      name="designationId"
-                      value={formData.designationId}
-                      onChange={handleInputChange}
-                      className="input"
-                    >
-                      <option value="">Select designation</option>
-                      {designations.map(des => (
-                        <option key={des.designationId} value={des.designationId}>
-                          {des.title}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="flex gap-2">
+                      <select
+                        name="designationId"
+                        value={formData.designationId}
+                        onChange={handleInputChange}
+                        className="input flex-1"
+                      >
+                        <option value="">Select designation</option>
+                        {designations.map(des => (
+                          <option key={des.designationId} value={des.designationId}>
+                            {des.name}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setShowAddDesignation(true)}
+                        className="btn btn-secondary whitespace-nowrap"
+                        title="Add new designation"
+                      >
+                        <PlusIcon className="h-5 w-5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -633,7 +683,7 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
                       <div>
                         <dt className="text-sm font-medium text-gray-500">Designation</dt>
                         <dd className="text-sm text-gray-900">
-                          {designations.find(d => d.designationId === formData.designationId)?.title || '-'}
+                          {designations.find(d => d.designationId === formData.designationId)?.name || '-'}
                         </dd>
                       </div>
                       <div>
@@ -740,6 +790,92 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
           </div>
         </div>
       </div>
+
+      {/* Inline Add Designation Modal */}
+      {showAddDesignation && (
+        <div className="fixed inset-0 z-[60] overflow-y-auto">
+          <div className="flex min-h-screen items-center justify-center p-4">
+            <div className="fixed inset-0 bg-gray-900 bg-opacity-75" onClick={() => setShowAddDesignation(false)} />
+
+            <div className="relative w-full max-w-md transform overflow-hidden rounded-xl bg-white shadow-2xl">
+              <div className="border-b border-gray-200 bg-primary-600 px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-white">Add New Designation</h3>
+                  <button onClick={() => setShowAddDesignation(false)} className="text-white hover:text-gray-200">
+                    <XMarkIcon className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Designation Name <span className="text-danger-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newDesignationName}
+                    onChange={(e) => setNewDesignationName(e.target.value)}
+                    className="input"
+                    placeholder="e.g., Senior Software Engineer"
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Level (Optional)
+                  </label>
+                  <select
+                    value={newDesignationLevel}
+                    onChange={(e) => setNewDesignationLevel(parseInt(e.target.value))}
+                    className="input"
+                  >
+                    <option value={1}>Level 1 - Executive (CEO, COO, CTO)</option>
+                    <option value={2}>Level 2 - VP/Director</option>
+                    <option value={3}>Level 3 - Senior Management</option>
+                    <option value={4}>Level 4 - Management</option>
+                    <option value={5}>Level 5 - Senior Individual Contributor</option>
+                    <option value={6}>Level 6 - Mid-Level (Default)</option>
+                    <option value={7}>Level 7 - Junior</option>
+                    <option value={8}>Level 8 - Entry/Intern/Trainee</option>
+                    <option value={9}>Level 9 - Support/Administrative</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
+                <div className="flex items-center justify-end gap-3">
+                  <button
+                    onClick={() => setShowAddDesignation(false)}
+                    className="btn btn-secondary"
+                    disabled={creatingDesignation}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleCreateDesignation}
+                    className="btn btn-primary"
+                    disabled={creatingDesignation || !newDesignationName.trim()}
+                  >
+                    {creatingDesignation ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                        Creating...
+                      </>
+                    ) : (
+                      <>
+                        <PlusIcon className="h-5 w-5 mr-2" />
+                        Add Designation
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

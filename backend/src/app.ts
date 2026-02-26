@@ -12,6 +12,7 @@ import { requestLogger } from './middleware/requestLogger';
 // Import routes (to be created)
 import authRoutes from './routes/authRoutes';
 import departmentRoutes from './routes/departmentRoutes';
+import designationRoutes from './routes/designationRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 import onboardingRoutes from './routes/onboardingRoutes';
 import probationRoutes from './routes/probationRoutes';
@@ -122,6 +123,7 @@ const apiRouter = express.Router();
 // Mount routes (uncomment as you create them)
 apiRouter.use('/auth', authRoutes);
 apiRouter.use('/departments', departmentRoutes);
+apiRouter.use('/designations', designationRoutes);
 apiRouter.use('/employees', employeeRoutes);
 apiRouter.use('/onboarding', onboardingRoutes);
 apiRouter.use('/probation', probationRoutes);
