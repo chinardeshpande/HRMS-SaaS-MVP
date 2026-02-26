@@ -52,6 +52,12 @@ export class OnboardingDocument {
   @Column({ type: 'text' })
   filePath!: string;
 
+  @Column({ type: 'integer', nullable: true })
+  fileSize?: number;
+
+  @Column({ length: 100, nullable: true })
+  mimeType?: string;
+
   @Column({ type: 'integer', default: 1 })
   version!: number;
 

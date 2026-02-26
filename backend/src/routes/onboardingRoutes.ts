@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authenticate } from '../middleware/auth';
+import { uploadSingle } from '../middleware/upload';
 import {
   createCandidate,
   getAllCandidates,
@@ -8,6 +9,7 @@ import {
   acceptOffer,
   uploadDocument,
   verifyDocument,
+  downloadDocument,
   transitionState,
   getOnboardingPipeline,
   getCandidateTasks,
@@ -30,9 +32,10 @@ router.post('/candidates/:candidateId/send-offer', sendOffer);
 router.post('/candidates/:candidateId/accept-offer', acceptOffer);
 router.post('/candidates/:candidateId/transition', transitionState);
 
-// Document routes
-router.post('/candidates/:candidateId/documents/upload', uploadDocument);
+// Document routes - uploadSingle middleware handles file upload
+router.post('/candidates/:candidateId/documents/upload', uploadSingle as any, uploadDocument);
 router.put('/documents/:documentId/verify', verifyDocument);
+router.get('/documents/:documentId/download', downloadDocument);
 
 // Task routes
 router.get('/candidates/:candidateId/tasks', getCandidateTasks);

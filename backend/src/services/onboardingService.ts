@@ -149,11 +149,13 @@ export class OnboardingService {
       documentType: documentType as any,
       category: 'candidate_upload' as any,
       verificationStatus: VerificationStatus.UPLOADED,
+      fileSize: metadata?.fileSize,
+      mimeType: metadata?.mimeType,
       ...metadata,
     });
 
     const savedDocument = await this.documentRepo.save(document);
-    logger.info(`Document uploaded: ${savedDocument.documentId}`);
+    logger.info(`Document uploaded: ${savedDocument.documentId} (${file.fileName}, ${metadata?.fileSize} bytes)`);
     return savedDocument;
   }
 

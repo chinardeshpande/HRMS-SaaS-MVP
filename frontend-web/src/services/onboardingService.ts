@@ -21,8 +21,22 @@ export const onboardingService = {
     return api.post(`/onboarding/candidates/${candidateId}/accept-offer`, data);
   },
 
-  async uploadDocument(candidateId: string, data: any) {
-    return api.post(`/onboarding/candidates/${candidateId}/documents/upload`, data);
+  async uploadDocument(candidateId: string, file: File, documentType: string, metadata?: any) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('documentType', documentType);
+
+    if (metadata) {
+      Object.keys(metadata).forEach(key => {
+        formData.append(key, metadata[key]);
+      });
+    }
+
+    return api.post(`/onboarding/candidates/${candidateId}/documents/upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
 
   async verifyDocument(documentId: string, status: string, notes?: string) {

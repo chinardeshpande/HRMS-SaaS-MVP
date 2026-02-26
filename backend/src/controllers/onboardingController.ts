@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
+import path from 'path';
+import fs from 'fs';
 import onboardingService from '../services/onboardingService';
 import onboardingFSMService from '../services/OnboardingFSMService';
 import { sendSuccess, sendError, sendCreated } from '../utils/responses';
 import logger from '../utils/logger';
+import { AppDataSource } from '../config/database';
+import { OnboardingDocument } from '../models/OnboardingDocument';
 
 export const createCandidate = async (req: Request, res: Response) => {
   try {
@@ -74,13 +78,28 @@ export const acceptOffer = async (req: Request, res: Response) => {
 export const uploadDocument = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
-    const { fileName, filePath, documentType } = req.body;
+    const { documentType } = req.body;
+
+    // Check if file was uploaded
+    if (!req.file) {
+      return sendError(res, { code: 'NO_FILE', message: 'No file uploaded' }, 400);
+    }
+
+    // File info from multer
+    const fileName = req.file.originalname;
+    const filePath = req.file.path; // Full path to uploaded file
+    const fileSize = req.file.size;
+    const mimeType = req.file.mimetype;
 
     const document = await onboardingService.uploadDocument(
       candidateId,
       { fileName, filePath },
       documentType,
-      req.body.metadata
+      {
+        fileSize,
+        mimeType,
+        ...req.body.metadata,
+      }
     );
 
     return sendCreated(res, document);
@@ -142,6 +161,35 @@ export const getCandidateTasks = async (req: Request, res: Response) => {
   } catch (error: any) {
     logger.error('Get tasks error:', error);
     return sendError(res, { code: 'FETCH_FAILED', message: error.message }, 400);
+  }
+};
+
+export const downloadDocument = async (req: Request, res: Response) => {
+  try {
+    const { documentId } = req.params;
+    const documentRepo = AppDataSource.getRepository(OnboardingDocument);
+
+    const document = await documentRepo.findOne({ where: { documentId } });
+
+    if (!document) {
+      return sendError(res, { code: 'NOT_FOUND', message: 'Document not found' }, 404);
+    }
+
+    // Check if file exists
+    if (!fs.existsSync(document.filePath)) {
+      return sendError(res, { code: 'FILE_NOT_FOUND', message: 'File not found on server' }, 404);
+    }
+
+    // Set appropriate headers
+    res.setHeader('Content-Type', document.mimeType || 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
+
+    // Stream the file
+    const fileStream = fs.createReadStream(document.filePath);
+    fileStream.pipe(res);
+  } catch (error: any) {
+    logger.error('Download document error:', error);
+    return sendError(res, { code: 'DOWNLOAD_FAILED', message: error.message }, 500);
   }
 };
 

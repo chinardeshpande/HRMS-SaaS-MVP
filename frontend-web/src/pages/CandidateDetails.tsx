@@ -149,12 +149,8 @@ export default function CandidateDetails() {
     }
 
     try {
-      const formData = {
-        documentType: uploadDocType,
-        fileName: uploadFile.name,
-        // In real implementation, you'd upload the file to storage first
-      };
-      await onboardingService.uploadDocument(candidateId!, formData);
+      // Upload file with real file object
+      await onboardingService.uploadDocument(candidateId!, uploadFile, uploadDocType);
       showNotification('Document uploaded successfully', 'success');
       setShowUploadDocModal(false);
       setUploadDocType('');
