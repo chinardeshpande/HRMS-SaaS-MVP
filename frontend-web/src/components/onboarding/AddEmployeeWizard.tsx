@@ -220,7 +220,7 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
 
       // Navigate to the candidate's onboarding page
       if (response.data?.candidateId) {
-        navigate(`/onboarding/candidates/${response.data.candidateId}`);
+        navigate(`/onboarding/candidate/${response.data.candidateId}`);
       }
     } catch (err: any) {
       console.error('Error creating employee:', err);
