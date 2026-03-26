@@ -1,8 +1,11 @@
 import 'reflect-metadata';
+import http from 'http';
 import app from './app';
 import { config } from './config/config';
 import { logger } from './utils/logger';
 import { initializeDatabase } from './config/database';
+import { initializeScheduledJobs } from './jobs/taskEscalation';
+import { socketService } from './services/socketService';
 
 const startServer = async () => {
   try {
@@ -10,8 +13,19 @@ const startServer = async () => {
     await initializeDatabase();
     logger.info('Database connection established');
 
+    // Initialize scheduled jobs (task escalation, review reminders)
+    initializeScheduledJobs();
+    logger.info('Scheduled jobs initialized (task escalation, review reminders)');
+
+    // Create HTTP server
+    const httpServer = http.createServer(app);
+
+    // Initialize WebSocket server
+    socketService.initialize(httpServer);
+    logger.info('WebSocket server initialized');
+
     // Start the server
-    const server = app.listen(config.port, () => {
+    const server = httpServer.listen(config.port, () => {
       logger.info(`
         ╔════════════════════════════════════════════════════════╗
         ║                                                        ║

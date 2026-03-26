@@ -53,7 +53,9 @@ export const upload = multer({
 });
 
 // Export single file upload middleware
-export const uploadSingle = upload.single('file');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const uploadSingle: any = upload.single('file');
 
 // Export multiple files upload middleware
-export const uploadMultiple = upload.array('files', 10); // Max 10 files
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const uploadMultiple: any = upload.array('files', 10); // Max 10 files

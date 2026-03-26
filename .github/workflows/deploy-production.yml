@@ -1,0 +1,308 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "DEPLOY" to confirm production deployment'
+        required: true
+        default: ''
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+jobs:
+  # ==================================
+  # TESTS - Run all tests first
+  # ==================================
+  tests:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'DEPLOY' || github.event_name == 'push'
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: hrms_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: yarn install --frozen-lockfile
+
+      - name: Run Backend Tests
+        working-directory: ./backend
+        env:
+          NODE_ENV: test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: hrms_test
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          JWT_SECRET: test_secret_key
+        run: yarn test
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend-web
+        run: yarn install --frozen-lockfile
+
+      - name: Run Frontend Tests
+        working-directory: ./frontend-web
+        run: yarn test
+
+  # ==================================
+  # BUILD - Build Docker images
+  # ==================================
+  build:
+    needs: tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub (Optional)
+        if: env.DOCKER_USERNAME != ''
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
+      - name: Build Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./docker/backend/Dockerfile
+          push: false
+          tags: hrms-backend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          load: true
+
+      - name: Build Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend-web
+          file: ./docker/frontend/Dockerfile
+          push: false
+          tags: hrms-frontend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VITE_API_URL=${{ secrets.PRODUCTION_API_URL }}
+            VITE_SOCKET_URL=${{ secrets.PRODUCTION_SOCKET_URL }}
+          load: true
+
+      - name: Save Docker images
+        run: |
+          docker save hrms-backend:${{ github.sha }} | gzip > backend-image.tar.gz
+          docker save hrms-frontend:${{ github.sha }} | gzip > frontend-image.tar.gz
+
+      - name: Upload Backend Image Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-image
+          path: backend-image.tar.gz
+          retention-days: 1
+
+      - name: Upload Frontend Image Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-image
+          path: frontend-image.tar.gz
+          retention-days: 1
+
+  # ==================================
+  # DEPLOY - Deploy to production server
+  # ==================================
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://hrms-app.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Backend Image
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-image
+
+      - name: Download Frontend Image
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-image
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.DROPLET_IP }} >> ~/.ssh/known_hosts
+
+      - name: Copy Docker images to server
+        run: |
+          scp backend-image.tar.gz ${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_IP }}:/tmp/
+          scp frontend-image.tar.gz ${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_IP }}:/tmp/
+          scp docker-compose.production.yml ${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_IP }}:/var/www/hrms-app/docker-compose.yml
+
+      - name: Copy environment file
+        run: |
+          echo "${{ secrets.PRODUCTION_ENV }}" > .env.production
+          scp .env.production ${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_IP }}:/var/www/hrms-app/.env
+
+      - name: Deploy on server
+        run: |
+          ssh ${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_IP }} << 'ENDSSH'
+            cd /var/www/hrms-app
+
+            # Load Docker images
+            docker load < /tmp/backend-image.tar.gz
+            docker load < /tmp/frontend-image.tar.gz
+
+            # Tag images as latest
+            docker tag hrms-backend:${{ github.sha }} hrms-backend:latest
+            docker tag hrms-frontend:${{ github.sha }} hrms-frontend:latest
+
+            # Stop old containers
+            docker-compose down || true
+
+            # Start new containers
+            docker-compose up -d
+
+            # Clean up
+            rm /tmp/backend-image.tar.gz
+            rm /tmp/frontend-image.tar.gz
+            docker system prune -f
+          ENDSSH
+
+      - name: Wait for services to be healthy
+        run: |
+          sleep 30
+          ssh ${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_IP }} << 'ENDSSH'
+            # Check backend health
+            curl -f https://hrms-app.com/api/health || exit 1
+
+            # Check frontend health
+            curl -f https://hrms-app.com/ || exit 1
+          ENDSSH
+
+      - name: Run database migrations
+        run: |
+          ssh ${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_IP }} << 'ENDSSH'
+            cd /var/www/hrms-app
+            docker-compose exec -T backend yarn run migrate
+          ENDSSH
+
+  # ==================================
+  # VERIFY - Smoke tests after deployment
+  # ==================================
+  verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Health Check
+        run: |
+          # Wait a bit for the application to fully start
+          sleep 10
+
+          # Check backend health
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://hrms-app.com/api/health)
+          if [ $response -ne 200 ]; then
+            echo "Backend health check failed with status $response"
+            exit 1
+          fi
+
+          # Check frontend
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://hrms-app.com/)
+          if [ $response -ne 200 ]; then
+            echo "Frontend health check failed with status $response"
+            exit 1
+          fi
+
+          echo "All health checks passed!"
+
+      - name: Send Slack Notification
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            Production Deployment ${{ job.status }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+            Message: ${{ github.event.head_commit.message }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # ==================================
+  # ROLLBACK - In case of failure
+  # ==================================
+  rollback:
+    needs: [deploy, verify]
+    runs-on: ubuntu-latest
+    if: failure()
+
+    steps:
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.DROPLET_IP }} >> ~/.ssh/known_hosts
+
+      - name: Rollback deployment
+        run: |
+          ssh ${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_IP }} << 'ENDSSH'
+            cd /var/www/hrms-app
+
+            # Restore previous containers
+            docker-compose down
+            docker tag hrms-backend:previous hrms-backend:latest
+            docker tag hrms-frontend:previous hrms-frontend:latest
+            docker-compose up -d
+
+            echo "Rollback completed"
+          ENDSSH
+
+      - name: Notify rollback
+        uses: 8398a7/action-slack@v3
+        with:
+          status: 'warning'
+          text: |
+            ⚠️ Production deployment failed and was rolled back
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -3,6 +3,9 @@ import { ApiResponse } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
 
+console.log('🌐 API Base URL:', API_BASE_URL);
+console.log('🌐 Environment VITE_API_URL:', import.meta.env.VITE_API_URL);
+
 class ApiClient {
   private client: AxiosInstance;
 
@@ -15,6 +18,7 @@ class ApiClient {
       },
     });
 
+    console.log('✅ API Client initialized with baseURL:', API_BASE_URL);
     this.setupInterceptors();
   }
 
@@ -22,22 +26,32 @@ class ApiClient {
     // Request interceptor - Add auth token
     this.client.interceptors.request.use(
       (config) => {
+        console.log(`🌐 API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
         const tokens = localStorage.getItem('tokens');
         if (tokens) {
           const { token } = JSON.parse(tokens);
           config.headers.Authorization = `Bearer ${token}`;
+          console.log('🔑 Auth token attached');
+        } else {
+          console.log('⚠️  No auth token found');
         }
         return config;
       },
       (error) => {
+        console.error('❌ Request error:', error);
         return Promise.reject(error);
       }
     );
 
     // Response interceptor - Handle errors
     this.client.interceptors.response.use(
-      (response) => response,
+      (response) => {
+        console.log(`✅ API Response: ${response.status} ${response.config.method?.toUpperCase()} ${response.config.url}`);
+        return response;
+      },
       async (error: AxiosError<ApiResponse<any>>) => {
+        console.error(`❌ API Error: ${error.response?.status || 'NETWORK'} ${error.config?.method?.toUpperCase()} ${error.config?.url}`);
+        console.error('Error details:', error.response?.data || error.message);
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
         // Handle 401 errors (token expired)

@@ -10,7 +10,8 @@ export default function SimpleLogin() {
     setMessage('Logging in...');
 
     try {
-      const response = await fetch('http://localhost:3000/api/v1/auth/login', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -52,8 +53,14 @@ export default function SimpleLogin() {
         maxWidth: '400px',
         width: '100%'
       }}>
-        <h1 style={{ margin: '0 0 10px', color: '#1976d2', fontSize: '28px' }}>HRMS SaaS</h1>
-        <p style={{ margin: '0 0 30px', color: '#666', fontSize: '14px' }}>Human Resource Management System</p>
+        <div style={{ marginBottom: '30px', textAlign: 'center' }}>
+          <img
+            src="/images/aurora-logo.svg"
+            alt="AuroraHR"
+            style={{ height: '50px', width: 'auto' }}
+          />
+          <p style={{ margin: '10px 0 0', color: '#666', fontSize: '14px' }}>Modern HRMS Platform</p>
+        </div>
 
         <form onSubmit={handleLogin}>
           <div style={{ marginBottom: '20px' }}>

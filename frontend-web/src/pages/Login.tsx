@@ -59,24 +59,20 @@ const Login = () => {
             borderRadius: 2,
           }}
         >
-          {/* Logo/Title */}
-          <Typography
-            component="h1"
-            variant="h4"
-            sx={{
-              mb: 1,
-              fontWeight: 700,
-              color: 'primary.main',
-            }}
-          >
-            HRMS SaaS
-          </Typography>
+          {/* Logo */}
+          <Box sx={{ mb: 3 }}>
+            <img
+              src="/images/aurora-logo.svg"
+              alt="AuroraHR"
+              style={{ height: '60px', width: 'auto' }}
+            />
+          </Box>
           <Typography
             variant="body2"
             color="text.secondary"
             sx={{ mb: 3 }}
           >
-            Human Resource Management System
+            Modern HRMS Platform
           </Typography>
 
           {/* Login Form */}

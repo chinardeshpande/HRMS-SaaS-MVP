@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="800" height="200">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;700&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- People circles (top) -->
+  <circle cx="72" cy="32" r="14" fill="#0A66C2"/>
+  <circle cx="116" cy="20" r="18" fill="#0A66C2"/>
+  <circle cx="160" cy="32" r="14" fill="#0A66C2"/>
+
+  <!-- Dashed connector threads -->
+  <line x1="72" y1="46" x2="64" y2="136" stroke="#0A66C2" stroke-width="1.5" stroke-linecap="round" opacity="0.14" stroke-dasharray="4 6"/>
+  <line x1="116" y1="38" x2="116" y2="130" stroke="#0A66C2" stroke-width="1.5" stroke-linecap="round" opacity="0.14" stroke-dasharray="4 6"/>
+  <line x1="160" y1="46" x2="168" y2="136" stroke="#0A66C2" stroke-width="1.5" stroke-linecap="round" opacity="0.14" stroke-dasharray="4 6"/>
+
+  <!-- Main arc (sunrise) -->
+  <path d="M 12 144 A 104 104 0 0 1 220 144" fill="none" stroke="#0A66C2" stroke-width="22" stroke-linecap="round"/>
+
+  <!-- Inner echo arc -->
+  <path d="M 40 144 A 76 76 0 0 1 192 144" fill="none" stroke="#0A66C2" stroke-width="10" stroke-linecap="round" opacity="0.22"/>
+
+  <!-- Horizon baseline -->
+  <line x1="0" y1="144" x2="232" y2="144" stroke="#0A66C2" stroke-width="2" stroke-linecap="round" opacity="0.13"/>
+
+  <!-- Bottom anchor dots -->
+  <circle cx="64" cy="144" r="8" fill="#0A66C2" opacity="0.38"/>
+  <circle cx="116" cy="144" r="10" fill="#0A66C2"/>
+  <circle cx="116" cy="144" r="4" fill="white"/>
+  <circle cx="168" cy="144" r="8" fill="#0A66C2" opacity="0.38"/>
+
+  <!-- Wordmark: AuroraHR -->
+  <text
+    x="260" y="124"
+    font-family="'Plus Jakarta Sans', Arial, sans-serif"
+    font-size="72"
+    font-weight="700"
+    fill="#0A66C2"
+    letter-spacing="-3"
+  >Aurora<tspan font-weight="300">HR</tspan></text>
+</svg>

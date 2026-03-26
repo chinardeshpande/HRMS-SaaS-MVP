@@ -266,3 +266,191 @@ export const getExitStatistics = async (req: Request, res: Response) => {
     return sendError(res, { code: 'FETCH_FAILED', message: error.message }, 400);
   }
 };
+
+// ==================== EXIT CASE CRUD OPERATIONS ====================
+
+export const updateExitCase = async (req: Request, res: Response) => {
+  try {
+    const { exitId } = req.params;
+    const userId = req.user!.employeeId!;
+
+    const updated = await exitService.updateExitCase(exitId, req.body, userId);
+    return sendSuccess(res, updated);
+  } catch (error: any) {
+    logger.error('Update exit case error:', error);
+    return sendError(res, { code: 'UPDATE_FAILED', message: error.message }, 400);
+  }
+};
+
+export const deleteExitCase = async (req: Request, res: Response) => {
+  try {
+    const { exitId } = req.params;
+    const userId = req.user!.employeeId!;
+
+    await exitService.deleteExitCase(exitId, userId);
+    return sendSuccess(res, { message: 'Exit case deleted successfully' });
+  } catch (error: any) {
+    logger.error('Delete exit case error:', error);
+    return sendError(res, { code: 'DELETE_FAILED', message: error.message }, 400);
+  }
+};
+
+// ==================== CLEARANCE CRUD OPERATIONS ====================
+
+export const createClearance = async (req: Request, res: Response) => {
+  try {
+    const { exitId } = req.params;
+    const userId = req.user!.employeeId!;
+
+    const clearance = await exitService.createClearance(exitId, req.body, userId);
+    return sendCreated(res, clearance);
+  } catch (error: any) {
+    logger.error('Create clearance error:', error);
+    return sendError(res, { code: 'CREATE_FAILED', message: error.message }, 400);
+  }
+};
+
+export const getClearancesByExitId = async (req: Request, res: Response) => {
+  try {
+    const { exitId } = req.params;
+
+    const clearances = await exitService.getClearancesByExitId(exitId);
+    return sendSuccess(res, clearances);
+  } catch (error: any) {
+    logger.error('Get clearances error:', error);
+    return sendError(res, { code: 'FETCH_FAILED', message: error.message }, 400);
+  }
+};
+
+export const deleteClearance = async (req: Request, res: Response) => {
+  try {
+    const { clearanceId } = req.params;
+    const userId = req.user!.employeeId!;
+
+    await exitService.deleteClearance(clearanceId, userId);
+    return sendSuccess(res, { message: 'Clearance deleted successfully' });
+  } catch (error: any) {
+    logger.error('Delete clearance error:', error);
+    return sendError(res, { code: 'DELETE_FAILED', message: error.message }, 400);
+  }
+};
+
+// ==================== ASSET RETURN CRUD OPERATIONS ====================
+
+export const updateAssetReturn = async (req: Request, res: Response) => {
+  try {
+    const { assetId } = req.params;
+    const userId = req.user!.employeeId!;
+
+    const updated = await exitService.updateAssetReturn(assetId, req.body, userId);
+    return sendSuccess(res, updated);
+  } catch (error: any) {
+    logger.error('Update asset return error:', error);
+    return sendError(res, { code: 'UPDATE_FAILED', message: error.message }, 400);
+  }
+};
+
+export const getAssetsByExitId = async (req: Request, res: Response) => {
+  try {
+    const { exitId } = req.params;
+
+    const assets = await exitService.getAssetsByExitId(exitId);
+    return sendSuccess(res, assets);
+  } catch (error: any) {
+    logger.error('Get assets error:', error);
+    return sendError(res, { code: 'FETCH_FAILED', message: error.message }, 400);
+  }
+};
+
+export const deleteAssetReturn = async (req: Request, res: Response) => {
+  try {
+    const { assetId } = req.params;
+    const userId = req.user!.employeeId!;
+
+    await exitService.deleteAssetReturn(assetId, userId);
+    return sendSuccess(res, { message: 'Asset return record deleted successfully' });
+  } catch (error: any) {
+    logger.error('Delete asset return error:', error);
+    return sendError(res, { code: 'DELETE_FAILED', message: error.message }, 400);
+  }
+};
+
+// ==================== EXIT INTERVIEW CRUD OPERATIONS ====================
+
+export const updateExitInterview = async (req: Request, res: Response) => {
+  try {
+    const { exitInterviewId } = req.params;
+    const userId = req.user!.employeeId!;
+
+    const updated = await exitService.updateExitInterview(exitInterviewId, req.body, userId);
+    return sendSuccess(res, updated);
+  } catch (error: any) {
+    logger.error('Update exit interview error:', error);
+    return sendError(res, { code: 'UPDATE_FAILED', message: error.message }, 400);
+  }
+};
+
+export const getExitInterviewByExitId = async (req: Request, res: Response) => {
+  try {
+    const { exitId } = req.params;
+
+    const interview = await exitService.getExitInterviewByExitId(exitId);
+    return sendSuccess(res, interview);
+  } catch (error: any) {
+    logger.error('Get exit interview error:', error);
+    return sendError(res, { code: 'FETCH_FAILED', message: error.message }, 400);
+  }
+};
+
+export const deleteExitInterview = async (req: Request, res: Response) => {
+  try {
+    const { exitInterviewId } = req.params;
+    const userId = req.user!.employeeId!;
+
+    await exitService.deleteExitInterview(exitInterviewId, userId);
+    return sendSuccess(res, { message: 'Exit interview deleted successfully' });
+  } catch (error: any) {
+    logger.error('Delete exit interview error:', error);
+    return sendError(res, { code: 'DELETE_FAILED', message: error.message }, 400);
+  }
+};
+
+// ==================== SETTLEMENT CRUD OPERATIONS ====================
+
+export const updateSettlement = async (req: Request, res: Response) => {
+  try {
+    const { settlementId } = req.params;
+    const userId = req.user!.employeeId!;
+
+    const updated = await exitService.updateSettlement(settlementId, req.body, userId);
+    return sendSuccess(res, updated);
+  } catch (error: any) {
+    logger.error('Update settlement error:', error);
+    return sendError(res, { code: 'UPDATE_FAILED', message: error.message }, 400);
+  }
+};
+
+export const getSettlementByExitId = async (req: Request, res: Response) => {
+  try {
+    const { exitId } = req.params;
+
+    const settlement = await exitService.getSettlementByExitId(exitId);
+    return sendSuccess(res, settlement);
+  } catch (error: any) {
+    logger.error('Get settlement error:', error);
+    return sendError(res, { code: 'FETCH_FAILED', message: error.message }, 400);
+  }
+};
+
+export const deleteSettlement = async (req: Request, res: Response) => {
+  try {
+    const { settlementId } = req.params;
+    const userId = req.user!.employeeId!;
+
+    await exitService.deleteSettlement(settlementId, userId);
+    return sendSuccess(res, { message: 'Settlement deleted successfully' });
+  } catch (error: any) {
+    logger.error('Delete settlement error:', error);
+    return sendError(res, { code: 'DELETE_FAILED', message: error.message }, 400);
+  }
+};

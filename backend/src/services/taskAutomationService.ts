@@ -72,13 +72,17 @@ export class TaskAutomationService {
   async escalateTask(taskId: string, level: number, type: 'onboarding' | 'probation' = 'onboarding'): Promise<void> {
     if (level > 3) return; // Max escalation level
 
-    const repo = type === 'onboarding' ? this.onboardingTaskRepo : this.probationTaskRepo;
-    const task = await repo.findOne({ where: { taskId } });
-
-    if (!task) return;
-
-    task.escalationLevel = level;
-    await repo.save(task);
+    if (type === 'onboarding') {
+      const task = await this.onboardingTaskRepo.findOne({ where: { taskId } });
+      if (!task) return;
+      task.escalationLevel = level;
+      await this.onboardingTaskRepo.save(task);
+    } else {
+      const task = await this.probationTaskRepo.findOne({ where: { taskId } });
+      if (!task) return;
+      task.escalationLevel = level;
+      await this.probationTaskRepo.save(task);
+    }
 
     // Send notifications based on escalation level
     // Level 1: Manager

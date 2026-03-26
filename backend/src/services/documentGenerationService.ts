@@ -3,11 +3,23 @@ import { DocumentTemplate } from '../models/DocumentTemplate';
 import { Candidate } from '../models/Candidate';
 import { Employee } from '../models/Employee';
 import logger from '../utils/logger';
+import PDFDocument from 'pdfkit';
+import fs from 'fs';
+import path from 'path';
 
 export class DocumentGenerationService {
   private templateRepo = AppDataSource.getRepository(DocumentTemplate);
   private candidateRepo = AppDataSource.getRepository(Candidate);
   private employeeRepo = AppDataSource.getRepository(Employee);
+  private uploadsDir = path.join(__dirname, '../../uploads/documents');
+
+  constructor() {
+    // Ensure uploads directory exists
+    if (!fs.existsSync(this.uploadsDir)) {
+      fs.mkdirSync(this.uploadsDir, { recursive: true });
+      logger.info(`Created uploads directory: ${this.uploadsDir}`);
+    }
+  }
 
   async generateDocument(
     templateName: string,
@@ -23,7 +35,7 @@ export class DocumentGenerationService {
     }
 
     const html = this.mergeTemplate(template.htmlTemplate, data);
-    const pdfPath = await this.htmlToPdf(html, templateName);
+    const pdfPath = await this.htmlToPdf(html, templateName, data);
 
     logger.info(`Document generated: ${templateName}`);
     return pdfPath;
@@ -40,11 +52,71 @@ export class DocumentGenerationService {
     return result;
   }
 
-  async htmlToPdf(html: string, templateName: string): Promise<string> {
-    // Placeholder implementation - would use pdfkit or puppeteer
-    const filePath = `/uploads/documents/${templateName}_${Date.now()}.pdf`;
-    logger.info(`PDF would be generated at: ${filePath}`);
-    return filePath;
+  async htmlToPdf(html: string, templateName: string, data?: Record<string, any>): Promise<string> {
+    const fileName = `${templateName}_${data?.employeeCode || data?.candidateId || Date.now()}.pdf`;
+    const filePath = path.join(this.uploadsDir, fileName);
+
+    return new Promise((resolve, reject) => {
+      try {
+        const doc = new PDFDocument({ margin: 50 });
+        const writeStream = fs.createWriteStream(filePath);
+
+        doc.pipe(writeStream);
+
+        // Simple HTML to PDF conversion (basic implementation)
+        const textContent = html
+          .replace(/<style>[\s\S]*?<\/style>/gi, '')
+          .replace(/<script>[\s\S]*?<\/script>/gi, '')
+          .replace(/<h1[^>]*>/gi, '\n\n')
+          .replace(/<\/h1>/gi, '\n')
+          .replace(/<h2[^>]*>/gi, '\n\n')
+          .replace(/<\/h2>/gi, '\n')
+          .replace(/<h3[^>]*>/gi, '\n')
+          .replace(/<\/h3>/gi, '\n')
+          .replace(/<p[^>]*>/gi, '\n')
+          .replace(/<\/p>/gi, '\n')
+          .replace(/<br\s*\/?>/gi, '\n')
+          .replace(/<li[^>]*>/gi, '\n  • ')
+          .replace(/<\/li>/gi, '')
+          .replace(/<[^>]+>/g, '')
+          .replace(/&nbsp;/g, ' ')
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&quot;/g, '"');
+
+        // Add letterhead
+        doc.fontSize(20).font('Helvetica-Bold').text(data?.companyName || 'Company Name', { align: 'center' });
+        doc.moveDown(0.5);
+        doc.fontSize(10).font('Helvetica').text(templateName.replace(/_/g, ' ').toUpperCase(), { align: 'center' });
+        doc.moveDown(2);
+
+        // Add content
+        doc.fontSize(11).font('Helvetica').text(textContent.trim(), {
+          align: 'justify',
+          lineGap: 4
+        });
+
+        // Add footer
+        doc.moveDown(3);
+        doc.fontSize(9).text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'right' });
+
+        doc.end();
+
+        writeStream.on('finish', () => {
+          logger.info(`PDF generated: ${fileName}`);
+          resolve(`/uploads/documents/${fileName}`);
+        });
+
+        writeStream.on('error', (err) => {
+          logger.error(`PDF generation error: ${err.message}`);
+          reject(err);
+        });
+      } catch (error: any) {
+        logger.error(`PDF generation failed: ${error.message}`);
+        reject(error);
+      }
+    });
   }
 
   async generateOfferLetter(candidateId: string): Promise<string> {
@@ -60,8 +132,8 @@ export class DocumentGenerationService {
     const data = {
       firstName: candidate.firstName,
       lastName: candidate.lastName,
-      positionOffered: candidate.designation?.designationName || 'N/A',
-      departmentName: candidate.department?.departmentName || 'N/A',
+      positionOffered: candidate.designation?.name || 'N/A',
+      departmentName: candidate.department?.name || 'N/A',
       currency: candidate.currency,
       offeredSalary: candidate.offeredSalary,
       expectedJoinDate: candidate.expectedJoinDate?.toISOString().split('T')[0],
@@ -90,8 +162,8 @@ export class DocumentGenerationService {
       firstName: employee.firstName,
       lastName: employee.lastName,
       employeeCode: employee.employeeCode,
-      designation: employee.designation?.designationName || 'N/A',
-      department: employee.department?.departmentName || 'N/A',
+      designation: employee.designation?.name || 'N/A',
+      department: employee.department?.name || 'N/A',
       confirmationDate: new Date().toISOString().split('T')[0],
     };
 

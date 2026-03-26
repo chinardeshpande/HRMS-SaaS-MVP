@@ -17,6 +17,7 @@ interface Config {
     name: string;
     user: string;
     password: string;
+    ssl: boolean;
   };
 
   // JWT
@@ -75,6 +76,7 @@ export const config: Config = {
     name: process.env.DB_NAME || 'hrms_saas',
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'postgres',
+    ssl: process.env.DB_SSL === 'true',
   },
 
   // JWT
@@ -101,8 +103,8 @@ export const config: Config = {
   },
 
   // Rate Limiting
-  rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10), // 15 minutes
-  rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
+  rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000', 10), // 1 minute (reduced from 15)
+  rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '1000', 10), // Increased from 100 to 1000
 
   // CORS
   corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',

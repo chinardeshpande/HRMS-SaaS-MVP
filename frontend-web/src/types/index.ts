@@ -34,5 +34,5 @@ export interface ApiResponse<T> {
     message: string;
     code?: string;
   };
-  timestamp: string;
+  timestamp?: string;
 }

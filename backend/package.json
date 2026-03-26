@@ -16,7 +16,11 @@
     "migrate": "ts-node src/database/migrate.ts",
     "seed": "ts-node src/scripts/seedTestData.ts",
     "seed:attendance": "ts-node src/scripts/seedAttendanceData.ts",
-    "seed:all": "npm run seed && npm run seed:attendance"
+    "seed:onboarding": "ts-node src/scripts/seedOnboardingData.ts",
+    "seed:templates": "ts-node src/scripts/seedDocumentTemplates.ts",
+    "seed:hrconnect": "ts-node src/scripts/seedHRConnectData.ts",
+    "seed:all": "npm run seed && npm run seed:attendance && npm run seed:onboarding && npm run seed:hrconnect",
+    "sync:employees": "ts-node src/scripts/syncCandidatesToEmployees.ts"
   },
   "keywords": [
     "hrms",
@@ -27,9 +31,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@types/node-schedule": "^2.1.8",
+    "@types/pdfkit": "^0.17.5",
     "bcrypt": "^5.1.1",
     "compression": "^1.7.4",
-    "cors": "^2.8.5",
+    "cors": "^2.8.6",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-rate-limit": "^7.1.5",
@@ -37,9 +43,12 @@
     "joi": "^17.12.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "node-schedule": "^2.1.1",
     "nodemailer": "^6.9.7",
+    "pdfkit": "^0.17.2",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.2.1",
+    "socket.io": "^4.8.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "typeorm": "^0.3.19",

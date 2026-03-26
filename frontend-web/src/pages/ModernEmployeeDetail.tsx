@@ -16,6 +16,7 @@ import {
   CheckCircleIcon,
   StarIcon,
   SparklesIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 
 interface HistoryEvent {
@@ -86,6 +87,32 @@ export default function ModernEmployeeDetail() {
   const [employee, setEmployee] = useState<EmployeeDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Edit mode states
+  const [isEditingPersonal, setIsEditingPersonal] = useState(false);
+  const [isEditingProfessional, setIsEditingProfessional] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Form states for personal tab
+  const [personalForm, setPersonalForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    gender: '',
+    maritalStatus: '',
+    nationality: '',
+    address: '',
+    emergencyContact: '',
+    emergencyPhone: '',
+  });
+
+  // Form states for professional tab
+  const [professionalForm, setProfessionalForm] = useState({
+    employmentType: '',
+    workLocation: '',
+  });
 
   // Generate organizational history based on employee data
   const generateOrganizationalHistory = (employee: any): HistoryEvent[] => {
@@ -212,6 +239,30 @@ export default function ModernEmployeeDetail() {
     fetchEmployee();
   }, [id, navigate]);
 
+  // Update form states when employee data changes
+  useEffect(() => {
+    if (employee) {
+      setPersonalForm({
+        firstName: employee.firstName || '',
+        lastName: employee.lastName || '',
+        email: employee.email || '',
+        phone: employee.phone || '',
+        dateOfBirth: employee.dateOfBirth || '',
+        gender: employee.gender || '',
+        maritalStatus: employee.maritalStatus || '',
+        nationality: employee.nationality || '',
+        address: employee.address || '',
+        emergencyContact: employee.emergencyContact || '',
+        emergencyPhone: employee.emergencyPhone || '',
+      });
+
+      setProfessionalForm({
+        employmentType: employee.employmentType || '',
+        workLocation: employee.workLocation || '',
+      });
+    }
+  }, [employee]);
+
   // Loading state
   if (loading) {
     return (
@@ -249,7 +300,102 @@ export default function ModernEmployeeDetail() {
   };
 
   const handleEdit = () => {
-    navigate('/edit-profile', { state: { employee } });
+    // Check which tab is active and enable editing for that tab
+    if (activeTab === 'personal') {
+      setIsEditingPersonal(true);
+    } else if (activeTab === 'professional') {
+      setIsEditingProfessional(true);
+    }
+    // History tab is view-only, no editing
+  };
+
+  const handleCancelEdit = () => {
+    // Reset form states to original employee data
+    if (employee) {
+      setPersonalForm({
+        firstName: employee.firstName || '',
+        lastName: employee.lastName || '',
+        email: employee.email || '',
+        phone: employee.phone || '',
+        dateOfBirth: employee.dateOfBirth || '',
+        gender: employee.gender || '',
+        maritalStatus: employee.maritalStatus || '',
+        nationality: employee.nationality || '',
+        address: employee.address || '',
+        emergencyContact: employee.emergencyContact || '',
+        emergencyPhone: employee.emergencyPhone || '',
+      });
+
+      setProfessionalForm({
+        employmentType: employee.employmentType || '',
+        workLocation: employee.workLocation || '',
+      });
+    }
+
+    setIsEditingPersonal(false);
+    setIsEditingProfessional(false);
+  };
+
+  const handleSavePersonal = async () => {
+    if (!id) return;
+
+    try {
+      setSaving(true);
+      await employeeService.updateEmployee(id, personalForm);
+
+      // Refresh employee data
+      const data = await employeeService.getById(id);
+      const mappedEmployee: EmployeeDetail = {
+        ...data,
+        positionTitle: data.designation?.title,
+        jobTitle: data.designation?.title,
+        departmentName: data.department?.name,
+        reportsToEmployeeName: data.manager
+          ? `${data.manager.firstName} ${data.manager.lastName}`
+          : undefined,
+        organizationalHistory: generateOrganizationalHistory(data),
+      };
+
+      setEmployee(mappedEmployee);
+      setIsEditingPersonal(false);
+      setError(null);
+    } catch (err: any) {
+      console.error('Error updating employee:', err);
+      setError('Failed to update employee details');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveProfessional = async () => {
+    if (!id) return;
+
+    try {
+      setSaving(true);
+      await employeeService.updateEmployee(id, professionalForm);
+
+      // Refresh employee data
+      const data = await employeeService.getById(id);
+      const mappedEmployee: EmployeeDetail = {
+        ...data,
+        positionTitle: data.designation?.title,
+        jobTitle: data.designation?.title,
+        departmentName: data.department?.name,
+        reportsToEmployeeName: data.manager
+          ? `${data.manager.firstName} ${data.manager.lastName}`
+          : undefined,
+        organizationalHistory: generateOrganizationalHistory(data),
+      };
+
+      setEmployee(mappedEmployee);
+      setIsEditingProfessional(false);
+      setError(null);
+    } catch (err: any) {
+      console.error('Error updating employee:', err);
+      setError('Failed to update employee details');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleAction = (action: string) => {
@@ -303,6 +449,59 @@ export default function ModernEmployeeDetail() {
     <div>
       <p className="text-xs font-semibold text-gray-500 mb-0.5">{label}</p>
       <p className="text-sm font-semibold text-gray-900">{value || 'N/A'}</p>
+    </div>
+  );
+
+  const EditableField = ({
+    label,
+    value,
+    onChange,
+    type = 'text',
+    placeholder,
+  }: {
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+    type?: string;
+    placeholder?: string;
+  }) => (
+    <div>
+      <label className="text-xs font-semibold text-gray-500 mb-1 block">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+      />
+    </div>
+  );
+
+  const EditableSelect = ({
+    label,
+    value,
+    onChange,
+    options,
+  }: {
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+    options: { value: string; label: string }[];
+  }) => (
+    <div>
+      <label className="text-xs font-semibold text-gray-500 mb-1 block">{label}</label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+      >
+        <option value="">Select...</option>
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
     </div>
   );
 
@@ -394,12 +593,23 @@ export default function ModernEmployeeDetail() {
         </div>
       </div>
 
+      {/* Edit Mode Alert */}
+      {(isEditingPersonal || isEditingProfessional) && (
+        <div className="mb-4 p-3 bg-primary-50 border border-primary-200 rounded-lg flex items-center">
+          <PencilIcon className="h-5 w-5 text-primary-600 mr-2" />
+          <p className="text-sm text-primary-700 font-medium">
+            You are editing the {isEditingPersonal ? 'Personal' : 'Professional'} information. Make your changes and click "Save Changes" or "Cancel" to discard.
+          </p>
+        </div>
+      )}
+
       {/* Tabs & Actions */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
           <button
             onClick={() => setActiveTab('personal')}
-            className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all ${
+            disabled={isEditingPersonal || isEditingProfessional}
+            className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
               activeTab === 'personal'
                 ? 'bg-white text-primary-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
@@ -410,7 +620,8 @@ export default function ModernEmployeeDetail() {
           </button>
           <button
             onClick={() => setActiveTab('professional')}
-            className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all ${
+            disabled={isEditingPersonal || isEditingProfessional}
+            className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
               activeTab === 'professional'
                 ? 'bg-white text-primary-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
@@ -421,7 +632,8 @@ export default function ModernEmployeeDetail() {
           </button>
           <button
             onClick={() => setActiveTab('history')}
-            className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all ${
+            disabled={isEditingPersonal || isEditingProfessional}
+            className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
               activeTab === 'history'
                 ? 'bg-white text-primary-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
@@ -433,25 +645,53 @@ export default function ModernEmployeeDetail() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center space-x-1">
-          <button onClick={handleEdit} className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Edit">
-            <PencilIcon className="h-4 w-4" />
-          </button>
-          <button onClick={() => handleAction('promotion')} className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Promote">
-            <ArrowTrendingUpIcon className="h-4 w-4" />
-          </button>
-          <button onClick={() => handleAction('transfer')} className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Transfer">
-            <ArrowsRightLeftIcon className="h-4 w-4" />
-          </button>
-          <button onClick={() => handleAction('compensation')} className="p-2 text-gray-500 hover:text-success-600 hover:bg-success-50 rounded-lg transition-colors" title="Compensation">
-            <BanknotesIcon className="h-4 w-4" />
-          </button>
-          <button onClick={() => handleAction('performance')} className="p-2 text-gray-500 hover:text-warning-600 hover:bg-warning-50 rounded-lg transition-colors" title="Performance">
-            <ChartBarIcon className="h-4 w-4" />
-          </button>
-          <button onClick={() => handleAction('attendance')} className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Attendance">
-            <ClockIcon className="h-4 w-4" />
-          </button>
+        <div className="flex items-center space-x-2">
+          {/* Show Save/Cancel buttons when editing */}
+          {(isEditingPersonal || isEditingProfessional) ? (
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={isEditingPersonal ? handleSavePersonal : handleSaveProfessional}
+                disabled={saving}
+                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button
+                onClick={handleCancelEdit}
+                disabled={saving}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium text-sm flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <XMarkIcon className="h-4 w-4 mr-1" />
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <>
+              <button
+                onClick={handleEdit}
+                className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title={activeTab === 'history' ? 'History is view-only' : 'Edit'}
+                disabled={activeTab === 'history'}
+              >
+                <PencilIcon className="h-4 w-4" />
+              </button>
+              <button onClick={() => handleAction('promotion')} className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Promote">
+                <ArrowTrendingUpIcon className="h-4 w-4" />
+              </button>
+              <button onClick={() => handleAction('transfer')} className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Transfer">
+                <ArrowsRightLeftIcon className="h-4 w-4" />
+              </button>
+              <button onClick={() => handleAction('compensation')} className="p-2 text-gray-500 hover:text-success-600 hover:bg-success-50 rounded-lg transition-colors" title="Compensation">
+                <BanknotesIcon className="h-4 w-4" />
+              </button>
+              <button onClick={() => handleAction('performance')} className="p-2 text-gray-500 hover:text-warning-600 hover:bg-warning-50 rounded-lg transition-colors" title="Performance">
+                <ChartBarIcon className="h-4 w-4" />
+              </button>
+              <button onClick={() => handleAction('attendance')} className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Attendance">
+                <ClockIcon className="h-4 w-4" />
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -462,6 +702,37 @@ export default function ModernEmployeeDetail() {
           {/* Personal Info Tab */}
           {activeTab === 'personal' && (
             <div className="space-y-4">
+              {/* Name Fields (only in edit mode) */}
+              {isEditingPersonal && (
+                <div className="p-4 bg-gradient-to-r from-primary-50 to-primary-100 rounded-lg border border-primary-200">
+                  <h3 className="text-xs font-bold text-primary-700 uppercase tracking-wide mb-3 flex items-center">
+                    <span className="w-6 h-6 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs mr-2">✏️</span>
+                    Basic Information
+                  </h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <EditableField
+                      label="First Name"
+                      value={personalForm.firstName}
+                      onChange={(value) => setPersonalForm({ ...personalForm, firstName: value })}
+                      placeholder="First name"
+                    />
+                    <EditableField
+                      label="Last Name"
+                      value={personalForm.lastName}
+                      onChange={(value) => setPersonalForm({ ...personalForm, lastName: value })}
+                      placeholder="Last name"
+                    />
+                    <EditableField
+                      label="Email"
+                      type="email"
+                      value={personalForm.email}
+                      onChange={(value) => setPersonalForm({ ...personalForm, email: value })}
+                      placeholder="email@example.com"
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Contact Details */}
               <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
                 <h3 className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-3 flex items-center">
@@ -469,9 +740,36 @@ export default function ModernEmployeeDetail() {
                   Contact Details
                 </h3>
                 <div className="grid grid-cols-3 gap-4">
-                  <InfoItem label="Email" value={employee.email} />
-                  <InfoItem label="Phone" value={employee.phone} />
-                  <InfoItem label="Address" value={employee.address} />
+                  {isEditingPersonal ? (
+                    <>
+                      <EditableField
+                        label="Email"
+                        type="email"
+                        value={personalForm.email}
+                        onChange={(value) => setPersonalForm({ ...personalForm, email: value })}
+                        placeholder="email@example.com"
+                      />
+                      <EditableField
+                        label="Phone"
+                        type="tel"
+                        value={personalForm.phone}
+                        onChange={(value) => setPersonalForm({ ...personalForm, phone: value })}
+                        placeholder="+1 (555) 123-4567"
+                      />
+                      <EditableField
+                        label="Address"
+                        value={personalForm.address}
+                        onChange={(value) => setPersonalForm({ ...personalForm, address: value })}
+                        placeholder="Full address"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <InfoItem label="Email" value={employee.email} />
+                      <InfoItem label="Phone" value={employee.phone} />
+                      <InfoItem label="Address" value={employee.address} />
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -482,10 +780,51 @@ export default function ModernEmployeeDetail() {
                   Personal Details
                 </h3>
                 <div className="grid grid-cols-4 gap-4">
-                  <InfoItem label="Date of Birth" value={employee.dateOfBirth} />
-                  <InfoItem label="Gender" value={employee.gender} />
-                  <InfoItem label="Marital Status" value={employee.maritalStatus} />
-                  <InfoItem label="Nationality" value={employee.nationality} />
+                  {isEditingPersonal ? (
+                    <>
+                      <EditableField
+                        label="Date of Birth"
+                        type="date"
+                        value={personalForm.dateOfBirth}
+                        onChange={(value) => setPersonalForm({ ...personalForm, dateOfBirth: value })}
+                      />
+                      <EditableSelect
+                        label="Gender"
+                        value={personalForm.gender}
+                        onChange={(value) => setPersonalForm({ ...personalForm, gender: value })}
+                        options={[
+                          { value: 'male', label: 'Male' },
+                          { value: 'female', label: 'Female' },
+                          { value: 'other', label: 'Other' },
+                          { value: 'prefer_not_to_say', label: 'Prefer not to say' },
+                        ]}
+                      />
+                      <EditableSelect
+                        label="Marital Status"
+                        value={personalForm.maritalStatus}
+                        onChange={(value) => setPersonalForm({ ...personalForm, maritalStatus: value })}
+                        options={[
+                          { value: 'single', label: 'Single' },
+                          { value: 'married', label: 'Married' },
+                          { value: 'divorced', label: 'Divorced' },
+                          { value: 'widowed', label: 'Widowed' },
+                        ]}
+                      />
+                      <EditableField
+                        label="Nationality"
+                        value={personalForm.nationality}
+                        onChange={(value) => setPersonalForm({ ...personalForm, nationality: value })}
+                        placeholder="Nationality"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <InfoItem label="Date of Birth" value={employee.dateOfBirth} />
+                      <InfoItem label="Gender" value={employee.gender} />
+                      <InfoItem label="Marital Status" value={employee.maritalStatus} />
+                      <InfoItem label="Nationality" value={employee.nationality} />
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -496,8 +835,28 @@ export default function ModernEmployeeDetail() {
                   Emergency Contact
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <InfoItem label="Contact Name" value={employee.emergencyContact} />
-                  <InfoItem label="Phone" value={employee.emergencyPhone} />
+                  {isEditingPersonal ? (
+                    <>
+                      <EditableField
+                        label="Contact Name"
+                        value={personalForm.emergencyContact}
+                        onChange={(value) => setPersonalForm({ ...personalForm, emergencyContact: value })}
+                        placeholder="Emergency contact name"
+                      />
+                      <EditableField
+                        label="Phone"
+                        type="tel"
+                        value={personalForm.emergencyPhone}
+                        onChange={(value) => setPersonalForm({ ...personalForm, emergencyPhone: value })}
+                        placeholder="+1 (555) 123-4567"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <InfoItem label="Contact Name" value={employee.emergencyContact} />
+                      <InfoItem label="Phone" value={employee.emergencyPhone} />
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -506,11 +865,14 @@ export default function ModernEmployeeDetail() {
           {/* Professional Info Tab */}
           {activeTab === 'professional' && (
             <div className="space-y-4">
-              {/* Position & Hierarchy */}
+              {/* Position & Hierarchy - View Only (requires workflows) */}
               <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100">
                 <h3 className="text-xs font-bold text-indigo-700 uppercase tracking-wide mb-3 flex items-center">
                   <span className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs mr-2">🏢</span>
                   Position & Hierarchy
+                  {isEditingProfessional && (
+                    <span className="ml-2 text-xs text-indigo-600 font-normal italic">(Use Transfer/Promotion for changes)</span>
+                  )}
                 </h3>
                 <div className="grid grid-cols-4 gap-4">
                   <InfoItem label="Position" value={employee.positionTitle} />
@@ -527,10 +889,37 @@ export default function ModernEmployeeDetail() {
                   Employment Details
                 </h3>
                 <div className="grid grid-cols-4 gap-4">
-                  <InfoItem label="Type" value={employee.employmentType || 'Full-time'} />
-                  <InfoItem label="Location" value={employee.workLocation} />
-                  <InfoItem label="Joining Date" value={employee.dateOfJoining} />
-                  <InfoItem label="Experience" value={employee.yearsOfExperience ? `${employee.yearsOfExperience} years` : undefined} />
+                  {isEditingProfessional ? (
+                    <>
+                      <EditableSelect
+                        label="Type"
+                        value={professionalForm.employmentType}
+                        onChange={(value) => setProfessionalForm({ ...professionalForm, employmentType: value })}
+                        options={[
+                          { value: 'full-time', label: 'Full-time' },
+                          { value: 'part-time', label: 'Part-time' },
+                          { value: 'contract', label: 'Contract' },
+                          { value: 'intern', label: 'Intern' },
+                          { value: 'consultant', label: 'Consultant' },
+                        ]}
+                      />
+                      <EditableField
+                        label="Location"
+                        value={professionalForm.workLocation}
+                        onChange={(value) => setProfessionalForm({ ...professionalForm, workLocation: value })}
+                        placeholder="Office/Remote/Hybrid"
+                      />
+                      <InfoItem label="Joining Date" value={employee.dateOfJoining} />
+                      <InfoItem label="Experience" value={employee.yearsOfExperience ? `${employee.yearsOfExperience} years` : undefined} />
+                    </>
+                  ) : (
+                    <>
+                      <InfoItem label="Type" value={employee.employmentType || 'Full-time'} />
+                      <InfoItem label="Location" value={employee.workLocation} />
+                      <InfoItem label="Joining Date" value={employee.dateOfJoining} />
+                      <InfoItem label="Experience" value={employee.yearsOfExperience ? `${employee.yearsOfExperience} years` : undefined} />
+                    </>
+                  )}
                 </div>
                 <div className="grid grid-cols-4 gap-4 mt-4">
                   <div>
@@ -541,11 +930,14 @@ export default function ModernEmployeeDetail() {
                 </div>
               </div>
 
-              {/* Compensation */}
+              {/* Compensation - View Only (requires workflow) */}
               <div className="p-4 bg-green-50 rounded-lg border border-green-100">
                 <h3 className="text-xs font-bold text-green-700 uppercase tracking-wide mb-3 flex items-center">
                   <span className="w-6 h-6 rounded-full bg-green-600 text-white flex items-center justify-center text-xs mr-2">💰</span>
                   Compensation
+                  {isEditingProfessional && (
+                    <span className="ml-2 text-xs text-green-600 font-normal italic">(Use Compensation workflow for changes)</span>
+                  )}
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>

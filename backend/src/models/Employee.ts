@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Department } from './Department';
 import { Designation } from './Designation';
+import { Role } from './Role';
 import { EmploymentStatus } from '../../../shared/types';
 
 @Entity('employees')
@@ -58,6 +59,9 @@ export class Employee {
   @Column({ type: 'uuid', nullable: true })
   managerId?: string;
 
+  @Column({ type: 'uuid', nullable: true })
+  roleId?: string;
+
   @Column({ type: 'date' })
   dateOfJoining!: Date;
 
@@ -98,6 +102,10 @@ export class Employee {
   @ManyToOne(() => Employee, { nullable: true })
   @JoinColumn({ name: 'managerId' })
   manager?: Employee;
+
+  @ManyToOne(() => Role, (role) => role.employees, { nullable: true })
+  @JoinColumn({ name: 'roleId' })
+  role?: Role;
 
   @OneToMany(() => Employee, (employee) => employee.manager)
   subordinates?: Employee[];

@@ -68,23 +68,22 @@ export default function ModernLogin() {
         <div className="relative z-10 flex flex-col justify-between w-full max-w-xl mx-auto">
           {/* Logo and tagline */}
           <div>
-            <div className="flex items-center space-x-3 mb-8">
-              <div className="bg-white rounded-xl p-3 shadow-lg">
-                <BriefcaseIcon className="h-10 w-10 text-primary-600" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-white">HRMS</h1>
-                <p className="text-primary-100">Enterprise Edition</p>
-              </div>
+            <div className="mb-12">
+              <img
+                src="/images/aurora-logo.svg"
+                alt="AuroraHR"
+                className="h-16 w-auto mb-6"
+                style={{ filter: 'brightness(0) invert(1)' }}
+              />
             </div>
 
             <h2 className="text-4xl font-bold text-white mb-4 leading-tight">
-              Modern HR Management
+              Transform Your
               <br />
-              Made Simple
+              HR Operations
             </h2>
             <p className="text-xl text-primary-100 mb-12">
-              Streamline your workforce operations with our comprehensive HR platform
+              Illuminate the journey. Grow every person. Modern HRMS platform trusted by 500+ companies.
             </p>
 
             {/* Features */}

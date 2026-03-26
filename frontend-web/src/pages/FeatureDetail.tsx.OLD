@@ -1,0 +1,737 @@
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  ArrowLeftIcon,
+  CheckCircleIcon,
+  SparklesIcon,
+  BoltIcon,
+  ShieldCheckIcon,
+  ChartBarIcon,
+  UsersIcon,
+  UserCircleIcon,
+  MagnifyingGlassIcon,
+  DocumentTextIcon,
+  BuildingOfficeIcon,
+  UserIcon,
+  ArrowsRightLeftIcon,
+  CalendarIcon,
+  ClockIcon,
+  CalendarDaysIcon,
+  ClipboardDocumentListIcon,
+  PlusCircleIcon,
+  ChartPieIcon,
+  DocumentChartBarIcon,
+  FlagIcon,
+  UserGroupIcon,
+  ChatBubbleLeftRightIcon,
+  AcademicCapIcon,
+  TrophyIcon,
+  EnvelopeIcon,
+  ClipboardDocumentCheckIcon,
+  DocumentCheckIcon,
+  UserPlusIcon,
+  ChatBubbleBottomCenterTextIcon,
+  KeyIcon,
+  PresentationChartBarIcon,
+  WrenchScrewdriverIcon,
+  LightBulbIcon,
+  ArrowDownTrayIcon,
+} from '@heroicons/react/24/outline';
+
+interface Feature {
+  title: string;
+  description: string;
+  icon: any;
+}
+
+interface Benefit {
+  title: string;
+  description: string;
+  metric?: string;
+}
+
+interface ModuleContent {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  heroGradient: string;
+  icon: any;
+  mainFeatures: Feature[];
+  keyBenefits: Benefit[];
+  differentiators: string[];
+  useCases: {
+    title: string;
+    description: string;
+    image: string;
+  }[];
+  stats: {
+    value: string;
+    label: string;
+  }[];
+}
+
+const moduleData: Record<string, ModuleContent> = {
+  'employee-management': {
+    id: 'employee-management',
+    title: 'Employee Management',
+    subtitle: 'Complete Employee Lifecycle Management',
+    description: 'Centralize all employee information in one secure, easy-to-access platform. From onboarding to exit, manage every aspect of the employee journey with powerful tools designed for efficiency.',
+    heroGradient: 'from-blue-600 to-indigo-700',
+    icon: UsersIcon,
+    mainFeatures: [
+      {
+        title: 'Comprehensive Employee Profiles',
+        description: 'Store and manage complete employee information including personal details, job history, documents, skills, and certifications in organized, searchable profiles.',
+        icon: UserCircleIcon,
+      },
+      {
+        title: 'Advanced Search & Filters',
+        description: 'Quickly find employees using powerful filters by department, designation, location, skills, or custom fields. Export data in multiple formats.',
+        icon: MagnifyingGlassIcon,
+      },
+      {
+        title: 'Document Management',
+        description: 'Securely store and organize employee documents, contracts, certificates, and files with version control and access permissions.',
+        icon: DocumentTextIcon,
+      },
+      {
+        title: 'Organizational Structure',
+        description: 'Visualize your company hierarchy with interactive org charts. Track reporting relationships and manage department structures.',
+        icon: BuildingOfficeIcon,
+      },
+      {
+        title: 'Employee Self-Service Portal',
+        description: 'Empower employees to update personal information, view payslips, request documents, and manage their profile independently.',
+        icon: UserIcon,
+      },
+      {
+        title: 'Bulk Operations',
+        description: 'Perform mass updates, transfers, promotions, or data imports efficiently with built-in validation and audit trails.',
+        icon: ArrowsRightLeftIcon,
+      },
+    ],
+    keyBenefits: [
+      {
+        title: 'Reduce Administrative Time',
+        description: 'Automate repetitive tasks and eliminate manual data entry',
+        metric: '70%',
+      },
+      {
+        title: 'Improve Data Accuracy',
+        description: 'Centralized data reduces errors and duplication',
+        metric: '99.9%',
+      },
+      {
+        title: 'Enhanced Compliance',
+        description: 'Meet regulatory requirements with automated tracking',
+        metric: '100%',
+      },
+    ],
+    differentiators: [
+      'AI-powered duplicate detection and data validation',
+      'Customizable fields and workflows to match your organization',
+      'Mobile-first design for access anywhere, anytime',
+      'Advanced role-based permissions for data security',
+      'Integration with popular HRIS and payroll systems',
+      'Real-time sync across all modules',
+    ],
+    useCases: [
+      {
+        title: 'Rapid Onboarding',
+        description: 'Onboard new hires 60% faster with automated workflows, digital document collection, and pre-configured employee profiles.',
+        image: 'onboarding',
+      },
+      {
+        title: 'Organizational Restructuring',
+        description: 'Easily manage department changes, reporting structure updates, and bulk transfers during company reorganization.',
+        image: 'restructuring',
+      },
+      {
+        title: 'Compliance Reporting',
+        description: 'Generate compliance reports instantly with accurate, up-to-date employee data for audits and regulatory requirements.',
+        image: 'compliance',
+      },
+    ],
+    stats: [
+      { value: '10K+', label: 'Employees Managed Daily' },
+      { value: '5 min', label: 'Average Setup Time' },
+      { value: '60%', label: 'Faster Onboarding' },
+      { value: '24/7', label: 'Employee Access' },
+    ],
+  },
+  'attendance-leave': {
+    id: 'attendance-leave',
+    title: 'Attendance & Leave Management',
+    subtitle: 'Automated Time & Attendance Tracking',
+    description: 'Say goodbye to manual attendance registers and spreadsheets. Automate time tracking, leave management, and shift scheduling with intelligent workflows that save time and reduce errors.',
+    heroGradient: 'from-green-600 to-teal-700',
+    icon: CalendarIcon,
+    mainFeatures: [
+      {
+        title: 'Automated Attendance Tracking',
+        description: 'Track employee attendance with multiple check-in methods: biometric, mobile app, web portal, or geofencing. Real-time attendance visibility.',
+        icon: ClockIcon,
+      },
+      {
+        title: 'Smart Leave Management',
+        description: 'Configure multiple leave types, policies, and accrual rules. Employees can apply for leave with instant approval workflows.',
+        icon: CalendarDaysIcon,
+      },
+      {
+        title: 'Shift Scheduling',
+        description: 'Create and manage complex shift patterns, rotations, and schedules. Auto-assign shifts based on availability and preferences.',
+        icon: ClipboardDocumentListIcon,
+      },
+      {
+        title: 'Overtime Management',
+        description: 'Track and approve overtime hours automatically. Calculate overtime pay with configurable rules and policies.',
+        icon: PlusCircleIcon,
+      },
+      {
+        title: 'Leave Balance Tracking',
+        description: 'Real-time leave balance visibility for employees and managers. Automatic accrual calculations and carry-forward rules.',
+        icon: ChartPieIcon,
+      },
+      {
+        title: 'Attendance Reports',
+        description: 'Generate detailed attendance reports, absence patterns, and punctuality metrics. Export to payroll systems seamlessly.',
+        icon: DocumentChartBarIcon,
+      },
+    ],
+    keyBenefits: [
+      {
+        title: 'Eliminate Time Theft',
+        description: 'Biometric and geofencing prevent buddy punching',
+        metric: '95%',
+      },
+      {
+        title: 'Reduce Payroll Errors',
+        description: 'Accurate time data ensures correct salary calculations',
+        metric: '99%',
+      },
+      {
+        title: 'Boost Productivity',
+        description: 'Real-time insights help optimize workforce scheduling',
+        metric: '25%',
+      },
+    ],
+    differentiators: [
+      'Mobile app for remote check-in/out with GPS tracking',
+      'Flexible leave policies supporting multiple work arrangements',
+      'AI-based absence prediction and workforce planning',
+      'Integration with biometric devices and access control systems',
+      'Configurable approval workflows with multi-level hierarchy',
+      'Automated notifications and reminders for managers',
+    ],
+    useCases: [
+      {
+        title: 'Remote Workforce Management',
+        description: 'Track attendance for distributed teams with mobile check-in, geofencing, and flexible work arrangements.',
+        image: 'remote',
+      },
+      {
+        title: 'Shift-Based Industries',
+        description: 'Manage complex shift rotations for manufacturing, healthcare, and retail with automated scheduling and shift swapping.',
+        image: 'shifts',
+      },
+      {
+        title: 'Leave Policy Compliance',
+        description: 'Ensure compliance with labor laws and company policies with automated leave accrual and balance tracking.',
+        image: 'leave-compliance',
+      },
+    ],
+    stats: [
+      { value: '100K+', label: 'Attendance Records/Day' },
+      { value: '30 sec', label: 'Check-in Time' },
+      { value: '80%', label: 'Reduced Admin Time' },
+      { value: '24/7', label: 'Mobile Access' },
+    ],
+  },
+  'performance-management': {
+    id: 'performance-management',
+    title: 'Performance Management',
+    subtitle: 'Drive Employee Growth & Engagement',
+    description: 'Transform performance reviews from annual chores to continuous conversations. Set goals, track progress, gather feedback, and develop your team with modern performance management tools.',
+    heroGradient: 'from-purple-600 to-pink-700',
+    icon: ChartBarIcon,
+    mainFeatures: [
+      {
+        title: 'Goal Setting & OKRs',
+        description: 'Align individual, team, and company goals. Track OKRs and key results with real-time progress visibility.',
+        icon: FlagIcon,
+      },
+      {
+        title: '360-Degree Feedback',
+        description: 'Gather comprehensive feedback from peers, managers, and direct reports. Anonymous surveys and structured evaluations.',
+        icon: UserGroupIcon,
+      },
+      {
+        title: 'Continuous Check-ins',
+        description: 'Replace annual reviews with ongoing 1-on-1s. Document conversations, action items, and development plans.',
+        icon: ChatBubbleLeftRightIcon,
+      },
+      {
+        title: 'Performance Reviews',
+        description: 'Customizable review templates and rating scales. Self-assessments, manager reviews, and calibration sessions.',
+        icon: DocumentTextIcon,
+      },
+      {
+        title: 'Development Plans',
+        description: 'Create personalized development plans with learning paths, skill gaps, and career progression tracking.',
+        icon: AcademicCapIcon,
+      },
+      {
+        title: 'Recognition & Rewards',
+        description: 'Peer-to-peer recognition, awards, and appreciation. Boost morale and celebrate achievements.',
+        icon: TrophyIcon,
+      },
+    ],
+    keyBenefits: [
+      {
+        title: 'Improve Retention',
+        description: 'Engaged employees are 87% less likely to leave',
+        metric: '87%',
+      },
+      {
+        title: 'Increase Productivity',
+        description: 'Clear goals and feedback drive performance',
+        metric: '40%',
+      },
+      {
+        title: 'Better Talent Decisions',
+        description: 'Data-driven insights for promotions and succession',
+        metric: '90%',
+      },
+    ],
+    differentiators: [
+      'Continuous feedback culture instead of annual reviews',
+      'AI-powered insights for performance trends and patterns',
+      'Skills matrix and competency framework management',
+      'Integration with learning management systems',
+      'Customizable review cycles and workflows',
+      'Mobile-friendly for on-the-go feedback',
+    ],
+    useCases: [
+      {
+        title: 'High-Growth Startups',
+        description: 'Scale performance management as you grow. Align rapidly expanding teams with company objectives.',
+        image: 'startup',
+      },
+      {
+        title: 'Enterprise Organizations',
+        description: 'Standardize performance processes across departments and locations while maintaining flexibility.',
+        image: 'enterprise',
+      },
+      {
+        title: 'Remote-First Companies',
+        description: 'Keep remote teams engaged with continuous feedback, virtual 1-on-1s, and transparent goal tracking.',
+        image: 'remote-performance',
+      },
+    ],
+    stats: [
+      { value: '5K+', label: 'Reviews Completed' },
+      { value: '92%', label: 'Employee Engagement' },
+      { value: '3x', label: 'More Frequent Feedback' },
+      { value: '50%', label: 'Faster Review Cycles' },
+    ],
+  },
+  'onboarding-exit': {
+    id: 'onboarding-exit',
+    title: 'Onboarding & Exit Management',
+    subtitle: 'Seamless Employee Transitions',
+    description: 'Create memorable first and last impressions. Streamline onboarding to get new hires productive faster, and manage exits professionally to protect your brand and gather valuable insights.',
+    heroGradient: 'from-orange-600 to-red-700',
+    icon: UserGroupIcon,
+    mainFeatures: [
+      {
+        title: 'Pre-Onboarding Portal',
+        description: 'Engage new hires before day one with welcome messages, digital paperwork, and company information.',
+        icon: EnvelopeIcon,
+      },
+      {
+        title: 'Automated Workflows',
+        description: 'Create custom onboarding checklists and tasks. Auto-assign to HR, IT, managers, and new hires with deadlines.',
+        icon: ClipboardDocumentCheckIcon,
+      },
+      {
+        title: 'Digital Document Collection',
+        description: 'Collect and verify documents electronically with e-signatures. No more paper forms and manual filing.',
+        icon: DocumentCheckIcon,
+      },
+      {
+        title: 'Buddy System',
+        description: 'Assign onboarding buddies to help new hires settle in. Track buddy interactions and feedback.',
+        icon: UserPlusIcon,
+      },
+      {
+        title: 'Exit Interviews',
+        description: 'Structured exit interview templates to gather valuable feedback. Identify trends and areas for improvement.',
+        icon: ChatBubbleBottomCenterTextIcon,
+      },
+      {
+        title: 'Asset & Access Management',
+        description: 'Track company assets, disable system access, and manage handovers during exits. Full audit trail.',
+        icon: KeyIcon,
+      },
+    ],
+    keyBenefits: [
+      {
+        title: 'Faster Time-to-Productivity',
+        description: 'New hires become productive 40% faster',
+        metric: '40%',
+      },
+      {
+        title: 'Better First Impressions',
+        description: 'Professional onboarding improves retention',
+        metric: '82%',
+      },
+      {
+        title: 'Reduced Exit Risks',
+        description: 'Structured exits protect company assets',
+        metric: '100%',
+      },
+    ],
+    differentiators: [
+      'Mobile-first onboarding experience for modern workforce',
+      'Integration with IT systems for automatic provisioning',
+      'Customizable workflows for different roles and departments',
+      'Analytics dashboard for onboarding effectiveness',
+      'Exit knowledge capture and transition management',
+      'Compliance tracking for onboarding paperwork',
+    ],
+    useCases: [
+      {
+        title: 'High-Volume Hiring',
+        description: 'Onboard dozens of new hires simultaneously with automated workflows and batch processing.',
+        image: 'volume-hiring',
+      },
+      {
+        title: 'Distributed Teams',
+        description: 'Deliver consistent onboarding experiences across multiple locations and remote workers.',
+        image: 'distributed',
+      },
+      {
+        title: 'Contractor Management',
+        description: 'Separate workflows for FTE, contractors, and interns with appropriate access levels.',
+        image: 'contractors',
+      },
+    ],
+    stats: [
+      { value: '2K+', label: 'Onboardings/Month' },
+      { value: '60%', label: 'Faster Onboarding' },
+      { value: '95%', label: 'Completion Rate' },
+      { value: '100%', label: 'Digital Documents' },
+    ],
+  },
+  'analytics-reports': {
+    id: 'analytics-reports',
+    title: 'Analytics & Reports',
+    subtitle: 'Data-Driven HR Decisions',
+    description: 'Transform HR data into actionable insights. Real-time dashboards, customizable reports, and predictive analytics help you make informed decisions about your most valuable asset - your people.',
+    heroGradient: 'from-cyan-600 to-blue-700',
+    icon: DocumentChartBarIcon,
+    mainFeatures: [
+      {
+        title: 'Real-Time Dashboards',
+        description: 'Executive dashboards with key HR metrics. Track headcount, turnover, attendance, and performance at a glance.',
+        icon: PresentationChartBarIcon,
+      },
+      {
+        title: 'Custom Report Builder',
+        description: 'Build custom reports with drag-and-drop interface. Choose fields, filters, grouping, and formatting.',
+        icon: WrenchScrewdriverIcon,
+      },
+      {
+        title: 'Automated Scheduling',
+        description: 'Schedule reports to run automatically. Email to stakeholders daily, weekly, or monthly.',
+        icon: CalendarIcon,
+      },
+      {
+        title: 'Predictive Analytics',
+        description: 'AI-powered predictions for attrition risk, hiring needs, and workforce trends. Plan proactively.',
+        icon: LightBulbIcon,
+      },
+      {
+        title: 'Compliance Reporting',
+        description: 'Pre-built templates for regulatory reports. EEO, OSHA, labor law compliance made easy.',
+        icon: ShieldCheckIcon,
+      },
+      {
+        title: 'Data Export & API',
+        description: 'Export data to Excel, PDF, or CSV. API access for integration with BI tools like Tableau and Power BI.',
+        icon: ArrowDownTrayIcon,
+      },
+    ],
+    keyBenefits: [
+      {
+        title: 'Better Decisions',
+        description: 'Data-driven insights improve workforce planning',
+        metric: '75%',
+      },
+      {
+        title: 'Time Savings',
+        description: 'Automated reports save hours each week',
+        metric: '20h',
+      },
+      {
+        title: 'Identify Trends',
+        description: 'Spot patterns before they become problems',
+        metric: '90%',
+      },
+    ],
+    differentiators: [
+      'AI-powered workforce forecasting and scenario planning',
+      'Interactive visualizations with drill-down capabilities',
+      'Benchmarking against industry standards',
+      'Mobile dashboards for executives on the go',
+      'Role-based analytics with appropriate data access',
+      'Integration with major BI and analytics platforms',
+    ],
+    useCases: [
+      {
+        title: 'Executive Reporting',
+        description: 'Board-ready reports and dashboards showing key HR metrics, trends, and strategic workforce insights.',
+        image: 'executive',
+      },
+      {
+        title: 'Workforce Planning',
+        description: 'Predictive analytics for hiring needs, budget planning, and skills gap analysis.',
+        image: 'planning',
+      },
+      {
+        title: 'Diversity & Inclusion',
+        description: 'Track D&I metrics, pay equity, representation across levels, and progress toward goals.',
+        image: 'diversity',
+      },
+    ],
+    stats: [
+      { value: '100+', label: 'Pre-Built Reports' },
+      { value: '50+', label: 'Data Visualizations' },
+      { value: 'Real-time', label: 'Data Updates' },
+      { value: '24/7', label: 'Dashboard Access' },
+    ],
+  },
+};
+
+export default function FeatureDetail() {
+  const navigate = useNavigate();
+  const { featureId } = useParams<{ featureId: string }>();
+
+  const module = featureId ? moduleData[featureId] : null;
+
+  if (!module) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Module Not Found</h1>
+          <button onClick={() => navigate('/')} className="btn btn-primary">
+            Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const IconComponent = module.icon;
+
+  return (
+    <div className="bg-white min-h-screen">
+      {/* Navigation */}
+      <nav className="fixed w-full bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+              <span className="font-medium">Back to Home</span>
+            </button>
+
+            <button
+              onClick={() => navigate('/login')}
+              className="btn btn-primary"
+            >
+              Start Free Trial
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className={`pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br ${module.heroGradient} text-white relative overflow-hidden`}>
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-1/2 translate-y-1/2"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center max-w-4xl mx-auto">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl mb-6">
+              <IconComponent className="h-10 w-10 text-white" />
+            </div>
+
+            <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+              {module.title}
+            </h1>
+
+            <p className="text-2xl text-white/90 mb-8">
+              {module.subtitle}
+            </p>
+
+            <p className="text-xl text-white/80 mb-12 leading-relaxed">
+              {module.description}
+            </p>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {module.stats.map((stat, index) => (
+                <div key={index} className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                  <div className="text-4xl font-bold mb-2">{stat.value}</div>
+                  <div className="text-white/80 text-sm">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Features */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Powerful Features
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Everything you need to streamline your {module.title.toLowerCase()}
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {module.mainFeatures.map((feature, index) => {
+              const FeatureIcon = feature.icon;
+              return (
+                <div
+                  key={index}
+                  className="bg-white rounded-2xl p-8 hover:shadow-2xl transition-all hover:-translate-y-1"
+                >
+                  <div className={`bg-gradient-to-br ${module.heroGradient} rounded-xl p-3 w-fit mb-6`}>
+                    <FeatureIcon className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Key Benefits */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Measurable Benefits
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              See real results from day one
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {module.keyBenefits.map((benefit, index) => (
+              <div
+                key={index}
+                className="text-center p-8 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-200"
+              >
+                <div className={`text-6xl font-bold bg-gradient-to-r ${module.heroGradient} bg-clip-text text-transparent mb-4`}>
+                  {benefit.metric}
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">{benefit.title}</h3>
+                <p className="text-gray-600">{benefit.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Differentiators */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Why Choose AuroraHR?
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Built for modern HR teams with features that make a difference
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {module.differentiators.map((diff, index) => (
+              <div key={index} className="flex items-start space-x-4 bg-white p-6 rounded-xl">
+                <CheckCircleIcon className="h-6 w-6 text-green-500 flex-shrink-0 mt-1" />
+                <p className="text-gray-700 text-lg">{diff}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Use Cases */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Real-World Applications
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              See how leading companies use {module.title}
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {module.useCases.map((useCase, index) => (
+              <div key={index} className="bg-gray-50 rounded-2xl overflow-hidden hover:shadow-xl transition-shadow">
+                <div className={`h-48 bg-gradient-to-br ${module.heroGradient} flex items-center justify-center`}>
+                  <SparklesIcon className="h-20 w-20 text-white opacity-50" />
+                </div>
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">{useCase.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{useCase.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className={`py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br ${module.heroGradient}`}>
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl font-bold text-white mb-6">
+            Ready to Transform Your {module.title}?
+          </h2>
+          <p className="text-xl text-white/90 mb-8">
+            Start your free 14-day trial today. No credit card required.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => navigate('/login')}
+              className="btn bg-white text-gray-900 hover:bg-gray-100 btn-lg"
+            >
+              Start Free Trial
+            </button>
+            <button className="btn btn-outline border-white text-white hover:bg-white hover:text-gray-900 btn-lg">
+              Schedule Demo
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

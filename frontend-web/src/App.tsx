@@ -1,7 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
 // Pages
+import LandingPage from './pages/LandingPage';
+import FeatureDetail from './pages/FeatureDetail';
 import ModernLogin from './pages/ModernLogin';
 import ModernDashboard from './pages/ModernDashboard';
 import ModernEmployees from './pages/ModernEmployees';
@@ -10,13 +12,19 @@ import ModernAttendance from './pages/ModernAttendance';
 import ModernLeave from './pages/ModernLeave';
 import ModernDepartments from './pages/ModernDepartments';
 import ModernDesignations from './pages/ModernDesignations';
-import ModernPerformance from './pages/ModernPerformance';
+import ModernPerformanceDashboard from './pages/ModernPerformanceDashboard';
+import PerformanceReviewDetails from './pages/PerformanceReviewDetails';
 import CandidateDetails from './pages/CandidateDetails';
 import ProbationCaseDetails from './pages/ProbationCaseDetails';
 import ModernOnboardingDashboard from './pages/ModernOnboardingDashboard';
 import ModernProbationTracker from './pages/ModernProbationTracker';
 import ModernExitDashboard from './pages/ModernExitDashboard';
 import ExitCaseDetails from './pages/ExitCaseDetails';
+import ModernCalendar from './pages/ModernCalendar';
+import ModernHRConnect from './pages/ModernHRConnect';
+import ChatConversation from './pages/ChatConversation';
+import TicketDetails from './pages/TicketDetails';
+import GroupManagement from './pages/GroupManagement';
 import ModernSettings from './pages/ModernSettings';
 
 // Employee Action Pages
@@ -34,6 +42,7 @@ function App() {
         <Routes>
               {/* Public routes */}
               <Route path="/login" element={<ModernLogin />} />
+              <Route path="/features/:featureId" element={<FeatureDetail />} />
 
               {/* Protected routes */}
               <Route path="/dashboard" element={<ModernDashboard />} />
@@ -43,7 +52,8 @@ function App() {
               <Route path="/designations" element={<ModernDesignations />} />
               <Route path="/attendance" element={<ModernAttendance />} />
               <Route path="/leave" element={<ModernLeave />} />
-              <Route path="/performance" element={<ModernPerformance />} />
+              <Route path="/performance" element={<ModernPerformanceDashboard />} />
+              <Route path="/performance/:reviewId" element={<PerformanceReviewDetails />} />
               <Route path="/onboarding" element={<ModernOnboardingDashboard />} />
               <Route path="/onboarding/candidate/:candidateId" element={<CandidateDetails />} />
               <Route path="/probation/case/:probationId" element={<ProbationCaseDetails />} />
@@ -51,6 +61,11 @@ function App() {
               <Route path="/probation" element={<ModernProbationTracker />} />
               <Route path="/exit" element={<ModernExitDashboard />} />
               <Route path="/exit/:exitId" element={<ExitCaseDetails />} />
+              <Route path="/calendar" element={<ModernCalendar />} />
+              <Route path="/hr-connect" element={<ModernHRConnect />} />
+              <Route path="/chat/:conversationId" element={<ChatConversation />} />
+              <Route path="/ticket/:ticketId" element={<TicketDetails />} />
+              <Route path="/groups" element={<GroupManagement />} />
               <Route path="/settings" element={<ModernSettings />} />
 
               {/* Employee Action routes */}
@@ -62,7 +77,7 @@ function App() {
               <Route path="/employee-attendance" element={<ModernEmployeeAttendance />} />
 
               {/* Default route */}
-              <Route path="/" element={<Navigate to="/login" replace />} />
+              <Route path="/" element={<LandingPage />} />
 
               {/* 404 route */}
               <Route path="*" element={<div>404 - Page Not Found</div>} />

@@ -1,0 +1,21 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="mark-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#1E40AF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- The Mark: Just the rising arc - iconic and memorable -->
+  <path d="M 5 28 Q 20 8, 35 28"
+        stroke="url(#mark-gradient)"
+        stroke-width="4"
+        fill="none"
+        stroke-linecap="round"/>
+
+  <!-- Subtle horizon for context -->
+  <line x1="5" y1="28" x2="35" y2="28"
+        stroke="#1E40AF"
+        stroke-width="1.5"
+        opacity="0.2"/>
+</svg>

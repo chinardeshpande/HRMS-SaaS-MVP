@@ -533,6 +533,169 @@ export class ExitService {
 
     return stats;
   }
+
+  // ==================== EXIT CASE CRUD OPERATIONS ====================
+
+  async updateExitCase(exitId: string, data: Partial<ExitCase>, userId: string): Promise<ExitCase> {
+    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId } });
+
+    if (!exitCase) {
+      throw new Error('Exit case not found');
+    }
+
+    Object.assign(exitCase, data);
+    const updated = await this.exitCaseRepo.save(exitCase);
+    logger.info(`Exit case updated: ${exitId} by user ${userId}`);
+    return updated;
+  }
+
+  async deleteExitCase(exitId: string, userId: string): Promise<void> {
+    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId } });
+
+    if (!exitCase) {
+      throw new Error('Exit case not found');
+    }
+
+    await this.exitCaseRepo.remove(exitCase);
+    logger.info(`Exit case deleted: ${exitId} by user ${userId}`);
+  }
+
+  // ==================== CLEARANCE CRUD OPERATIONS ====================
+
+  async createClearance(exitId: string, data: Partial<Clearance>, userId: string): Promise<Clearance> {
+    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId } });
+
+    if (!exitCase) {
+      throw new Error('Exit case not found');
+    }
+
+    const clearance = this.clearanceRepo.create({
+      ...data,
+      tenantId: exitCase.tenantId,
+      exitId,
+      employeeId: exitCase.employeeId,
+      isCleared: false,
+    });
+
+    const saved = await this.clearanceRepo.save(clearance);
+    logger.info(`Clearance created: ${saved.clearanceId} for exit ${exitId} by user ${userId}`);
+    return saved;
+  }
+
+  async getClearancesByExitId(exitId: string): Promise<Clearance[]> {
+    return this.clearanceRepo.find({
+      where: { exitId },
+      order: { dueDate: 'ASC' },
+    });
+  }
+
+  async deleteClearance(clearanceId: string, userId: string): Promise<void> {
+    const clearance = await this.clearanceRepo.findOne({ where: { clearanceId } });
+
+    if (!clearance) {
+      throw new Error('Clearance not found');
+    }
+
+    await this.clearanceRepo.remove(clearance);
+    logger.info(`Clearance deleted: ${clearanceId} by user ${userId}`);
+  }
+
+  // ==================== ASSET RETURN CRUD OPERATIONS ====================
+
+  async updateAssetReturn(assetId: string, data: Partial<AssetReturn>, userId: string): Promise<AssetReturn> {
+    const asset = await this.assetReturnRepo.findOne({ where: { assetId } });
+
+    if (!asset) {
+      throw new Error('Asset return record not found');
+    }
+
+    Object.assign(asset, data);
+    const updated = await this.assetReturnRepo.save(asset);
+    logger.info(`Asset return updated: ${assetId} by user ${userId}`);
+    return updated;
+  }
+
+  async getAssetsByExitId(exitId: string): Promise<AssetReturn[]> {
+    return this.assetReturnRepo.find({
+      where: { exitId },
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  async deleteAssetReturn(assetId: string, userId: string): Promise<void> {
+    const asset = await this.assetReturnRepo.findOne({ where: { assetId } });
+
+    if (!asset) {
+      throw new Error('Asset return record not found');
+    }
+
+    await this.assetReturnRepo.remove(asset);
+    logger.info(`Asset return deleted: ${assetId} by user ${userId}`);
+  }
+
+  // ==================== EXIT INTERVIEW CRUD OPERATIONS ====================
+
+  async updateExitInterview(exitInterviewId: string, data: Partial<ExitInterview>, userId: string): Promise<ExitInterview> {
+    const interview = await this.interviewRepo.findOne({ where: { exitInterviewId } });
+
+    if (!interview) {
+      throw new Error('Exit interview not found');
+    }
+
+    Object.assign(interview, data);
+    const updated = await this.interviewRepo.save(interview);
+    logger.info(`Exit interview updated: ${exitInterviewId} by user ${userId}`);
+    return updated;
+  }
+
+  async getExitInterviewByExitId(exitId: string): Promise<ExitInterview | null> {
+    return this.interviewRepo.findOne({
+      where: { exitId },
+    });
+  }
+
+  async deleteExitInterview(exitInterviewId: string, userId: string): Promise<void> {
+    const interview = await this.interviewRepo.findOne({ where: { exitInterviewId } });
+
+    if (!interview) {
+      throw new Error('Exit interview not found');
+    }
+
+    await this.interviewRepo.remove(interview);
+    logger.info(`Exit interview deleted: ${exitInterviewId} by user ${userId}`);
+  }
+
+  // ==================== SETTLEMENT CRUD OPERATIONS ====================
+
+  async updateSettlement(settlementId: string, data: Partial<FinalSettlement>, userId: string): Promise<FinalSettlement> {
+    const settlement = await this.settlementRepo.findOne({ where: { settlementId } });
+
+    if (!settlement) {
+      throw new Error('Settlement not found');
+    }
+
+    Object.assign(settlement, data);
+    const updated = await this.settlementRepo.save(settlement);
+    logger.info(`Settlement updated: ${settlementId} by user ${userId}`);
+    return updated;
+  }
+
+  async getSettlementByExitId(exitId: string): Promise<FinalSettlement | null> {
+    return this.settlementRepo.findOne({
+      where: { exitId },
+    });
+  }
+
+  async deleteSettlement(settlementId: string, userId: string): Promise<void> {
+    const settlement = await this.settlementRepo.findOne({ where: { settlementId } });
+
+    if (!settlement) {
+      throw new Error('Settlement not found');
+    }
+
+    await this.settlementRepo.remove(settlement);
+    logger.info(`Settlement deleted: ${settlementId} by user ${userId}`);
+  }
 }
 
 export default new ExitService();

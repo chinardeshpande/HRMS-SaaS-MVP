@@ -1,0 +1,44 @@
+<svg width="280" height="60" viewBox="0 0 280 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="dawn-alt2" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#1E40AF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Icon -->
+  <g transform="translate(5, 15)">
+    <line x1="0" y1="18" x2="24" y2="18" stroke="#1E40AF" stroke-width="1.5" opacity="0.3"/>
+    <path d="M 2 18 Q 12 4, 22 18"
+          stroke="url(#dawn-alt2)"
+          stroke-width="3"
+          fill="none"
+          stroke-linecap="round"/>
+    <circle cx="12" cy="10" r="2" fill="#1E40AF"/>
+    <path d="M 12 12.5 L 12 17 M 10 14.5 L 14 14.5"
+          stroke="#1E40AF"
+          stroke-width="1.5"
+          stroke-linecap="round"/>
+  </g>
+
+  <!-- Text -->
+  <text x="42" y="26"
+        font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif"
+        font-size="20"
+        font-weight="600"
+        fill="#1E293B"
+        letter-spacing="-0.5">Aurora</text>
+  <text x="112" y="26"
+        font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif"
+        font-size="20"
+        font-weight="600"
+        fill="#3B82F6">HR</text>
+
+  <!-- Tagline: From first light -->
+  <text x="42" y="40"
+        font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif"
+        font-size="7"
+        font-weight="400"
+        fill="#64748B"
+        letter-spacing="0.6">From first light to every milestone — your people, seen, grown, and celebrated.</text>
+</svg>

@@ -69,6 +69,78 @@ export const onboardingService = {
       },
     });
   },
+
+  async getCandidateDocuments(candidateId: string) {
+    return api.get(`/onboarding/candidates/${candidateId}/documents`);
+  },
+
+  async signDocument(documentId: string) {
+    return api.post(`/onboarding/documents/${documentId}/sign`);
+  },
+
+  async signAllRequiredDocuments(candidateId: string) {
+    return api.post(`/onboarding/candidates/${candidateId}/documents/sign-all`);
+  },
+
+  async generateAndSignDocuments(candidateId: string) {
+    return api.post(`/onboarding/candidates/${candidateId}/documents/generate`);
+  },
+
+  async getStateTransitionHistory(candidateId: string) {
+    return api.get(`/onboarding/candidates/${candidateId}/history`);
+  },
+
+  async updateCandidate(candidateId: string, data: any) {
+    return api.put(`/onboarding/candidates/${candidateId}`, data);
+  },
+
+  // ==================== TASK CRUD OPERATIONS ====================
+
+  async createTask(candidateId: string, data: any) {
+    return api.post(`/onboarding/candidates/${candidateId}/tasks`, data);
+  },
+
+  async updateTask(taskId: string, data: any) {
+    return api.put(`/onboarding/tasks/${taskId}`, data);
+  },
+
+  async deleteTask(taskId: string) {
+    return api.delete(`/onboarding/tasks/${taskId}`);
+  },
+
+  // ==================== DOCUMENT CRUD OPERATIONS ====================
+
+  async updateDocument(documentId: string, data: any) {
+    return api.put(`/onboarding/documents/${documentId}`, data);
+  },
+
+  async deleteDocument(documentId: string) {
+    return api.delete(`/onboarding/documents/${documentId}`);
+  },
+
+  async downloadDocument(documentId: string) {
+    return api.get(`/onboarding/documents/${documentId}/download`);
+  },
+
+  // ==================== BGV OPERATIONS ====================
+
+  async getBGVDetails(candidateId: string) {
+    return api.get(`/onboarding/candidates/${candidateId}/bgv`);
+  },
+
+  async updateBGVStatus(candidateId: string, data: any) {
+    return api.put(`/onboarding/candidates/${candidateId}/bgv`, data);
+  },
+
+  // ==================== ONBOARDING CASE OPERATIONS ====================
+
+  async getOnboardingCase(candidateId: string) {
+    return api.get(`/onboarding/candidates/${candidateId}/case`);
+  },
+
+  async updateOnboardingCase(candidateId: string, data: any) {
+    return api.put(`/onboarding/candidates/${candidateId}/case`, data);
+  },
 };
 
 export default onboardingService;

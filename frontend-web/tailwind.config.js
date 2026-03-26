@@ -30,18 +30,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Metronic-inspired color palette
+        // AuroraHR brand color palette
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          50: '#e8f4f8',
+          100: '#d1e9f1',
+          200: '#a3d3e3',
+          300: '#75bdd5',
+          400: '#47a7c7',
+          500: '#0A66C2',
+          600: '#08529b',
+          700: '#063e74',
+          800: '#042a4e',
+          900: '#021527',
         },
         success: {
           50: '#f0fdf4',
@@ -105,7 +105,7 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         'card': '0 1px 3px 0 rgba(0, 0, 0, 0.08)',

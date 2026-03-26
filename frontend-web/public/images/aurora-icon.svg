@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" width="480" height="480">
+  <!-- Icon-only version: just the symbol -->
+
+  <!-- People circles (top) -->
+  <circle cx="168" cy="120" r="36" fill="#0A66C2"/>
+  <circle cx="240" cy="84" r="44" fill="#0A66C2"/>
+  <circle cx="312" cy="120" r="36" fill="#0A66C2"/>
+
+  <!-- Dashed connector threads -->
+  <line x1="168" y1="156" x2="156" y2="348" stroke="#0A66C2" stroke-width="3.6" stroke-linecap="round" opacity="0.14" stroke-dasharray="9 15"/>
+  <line x1="240" y1="128" x2="240" y2="336" stroke="#0A66C2" stroke-width="3.6" stroke-linecap="round" opacity="0.14" stroke-dasharray="9 15"/>
+  <line x1="312" y1="156" x2="324" y2="348" stroke="#0A66C2" stroke-width="3.6" stroke-linecap="round" opacity="0.14" stroke-dasharray="9 15"/>
+
+  <!-- Main arc (sunrise) -->
+  <path d="M 60 360 A 180 180 0 0 1 420 360" fill="none" stroke="#0A66C2" stroke-width="48" stroke-linecap="round"/>
+
+  <!-- Inner echo arc -->
+  <path d="M 108 360 A 132 132 0 0 1 372 360" fill="none" stroke="#0A66C2" stroke-width="24" stroke-linecap="round" opacity="0.22"/>
+
+  <!-- Horizon baseline -->
+  <line x1="24" y1="360" x2="456" y2="360" stroke="#0A66C2" stroke-width="5" stroke-linecap="round" opacity="0.13"/>
+
+  <!-- Bottom anchor dots -->
+  <circle cx="156" cy="360" r="18" fill="#0A66C2" opacity="0.38"/>
+  <circle cx="240" cy="360" r="24" fill="#0A66C2"/>
+  <circle cx="240" cy="360" r="10" fill="white"/>
+  <circle cx="324" cy="360" r="18" fill="#0A66C2" opacity="0.38"/>
+</svg>

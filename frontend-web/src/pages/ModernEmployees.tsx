@@ -181,6 +181,14 @@ export default function ModernEmployees() {
     return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
   };
 
+  const handleStatCardClick = (status: string) => {
+    if (status === 'all') {
+      setSelectedStatus('');
+    } else {
+      setSelectedStatus(status);
+    }
+  };
+
   const statCards = [
     {
       title: 'Total Employees',
@@ -189,6 +197,7 @@ export default function ModernEmployees() {
       iconColor: 'text-primary-600',
       iconBg: 'bg-primary-100',
       change: '+12% vs last month',
+      status: 'all',
     },
     {
       title: 'Active',
@@ -197,6 +206,7 @@ export default function ModernEmployees() {
       iconColor: 'text-success-600',
       iconBg: 'bg-success-100',
       change: `${Math.round(((stats?.active || 0) / (stats?.total || 1)) * 100)}% of total`,
+      status: 'active',
     },
     {
       title: 'Inactive',
@@ -205,6 +215,7 @@ export default function ModernEmployees() {
       iconColor: 'text-warning-600',
       iconBg: 'bg-warning-100',
       change: 'Temporary status',
+      status: 'inactive',
     },
     {
       title: 'Exited',
@@ -213,6 +224,7 @@ export default function ModernEmployees() {
       iconColor: 'text-danger-600',
       iconBg: 'bg-danger-100',
       change: 'All time',
+      status: 'exited',
     },
   ];
 
@@ -250,7 +262,15 @@ export default function ModernEmployees() {
       {/* Stats Grid - matching dashboard style */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
         {statCards.map((stat, index) => (
-          <div key={index} className="stat-card">
+          <div
+            key={index}
+            onClick={() => handleStatCardClick(stat.status)}
+            className={`stat-card cursor-pointer transition-all hover:shadow-lg hover:scale-105 ${
+              (stat.status === 'all' && !selectedStatus) || selectedStatus === stat.status
+                ? 'ring-2 ring-primary-500 shadow-lg'
+                : ''
+            }`}
+          >
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="stat-label">{stat.title}</p>

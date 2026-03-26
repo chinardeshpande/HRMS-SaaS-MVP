@@ -226,7 +226,12 @@ const ModernExitDashboard: React.FC = () => {
       {/* Stats Cards - Matching Leave Management Design */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {/* Total Exit Cases */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+        <div
+          onClick={() => setActiveFilter('all')}
+          className={`bg-white rounded-xl shadow-sm border-2 p-6 hover:shadow-lg transition-all cursor-pointer ${
+            activeFilter === 'all' ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 mb-1">Total Exit Cases</p>
@@ -239,7 +244,12 @@ const ModernExitDashboard: React.FC = () => {
         </div>
 
         {/* Pending Approvals */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+        <div
+          onClick={() => setActiveFilter('resignation_submitted')}
+          className={`bg-white rounded-xl shadow-sm border-2 p-6 hover:shadow-lg transition-all cursor-pointer ${
+            activeFilter === 'resignation_submitted' ? 'border-warning-500 ring-2 ring-warning-200' : 'border-gray-200'
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 mb-1">Pending</p>
@@ -252,7 +262,12 @@ const ModernExitDashboard: React.FC = () => {
         </div>
 
         {/* In Progress */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+        <div
+          onClick={() => setActiveFilter('notice_period_active')}
+          className={`bg-white rounded-xl shadow-sm border-2 p-6 hover:shadow-lg transition-all cursor-pointer ${
+            activeFilter === 'notice_period_active' ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 mb-1">In Progress</p>
@@ -265,7 +280,12 @@ const ModernExitDashboard: React.FC = () => {
         </div>
 
         {/* Completed */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+        <div
+          onClick={() => setActiveFilter('exit_completed')}
+          className={`bg-white rounded-xl shadow-sm border-2 p-6 hover:shadow-lg transition-all cursor-pointer ${
+            activeFilter === 'exit_completed' ? 'border-success-500 ring-2 ring-success-200' : 'border-gray-200'
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 mb-1">Completed</p>
@@ -350,14 +370,15 @@ const ModernExitDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Actions
-                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-100">
                 {exitCases.map((exitCase) => (
-                    <tr key={exitCase.exitId} className="hover:bg-gray-50 transition-colors">
+                    <tr
+                      key={exitCase.exitId}
+                      onClick={() => navigate(`/exit/${exitCase.exitId}`)}
+                      className="hover:bg-gray-50 cursor-pointer transition-colors"
+                    >
                       <td className="px-6 py-4">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-sm">
@@ -385,14 +406,6 @@ const ModernExitDashboard: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <ExitStatusChip state={exitCase.currentState} />
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <button
-                          onClick={() => navigate(`/exit/${exitCase.exitId}`)}
-                          className="text-red-600 hover:text-red-800 font-medium text-sm transition-colors"
-                        >
-                          View Details →
-                        </button>
                       </td>
                     </tr>
                 ))}

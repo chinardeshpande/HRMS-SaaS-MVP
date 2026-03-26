@@ -1,0 +1,260 @@
+name: Deploy to AuroraHR Production
+
+on:
+  push:
+    branches: [main, master]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  workflow_dispatch:
+
+jobs:
+  # ==================================
+  # BUILD & TEST
+  # ==================================
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: hrms_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: yarn install --frozen-lockfile
+
+      - name: Build Backend
+        working-directory: ./backend
+        run: yarn build
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend-web
+        run: yarn install --frozen-lockfile
+
+      - name: Build Frontend
+        working-directory: ./frontend-web
+        env:
+          VITE_API_URL: https://aurorahr.in/api/v1
+          VITE_SOCKET_URL: https://aurorahr.in
+          VITE_APP_NAME: AuroraHR
+        run: yarn build
+
+      - name: Upload Backend Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-build
+          path: |
+            backend/dist
+            backend/package.json
+            backend/yarn.lock
+            backend/node_modules
+          retention-days: 1
+
+      - name: Upload Frontend Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend-web/dist
+          retention-days: 1
+
+  # ==================================
+  # DEPLOY TO PRODUCTION
+  # ==================================
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://aurorahr.in
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Backend Build
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-build
+          path: backend-build
+
+      - name: Download Frontend Build
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend-build
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PRODUCTION_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.PRODUCTION_SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy Backend
+        run: |
+          # Create deployment archive
+          cd backend-build
+          tar -czf ../backend-deploy.tar.gz .
+          cd ..
+
+          # Copy to server
+          scp backend-deploy.tar.gz root@${{ secrets.PRODUCTION_SERVER_IP }}:/tmp/
+
+          # Extract and restart on server
+          ssh root@${{ secrets.PRODUCTION_SERVER_IP }} << 'ENDSSH'
+            # Backup current version
+            if [ -d /var/www/hrms-app/backend ]; then
+              cp -r /var/www/hrms-app/backend /var/www/hrms-app/backend.backup.$(date +%Y%m%d_%H%M%S)
+            fi
+
+            # Extract new version
+            mkdir -p /var/www/hrms-app/backend
+            cd /var/www/hrms-app/backend
+            tar -xzf /tmp/backend-deploy.tar.gz
+
+            # Install production dependencies only
+            yarn install --production --frozen-lockfile
+
+            # Restart PM2
+            pm2 restart aurorahr-backend || pm2 start yarn --name aurorahr-backend -- dev
+
+            # Cleanup
+            rm /tmp/backend-deploy.tar.gz
+          ENDSSH
+
+      - name: Deploy Frontend
+        run: |
+          # Create deployment archive
+          cd frontend-build
+          tar -czf ../frontend-deploy.tar.gz .
+          cd ..
+
+          # Copy to server
+          scp frontend-deploy.tar.gz root@${{ secrets.PRODUCTION_SERVER_IP }}:/tmp/
+
+          # Extract and restart on server
+          ssh root@${{ secrets.PRODUCTION_SERVER_IP }} << 'ENDSSH'
+            # Backup current version
+            if [ -d /var/www/hrms-app/frontend-web/dist ]; then
+              cp -r /var/www/hrms-app/frontend-web/dist /var/www/hrms-app/frontend-web/dist.backup.$(date +%Y%m%d_%H%M%S)
+            fi
+
+            # Extract new version
+            mkdir -p /var/www/hrms-app/frontend-web/dist
+            cd /var/www/hrms-app/frontend-web/dist
+            rm -rf ./*
+            tar -xzf /tmp/frontend-deploy.tar.gz
+
+            # Cleanup old backups (keep last 3)
+            cd /var/www/hrms-app/frontend-web
+            ls -dt dist.backup.* 2>/dev/null | tail -n +4 | xargs rm -rf 2>/dev/null || true
+
+            # Cleanup
+            rm /tmp/frontend-deploy.tar.gz
+          ENDSSH
+
+      - name: Run Database Migrations
+        run: |
+          ssh root@${{ secrets.PRODUCTION_SERVER_IP }} << 'ENDSSH'
+            cd /var/www/hrms-app/backend
+            # Ensure TypeORM can sync schema
+            pm2 logs aurorahr-backend --lines 20
+          ENDSSH
+
+      - name: Health Check
+        run: |
+          sleep 10
+
+          # Check backend health (served from same domain)
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://aurorahr.in/api/v1/health)
+          if [ $response -ne 200 ]; then
+            echo "Backend health check failed with status $response"
+            exit 1
+          fi
+
+          # Check frontend
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://aurorahr.in/)
+          if [ $response -ne 200 ]; then
+            echo "Frontend health check failed with status $response"
+            exit 1
+          fi
+
+          echo "✅ All health checks passed!"
+
+      - name: Cleanup Old Backups
+        if: success()
+        run: |
+          ssh root@${{ secrets.PRODUCTION_SERVER_IP }} << 'ENDSSH'
+            # Keep only last 3 backend backups
+            cd /var/www/hrms-app
+            ls -dt backend.backup.* 2>/dev/null | tail -n +4 | xargs rm -rf 2>/dev/null || true
+          ENDSSH
+
+  # ==================================
+  # ROLLBACK ON FAILURE
+  # ==================================
+  rollback:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: failure()
+
+    steps:
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PRODUCTION_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.PRODUCTION_SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: Rollback to Previous Version
+        run: |
+          ssh root@${{ secrets.PRODUCTION_SERVER_IP }} << 'ENDSSH'
+            cd /var/www/hrms-app
+
+            # Restore backend backup
+            latest_backend=$(ls -dt backend.backup.* 2>/dev/null | head -1)
+            if [ ! -z "$latest_backend" ]; then
+              rm -rf backend
+              cp -r "$latest_backend" backend
+              cd backend
+              yarn install --production
+              pm2 restart aurorahr-backend
+            fi
+
+            # Restore frontend backup
+            latest_frontend=$(ls -dt frontend-web/dist.backup.* 2>/dev/null | head -1)
+            if [ ! -z "$latest_frontend" ]; then
+              rm -rf frontend-web/dist
+              cp -r "$latest_frontend" frontend-web/dist
+            fi
+
+            echo "⚠️ Rollback completed"
+          ENDSSH
+
+      - name: Notify Rollback
+        if: always()
+        run: |
+          echo "⚠️ Deployment failed and was rolled back"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"

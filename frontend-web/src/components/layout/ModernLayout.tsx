@@ -5,10 +5,11 @@ import {
   HomeIcon,
   UsersIcon,
   CalendarIcon,
+  CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
   ChartBarIcon,
   UserPlusIcon,
-  ArrowRightOnRectangleIcon,
+  ArrowRightStartOnRectangleIcon,
   Cog6ToothIcon,
   BriefcaseIcon,
   BuildingOfficeIcon,
@@ -18,6 +19,7 @@ import {
   BellIcon,
   MagnifyingGlassIcon,
   ChevronDownIcon,
+  ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
 
 interface ModernLayoutProps {
@@ -42,10 +44,13 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
   const navigation: NavItem[] = [
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
     { name: 'Employees', href: '/employees', icon: UsersIcon },
+    { name: 'Onboarding', href: '/onboarding', icon: UserPlusIcon },
     { name: 'Attendance', href: '/attendance', icon: CalendarIcon },
     { name: 'Leave Management', href: '/leave', icon: ClipboardDocumentCheckIcon },
     { name: 'Performance', href: '/performance', icon: ChartBarIcon },
-    { name: 'Onboarding', href: '/onboarding', icon: UserPlusIcon },
+    { name: 'Exit Management', href: '/exit', icon: ArrowRightStartOnRectangleIcon },
+    { name: 'Calendar', href: '/calendar', icon: CalendarDaysIcon },
+    { name: 'HR Connect', href: '/hr-connect', icon: ChatBubbleLeftRightIcon },
     {
       name: 'Master Data',
       href: '/master-data',
@@ -55,7 +60,6 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
         { name: 'Designations', href: '/designations', icon: BriefcaseIcon },
       ],
     },
-    { name: 'Exit Management', href: '/exit', icon: ArrowRightOnRectangleIcon },
     { name: 'Reports', href: '/reports', icon: DocumentTextIcon },
     { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
   ];
@@ -82,15 +86,12 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
         <div className="flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
           {/* Logo */}
           <div className="flex items-center flex-shrink-0 px-6">
-            <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-br from-primary-600 to-primary-700 rounded-lg p-2">
-                <BriefcaseIcon className="h-8 w-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">HRMS</h1>
-                <p className="text-xs text-gray-500">Enterprise Edition</p>
-              </div>
-            </div>
+            <img
+              src="/images/aurora-logo-navbar.svg"
+              alt="AuroraHR"
+              className="h-10 w-auto cursor-pointer"
+              onClick={() => navigate('/dashboard')}
+            />
           </div>
 
           {/* Navigation */}
@@ -189,7 +190,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                 className="ml-2 p-2 text-gray-400 hover:text-gray-500 rounded-lg hover:bg-gray-100 transition-colors"
                 title="Logout"
               >
-                <ArrowRightOnRectangleIcon className="h-5 w-5" />
+                <ArrowRightStartOnRectangleIcon className="h-5 w-5" />
               </button>
             </div>
           </div>
@@ -213,10 +214,12 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
               {/* Mobile menu content - reuse desktop sidebar content */}
               <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
                 <div className="flex items-center flex-shrink-0 px-4">
-                  <div className="bg-gradient-to-br from-primary-600 to-primary-700 rounded-lg p-2">
-                    <BriefcaseIcon className="h-8 w-8 text-white" />
-                  </div>
-                  <h1 className="ml-3 text-xl font-bold text-gray-900">HRMS</h1>
+                  <img
+                    src="/images/aurora-logo-navbar.svg"
+                    alt="AuroraHR"
+                    className="h-10 w-auto cursor-pointer"
+                    onClick={() => { navigate('/dashboard'); setSidebarOpen(false); }}
+                  />
                 </div>
                 <nav className="mt-5 px-2 space-y-1">
                   {navigation.map((item) => (

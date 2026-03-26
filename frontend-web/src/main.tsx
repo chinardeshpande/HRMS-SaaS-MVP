@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
-console.log('===== LOADING HRMS APPLICATION =====');
+console.log('===== LOADING AuroraHR APPLICATION =====');
 
 const root = document.getElementById('root');
 
@@ -19,7 +19,7 @@ if (!root) {
       </React.StrictMode>
     );
 
-    console.log('===== HRMS APPLICATION LOADED =====');
+    console.log('===== AuroraHR APPLICATION LOADED =====');
   } catch (error) {
     console.error('===== RENDER ERROR =====', error);
     document.body.innerHTML = `

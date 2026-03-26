@@ -33,6 +33,30 @@ import { ExitInterview } from '../models/ExitInterview';
 import { AssetReturn } from '../models/AssetReturn';
 import { Clearance } from '../models/Clearance';
 import { FinalSettlement } from '../models/FinalSettlement';
+// Performance Management entities
+import { PerformanceReview } from '../models/PerformanceReview';
+import { Goal } from '../models/Goal';
+import { KPI } from '../models/KPI';
+import { Feedback360 } from '../models/Feedback360';
+import { DevelopmentActionItem } from '../models/DevelopmentActionItem';
+// HR Connect entities
+import { HRConnectPost } from '../models/HRConnectPost';
+import { HRConnectComment } from '../models/HRConnectComment';
+import { HRConnectReaction } from '../models/HRConnectReaction';
+import { HRConnectGroup } from '../models/HRConnectGroup';
+import { HRConnectGroupMember } from '../models/HRConnectGroupMember';
+// Chat entities
+import { ChatConversation } from '../models/ChatConversation';
+import { ChatMessage } from '../models/ChatMessage';
+import { ChatParticipant } from '../models/ChatParticipant';
+// Settings entities
+import { Subscription } from '../models/Subscription';
+import { OrganizationSettings } from '../models/OrganizationSettings';
+import { PaymentHistory } from '../models/PaymentHistory';
+import { PaymentMethod } from '../models/PaymentMethod';
+import { Permission } from '../models/Permission';
+import { Role } from '../models/Role';
+import { BusinessRules } from '../models/BusinessRules';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -41,6 +65,7 @@ export const AppDataSource = new DataSource({
   username: config.database.user,
   password: config.database.password,
   database: config.database.name,
+  ssl: config.database.ssl ? { rejectUnauthorized: false } : false,
   synchronize: config.nodeEnv === 'development', // Auto-sync in development only
   logging: config.nodeEnv === 'development',
   entities: [
@@ -74,6 +99,30 @@ export const AppDataSource = new DataSource({
     AssetReturn,
     Clearance,
     FinalSettlement,
+    // Performance Management
+    PerformanceReview,
+    Goal,
+    KPI,
+    Feedback360,
+    DevelopmentActionItem,
+    // HR Connect
+    HRConnectPost,
+    HRConnectComment,
+    HRConnectReaction,
+    HRConnectGroup,
+    HRConnectGroupMember,
+    // Chat
+    ChatConversation,
+    ChatMessage,
+    ChatParticipant,
+    // Settings
+    Subscription,
+    OrganizationSettings,
+    PaymentHistory,
+    PaymentMethod,
+    Permission,
+    Role,
+    BusinessRules,
   ],
   migrations: ['src/migrations/*.ts'],
   subscribers: [],

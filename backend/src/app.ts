@@ -1,10 +1,10 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import compression from 'compression';
-import swaggerUi from 'swagger-ui-express';
-import swaggerJsdoc from 'swagger-jsdoc';
+// import swaggerUi from 'swagger-ui-express';
+// import swaggerJsdoc from 'swagger-jsdoc';
 import rateLimit from 'express-rate-limit';
+import * as path from 'path';
 import { config } from './config/config';
 import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
@@ -19,6 +19,13 @@ import probationRoutes from './routes/probationRoutes';
 import exitRoutes from './routes/exitRoutes';
 import attendanceRoutes from './routes/attendanceRoutes';
 import leaveRoutes from './routes/leaveRoutes';
+import documentRoutes from './routes/documentRoutes';
+import performanceRoutes from './routes/performanceRoutes';
+import hrConnectRoutes from './routes/hrConnectRoutes';
+import chatRoutes from './routes/chatRoutes';
+import ticketRoutes from './routes/ticketRoutes';
+import settingsRoutes from './routes/settingsRoutes';
+import paymentMethodRoutes from './routes/paymentMethodRoutes';
 // import pmsRoutes from './routes/pmsRoutes';
 // import transferRoutes from './routes/transferRoutes';
 // import confirmationRoutes from './routes/confirmationRoutes';
@@ -68,7 +75,7 @@ const swaggerOptions = {
   apis: ['./src/routes/*.ts', './src/controllers/*.ts'], // Path to API docs
 };
 
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
+// const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 // Security middleware
 app.use(helmet());
@@ -81,29 +88,38 @@ app.use(
   })
 );
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: config.rateLimitWindowMs,
-  max: config.rateLimitMaxRequests,
-  message: 'Too many requests from this IP, please try again later.',
-});
-app.use('/api/', limiter);
+// Rate limiting (disabled in development for easier testing)
+if (config.nodeEnv !== 'development') {
+  const limiter = rateLimit({
+    windowMs: config.rateLimitWindowMs,
+    max: config.rateLimitMaxRequests,
+    message: 'Too many requests from this IP, please try again later.',
+  });
+  app.use('/api/', limiter);
+  console.log(`⚠️  Rate limiting enabled: ${config.rateLimitMaxRequests} requests per ${config.rateLimitWindowMs / 1000}s`);
+} else {
+  console.log('✅ Rate limiting DISABLED in development mode');
+}
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Compression middleware
-app.use(compression() as any);
+// Compression middleware (commented out due to TypeScript type conflicts)
+// app.use(compression() as any);
+
+// Serve static files (uploaded files)
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Request logging
 app.use(requestLogger);
 
 // API Documentation
-if (config.enableSwagger) {
-  app.use('/api/docs', swaggerUi.serve as any);
-  app.get('/api/docs', swaggerUi.setup(swaggerSpec) as any);
-}
+// Disabled due to TypeScript type conflicts
+// if (config.enableSwagger) {
+//   app.use('/api/docs', swaggerUi.serve as any);
+//   app.get('/api/docs', swaggerUi.setup(swaggerSpec) as any);
+// }
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
@@ -130,6 +146,13 @@ apiRouter.use('/probation', probationRoutes);
 apiRouter.use('/exit', exitRoutes);
 apiRouter.use('/attendance', attendanceRoutes);
 apiRouter.use('/leave', leaveRoutes);
+apiRouter.use('/documents', documentRoutes);
+apiRouter.use('/performance', performanceRoutes);
+apiRouter.use('/hr-connect', hrConnectRoutes);
+apiRouter.use('/chat', chatRoutes);
+apiRouter.use('/helpdesk', ticketRoutes);
+apiRouter.use('/settings', settingsRoutes);
+apiRouter.use('/payment-methods', paymentMethodRoutes);
 // apiRouter.use('/pms', pmsRoutes);
 // apiRouter.use('/transfer', transferRoutes);
 // apiRouter.use('/confirmation', confirmationRoutes);

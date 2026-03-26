@@ -99,10 +99,10 @@ export default function ExitProgressTracker({ currentState, lastWorkingDate }: E
   const daysRemaining = lastWorkingDate ? calculateDaysRemaining(lastWorkingDate) : null;
 
   return (
-    <div className="w-full py-8">
+    <div className="w-full py-3">
       <div className="relative">
         {/* Progress Line */}
-        <div className="absolute top-5 left-0 w-full h-1 bg-gray-200">
+        <div className="absolute top-4 left-0 w-full h-0.5 bg-gray-200">
           <div
             className="absolute top-0 left-0 h-full bg-blue-600 transition-all duration-500"
             style={{ width: `${(currentStepIndex / (exitSteps.length - 1)) * 100}%` }}
@@ -116,130 +116,39 @@ export default function ExitProgressTracker({ currentState, lastWorkingDate }: E
             const isActive = step.states.includes(currentState);
 
             return (
-              <div key={step.id} className="flex flex-col items-center" style={{ width: '150px' }}>
+              <div key={step.id} className="flex flex-col items-center" style={{ width: '120px' }}>
                 {/* Icon */}
                 <div
-                  className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-4 transition-all duration-300 ${
+                  className={`relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all duration-300 ${
                     status === 'completed'
                       ? 'border-blue-600 bg-blue-600'
                       : status === 'current'
-                      ? 'border-blue-600 bg-white shadow-lg ring-4 ring-blue-100'
+                      ? 'border-blue-600 bg-white shadow-lg ring-2 ring-blue-100'
                       : 'border-gray-300 bg-white'
                   }`}
                 >
                   {status === 'completed' ? (
-                    <CheckCircleIcon className="h-6 w-6 text-white" />
+                    <CheckCircleIcon className="h-4 w-4 text-white" />
                   ) : status === 'current' ? (
-                    <step.icon className="h-6 w-6 text-blue-600" />
+                    <step.icon className="h-4 w-4 text-blue-600" />
                   ) : (
-                    <step.icon className="h-6 w-6 text-gray-400" />
+                    <step.icon className="h-4 w-4 text-gray-400" />
                   )}
                 </div>
 
                 {/* Step Name */}
-                <div className="mt-3 text-center">
+                <div className="mt-2 text-center">
                   <div
-                    className={`text-sm font-semibold ${
+                    className={`text-xs font-semibold ${
                       status === 'completed' || status === 'current' ? 'text-gray-900' : 'text-gray-500'
                     }`}
                   >
                     {step.name}
                   </div>
-
-                  {/* Current State Badge */}
-                  {isActive && (
-                    <div className="mt-2">
-                      <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
-                        {getStateDisplayName(currentState)}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Step Description */}
-                  <div className="mt-1 text-xs text-gray-500">{step.description}</div>
-
-                  {/* Status Icon */}
-                  {status === 'completed' && !isActive && (
-                    <div className="mt-2 flex justify-center">
-                      <CheckCircleOutlineIcon className="h-5 w-5 text-green-600" />
-                    </div>
-                  )}
-                  {status === 'current' && (
-                    <div className="mt-2 flex justify-center">
-                      <ClockIcon className="h-5 w-5 text-blue-600 animate-pulse" />
-                    </div>
-                  )}
                 </div>
               </div>
             );
           })}
-        </div>
-      </div>
-
-      {/* Detailed State Information */}
-      <div className="mt-8 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 p-6">
-        <div className="flex items-start">
-          <div className="flex-shrink-0">
-            <ClockIcon className="h-8 w-8 text-blue-600" />
-          </div>
-          <div className="ml-4 flex-1">
-            <h3 className="text-lg font-semibold text-gray-900">Current Status</h3>
-            <p className="mt-1 text-sm text-gray-700">
-              <span className="font-medium text-blue-600">{getStateDisplayName(currentState)}</span>
-            </p>
-            <p className="mt-2 text-xs text-gray-600">
-              {currentStepIndex >= 0 && exitSteps[currentStepIndex]?.description}
-            </p>
-
-            {/* Progress Percentage */}
-            <div className="mt-4">
-              <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-                <span>Exit Progress</span>
-                <span className="font-semibold">
-                  {Math.round(((currentStepIndex + 1) / exitSteps.length) * 100)}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${((currentStepIndex + 1) / exitSteps.length) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Days until last working day */}
-            {lastWorkingDate && daysRemaining !== null && (
-              <div className="mt-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600">Last Working Date</span>
-                  <span className="text-sm font-semibold text-gray-900">
-                    {new Date(lastWorkingDate).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </span>
-                </div>
-                <div className="mt-1">
-                  <span
-                    className={`text-sm font-medium ${
-                      daysRemaining < 0
-                        ? 'text-red-600'
-                        : daysRemaining < 7
-                        ? 'text-orange-600'
-                        : 'text-green-600'
-                    }`}
-                  >
-                    {daysRemaining > 0
-                      ? `${daysRemaining} days remaining`
-                      : daysRemaining === 0
-                      ? 'Last working day is today'
-                      : `${Math.abs(daysRemaining)} days past LWD`}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>

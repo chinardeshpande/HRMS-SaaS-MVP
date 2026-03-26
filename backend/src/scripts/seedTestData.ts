@@ -26,15 +26,26 @@ async function seedTestData() {
     const attendancePolicyRepo = AppDataSource.getRepository(AttendancePolicy);
 
     // 1. Create Test Tenant
-    console.log('📦 Creating test tenant...');
-    const tenant = tenantRepo.create({
-      companyName: 'Acme Corporation',
-      subdomain: 'acme',
-      planType: 'professional',
-      status: EmploymentStatus.ACTIVE,
-    });
-    await tenantRepo.save(tenant);
-    console.log(`✅ Tenant created: ${tenant.companyName}`);
+    console.log('📦 Creating or finding test tenant...');
+    let tenant = await tenantRepo.findOne({ where: { subdomain: 'acme' } });
+
+    if (!tenant) {
+      tenant = tenantRepo.create({
+        companyName: 'Acme Corporation',
+        subdomain: 'acme',
+        planType: 'professional',
+        status: EmploymentStatus.ACTIVE,
+      });
+      await tenantRepo.save(tenant);
+      console.log(`✅ Tenant created: ${tenant.companyName}`);
+    } else {
+      console.log(`✅ Tenant found: ${tenant.companyName}`);
+    }
+
+    if (!tenant) {
+      console.error('❌ Failed to create or find tenant');
+      process.exit(1);
+    }
 
     // 2. Create Departments
     console.log('🏢 Creating departments...');
@@ -207,6 +218,15 @@ async function seedTestData() {
     // 6. Create Test Users & Employees
     console.log('👥 Creating test users and employees...');
 
+    // Check if users already exist
+    const existingUser = await userRepo.findOne({ where: { email: 'admin@acme.com' } });
+    if (existingUser) {
+      console.log('⚠️  Users already exist. Skipping user creation...');
+      await AppDataSource.destroy();
+      console.log('\n✅ Seed data already exists!');
+      process.exit(0);
+    }
+
     const hashedPassword = await bcrypt.hash('password123', 10);
     const allEmployees: Employee[] = [];
 
@@ -222,7 +242,7 @@ async function seedTestData() {
       joinDate: string;
     }) {
       const employee = employeeRepo.create({
-        tenantId: tenant.tenantId,
+        tenantId: tenant!.tenantId,
         employeeCode: data.code,
         firstName: data.firstName,
         lastName: data.lastName,
@@ -238,7 +258,7 @@ async function seedTestData() {
       await employeeRepo.save(employee);
 
       const user = userRepo.create({
-        tenantId: tenant.tenantId,
+        tenantId: tenant!.tenantId,
         email: employee.email,
         passwordHash: hashedPassword,
         fullName: `${data.firstName} ${data.lastName}`,

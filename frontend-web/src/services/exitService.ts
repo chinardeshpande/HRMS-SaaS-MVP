@@ -72,6 +72,72 @@ export const exitService = {
   async getExitStatistics() {
     return api.get('/exit/statistics');
   },
+
+  // ==================== EXIT CASE CRUD OPERATIONS ====================
+
+  async updateExitCase(exitId: string, data: any) {
+    return api.put(`/exit/cases/${exitId}`, data);
+  },
+
+  async deleteExitCase(exitId: string) {
+    return api.delete(`/exit/cases/${exitId}`);
+  },
+
+  // ==================== CLEARANCE CRUD OPERATIONS ====================
+
+  async getClearancesByExitId(exitId: string) {
+    return api.get(`/exit/cases/${exitId}/clearances`);
+  },
+
+  async createClearance(exitId: string, data: any) {
+    return api.post(`/exit/cases/${exitId}/clearances`, data);
+  },
+
+  async deleteClearance(clearanceId: string) {
+    return api.delete(`/exit/clearances/${clearanceId}`);
+  },
+
+  // ==================== ASSET RETURN CRUD OPERATIONS ====================
+
+  async getAssetsByExitId(exitId: string) {
+    return api.get(`/exit/cases/${exitId}/assets`);
+  },
+
+  async updateAssetReturn(assetId: string, data: any) {
+    return api.put(`/exit/assets/${assetId}`, data);
+  },
+
+  async deleteAssetReturn(assetId: string) {
+    return api.delete(`/exit/assets/${assetId}`);
+  },
+
+  // ==================== EXIT INTERVIEW CRUD OPERATIONS ====================
+
+  async getExitInterviewByExitId(exitId: string) {
+    return api.get(`/exit/cases/${exitId}/exit-interview`);
+  },
+
+  async updateExitInterview(exitInterviewId: string, data: any) {
+    return api.put(`/exit/exit-interviews/${exitInterviewId}`, data);
+  },
+
+  async deleteExitInterview(exitInterviewId: string) {
+    return api.delete(`/exit/exit-interviews/${exitInterviewId}`);
+  },
+
+  // ==================== SETTLEMENT CRUD OPERATIONS ====================
+
+  async getSettlementByExitId(exitId: string) {
+    return api.get(`/exit/cases/${exitId}/settlement`);
+  },
+
+  async updateSettlement(settlementId: string, data: any) {
+    return api.put(`/exit/settlements/${settlementId}`, data);
+  },
+
+  async deleteSettlement(settlementId: string) {
+    return api.delete(`/exit/settlements/${settlementId}`);
+  },
 };
 
 export default exitService;

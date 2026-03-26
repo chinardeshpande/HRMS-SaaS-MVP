@@ -120,6 +120,10 @@ const ModernOnboardingDashboard: React.FC = () => {
   const filterCandidates = () => {
     let filtered = [...allCandidates];
 
+    // EXCLUDE candidates who have completed onboarding (they should appear in Employee list instead)
+    const completedStates = ['joined', 'orientation', 'onboarding_complete'];
+    filtered = filtered.filter(c => !completedStates.includes(c.currentState));
+
     // Filter by status dropdown
     if (activeFilter !== 'all') {
       filtered = filtered.filter(c => c.currentState === activeFilter);
@@ -166,7 +170,7 @@ const ModernOnboardingDashboard: React.FC = () => {
     { key: 'docs_pending', label: 'Docs Pending', color: 'bg-yellow-500' },
     { key: 'bgv_in_progress', label: 'BGV In Progress', color: 'bg-orange-500' },
     { key: 'pre_joining_setup', label: 'Pre-Joining Setup', color: 'bg-cyan-500' },
-    { key: 'joined', label: 'Joined', color: 'bg-emerald-500' },
+    // Note: 'joined', 'orientation', 'onboarding_complete' are excluded - they appear in Employee list
   ];
 
   const handleExportCSV = () => {
@@ -264,7 +268,12 @@ const ModernOnboardingDashboard: React.FC = () => {
         {activeView === 'all-candidates' ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             {/* Total Candidates */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div
+              onClick={() => setActiveFilter('all')}
+              className={`bg-white rounded-xl shadow-sm border-2 p-6 hover:shadow-lg transition-all cursor-pointer ${
+                activeFilter === 'all' ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">Total Candidates</p>
@@ -277,7 +286,12 @@ const ModernOnboardingDashboard: React.FC = () => {
             </div>
 
             {/* Pending Verification */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div
+              onClick={() => setActiveFilter('hr_review')}
+              className={`bg-white rounded-xl shadow-sm border-2 p-6 hover:shadow-lg transition-all cursor-pointer ${
+                activeFilter === 'hr_review' ? 'border-warning-500 ring-2 ring-warning-200' : 'border-gray-200'
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">Pending Verification</p>
@@ -290,7 +304,12 @@ const ModernOnboardingDashboard: React.FC = () => {
             </div>
 
             {/* BGV In Progress */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div
+              onClick={() => setActiveFilter('bgv_in_progress')}
+              className={`bg-white rounded-xl shadow-sm border-2 p-6 hover:shadow-lg transition-all cursor-pointer ${
+                activeFilter === 'bgv_in_progress' ? 'border-orange-500 ring-2 ring-orange-200' : 'border-gray-200'
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">BGV In Progress</p>
@@ -303,7 +322,12 @@ const ModernOnboardingDashboard: React.FC = () => {
             </div>
 
             {/* Joining This Month */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div
+              onClick={() => setActiveFilter('pre_joining_setup')}
+              className={`bg-white rounded-xl shadow-sm border-2 p-6 hover:shadow-lg transition-all cursor-pointer ${
+                activeFilter === 'pre_joining_setup' ? 'border-success-500 ring-2 ring-success-200' : 'border-gray-200'
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">Joining This Month</p>
@@ -318,7 +342,12 @@ const ModernOnboardingDashboard: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             {/* Total Probation */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div
+              onClick={() => setAtRiskOnly(false)}
+              className={`bg-white rounded-xl shadow-sm border-2 p-6 hover:shadow-lg transition-all cursor-pointer ${
+                !atRiskOnly ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">Total Probation</p>
@@ -331,7 +360,12 @@ const ModernOnboardingDashboard: React.FC = () => {
             </div>
 
             {/* Active Probation */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div
+              onClick={() => setAtRiskOnly(false)}
+              className={`bg-white rounded-xl shadow-sm border-2 p-6 hover:shadow-lg transition-all cursor-pointer ${
+                !atRiskOnly ? 'border-success-500 ring-2 ring-success-200' : 'border-gray-200'
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">Active Probation</p>
@@ -344,7 +378,12 @@ const ModernOnboardingDashboard: React.FC = () => {
             </div>
 
             {/* At Risk */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div
+              onClick={() => setAtRiskOnly(true)}
+              className={`bg-white rounded-xl shadow-sm border-2 p-6 hover:shadow-lg transition-all cursor-pointer ${
+                atRiskOnly ? 'border-danger-500 ring-2 ring-danger-200' : 'border-gray-200'
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">At Risk</p>
@@ -357,7 +396,12 @@ const ModernOnboardingDashboard: React.FC = () => {
             </div>
 
             {/* Confirmed */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div
+              onClick={() => setAtRiskOnly(false)}
+              className={`bg-white rounded-xl shadow-sm border-2 p-6 hover:shadow-lg transition-all cursor-pointer ${
+                !atRiskOnly ? 'border-emerald-500 ring-2 ring-emerald-200' : 'border-gray-200'
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">Confirmed</p>
@@ -452,14 +496,15 @@ const ModernOnboardingDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Actions
-                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-100">
                 {candidates.map((candidate) => (
-                  <tr key={candidate.candidateId} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={candidate.candidateId}
+                    onClick={() => navigate(`/onboarding/candidate/${candidate.candidateId}`)}
+                    className="hover:bg-gray-50 cursor-pointer transition-colors"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-sm">
@@ -487,14 +532,6 @@ const ModernOnboardingDashboard: React.FC = () => {
                     </td>
                     <td className="px-6 py-4">
                       <OnboardingStatusChip state={candidate.currentState} />
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => navigate(`/onboarding/candidate/${candidate.candidateId}`)}
-                        className="text-indigo-600 hover:text-indigo-800 font-medium text-sm transition-colors"
-                      >
-                        View Details →
-                      </button>
                     </td>
                   </tr>
                 ))}
@@ -563,9 +600,6 @@ const ModernOnboardingDashboard: React.FC = () => {
                       <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         End Date
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Actions
-                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-100">
@@ -574,7 +608,11 @@ const ModernOnboardingDashboard: React.FC = () => {
                       const progress = getProgressPercentage(probationCase);
 
                       return (
-                        <tr key={probationCase.probationId} className="hover:bg-gray-50 transition-colors">
+                        <tr
+                          key={probationCase.probationId}
+                          onClick={() => navigate(`/probation/case/${probationCase.probationId}`)}
+                          className="hover:bg-gray-50 cursor-pointer transition-colors"
+                        >
                           <td className="px-6 py-4">
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm">
@@ -631,14 +669,6 @@ const ModernOnboardingDashboard: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-900">
                             {new Date(probationCase.probationEndDate).toLocaleDateString('en-GB')}
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <button
-                              onClick={() => navigate(`/probation/case/${probationCase.probationId}`)}
-                              className="text-indigo-600 hover:text-indigo-800 font-medium text-sm transition-colors"
-                            >
-                              View Details →
-                            </button>
                           </td>
                         </tr>
                       );

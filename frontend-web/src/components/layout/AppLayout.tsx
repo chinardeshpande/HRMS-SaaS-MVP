@@ -20,7 +20,6 @@ import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
   People as PeopleIcon,
-  Business as BusinessIcon,
   Schedule as ScheduleIcon,
   BeachAccess as LeaveIcon,
   TrendingUp as PerformanceIcon,
@@ -129,21 +128,19 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
       {/* Logo/Brand */}
       <Box
         sx={{
-          p: 2,
+          p: 2.5,
           display: 'flex',
           alignItems: 'center',
-          gap: 1,
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
+          justifyContent: 'center',
+          cursor: 'pointer',
         }}
+        onClick={() => navigate('/dashboard')}
       >
-        <BusinessIcon sx={{ fontSize: 32 }} />
-        <Box>
-          <Typography variant="h6" sx={{ fontWeight: 700 }}>
-            HRMS SaaS
-          </Typography>
-          <Typography variant="caption">HR Management</Typography>
-        </Box>
+        <img
+          src="/images/aurora-logo-navbar.svg"
+          alt="AuroraHR"
+          style={{ height: '40px', width: 'auto' }}
+        />
       </Box>
 
       <Divider />

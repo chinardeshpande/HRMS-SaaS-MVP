@@ -145,6 +145,18 @@ class EmployeeService {
   async delete(id: string): Promise<void> {
     await api.delete(`/employees/${id}`);
   }
+
+  /**
+   * Convenience aliases
+   */
+  async getEmployee(id: string): Promise<{ data: Employee }> {
+    const employee = await this.getById(id);
+    return { data: employee };
+  }
+
+  async updateEmployee(id: string, data: Partial<CreateEmployeeData>): Promise<void> {
+    await this.update(id, data);
+  }
 }
 
 export default new EmployeeService();

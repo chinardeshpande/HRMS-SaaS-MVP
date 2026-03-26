@@ -207,6 +207,78 @@ export const completeTask = async (req: Request, res: Response) => {
   }
 };
 
+export const signDocument = async (req: Request, res: Response) => {
+  try {
+    const { documentId } = req.params;
+    const userId = req.user!.userId;
+
+    await onboardingService.signDocument(documentId, userId);
+    return sendSuccess(res, { message: 'Document signed successfully' });
+  } catch (error: any) {
+    logger.error('Sign document error:', error);
+    return sendError(res, { code: 'SIGN_FAILED', message: error.message }, 400);
+  }
+};
+
+export const getCandidateDocuments = async (req: Request, res: Response) => {
+  try {
+    const { candidateId } = req.params;
+    const documents = await onboardingService.getCandidateDocuments(candidateId);
+    return sendSuccess(res, documents);
+  } catch (error: any) {
+    logger.error('Get candidate documents error:', error);
+    return sendError(res, { code: 'FETCH_FAILED', message: error.message }, 400);
+  }
+};
+
+export const signAllRequiredDocuments = async (req: Request, res: Response) => {
+  try {
+    const { candidateId } = req.params;
+    const userId = req.user!.userId;
+
+    await onboardingService.signAllRequiredDocuments(candidateId, userId);
+    return sendSuccess(res, { message: 'All required documents signed successfully' });
+  } catch (error: any) {
+    logger.error('Sign all documents error:', error);
+    return sendError(res, { code: 'SIGN_ALL_FAILED', message: error.message }, 400);
+  }
+};
+
+export const getStateTransitionHistory = async (req: Request, res: Response) => {
+  try {
+    const { candidateId } = req.params;
+    const history = await onboardingService.getStateTransitionHistory(candidateId);
+    return sendSuccess(res, history);
+  } catch (error: any) {
+    logger.error('Get state history error:', error);
+    return sendError(res, { code: 'FETCH_FAILED', message: error.message }, 400);
+  }
+};
+
+export const updateCandidate = async (req: Request, res: Response) => {
+  try {
+    const { candidateId } = req.params;
+    const userId = req.user!.userId;
+    const updated = await onboardingService.updateCandidate(candidateId, req.body, userId);
+    return sendSuccess(res, updated);
+  } catch (error: any) {
+    logger.error('Update candidate error:', error);
+    return sendError(res, { code: 'UPDATE_FAILED', message: error.message }, 400);
+  }
+};
+
+export const generateAndSignDocuments = async (req: Request, res: Response) => {
+  try {
+    const { candidateId } = req.params;
+    const userId = req.user!.userId;
+    await onboardingService.generateAndSignRequiredDocuments(candidateId, userId);
+    return sendSuccess(res, { message: 'All required documents generated and signed successfully' });
+  } catch (error: any) {
+    logger.error('Generate documents error:', error);
+    return sendError(res, { code: 'GENERATE_FAILED', message: error.message }, 400);
+  }
+};
+
 export const bulkUploadCandidates = async (req: Request, res: Response) => {
   try {
     const tenantId = req.user!.tenantId;
@@ -298,5 +370,141 @@ export const bulkUploadCandidates = async (req: Request, res: Response) => {
     }
 
     return sendError(res, { code: 'BULK_UPLOAD_FAILED', message: error.message }, 500);
+  }
+};
+
+// ==================== TASK CRUD OPERATIONS ====================
+
+export const createTask = async (req: Request, res: Response) => {
+  try {
+    const { candidateId } = req.params;
+    const tenantId = req.user!.tenantId;
+    const userId = req.user!.userId;
+
+    const task = await onboardingService.createTask(tenantId, candidateId, req.body, userId);
+    return sendCreated(res, task);
+  } catch (error: any) {
+    logger.error('Create task error:', error);
+    return sendError(res, { code: 'CREATE_TASK_FAILED', message: error.message }, 400);
+  }
+};
+
+export const updateTask = async (req: Request, res: Response) => {
+  try {
+    const { taskId } = req.params;
+    const userId = req.user!.userId;
+
+    const task = await onboardingService.updateTask(taskId, req.body, userId);
+    return sendSuccess(res, task);
+  } catch (error: any) {
+    logger.error('Update task error:', error);
+    return sendError(res, { code: 'UPDATE_TASK_FAILED', message: error.message }, 400);
+  }
+};
+
+export const deleteTask = async (req: Request, res: Response) => {
+  try {
+    const { taskId } = req.params;
+    const userId = req.user!.userId;
+
+    await onboardingService.deleteTask(taskId, userId);
+    return sendSuccess(res, { message: 'Task deleted successfully' });
+  } catch (error: any) {
+    logger.error('Delete task error:', error);
+    return sendError(res, { code: 'DELETE_TASK_FAILED', message: error.message }, 400);
+  }
+};
+
+// ==================== DOCUMENT CRUD OPERATIONS ====================
+
+export const updateDocument = async (req: Request, res: Response) => {
+  try {
+    const { documentId } = req.params;
+    const userId = req.user!.userId;
+
+    const document = await onboardingService.updateDocument(documentId, req.body, userId);
+    return sendSuccess(res, document);
+  } catch (error: any) {
+    logger.error('Update document error:', error);
+    return sendError(res, { code: 'UPDATE_DOCUMENT_FAILED', message: error.message }, 400);
+  }
+};
+
+export const deleteDocument = async (req: Request, res: Response) => {
+  try {
+    const { documentId } = req.params;
+    const userId = req.user!.userId;
+
+    await onboardingService.deleteDocument(documentId, userId);
+    return sendSuccess(res, { message: 'Document deleted successfully' });
+  } catch (error: any) {
+    logger.error('Delete document error:', error);
+    return sendError(res, { code: 'DELETE_DOCUMENT_FAILED', message: error.message }, 400);
+  }
+};
+
+// ==================== BGV CRUD OPERATIONS ====================
+
+export const updateBGVStatus = async (req: Request, res: Response) => {
+  try {
+    const { candidateId } = req.params;
+    const userId = req.user!.userId;
+    const { bgvStatus, bgvVendor, bgvReferenceId, bgvInitiatedDate, bgvCompletedDate, bgvRemarks } = req.body;
+
+    const updated = await onboardingService.updateBGVStatus(candidateId, {
+      bgvStatus,
+      bgvVendor,
+      bgvReferenceId,
+      bgvInitiatedDate,
+      bgvCompletedDate,
+      bgvRemarks,
+    }, userId);
+
+    return sendSuccess(res, updated);
+  } catch (error: any) {
+    logger.error('Update BGV status error:', error);
+    return sendError(res, { code: 'UPDATE_BGV_FAILED', message: error.message }, 400);
+  }
+};
+
+export const getBGVDetails = async (req: Request, res: Response) => {
+  try {
+    const { candidateId } = req.params;
+    const bgvDetails = await onboardingService.getBGVDetails(candidateId);
+    return sendSuccess(res, bgvDetails);
+  } catch (error: any) {
+    logger.error('Get BGV details error:', error);
+    return sendError(res, { code: 'FETCH_BGV_FAILED', message: error.message }, 400);
+  }
+};
+
+// ==================== ONBOARDING CASE CRUD OPERATIONS ====================
+
+export const updateOnboardingCase = async (req: Request, res: Response) => {
+  try {
+    const { candidateId } = req.params;
+    const userId = req.user!.userId;
+
+    const onboardingCase = await onboardingService.updateOnboardingCase(candidateId, req.body, userId);
+    return sendSuccess(res, onboardingCase);
+  } catch (error: any) {
+    logger.error('Update onboarding case error:', error);
+    return sendError(res, { code: 'UPDATE_CASE_FAILED', message: error.message }, 400);
+  }
+};
+
+export const getOnboardingCase = async (req: Request, res: Response) => {
+  try {
+    const { candidateId } = req.params;
+    const onboardingCase = await onboardingService.getOnboardingCase(candidateId);
+
+    if (!onboardingCase) {
+      return sendError(res, { code: 'NOT_FOUND', message: 'Onboarding case not found' }, 404);
+    }
+
+    return sendSuccess(res, onboardingCase);
+  } catch (error: any) {
+    logger.error('Get onboarding case error:', error);
+    return sendError(res, { code: 'FETCH_CASE_FAILED', message: error.message }, 400);
   }
 };
