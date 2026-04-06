@@ -7,7 +7,9 @@ import { OnboardingState } from '../models/enums/OnboardingState';
 import { VerificationStatus, BGVStatus } from '../models/enums/DocumentEnums';
 import { TaskStatus } from '../models/enums/TaskStatus';
 import onboardingFSMService from './OnboardingFSMService';
+import emailService from './emailService';
 import logger from '../utils/logger';
+import { validateEmail } from '../middleware/validation';
 
 export class OnboardingService {
   private candidateRepo = AppDataSource.getRepository(Candidate);
@@ -17,6 +19,11 @@ export class OnboardingService {
 
   async createCandidate(tenantId: string, data: Partial<Candidate>, userId: string): Promise<Candidate> {
     try {
+      // Validate email format
+      if (data.email && !validateEmail(data.email)) {
+        throw new Error('Invalid email format');
+      }
+
       // Sanitize input: convert empty strings to null for UUID fields
       const sanitizedData = {
         ...data,
@@ -110,10 +117,36 @@ export class OnboardingService {
   }
 
   async sendOffer(candidateId: string, userId: string): Promise<void> {
-    const candidate = await this.candidateRepo.findOne({ where: { candidateId } });
+    const candidate = await this.candidateRepo.findOne({
+      where: { candidateId },
+      relations: ['department', 'designation'],
+    });
 
     if (!candidate) {
       throw new Error('Candidate not found');
+    }
+
+    // Send offer letter email
+    try {
+      await emailService.sendOfferLetter({
+        to: candidate.email,
+        candidateName: `${candidate.firstName} ${candidate.lastName}`,
+        position: candidate.designation?.name || 'Not specified',
+        department: candidate.department?.name || 'Not specified',
+        salary: candidate.offeredSalary || 0,
+        joinDate: candidate.expectedJoinDate
+          ? new Date(candidate.expectedJoinDate).toLocaleDateString('en-IN', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })
+          : 'To be confirmed',
+        companyName: 'AuroraHR',
+      });
+      logger.info(`Offer letter email sent to: ${candidate.email}`);
+    } catch (error: any) {
+      logger.error(`Failed to send offer email: ${error.message}`);
+      // Continue with state transition even if email fails
     }
 
     // Transition to OFFER_SENT

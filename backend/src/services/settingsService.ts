@@ -492,6 +492,38 @@ export class SettingsService {
     employee.status = 'active' as any;
     return await this.employeeRepo.save(employee);
   }
+
+  // ==================== SMTP CONFIGURATION ====================
+  async getSmtpConfig(tenantId: string): Promise<any> {
+    const settings = await this.orgSettingsRepo.findOne({
+      where: { tenantId },
+    });
+
+    if (!settings || !settings.smtpConfig || !settings.smtpConfig.enabled) {
+      return null; // Fall back to global config
+    }
+
+    return settings.smtpConfig;
+  }
+
+  async updateSmtpConfig(tenantId: string, smtpConfig: any): Promise<void> {
+    let settings = await this.orgSettingsRepo.findOne({
+      where: { tenantId },
+    });
+
+    if (!settings) {
+      settings = this.orgSettingsRepo.create({
+        tenantId,
+        companyName: 'Default',
+        smtpConfig,
+      });
+    } else {
+      settings.smtpConfig = smtpConfig;
+    }
+
+    await this.orgSettingsRepo.save(settings);
+  }
 }
+
 
 export const settingsService = SettingsService.getInstance();

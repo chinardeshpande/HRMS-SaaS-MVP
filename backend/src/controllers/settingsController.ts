@@ -4,6 +4,8 @@ import { SubscriptionPlan, BillingCycle } from '../models/Subscription';
 import { PaymentStatus } from '../models/PaymentHistory';
 import { RuleCategory } from '../models/BusinessRules';
 import { PermissionModule } from '../models/Permission';
+import leavePolicyService from '../services/leavePolicyService';
+import attendancePolicyService from '../services/attendancePolicyService';
 
 // ==================== SUBSCRIPTION CONTROLLERS ====================
 
@@ -917,6 +919,299 @@ export const reactivateUser = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error('Error reactivating user:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error.message,
+      },
+    });
+  }
+};
+
+// ==================== LEAVE POLICY CONTROLLERS ====================
+
+export const createLeavePolicy = async (req: Request, res: Response) => {
+  try {
+    const { tenantId } = req as any;
+    const policyData = req.body;
+
+    const policy = await leavePolicyService.createPolicy(tenantId, policyData);
+
+    res.status(201).json({
+      success: true,
+      data: policy,
+    });
+  } catch (error: any) {
+    console.error('Error creating leave policy:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error.message,
+      },
+    });
+  }
+};
+
+export const getAllLeavePolicies = async (req: Request, res: Response) => {
+  try {
+    const { tenantId } = req as any;
+    const { isActive } = req.query;
+
+    const filters: any = {};
+    if (isActive !== undefined) {
+      filters.isActive = isActive === 'true';
+    }
+
+    const policies = await leavePolicyService.getAllPolicies(tenantId, filters);
+
+    res.status(200).json({
+      success: true,
+      data: policies,
+    });
+  } catch (error: any) {
+    console.error('Error fetching leave policies:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error.message,
+      },
+    });
+  }
+};
+
+export const getLeavePolicyById = async (req: Request, res: Response) => {
+  try {
+    const { tenantId } = req as any;
+    const { policyId } = req.params;
+
+    const policy = await leavePolicyService.getPolicyById(policyId, tenantId);
+
+    res.status(200).json({
+      success: true,
+      data: policy,
+    });
+  } catch (error: any) {
+    console.error('Error fetching leave policy:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error.message,
+      },
+    });
+  }
+};
+
+export const updateLeavePolicy = async (req: Request, res: Response) => {
+  try {
+    const { tenantId } = req as any;
+    const { policyId } = req.params;
+    const policyData = req.body;
+
+    const policy = await leavePolicyService.updatePolicy(policyId, tenantId, policyData);
+
+    res.status(200).json({
+      success: true,
+      data: policy,
+    });
+  } catch (error: any) {
+    console.error('Error updating leave policy:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error.message,
+      },
+    });
+  }
+};
+
+export const deleteLeavePolicy = async (req: Request, res: Response) => {
+  try {
+    const { tenantId } = req as any;
+    const { policyId } = req.params;
+
+    await leavePolicyService.deletePolicy(policyId, tenantId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Leave policy deleted successfully',
+    });
+  } catch (error: any) {
+    console.error('Error deleting leave policy:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error.message,
+      },
+    });
+  }
+};
+
+// ==================== ATTENDANCE POLICY CONTROLLERS ====================
+
+export const createAttendancePolicy = async (req: Request, res: Response) => {
+  try {
+    const { tenantId } = req as any;
+    const policyData = req.body;
+
+    const policy = await attendancePolicyService.createPolicy(tenantId, policyData);
+
+    res.status(201).json({
+      success: true,
+      data: policy,
+    });
+  } catch (error: any) {
+    console.error('Error creating attendance policy:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error.message,
+      },
+    });
+  }
+};
+
+export const getAllAttendancePolicies = async (req: Request, res: Response) => {
+  try {
+    const { tenantId } = req as any;
+    const { isActive } = req.query;
+
+    const filters: any = {};
+    if (isActive !== undefined) {
+      filters.isActive = isActive === 'true';
+    }
+
+    const policies = await attendancePolicyService.getAllPolicies(tenantId, filters);
+
+    res.status(200).json({
+      success: true,
+      data: policies,
+    });
+  } catch (error: any) {
+    console.error('Error fetching attendance policies:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error.message,
+      },
+    });
+  }
+};
+
+export const getAttendancePolicyById = async (req: Request, res: Response) => {
+  try {
+    const { tenantId } = req as any;
+    const { policyId } = req.params;
+
+    const policy = await attendancePolicyService.getPolicyById(policyId, tenantId);
+
+    res.status(200).json({
+      success: true,
+      data: policy,
+    });
+  } catch (error: any) {
+    console.error('Error fetching attendance policy:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error.message,
+      },
+    });
+  }
+};
+
+export const updateAttendancePolicy = async (req: Request, res: Response) => {
+  try {
+    const { tenantId } = req as any;
+    const { policyId } = req.params;
+    const policyData = req.body;
+
+    const policy = await attendancePolicyService.updatePolicy(policyId, tenantId, policyData);
+
+    res.status(200).json({
+      success: true,
+      data: policy,
+    });
+  } catch (error: any) {
+    console.error('Error updating attendance policy:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error.message,
+      },
+    });
+  }
+};
+
+export const deleteAttendancePolicy = async (req: Request, res: Response) => {
+  try {
+    const { tenantId } = req as any;
+    const { policyId } = req.params;
+
+    await attendancePolicyService.deletePolicy(policyId, tenantId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Attendance policy deleted successfully',
+    });
+  } catch (error: any) {
+    console.error('Error deleting attendance policy:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error.message,
+      },
+    });
+  }
+};
+
+// ==================== SMTP CONFIGURATION CONTROLLERS ====================
+
+export const getSmtpConfig = async (req: Request, res: Response) => {
+  try {
+    const { tenantId } = req as any;
+
+    const smtpConfig = await settingsService.getSmtpConfig(tenantId);
+
+    res.status(200).json({
+      success: true,
+      data: smtpConfig,
+    });
+  } catch (error: any) {
+    console.error('Error fetching SMTP config:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error.message,
+      },
+    });
+  }
+};
+
+export const updateSmtpConfig = async (req: Request, res: Response) => {
+  try {
+    const { tenantId } = req as any;
+    const smtpConfig = req.body;
+
+    await settingsService.updateSmtpConfig(tenantId, smtpConfig);
+
+    res.status(200).json({
+      success: true,
+      message: 'SMTP configuration updated successfully',
+    });
+  } catch (error: any) {
+    console.error('Error updating SMTP config:', error);
     res.status(500).json({
       success: false,
       error: {

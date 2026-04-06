@@ -49,4 +49,22 @@ router.post('/users/:employeeId/role', settingsController.assignRoleToUser);
 router.post('/users/:employeeId/deactivate', settingsController.deactivateUser);
 router.post('/users/:employeeId/reactivate', settingsController.reactivateUser);
 
+// ==================== LEAVE POLICY ROUTES ====================
+router.get('/leave-policies', settingsController.getAllLeavePolicies);
+router.get('/leave-policies/:policyId', settingsController.getLeavePolicyById);
+router.post('/leave-policies', settingsController.createLeavePolicy);
+router.put('/leave-policies/:policyId', settingsController.updateLeavePolicy);
+router.delete('/leave-policies/:policyId', settingsController.deleteLeavePolicy);
+
+// ==================== ATTENDANCE POLICY ROUTES ====================
+router.get('/attendance-policies', settingsController.getAllAttendancePolicies);
+router.get('/attendance-policies/:policyId', settingsController.getAttendancePolicyById);
+router.post('/attendance-policies', settingsController.createAttendancePolicy);
+router.put('/attendance-policies/:policyId', settingsController.updateAttendancePolicy);
+router.delete('/attendance-policies/:policyId', settingsController.deleteAttendancePolicy);
+
+// ==================== SMTP CONFIGURATION ROUTES ====================
+router.get('/smtp', settingsController.getSmtpConfig);
+router.put('/smtp', settingsController.updateSmtpConfig);
+
 export default router;

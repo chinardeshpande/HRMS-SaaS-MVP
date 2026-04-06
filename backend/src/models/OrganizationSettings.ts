@@ -109,6 +109,19 @@ export class OrganizationSettings {
     teamsIntegration: boolean;
   };
 
+  // SMTP Email Configuration (Per-tenant)
+  @Column({ type: 'jsonb', nullable: true })
+  smtpConfig: {
+    enabled: boolean;
+    host: string;
+    port: number;
+    secure: boolean;
+    username: string;
+    password: string;
+    fromEmail: string;
+    fromName: string;
+  };
+
   // Security Settings
   @Column({ default: true })
   twoFactorAuthRequired: boolean;

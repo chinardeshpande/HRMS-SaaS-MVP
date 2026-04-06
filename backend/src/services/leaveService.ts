@@ -117,6 +117,11 @@ export class LeaveService {
       throw new Error('Leave request is not pending');
     }
 
+    // Prevent self-approval
+    if (approverId === leaveRequest.employeeId) {
+      throw new Error('Employee cannot approve their own leave request');
+    }
+
     // Update leave request status
     leaveRequest.status = status;
     leaveRequest.approverId = approverId;

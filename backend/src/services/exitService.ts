@@ -5,6 +5,9 @@ import { AssetReturn } from '../models/AssetReturn';
 import { Clearance } from '../models/Clearance';
 import { FinalSettlement } from '../models/FinalSettlement';
 import { Employee } from '../models/Employee';
+import { LeaveBalance } from '../models/LeaveBalance';
+import { LeavePolicy } from '../models/LeavePolicy';
+import { CompensationHistory } from '../models/CompensationHistory';
 import { ExitState } from '../models/enums/ExitState';
 import { ResignationType } from '../models/enums/ResignationType';
 import { ClearanceStatus } from '../models/enums/ClearanceStatus';
@@ -20,6 +23,8 @@ export class ExitService {
   private clearanceRepo = AppDataSource.getRepository(Clearance);
   private settlementRepo = AppDataSource.getRepository(FinalSettlement);
   private employeeRepo = AppDataSource.getRepository(Employee);
+  private leaveBalanceRepo = AppDataSource.getRepository(LeaveBalance);
+  private leavePolicyRepo = AppDataSource.getRepository(LeavePolicy);
 
   async submitResignation(
     employeeId: string,
@@ -382,6 +387,55 @@ export class ExitService {
     Object.assign(settlement, settlementData);
     settlement.calculatedBy = userId;
     settlement.calculatedDate = new Date();
+
+    // Auto-calculate leave encashment if not provided
+    if (!settlementData.leaveEncashmentAmount) {
+      // Get latest salary from compensation history
+      const latestCompensation = await AppDataSource.getRepository(CompensationHistory).findOne({
+        where: {
+          employeeId: exitCase.employeeId,
+          tenantId: exitCase.tenantId,
+        },
+        order: {
+          effectiveDate: 'DESC',
+        },
+      });
+
+      if (latestCompensation && latestCompensation.newAmount) {
+        // Calculate daily salary rate (assuming 30 working days per month)
+        const dailyRate = Number(latestCompensation.newAmount) / 30;
+
+        // Fetch leave balances for encashable leave types
+        const leaveBalances = await this.leaveBalanceRepo.find({
+          where: {
+            employeeId: exitCase.employeeId,
+            tenantId: exitCase.tenantId,
+          },
+        });
+
+        // Get encashable leave policies
+        const leavePolicies = await this.leavePolicyRepo.find({
+          where: {
+            tenantId: exitCase.tenantId,
+            encashable: true,
+            isActive: true,
+          },
+        });
+
+        const encashableTypes = leavePolicies.map(p => p.leaveType);
+
+        // Calculate total encashment amount
+        let totalEncashment = 0;
+        for (const balance of leaveBalances) {
+          if (encashableTypes.includes(balance.leaveType as any) && balance.available > 0) {
+            totalEncashment += balance.available * dailyRate;
+          }
+        }
+
+        settlement.leaveEncashmentAmount = totalEncashment;
+        logger.info(`Auto-calculated leave encashment: ${totalEncashment} for employee ${exitCase.employeeId}`);
+      }
+    }
 
     // Calculate totals
     const totalEarnings =
