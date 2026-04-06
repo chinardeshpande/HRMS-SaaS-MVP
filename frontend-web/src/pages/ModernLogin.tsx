@@ -27,11 +27,16 @@ export default function ModernLogin() {
     setError('');
     setLoading(true);
 
+    console.log('🔐 Login form submitted:', { email, hasPassword: !!password });
+
     try {
       await login(email, password);
+      console.log('✅ Login successful, navigating to dashboard');
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Invalid credentials');
+      console.error('❌ Login failed:', err);
+      const errorMessage = err.message || err.response?.data?.error?.message || 'Invalid credentials';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -68,22 +73,21 @@ export default function ModernLogin() {
         <div className="relative z-10 flex flex-col justify-between w-full max-w-xl mx-auto">
           {/* Logo and tagline */}
           <div>
-            <div className="mb-12">
+            <div className="mb-8 bg-white/95 rounded-xl p-4 inline-block">
               <img
-                src="/images/aurora-logo.svg"
-                alt="AuroraHR"
-                className="h-16 w-auto mb-6"
-                style={{ filter: 'brightness(0) invert(1)' }}
+                src="/images/AuroraHR-logo-with-tagline.png"
+                alt="AuroraHR - Illuminate The Journey | Grow Every Person"
+                className="h-14 w-auto"
               />
             </div>
 
             <h2 className="text-4xl font-bold text-white mb-4 leading-tight">
-              Transform Your
+              Illuminate The Journey.
               <br />
-              HR Operations
+              Grow Every Person.
             </h2>
-            <p className="text-xl text-primary-100 mb-12">
-              Illuminate the journey. Grow every person. Modern HRMS platform trusted by 500+ companies.
+            <p className="text-lg text-primary-100 mb-12">
+              Transform HR from administrative overhead into a strategic growth engine. Trusted by 500+ companies.
             </p>
 
             {/* Features */}
@@ -269,12 +273,18 @@ export default function ModernLogin() {
           </div>
 
           {/* Footer links */}
-          <div className="mt-8 text-center">
+          <div className="mt-8 text-center space-y-3">
             <p className="text-sm text-gray-500">
               Don't have an account?{' '}
-              <a href="#" className="font-medium text-primary-600 hover:text-primary-500">
-                Contact Sales
-              </a>
+              <button
+                onClick={() => navigate('/signup')}
+                className="font-medium text-primary-600 hover:text-primary-500 transition-colors"
+              >
+                Start Free Trial
+              </button>
+            </p>
+            <p className="text-xs text-gray-400">
+              14 days free • No credit card required
             </p>
           </div>
         </div>

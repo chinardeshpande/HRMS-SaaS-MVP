@@ -57,22 +57,22 @@ export default function LandingPage() {
 
   const benefits = [
     {
-      title: 'Save Time',
-      description: 'Automate repetitive HR tasks and reduce manual data entry by 70%',
-      metric: '70%',
-      label: 'Time Saved',
+      title: 'Illuminate The Path',
+      description: 'Clear visibility into every employee journey from day one to promotion and beyond',
+      metric: '360°',
+      label: 'Visibility',
     },
     {
-      title: 'Improve Accuracy',
-      description: 'Eliminate errors with automated workflows and data validation',
-      metric: '99.9%',
-      label: 'Accuracy',
+      title: 'Accelerate Growth',
+      description: 'Data-driven insights that help every person reach their full potential',
+      metric: '3x',
+      label: 'Faster Development',
     },
     {
-      title: 'Boost Engagement',
-      description: 'Empower employees with self-service portals and transparent processes',
-      metric: '4.8/5',
-      label: 'Satisfaction',
+      title: 'Build Connection',
+      description: 'Foster a culture where every person feels valued, heard, and empowered',
+      metric: '92%',
+      label: 'Employee Satisfaction',
     },
   ];
 
@@ -169,8 +169,8 @@ export default function LandingPage() {
             {/* Logo */}
             <div className="flex items-center">
               <img
-                src="/images/AuroraHR_logo.svg"
-                alt="AuroraHR"
+                src="/images/AuroraHR-logo.png"
+                alt="AuroraHR - Illuminate The Journey | Grow Every Person"
                 className="h-12 w-auto cursor-pointer"
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               />
@@ -273,19 +273,20 @@ export default function LandingPage() {
             <div>
               <div className="inline-flex items-center space-x-2 bg-primary-100 text-primary-700 rounded-full px-4 py-2 mb-6">
                 <SparklesIcon className="h-5 w-5" />
-                <span className="text-sm font-medium">Modern HR Platform</span>
+                <span className="text-sm font-medium">Illuminate The Journey | Grow Every Person</span>
               </div>
 
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                Transform Your
+                Illuminate The Journey.
                 <span className="block bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
-                  HR Operations
+                  Grow Every Person.
                 </span>
               </h1>
 
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Streamline employee management, automate workflows, and empower your workforce
-                with AuroraHR - the all-in-one HRMS platform trusted by 500+ companies.
+                Transform HR from administrative overhead into a strategic growth engine.
+                AuroraHR empowers you to nurture talent, streamline operations, and build
+                a workplace where every person thrives.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-12">
@@ -296,8 +297,11 @@ export default function LandingPage() {
                   Start Free Trial
                   <ArrowRightIcon className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </button>
-                <button className="btn btn-outline btn-lg">
-                  Watch Demo
+                <button
+                  onClick={() => window.location.href = 'mailto:sales@aurorahr.in?subject=Request%20Demo%20-%20AuroraHR&body=Hi%2C%0A%0AI%20would%20like%20to%20schedule%20a%20demo%20with%20a%20product%20expert.%0A%0ACompany%20Name%3A%20%0ANumber%20of%20Employees%3A%20%0APreferred%20Date%2FTime%3A%20%0A%0AThank%20you!'}
+                  className="btn btn-outline btn-lg"
+                >
+                  Request Demo
                 </button>
               </div>
 
@@ -313,7 +317,7 @@ export default function LandingPage() {
             </div>
 
             {/* Hero Carousel */}
-            <div className="relative animate-slide-in-right h-[600px]">
+            <div className="relative animate-slide-in-right h-[500px]">
               <HeroCarousel />
             </div>
           </div>
@@ -324,9 +328,10 @@ export default function LandingPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose AuroraHR?</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Every Journey Needs Light</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Built for modern HR teams who want to focus on people, not paperwork
+              From hiring to retiring, illuminate every step of your employee journey with tools
+              that empower growth and celebrate potential.
             </p>
           </div>
 
@@ -353,10 +358,10 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Everything You Need to Manage Your Workforce
+              Light Every Step of The Journey
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive HR features designed to scale with your business
+              Complete HR toolkit to support, develop, and celebrate every person at every stage
             </p>
           </div>
 
@@ -391,9 +396,9 @@ export default function LandingPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Get Started in Minutes</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Begin Your Journey Today</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Simple setup process with guided onboarding
+              Three simple steps to transform how you nurture and grow your team
             </p>
           </div>
 
@@ -553,10 +558,10 @@ export default function LandingPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary-600 to-primary-800">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-white mb-6">
-            Ready to Transform Your HR Operations?
+            Ready to Illuminate Your Journey?
           </h2>
           <p className="text-xl text-primary-100 mb-8">
-            Join 500+ companies already using AuroraHR to streamline their workforce management
+            Join organizations worldwide who are growing every person and building exceptional workplaces with AuroraHR
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -567,8 +572,11 @@ export default function LandingPage() {
               Start Free Trial
               <ArrowRightIcon className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="btn btn-outline border-white text-white hover:bg-white hover:text-primary-600 btn-lg">
-              Schedule Demo
+            <button
+              onClick={() => window.location.href = 'mailto:sales@aurorahr.in?subject=Schedule%20Demo%20-%20AuroraHR&body=Hi%2C%0A%0AI%20would%20like%20to%20schedule%20a%20demo%20with%20a%20product%20expert.%0A%0ACompany%20Name%3A%20%0ANumber%20of%20Employees%3A%20%0APreferred%20Date%2FTime%3A%20%0A%0AThank%20you!'}
+              className="btn btn-outline border-white text-white hover:bg-white hover:text-primary-600 btn-lg"
+            >
+              Talk to an Expert
             </button>
           </div>
 
@@ -588,10 +596,13 @@ export default function LandingPage() {
                 <div className="bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl p-2">
                   <BriefcaseIcon className="h-6 w-6 text-white" />
                 </div>
-                <span className="text-xl font-bold text-white">AuroraHR</span>
+                <div>
+                  <div className="text-xl font-bold text-white">AuroraHR</div>
+                  <div className="text-xs text-primary-300 italic">Illuminate The Journey | Grow Every Person</div>
+                </div>
               </div>
               <p className="text-gray-400 text-sm">
-                Modern HR management platform built for the future of work.
+                Empowering HR teams to nurture talent and build exceptional workplaces.
               </p>
             </div>
 

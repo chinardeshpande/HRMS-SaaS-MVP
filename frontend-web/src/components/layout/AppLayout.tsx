@@ -137,8 +137,8 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         onClick={() => navigate('/dashboard')}
       >
         <img
-          src="/images/aurora-logo-navbar.svg"
-          alt="AuroraHR"
+          src="/images/AuroraHR-logo.png"
+          alt="AuroraHR - Illuminate The Journey | Grow Every Person"
           style={{ height: '40px', width: 'auto' }}
         />
       </Box>

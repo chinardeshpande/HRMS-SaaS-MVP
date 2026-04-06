@@ -87,8 +87,8 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
           {/* Logo */}
           <div className="flex items-center flex-shrink-0 px-6">
             <img
-              src="/images/aurora-logo-navbar.svg"
-              alt="AuroraHR"
+              src="/images/AuroraHR-logo.png"
+              alt="AuroraHR - Illuminate The Journey | Grow Every Person"
               className="h-10 w-auto cursor-pointer"
               onClick={() => navigate('/dashboard')}
             />
@@ -215,8 +215,8 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
               <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
                 <div className="flex items-center flex-shrink-0 px-4">
                   <img
-                    src="/images/aurora-logo-navbar.svg"
-                    alt="AuroraHR"
+                    src="/images/AuroraHR-logo.png"
+                    alt="AuroraHR - Illuminate The Journey | Grow Every Person"
                     className="h-10 w-auto cursor-pointer"
                     onClick={() => { navigate('/dashboard'); setSidebarOpen(false); }}
                   />

@@ -45,7 +45,7 @@ const Login = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #0A66C2 0%, #084D94 100%)',
       }}
     >
       <Container maxWidth="sm">
@@ -60,20 +60,13 @@ const Login = () => {
           }}
         >
           {/* Logo */}
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{ mb: 2 }}>
             <img
-              src="/images/aurora-logo.svg"
-              alt="AuroraHR"
-              style={{ height: '60px', width: 'auto' }}
+              src="/images/AuroraHR-logo-with-tagline.png"
+              alt="AuroraHR - Illuminate The Journey | Grow Every Person"
+              style={{ height: '80px', width: 'auto' }}
             />
           </Box>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ mb: 3 }}
-          >
-            Modern HRMS Platform
-          </Typography>
 
           {/* Login Form */}
           <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
