@@ -22,6 +22,7 @@ export interface Module {
   icon: any;
   gradient: string;
   color: string;
+  headerImage: string;
   screenshots: string[];
   keyFeatures: string[];
   benefits: string[];
@@ -35,8 +36,9 @@ export const modules: Module[] = [
     description: 'Get a comprehensive overview of your entire workforce with real-time insights and analytics.',
     longDescription: 'Our intelligent dashboard provides a centralized view of all HR metrics, employee statistics, and key performance indicators. Make data-driven decisions with customizable widgets, real-time updates, and actionable insights.',
     icon: ChartBarIcon,
-    gradient: 'from-blue-500 to-indigo-600',
+    gradient: 'from-primary-500 to-primary-700',
     color: 'blue',
+    headerImage: '/images/Module-Headers/dashboard-header.jpg',
     screenshots: [
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png',
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.42-AM.png',
@@ -61,8 +63,9 @@ export const modules: Module[] = [
     description: 'Centralized employee database with comprehensive profiles, documents, and complete lifecycle tracking.',
     longDescription: 'Manage your entire employee lifecycle from hire to retire with our comprehensive employee management system. Store documents, track history, manage transfers, promotions, and maintain detailed employee records.',
     icon: UsersIcon,
-    gradient: 'from-purple-500 to-pink-600',
-    color: 'purple',
+    gradient: 'from-primary-500 to-primary-700',
+    color: 'blue',
+    headerImage: '/images/Module-Headers/employee-management-header.jpg',
     screenshots: [
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.15.14-AM.png',
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.15.25-AM.png',
@@ -88,8 +91,9 @@ export const modules: Module[] = [
     description: 'Streamlined onboarding workflows with automated tasks, digital documents, and pre-boarding portals.',
     longDescription: 'Transform your new hire experience with automated onboarding workflows. From offer acceptance to first day and beyond, ensure every new employee has a smooth, engaging onboarding journey.',
     icon: UserPlusIcon,
-    gradient: 'from-green-500 to-emerald-600',
-    color: 'green',
+    gradient: 'from-primary-500 to-primary-700',
+    color: 'blue',
+    headerImage: '/images/Module-Headers/onboarding-header.jpg',
     screenshots: [
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.18.08-AM.png',
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.18.14-AM.png',
@@ -115,8 +119,9 @@ export const modules: Module[] = [
     description: 'Automated time tracking with biometric integration, geofencing, and real-time attendance monitoring.',
     longDescription: 'Track employee attendance with precision using our advanced time and attendance system. Support multiple tracking methods including biometric, GPS, and manual clock-in/out with real-time monitoring and automated calculations.',
     icon: ClockIcon,
-    gradient: 'from-orange-500 to-red-600',
-    color: 'orange',
+    gradient: 'from-primary-500 to-primary-700',
+    color: 'blue',
+    headerImage: '/images/Module-Headers/attendance-header.jpg',
     screenshots: [
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.04-AM.png',
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.14-AM.png',
@@ -142,8 +147,9 @@ export const modules: Module[] = [
     description: 'Smart leave policies, automated approvals, balance tracking, and accrual calculations.',
     longDescription: 'Simplify leave management with our intelligent system that handles multiple leave types, automated approvals, balance calculations, and compliance tracking. Employees can request leave with a click while managers get complete visibility.',
     icon: CalendarIcon,
-    gradient: 'from-cyan-500 to-blue-600',
-    color: 'cyan',
+    gradient: 'from-primary-500 to-primary-700',
+    color: 'blue',
+    headerImage: '/images/Module-Headers/leave-management-header.jpg',
     screenshots: [
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.19.47-AM.png',
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.20.02-AM.png',
@@ -169,8 +175,9 @@ export const modules: Module[] = [
     description: 'Continuous feedback, goal tracking, 360-degree reviews, and development planning.',
     longDescription: 'Drive performance excellence with our comprehensive performance management system. Set goals, conduct reviews, gather 360-degree feedback, and create development plans to help your employees reach their full potential.',
     icon: ChartBarIcon,
-    gradient: 'from-yellow-500 to-amber-600',
-    color: 'yellow',
+    gradient: 'from-primary-500 to-primary-700',
+    color: 'blue',
+    headerImage: '/images/Module-Headers/performance-header.jpg',
     screenshots: [
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.58-AM.png',
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.17.14-AM.png',
@@ -196,8 +203,9 @@ export const modules: Module[] = [
     description: 'Track new hire probation periods with automated reviews, feedback collection, and confirmation workflows.',
     longDescription: 'Effectively manage probation periods with structured review processes, milestone tracking, and automated notifications. Ensure new hires receive proper guidance and evaluation during their critical first months.',
     icon: CalendarDaysIcon,
-    gradient: 'from-indigo-500 to-purple-600',
-    color: 'indigo',
+    gradient: 'from-primary-500 to-primary-700',
+    color: 'blue',
+    headerImage: '/images/Module-Headers/probation-header.jpg',
     screenshots: [
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.18.26-AM.png',
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.18.44-AM.png',
@@ -222,8 +230,9 @@ export const modules: Module[] = [
     description: 'Professional exit interviews, asset recovery, knowledge transfer, and compliance tracking.',
     longDescription: 'Manage employee exits professionally with structured workflows covering exit interviews, asset returns, clearances, final settlements, and knowledge transfer. Maintain good relationships even as employees leave.',
     icon: UserMinusIcon,
-    gradient: 'from-red-500 to-rose-600',
-    color: 'red',
+    gradient: 'from-primary-500 to-primary-700',
+    color: 'blue',
+    headerImage: '/images/Module-Headers/exit-management-header.jpg',
     screenshots: [
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.19.21-AM.png',
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.19.34-AM.png',
@@ -248,8 +257,9 @@ export const modules: Module[] = [
     description: 'Internal social network, announcements, employee directory, and helpdesk system in one platform.',
     longDescription: 'Foster employee engagement with our integrated communication platform. Share updates, create groups, submit tickets, and build a connected workplace culture.',
     icon: ChatBubbleLeftRightIcon,
-    gradient: 'from-pink-500 to-rose-600',
-    color: 'pink',
+    gradient: 'from-primary-500 to-primary-700',
+    color: 'blue',
+    headerImage: '/images/Module-Headers/hr-connect-header.jpg',
     screenshots: [
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.20.43-AM.png',
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.21.10-AM.png',
@@ -274,8 +284,9 @@ export const modules: Module[] = [
     description: 'Define departments, designations, reporting hierarchies, and organizational charts.',
     longDescription: 'Build and visualize your organizational structure with departments, designations, and reporting relationships. Create hierarchies that reflect your company structure.',
     icon: BuildingOfficeIcon,
-    gradient: 'from-teal-500 to-green-600',
-    color: 'teal',
+    gradient: 'from-primary-500 to-primary-700',
+    color: 'blue',
+    headerImage: '/images/Module-Headers/organization-header.jpg',
     screenshots: [
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.15.53-AM.png',
     ],
@@ -299,8 +310,9 @@ export const modules: Module[] = [
     description: 'Manage company holidays, events, and important dates in a centralized calendar.',
     longDescription: 'Keep everyone informed with a centralized company calendar showing holidays, events, meetings, and important milestones. Sync with personal calendars and send automated reminders.',
     icon: CalendarDaysIcon,
-    gradient: 'from-violet-500 to-purple-600',
-    color: 'violet',
+    gradient: 'from-primary-500 to-primary-700',
+    color: 'blue',
+    headerImage: '/images/Module-Headers/calendar-header.jpg',
     screenshots: [
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.21.16-AM.png',
     ],
@@ -324,8 +336,9 @@ export const modules: Module[] = [
     description: 'Complete system configuration including subscriptions, payments, users, roles, and business rules.',
     longDescription: 'Comprehensive system administration with subscription management, payment methods, user roles & permissions, and configurable business rules tailored to your organization.',
     icon: Cog6ToothIcon,
-    gradient: 'from-gray-500 to-slate-600',
-    color: 'gray',
+    gradient: 'from-primary-500 to-primary-700',
+    color: 'blue',
+    headerImage: '/images/Module-Headers/settings-header.jpg',
     screenshots: [
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.53-AM.png',
       '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.06-AM.png',

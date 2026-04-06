@@ -23,8 +23,8 @@ export enum GroupType {
 }
 
 export enum GroupPrivacy {
-  PUBLIC = 'public',
-  PRIVATE = 'private',
+  PUBLIC_ACCESS = 'public',
+  PRIVATE_ACCESS = 'private',
   SECRET = 'secret',
 }
 
@@ -59,7 +59,7 @@ export class HRConnectGroup {
   @Column({
     type: 'enum',
     enum: GroupPrivacy,
-    default: GroupPrivacy.PUBLIC,
+    default: GroupPrivacy.PUBLIC_ACCESS,
   })
   privacy!: GroupPrivacy;
 

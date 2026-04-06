@@ -69,7 +69,7 @@ export default function OrganizationTab() {
       if (!tokens) throw new Error('No authentication token');
 
       const { token } = JSON.parse(tokens);
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
       const response = await fetch(`${apiUrl}/documents/upload`, {
         method: 'POST',

@@ -39,6 +39,9 @@ import { Goal } from '../models/Goal';
 import { KPI } from '../models/KPI';
 import { Feedback360 } from '../models/Feedback360';
 import { DevelopmentActionItem } from '../models/DevelopmentActionItem';
+// Professional History entities
+import { PositionHistory } from '../models/PositionHistory';
+import { CompensationHistory } from '../models/CompensationHistory';
 // HR Connect entities
 import { HRConnectPost } from '../models/HRConnectPost';
 import { HRConnectComment } from '../models/HRConnectComment';
@@ -57,6 +60,10 @@ import { PaymentMethod } from '../models/PaymentMethod';
 import { Permission } from '../models/Permission';
 import { Role } from '../models/Role';
 import { BusinessRules } from '../models/BusinessRules';
+// Registration & Onboarding Wizard entities
+import { CompanyRegistration } from '../models/CompanyRegistration';
+import { OnboardingProgress } from '../models/OnboardingProgress';
+import { UserInvitation } from '../models/UserInvitation';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -105,6 +112,9 @@ export const AppDataSource = new DataSource({
     KPI,
     Feedback360,
     DevelopmentActionItem,
+    // Professional History
+    PositionHistory,
+    CompensationHistory,
     // HR Connect
     HRConnectPost,
     HRConnectComment,
@@ -123,8 +133,12 @@ export const AppDataSource = new DataSource({
     Permission,
     Role,
     BusinessRules,
+    // Registration & Onboarding Wizard
+    CompanyRegistration,
+    OnboardingProgress,
+    UserInvitation,
   ],
-  migrations: ['src/migrations/*.ts'],
+  migrations: ['dist/backend/src/migrations/*.js'],
   subscribers: [],
   // Connection pool configuration
   extra: {

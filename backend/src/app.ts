@@ -26,6 +26,13 @@ import chatRoutes from './routes/chatRoutes';
 import ticketRoutes from './routes/ticketRoutes';
 import settingsRoutes from './routes/settingsRoutes';
 import paymentMethodRoutes from './routes/paymentMethodRoutes';
+import registrationRoutes from './routes/registrationRoutes';
+import onboardingWizardRoutes from './routes/onboardingWizardRoutes';
+import invitationRoutes from './routes/invitationRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
+import professionalHistoryRoutes from './routes/professionalHistoryRoutes';
+import calendarRoutes from './routes/calendarRoutes';
+import activityRoutes from './routes/activityRoutes';
 // import pmsRoutes from './routes/pmsRoutes';
 // import transferRoutes from './routes/transferRoutes';
 // import confirmationRoutes from './routes/confirmationRoutes';
@@ -81,9 +88,37 @@ const swaggerOptions = {
 app.use(helmet());
 
 // CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:5176',
+  'http://localhost:5177',
+  'http://localhost:5178',
+  'http://localhost:3000',
+  'https://aurorahr.in',
+  config.corsOrigin
+];
+
 app.use(
   cors({
-    origin: config.corsOrigin,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, Postman)
+      if (!origin) return callback(null, true);
+
+      // In development, allow any localhost origin
+      if (config.nodeEnv === 'development' && origin.startsWith('http://localhost:')) {
+        return callback(null, true);
+      }
+
+      // Check if origin is in allowed list
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.warn(`⚠️  CORS blocked origin: ${origin}`);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
@@ -138,6 +173,13 @@ const apiRouter = express.Router();
 
 // Mount routes (uncomment as you create them)
 apiRouter.use('/auth', authRoutes);
+apiRouter.use('/registration', registrationRoutes);
+apiRouter.use('/onboarding-wizard', onboardingWizardRoutes);
+apiRouter.use('/invitations', invitationRoutes);
+apiRouter.use('/dashboard', dashboardRoutes);
+apiRouter.use('/professional-history', professionalHistoryRoutes);
+apiRouter.use('/calendar', calendarRoutes);
+apiRouter.use('/activities', activityRoutes);
 apiRouter.use('/departments', departmentRoutes);
 apiRouter.use('/designations', designationRoutes);
 apiRouter.use('/employees', employeeRoutes);

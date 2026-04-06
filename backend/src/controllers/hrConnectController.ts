@@ -393,7 +393,7 @@ export const createGroup = async (req: Request, res: Response) => {
       name,
       description,
       groupType: groupType as GroupType,
-      privacy: (privacy as GroupPrivacy) || GroupPrivacy.PUBLIC,
+      privacy: (privacy as GroupPrivacy) || GroupPrivacy.PUBLIC_ACCESS,
       departmentId,
     });
 

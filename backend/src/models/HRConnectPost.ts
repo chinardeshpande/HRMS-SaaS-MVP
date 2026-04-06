@@ -23,7 +23,7 @@ export enum PostType {
 }
 
 export enum PostVisibility {
-  PUBLIC = 'public',
+  PUBLIC_ACCESS = 'public',
   HR_ONLY = 'hr_only',
   GROUP_ONLY = 'group_only',
   DEPARTMENT = 'department',
@@ -70,7 +70,7 @@ export class HRConnectPost {
   @Column({
     type: 'enum',
     enum: PostVisibility,
-    default: PostVisibility.PUBLIC,
+    default: PostVisibility.PUBLIC_ACCESS,
   })
   visibility!: PostVisibility;
 

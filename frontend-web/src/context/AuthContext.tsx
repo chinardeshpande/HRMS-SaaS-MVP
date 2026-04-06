@@ -48,18 +48,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string): Promise<void> => {
     try {
+      console.log('🔐 Attempting login for:', email);
+
       // Call the actual backend API
       const response = await api.post<{ user: User; tokens: AuthTokens }>('/auth/login', {
         email,
         password
       });
 
+      console.log('📥 Login response received:', response);
+
       // api.post returns ApiResponse<T>, so response.data contains the actual payload
       if (!response.success || !response.data) {
+        console.error('❌ Login failed - invalid response structure:', response);
         throw new Error('Login failed');
       }
 
       const { user: userData, tokens: tokenData } = response.data;
+
+      console.log('✅ User data extracted:', userData);
+      console.log('✅ Tokens extracted:', { hasToken: !!tokenData.token, hasRefresh: !!tokenData.refreshToken });
 
       // Update state with actual user data from backend
       setUser(userData);
@@ -68,9 +76,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Store in localStorage
       localStorage.setItem('user', JSON.stringify(userData));
       localStorage.setItem('tokens', JSON.stringify(tokenData));
+
+      console.log('✅ Login successful - user and tokens stored');
     } catch (error: any) {
-      console.error('Login error:', error);
-      const errorMessage = error.response?.data?.error?.message || 'Invalid email or password';
+      console.error('❌ Login error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+
+      const errorMessage = error.response?.data?.error?.message || error.message || 'Invalid email or password';
       throw new Error(errorMessage);
     }
   };

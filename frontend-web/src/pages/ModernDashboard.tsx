@@ -32,40 +32,57 @@ import {
 import { useAuth } from '../context/AuthContext';
 import activityService, { Activity } from '../services/activityService';
 import calendarService, { CalendarEvent } from '../services/calendarService';
+import api from '../services/api';
 
 interface DashboardStats {
   totalEmployees: number;
-  presentToday: number;
-  upcomingOnboarding: number;
-  upcomingExits: number;
-  pendingApprovals: number;
+  activeEmployees: number;
   employeeTrend: number;
+  presentToday: number;
+  absentToday: number;
+  onLeaveToday: number;
   attendanceTrend: number;
+  upcomingOnboarding: number;
+  activeProbation: number;
+  probationEndingSoon: number;
+  upcomingExits: number;
+  exitThisMonth: number;
+  pendingLeaveApprovals: number;
+  pendingApprovals: number;
+  departmentCount: number;
+  designationCount: number;
 }
 
 export default function ModernDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [stats, setStats] = useState<DashboardStats>({
-    totalEmployees: 30,
-    presentToday: 28,
-    upcomingOnboarding: 8,
-    upcomingExits: 3,
-    pendingApprovals: 12,
-    employeeTrend: 12,
-    attendanceTrend: -2,
-  });
-
-  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [recentActivities, setRecentActivities] = useState<Activity[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<CalendarEvent[]>([]);
   const [showApprovalsDropdown, setShowApprovalsDropdown] = useState(false);
   const approvalsDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    fetchDashboardStats();
     fetchRecentActivities();
     fetchUpcomingEvents();
   }, []);
+
+  const fetchDashboardStats = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await api.get<DashboardStats>('/dashboard/stats');
+      setStats(response.data);
+    } catch (err: any) {
+      console.error('Error fetching dashboard stats:', err);
+      setError(err.response?.data?.message || 'Failed to load dashboard statistics');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -219,7 +236,7 @@ export default function ModernDashboard() {
     navigate(path);
   };
 
-  const statCards = [
+  const statCards = stats ? [
     {
       title: 'Total Employees',
       value: stats.totalEmployees,
@@ -228,18 +245,18 @@ export default function ModernDashboard() {
       icon: UsersIcon,
       iconColor: 'text-primary-600',
       iconBg: 'bg-primary-100',
-      trend: stats.employeeTrend > 0 ? 'up' : 'down',
+      trend: stats.employeeTrend > 0 ? 'up' : stats.employeeTrend < 0 ? 'down' : 'neutral',
       onClick: () => navigate('/employees'),
     },
     {
       title: 'Present Today',
       value: stats.presentToday,
-      change: Math.round((stats.presentToday / stats.totalEmployees) * 100),
+      change: stats.totalEmployees > 0 ? Math.round((stats.presentToday / stats.totalEmployees) * 100) : 0,
       changeLabel: 'attendance',
       icon: CheckCircleIcon,
       iconColor: 'text-teal-600',
       iconBg: 'bg-teal-100',
-      trend: 'up',
+      trend: stats.attendanceTrend > 0 ? 'up' : stats.attendanceTrend < 0 ? 'down' : 'neutral',
       isPercentage: false,
       onClick: () => navigate('/attendance'),
     },
@@ -247,7 +264,7 @@ export default function ModernDashboard() {
       title: 'Upcoming Onboarding',
       value: stats.upcomingOnboarding,
       change: stats.upcomingOnboarding,
-      changeLabel: 'this month',
+      changeLabel: 'candidates ready',
       icon: UserPlusIcon,
       iconColor: 'text-blue-600',
       iconBg: 'bg-blue-100',
@@ -257,7 +274,7 @@ export default function ModernDashboard() {
     {
       title: 'Upcoming Exits',
       value: stats.upcomingExits,
-      change: stats.upcomingExits,
+      change: stats.exitThisMonth,
       changeLabel: 'this month',
       icon: ArrowRightOnRectangleIcon,
       iconColor: 'text-red-600',
@@ -268,7 +285,7 @@ export default function ModernDashboard() {
     {
       title: 'Pending Approvals',
       value: stats.pendingApprovals,
-      change: stats.pendingApprovals,
+      change: stats.pendingLeaveApprovals,
       changeLabel: 'need action',
       icon: BellAlertIcon,
       iconColor: 'text-orange-600',
@@ -277,7 +294,42 @@ export default function ModernDashboard() {
       onClick: () => setShowApprovalsDropdown(!showApprovalsDropdown),
       hasDropdown: true,
     },
-  ];
+  ] : [];
+
+  // Loading state
+  if (loading) {
+    return (
+      <ModernLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p className="text-gray-500">Loading dashboard...</p>
+          </div>
+        </div>
+      </ModernLayout>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <ModernLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <ExclamationTriangleIcon className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <p className="text-gray-900 font-semibold mb-2">Failed to load dashboard</p>
+            <p className="text-gray-500 mb-4">{error}</p>
+            <button onClick={fetchDashboardStats} className="btn btn-primary">
+              Retry
+            </button>
+          </div>
+        </div>
+      </ModernLayout>
+    );
+  }
+
+  // Empty state for new organizations
+  const isNewOrganization = stats && stats.totalEmployees === 0 && stats.departmentCount === 0;
 
   return (
     <ModernLayout>
@@ -286,8 +338,52 @@ export default function ModernDashboard() {
         <h1 className="text-3xl font-bold text-gray-900">
           Welcome back, {user?.fullName || 'User'}!
         </h1>
-        <p className="mt-2 text-gray-600">Here's what's happening with your organization today.</p>
+        <p className="mt-2 text-gray-600">
+          {isNewOrganization
+            ? "Let's get started by setting up your organization."
+            : "Here's what's happening with your organization today."}
+        </p>
       </div>
+
+      {/* Empty State for New Organization */}
+      {isNewOrganization && (
+        <div className="bg-gradient-to-br from-primary-50 to-blue-50 rounded-xl p-8 mb-6 border border-primary-100">
+          <div className="max-w-3xl">
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+              🎉 Welcome to AuroraHR!
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Your account is set up and ready. Complete these steps to get started with your HRMS:
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button
+                onClick={() => navigate('/employees/add')}
+                className="flex items-start p-4 bg-white rounded-lg border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all text-left group"
+              >
+                <div className="bg-primary-100 rounded-lg p-2 mr-3">
+                  <UserPlusIcon className="h-6 w-6 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 group-hover:text-primary-600">Add Employees</h3>
+                  <p className="text-sm text-gray-500 mt-1">Add your first employee or bulk upload</p>
+                </div>
+              </button>
+              <button
+                onClick={() => navigate('/settings?tab=organization')}
+                className="flex items-start p-4 bg-white rounded-lg border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all text-left group"
+              >
+                <div className="bg-blue-100 rounded-lg p-2 mr-3">
+                  <Cog6ToothIcon className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 group-hover:text-blue-600">Configure Settings</h3>
+                  <p className="text-sm text-gray-500 mt-1">Set up policies, departments & more</p>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stats Grid - Narrower cards */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-5 mb-6">

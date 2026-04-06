@@ -9,29 +9,34 @@ interface CarouselSlide {
 
 const slides: CarouselSlide[] = [
   {
+    image: '/images/Hero-Images/hero-team-collaboration.jpg',
+    title: 'Empower Your Team',
+    description: 'Build a connected, engaged workforce with modern HR tools',
+  },
+  {
     image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png',
-    title: 'Modern Dashboard',
-    description: 'Get instant insights into your workforce with our intuitive dashboard',
+    title: 'Real-Time Insights',
+    description: 'Make data-driven decisions with comprehensive analytics dashboard',
+  },
+  {
+    image: '/images/Hero-Images/hero-employee-onboarding.jpg',
+    title: 'Seamless Onboarding',
+    description: 'Create memorable first impressions for every new hire',
   },
   {
     image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.15.14-AM.png',
-    title: 'Employee Management',
-    description: 'Comprehensive employee profiles and lifecycle management',
+    title: 'Complete Employee Profiles',
+    description: 'Centralized employee data with full lifecycle management',
   },
   {
-    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.18-AM.png',
-    title: 'Performance Tracking',
-    description: 'Monitor and improve employee performance with data-driven insights',
-  },
-  {
-    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.18.08-AM.png',
-    title: 'Onboarding Excellence',
-    description: 'Streamline new hire onboarding with automated workflows',
+    image: '/images/Hero-Images/hero-happy-employees.jpg',
+    title: 'Culture & Engagement',
+    description: 'Foster a positive workplace culture that retains top talent',
   },
   {
     image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.19.47-AM.png',
-    title: 'Leave Management',
-    description: 'Smart leave policies with automated approvals and tracking',
+    title: 'Smart Automation',
+    description: 'Automate leave management, approvals, and repetitive tasks',
   },
 ];
 

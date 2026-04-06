@@ -5,6 +5,12 @@ import { AuthProvider } from './context/AuthContext';
 import LandingPage from './pages/LandingPage';
 import FeatureDetail from './pages/FeatureDetail';
 import ModernLogin from './pages/ModernLogin';
+import CompanySignup from './pages/CompanySignup';
+import EmailVerification from './pages/EmailVerification';
+import EmailVerificationPending from './pages/EmailVerificationPending';
+import CreatePassword from './pages/CreatePassword';
+import AcceptInvitation from './pages/AcceptInvitation';
+import OnboardingWizard from './components/onboarding/OnboardingWizard';
 import ModernDashboard from './pages/ModernDashboard';
 import ModernEmployees from './pages/ModernEmployees';
 import ModernEmployeeDetail from './pages/ModernEmployeeDetail';
@@ -42,7 +48,15 @@ function App() {
         <Routes>
               {/* Public routes */}
               <Route path="/login" element={<ModernLogin />} />
+              <Route path="/signup" element={<CompanySignup />} />
+              <Route path="/email-verification-pending" element={<EmailVerificationPending />} />
+              <Route path="/verify-email/:token" element={<EmailVerification />} />
+              <Route path="/create-password" element={<CreatePassword />} />
+              <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
               <Route path="/features/:featureId" element={<FeatureDetail />} />
+
+              {/* Onboarding route (semi-protected - requires verified registration) */}
+              <Route path="/onboarding-wizard" element={<OnboardingWizard />} />
 
               {/* Protected routes */}
               <Route path="/dashboard" element={<ModernDashboard />} />

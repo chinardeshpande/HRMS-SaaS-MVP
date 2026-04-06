@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import employeeService from '../services/employeeService';
+import departmentService, { Department } from '../services/departmentService';
+import designationService, { Designation } from '../services/designationService';
 import {
   ArrowLeftIcon,
   PencilIcon,
@@ -93,6 +95,19 @@ export default function ModernEmployeeDetail() {
   const [isEditingProfessional, setIsEditingProfessional] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // Dropdown data for professional form
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [designations, setDesignations] = useState<Designation[]>([]);
+  const [managers, setManagers] = useState<any[]>([]);
+  const [loadingDropdowns, setLoadingDropdowns] = useState(false);
+
+  // Professional history state
+  const [professionalHistory, setProfessionalHistory] = useState<{
+    positionChanges: any[];
+    compensationChanges: any[];
+  } | null>(null);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+
   // Form states for personal tab
   const [personalForm, setPersonalForm] = useState({
     firstName: '',
@@ -110,16 +125,90 @@ export default function ModernEmployeeDetail() {
 
   // Form states for professional tab
   const [professionalForm, setProfessionalForm] = useState({
+    departmentId: '',
+    designationId: '',
+    managerId: '',
     employmentType: '',
     workLocation: '',
+    dateOfJoining: '',
+    probationEndDate: '',
   });
 
-  // Generate organizational history based on employee data
+  // Convert professional history from API to UI format
+  const convertProfessionalHistoryToEvents = (): HistoryEvent[] => {
+    if (!professionalHistory) return [];
+
+    const events: HistoryEvent[] = [];
+
+    // Convert position changes
+    professionalHistory.positionChanges.forEach((change) => {
+      let eventType: HistoryEvent['type'] = 'transfer';
+      let title = '';
+      let description = '';
+
+      switch (change.changeType) {
+        case 'joining':
+          eventType = 'joining';
+          title = 'Joined Company';
+          description = `Started as ${change.toDesignation?.name || 'Employee'} in ${change.toDepartment?.name || 'the company'}`;
+          break;
+        case 'promotion':
+          eventType = 'promotion';
+          title = `Promoted to ${change.toDesignation?.name || 'New Position'}`;
+          description = change.reason || 'Promoted for exceptional performance';
+          break;
+        case 'transfer':
+          eventType = 'transfer';
+          title = `Transferred to ${change.toDepartment?.name || 'New Department'}`;
+          description = change.reason || 'Department transfer';
+          break;
+        default:
+          title = 'Position Change';
+          description = change.notes || 'Position updated';
+      }
+
+      events.push({
+        id: change.historyId,
+        type: eventType,
+        date: change.effectiveDate,
+        title,
+        description,
+        details: {
+          from: change.fromDesignation?.name || change.fromDepartment?.name,
+          to: change.toDesignation?.name || change.toDepartment?.name,
+        },
+      });
+    });
+
+    // Convert compensation changes
+    professionalHistory.compensationChanges.forEach((change) => {
+      if (change.changeType === 'increment' || change.changeType === 'promotion') {
+        events.push({
+          id: change.historyId,
+          type: 'salary_increase',
+          date: change.effectiveDate,
+          title: change.changeType === 'promotion' ? 'Promotion Salary Increase' : 'Annual Salary Review',
+          description: change.reason || 'Salary increased based on performance',
+          details: {
+            amount: change.changePercentage || 0,
+          },
+        });
+      }
+    });
+
+    // Sort by date
+    return events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  };
+
+  // Generate organizational history based on employee data (DEPRECATED - using real API data now)
   const generateOrganizationalHistory = (employee: any): HistoryEvent[] => {
+    // If we have real professional history, use it
+    if (professionalHistory) {
+      return convertProfessionalHistoryToEvents();
+    }
+
+    // Fallback to basic joining event only if no history available
     const history: HistoryEvent[] = [];
-    const joinDate = new Date(employee.dateOfJoining);
-    const now = new Date();
-    const monthsSinceJoining = (now.getFullYear() - joinDate.getFullYear()) * 12 + (now.getMonth() - joinDate.getMonth());
 
     // Joining event
     history.push({
@@ -131,74 +220,8 @@ export default function ModernEmployeeDetail() {
       details: { to: employee.designation?.title || 'Employee' },
     });
 
-    // Probation end (6 months after joining)
-    if (monthsSinceJoining >= 6) {
-      const probationEndDate = new Date(joinDate);
-      probationEndDate.setMonth(probationEndDate.getMonth() + 6);
-      history.push({
-        id: '2',
-        type: 'probation_end',
-        date: probationEndDate.toISOString().split('T')[0],
-        title: 'Probation Completed',
-        description: 'Successfully completed 6-month probation period',
-      });
-    }
-
-    // Performance reviews (every 6 months)
-    let reviewCount = 0;
-    for (let i = 12; i <= monthsSinceJoining; i += 6) {
-      reviewCount++;
-      const reviewDate = new Date(joinDate);
-      reviewDate.setMonth(reviewDate.getMonth() + i);
-
-      const ratings = ['Meets Expectations', 'Exceeds Expectations', 'Outstanding'];
-      const rating = ratings[Math.min(reviewCount - 1, 2)];
-
-      history.push({
-        id: `review-${reviewCount}`,
-        type: 'performance_review',
-        date: reviewDate.toISOString().split('T')[0],
-        title: reviewCount % 2 === 0 ? 'Annual Performance Review' : 'Mid-Year Performance Review',
-        description: `Demonstrated strong performance and contribution to team goals`,
-        details: { rating },
-      });
-    }
-
-    // Salary increase (annually)
-    for (let i = 12; i <= monthsSinceJoining; i += 12) {
-      const raiseDate = new Date(joinDate);
-      raiseDate.setMonth(raiseDate.getMonth() + i);
-
-      history.push({
-        id: `salary-${i}`,
-        type: 'salary_increase',
-        date: raiseDate.toISOString().split('T')[0],
-        title: 'Annual Salary Review',
-        description: 'Salary increased based on performance',
-        details: { amount: 5 + Math.floor(Math.random() * 10) },
-      });
-    }
-
-    // Promotion (every 18-24 months for good performers)
-    if (monthsSinceJoining >= 18) {
-      const promotionDate = new Date(joinDate);
-      promotionDate.setMonth(promotionDate.getMonth() + 18);
-
-      history.push({
-        id: 'promotion-1',
-        type: 'promotion',
-        date: promotionDate.toISOString().split('T')[0],
-        title: `Promoted to Senior ${employee.designation?.title || 'Position'}`,
-        description: 'Promoted for exceptional performance and leadership',
-        details: {
-          from: employee.designation?.title || 'Previous Position',
-          to: `Senior ${employee.designation?.title || 'Position'}`,
-        },
-      });
-    }
-
-    // Sort by date
-    return history.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    // No mock data - just return the joining event
+    return history;
   };
 
   // Fetch employee data on mount
@@ -239,6 +262,56 @@ export default function ModernEmployeeDetail() {
     fetchEmployee();
   }, [id, navigate]);
 
+  // Fetch professional history
+  const fetchProfessionalHistory = async () => {
+    if (!id) return;
+
+    try {
+      setLoadingHistory(true);
+      const response = await api.get(`/professional-history/employee/${id}`);
+      setProfessionalHistory(response.data);
+    } catch (err) {
+      console.error('Error fetching professional history:', err);
+      // Fallback to empty history if API fails
+      setProfessionalHistory({ positionChanges: [], compensationChanges: [] });
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  // Fetch dropdown data for professional form
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      if (isEditingProfessional) {
+        setLoadingDropdowns(true);
+        try {
+          const [depts, desigs, emps] = await Promise.all([
+            departmentService.getAll(),
+            designationService.getAll(),
+            employeeService.getAll(),
+          ]);
+          setDepartments(depts);
+          setDesignations(desigs);
+          // Filter out current employee from managers list
+          setManagers(emps.filter((emp: any) => emp.employeeId !== id));
+        } catch (err) {
+          console.error('Error fetching dropdown data:', err);
+        } finally {
+          setLoadingDropdowns(false);
+        }
+      }
+    };
+
+    fetchDropdownData();
+  }, [isEditingProfessional, id]);
+
+  // Fetch professional history when viewing history tab
+  useEffect(() => {
+    if (activeTab === 'history' && !professionalHistory && !loadingHistory) {
+      fetchProfessionalHistory();
+    }
+  }, [activeTab, id]);
+
   // Update form states when employee data changes
   useEffect(() => {
     if (employee) {
@@ -257,8 +330,13 @@ export default function ModernEmployeeDetail() {
       });
 
       setProfessionalForm({
+        departmentId: employee.department?.departmentId || '',
+        designationId: employee.designation?.designationId || '',
+        managerId: employee.manager?.employeeId || '',
         employmentType: employee.employmentType || '',
         workLocation: employee.workLocation || '',
+        dateOfJoining: employee.dateOfJoining || '',
+        probationEndDate: employee.probationEndDate || '',
       });
     }
   }, [employee]);
@@ -327,8 +405,13 @@ export default function ModernEmployeeDetail() {
       });
 
       setProfessionalForm({
+        departmentId: employee.department?.departmentId || '',
+        designationId: employee.designation?.designationId || '',
+        managerId: employee.manager?.employeeId || '',
         employmentType: employee.employmentType || '',
         workLocation: employee.workLocation || '',
+        dateOfJoining: employee.dateOfJoining || '',
+        probationEndDate: employee.probationEndDate || '',
       });
     }
 
@@ -482,18 +565,21 @@ export default function ModernEmployeeDetail() {
     value,
     onChange,
     options,
+    disabled = false,
   }: {
     label: string;
     value: string;
     onChange: (value: string) => void;
     options: { value: string; label: string }[];
+    disabled?: boolean;
   }) => (
     <div>
       <label className="text-xs font-semibold text-gray-500 mb-1 block">{label}</label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        disabled={disabled}
+        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <option value="">Select...</option>
         {options.map((opt) => (
@@ -865,20 +951,58 @@ export default function ModernEmployeeDetail() {
           {/* Professional Info Tab */}
           {activeTab === 'professional' && (
             <div className="space-y-4">
-              {/* Position & Hierarchy - View Only (requires workflows) */}
+              {/* Position & Hierarchy */}
               <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100">
                 <h3 className="text-xs font-bold text-indigo-700 uppercase tracking-wide mb-3 flex items-center">
                   <span className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs mr-2">🏢</span>
                   Position & Hierarchy
-                  {isEditingProfessional && (
-                    <span className="ml-2 text-xs text-indigo-600 font-normal italic">(Use Transfer/Promotion for changes)</span>
-                  )}
                 </h3>
                 <div className="grid grid-cols-4 gap-4">
-                  <InfoItem label="Position" value={employee.positionTitle} />
-                  <InfoItem label="Job Title" value={employee.jobTitle} />
-                  <InfoItem label="Department" value={employee.departmentName} />
-                  <InfoItem label="Reports To" value={employee.reportsToEmployeeName || 'No manager'} />
+                  {isEditingProfessional ? (
+                    <>
+                      <EditableSelect
+                        label="Department"
+                        value={professionalForm.departmentId}
+                        onChange={(value) => setProfessionalForm({ ...professionalForm, departmentId: value })}
+                        options={[
+                          { value: '', label: 'No department' },
+                          ...departments.map(dept => ({ value: dept.departmentId, label: dept.name }))
+                        ]}
+                        disabled={loadingDropdowns}
+                      />
+                      <EditableSelect
+                        label="Designation"
+                        value={professionalForm.designationId}
+                        onChange={(value) => setProfessionalForm({ ...professionalForm, designationId: value })}
+                        options={[
+                          { value: '', label: 'No designation' },
+                          ...designations.map(desig => ({ value: desig.designationId, label: desig.name }))
+                        ]}
+                        disabled={loadingDropdowns}
+                      />
+                      <EditableSelect
+                        label="Reports To"
+                        value={professionalForm.managerId}
+                        onChange={(value) => setProfessionalForm({ ...professionalForm, managerId: value })}
+                        options={[
+                          { value: '', label: 'No manager' },
+                          ...managers.map(mgr => ({
+                            value: mgr.employeeId,
+                            label: `${mgr.firstName} ${mgr.lastName} (${mgr.employeeCode})`
+                          }))
+                        ]}
+                        disabled={loadingDropdowns}
+                      />
+                      <InfoItem label="Position" value={employee.positionTitle} />
+                    </>
+                  ) : (
+                    <>
+                      <InfoItem label="Department" value={employee.departmentName || 'Not assigned'} />
+                      <InfoItem label="Designation" value={employee.positionTitle || 'Not assigned'} />
+                      <InfoItem label="Reports To" value={employee.reportsToEmployeeName || 'No manager'} />
+                      <InfoItem label="Job Title" value={employee.jobTitle || 'Not assigned'} />
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -909,7 +1033,12 @@ export default function ModernEmployeeDetail() {
                         onChange={(value) => setProfessionalForm({ ...professionalForm, workLocation: value })}
                         placeholder="Office/Remote/Hybrid"
                       />
-                      <InfoItem label="Joining Date" value={employee.dateOfJoining} />
+                      <EditableField
+                        label="Joining Date"
+                        type="date"
+                        value={professionalForm.dateOfJoining}
+                        onChange={(value) => setProfessionalForm({ ...professionalForm, dateOfJoining: value })}
+                      />
                       <InfoItem label="Experience" value={employee.yearsOfExperience ? `${employee.yearsOfExperience} years` : undefined} />
                     </>
                   ) : (
@@ -926,27 +1055,30 @@ export default function ModernEmployeeDetail() {
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Status</p>
                     <span className={`badge ${getStatusBadge(employee.status)}`}>{employee.status.toUpperCase()}</span>
                   </div>
-                  <InfoItem label="Probation End" value={employee.probationEndDate || 'Confirmed'} />
+                  {isEditingProfessional ? (
+                    <EditableField
+                      label="Probation End"
+                      type="date"
+                      value={professionalForm.probationEndDate}
+                      onChange={(value) => setProfessionalForm({ ...professionalForm, probationEndDate: value })}
+                      placeholder="Leave empty if confirmed"
+                    />
+                  ) : (
+                    <InfoItem label="Probation End" value={employee.probationEndDate || 'Confirmed'} />
+                  )}
                 </div>
               </div>
 
-              {/* Compensation - View Only (requires workflow) */}
+              {/* Compensation - Coming Soon */}
               <div className="p-4 bg-green-50 rounded-lg border border-green-100">
                 <h3 className="text-xs font-bold text-green-700 uppercase tracking-wide mb-3 flex items-center">
                   <span className="w-6 h-6 rounded-full bg-green-600 text-white flex items-center justify-center text-xs mr-2">💰</span>
                   Compensation
-                  {isEditingProfessional && (
-                    <span className="ml-2 text-xs text-green-600 font-normal italic">(Use Compensation workflow for changes)</span>
-                  )}
+                  <span className="ml-2 text-xs text-green-600 font-normal italic">(Salary tracking will be added in professional history)</span>
                 </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Annual Salary</p>
-                    <p className="text-2xl font-bold text-success-600">
-                      {employee.salary ? `${employee.currency || '$'}${employee.salary.toLocaleString()}` : 'Confidential'}
-                    </p>
-                  </div>
-                  <InfoItem label="Last Promotion" value={employee.lastPromotionDate || 'No history'} />
+                <div className="p-4 text-center text-gray-500">
+                  <p className="text-sm">Compensation tracking coming soon</p>
+                  <p className="text-xs mt-1">Will include salary history, increments, and bonuses</p>
                 </div>
               </div>
             </div>

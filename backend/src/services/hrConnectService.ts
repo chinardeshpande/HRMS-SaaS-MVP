@@ -43,7 +43,7 @@ export class HRConnectService {
     const post = this.postRepo.create({
       ...data,
       postType: data.postType || PostType.DISCUSSION,
-      visibility: data.visibility || PostVisibility.PUBLIC,
+      visibility: data.visibility || PostVisibility.PUBLIC_ACCESS,
     });
 
     const savedPost = await this.postRepo.save(post);

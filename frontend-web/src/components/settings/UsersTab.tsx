@@ -32,6 +32,7 @@ export default function UsersTab() {
     departmentId: '',
     designationId: '',
     roleId: '',
+    userRole: 'employee', // System access level
     dateOfJoining: new Date().toISOString().split('T')[0],
   });
 
@@ -120,6 +121,7 @@ export default function UsersTab() {
       departmentId: user.department?.departmentId || '',
       designationId: user.designation?.designationId || '',
       roleId: user.roleId || '',
+      userRole: 'employee',
       dateOfJoining: user.dateOfJoining,
     });
     setShowUserModal(true);
@@ -138,9 +140,15 @@ export default function UsersTab() {
         await api.put(`/employees/${editingUser.employeeId}`, userFormData);
         alert('User updated successfully!');
       } else {
-        // Create new user via employee API
-        await api.post('/employees', userFormData);
-        alert('User created successfully!');
+        // Create employee record with user account
+        const employeeData = {
+          ...userFormData,
+          createUser: true,
+          userRole: userFormData.userRole,
+          password: 'TempPassword@123', // Temporary password - user should change it
+        };
+        await api.post('/employees', employeeData);
+        alert('User created successfully! Default password: TempPassword@123 (user should change this)');
       }
       await loadData();
       setShowUserModal(false);
@@ -154,11 +162,13 @@ export default function UsersTab() {
         departmentId: '',
         designationId: '',
         roleId: '',
+        userRole: 'employee',
         dateOfJoining: new Date().toISOString().split('T')[0],
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving user:', error);
-      alert('Failed to save user');
+      const errorMessage = error.response?.data?.error?.message || 'Failed to save user';
+      alert(errorMessage);
     } finally {
       setActionLoading(false);
     }
@@ -213,6 +223,7 @@ export default function UsersTab() {
                 departmentId: '',
                 designationId: '',
                 roleId: '',
+                userRole: 'employee',
                 dateOfJoining: new Date().toISOString().split('T')[0],
               });
               setShowUserModal(true);
@@ -527,6 +538,25 @@ export default function UsersTab() {
                       ))}
                     </select>
                   </div>
+                  {!editingUser && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">System Access Level *</label>
+                      <select
+                        value={userFormData.userRole}
+                        onChange={(e) => setUserFormData({ ...userFormData, userRole: e.target.value })}
+                        className="input w-full"
+                        required
+                      >
+                        <option value="employee">Employee</option>
+                        <option value="manager">Manager</option>
+                        <option value="hr_admin">HR Admin</option>
+                        <option value="system_admin">System Admin</option>
+                      </select>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Determines what they can access in the system
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 flex items-center justify-end space-x-3">

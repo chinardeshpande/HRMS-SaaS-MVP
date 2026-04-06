@@ -8,15 +8,17 @@ import {
   UserGroupIcon,
   ShieldCheckIcon,
   DocumentTextIcon,
+  EnvelopeIcon,
 } from '@heroicons/react/24/outline';
 import SubscriptionTab from '../components/settings/SubscriptionTab';
 import OrganizationTab from '../components/settings/OrganizationTab';
 import PaymentsTab from '../components/settings/PaymentsTab';
 import UsersTab from '../components/settings/UsersTab';
+import InvitationsTab from '../components/settings/InvitationsTab';
 import RolesPermissionsTab from '../components/settings/RolesPermissionsTab';
 import BusinessRulesTab from '../components/settings/BusinessRulesTab';
 
-type SettingsTab = 'subscription' | 'organization' | 'payments' | 'users' | 'roles' | 'business-rules';
+type SettingsTab = 'subscription' | 'organization' | 'payments' | 'users' | 'invitations' | 'roles' | 'business-rules';
 
 function ModernSettingsContent() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('subscription');
@@ -45,6 +47,12 @@ function ModernSettingsContent() {
       name: 'Users',
       icon: UserGroupIcon,
       description: 'Manage users and access',
+    },
+    {
+      id: 'invitations' as SettingsTab,
+      name: 'Invitations',
+      icon: EnvelopeIcon,
+      description: 'Send and manage user invitations',
     },
     {
       id: 'roles' as SettingsTab,
@@ -107,6 +115,7 @@ function ModernSettingsContent() {
               {activeTab === 'organization' && <OrganizationTab />}
               {activeTab === 'payments' && <PaymentsTab />}
               {activeTab === 'users' && <UsersTab />}
+              {activeTab === 'invitations' && <InvitationsTab />}
               {activeTab === 'roles' && <RolesPermissionsTab />}
               {activeTab === 'business-rules' && <BusinessRulesTab />}
             </ErrorBoundary>

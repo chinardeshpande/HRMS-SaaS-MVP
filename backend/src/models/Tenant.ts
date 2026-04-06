@@ -31,6 +31,28 @@ export class Tenant {
   @Column({ type: 'varchar', length: 7, nullable: true })
   primaryColor?: string;
 
+  // Trial & Onboarding fields
+  @Column({ type: 'boolean', default: true })
+  isTrialActive!: boolean;
+
+  @Column({ type: 'timestamp', nullable: true })
+  trialStartDate?: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  trialEndDate?: Date;
+
+  @Column({ type: 'boolean', default: false })
+  onboardingCompleted!: boolean;
+
+  @Column({ type: 'timestamp', nullable: true })
+  onboardingCompletedAt?: Date;
+
+  @Column({ type: 'int', default: 0 })
+  employeeCount!: number;
+
+  @Column({ type: 'boolean', default: false })
+  setupWizardCompleted!: boolean;
+
   @CreateDateColumn()
   createdAt!: Date;
 

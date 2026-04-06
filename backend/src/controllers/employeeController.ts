@@ -6,6 +6,7 @@ import { sendSuccess, sendError, sendCreated } from '../utils/responses';
 import { Like } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { EmploymentStatus } from '../../../shared/types';
+import professionalHistoryService from '../services/professionalHistoryService';
 
 /**
  * Get all employees with optional filters
@@ -174,6 +175,21 @@ export const createEmployee = async (req: Request, res: Response) => {
     });
 
     await employeeRepo.save(employee);
+
+    // Create joining record in position history
+    try {
+      await professionalHistoryService.createJoiningRecord(
+        tenantId,
+        employee.employeeId,
+        departmentId,
+        designationId,
+        new Date(dateOfJoining),
+        `${firstName} ${lastName} joined as employee ${employeeCode}`
+      );
+    } catch (historyError) {
+      console.error('Error creating position history:', historyError);
+      // Don't fail employee creation if history fails
+    }
 
     // Create user account if requested
     if (createUser && userRole && password) {
