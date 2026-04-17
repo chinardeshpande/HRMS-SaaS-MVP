@@ -11,6 +11,12 @@ import EmailVerificationPending from './pages/EmailVerificationPending';
 import CreatePassword from './pages/CreatePassword';
 import AcceptInvitation from './pages/AcceptInvitation';
 import OnboardingWizard from './components/onboarding/OnboardingWizard';
+
+// New Registration Flow Pages
+import Signup from './pages/Signup';
+import VerifyEmail from './pages/VerifyEmail';
+import SetupPassword from './pages/SetupPassword';
+import Welcome from './pages/Welcome';
 import ModernDashboard from './pages/ModernDashboard';
 import ModernEmployees from './pages/ModernEmployees';
 import ModernEmployeeDetail from './pages/ModernEmployeeDetail';
@@ -32,6 +38,9 @@ import ChatConversation from './pages/ChatConversation';
 import TicketDetails from './pages/TicketDetails';
 import GroupManagement from './pages/GroupManagement';
 import ModernSettings from './pages/ModernSettings';
+import ModernReports from './pages/ModernReports';
+import ModernDocuments from './pages/ModernDocuments';
+import ModernOrgChart from './pages/ModernOrgChart';
 
 // Employee Action Pages
 import ModernEditProfile from './pages/ModernEditProfile';
@@ -48,6 +57,14 @@ function App() {
         <Routes>
               {/* Public routes */}
               <Route path="/login" element={<ModernLogin />} />
+
+              {/* New Registration Flow */}
+              <Route path="/register" element={<Signup />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/setup-password" element={<SetupPassword />} />
+              <Route path="/welcome" element={<Welcome />} />
+
+              {/* Legacy routes (kept for backward compatibility) */}
               <Route path="/signup" element={<CompanySignup />} />
               <Route path="/email-verification-pending" element={<EmailVerificationPending />} />
               <Route path="/verify-email/:token" element={<EmailVerification />} />
@@ -80,6 +97,9 @@ function App() {
               <Route path="/chat/:conversationId" element={<ChatConversation />} />
               <Route path="/ticket/:ticketId" element={<TicketDetails />} />
               <Route path="/groups" element={<GroupManagement />} />
+              <Route path="/reports" element={<ModernReports />} />
+              <Route path="/documents" element={<ModernDocuments />} />
+              <Route path="/org-chart" element={<ModernOrgChart />} />
               <Route path="/settings" element={<ModernSettings />} />
 
               {/* Employee Action routes */}

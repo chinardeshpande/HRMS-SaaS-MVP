@@ -29,6 +29,7 @@ import {
   AccountCircle,
   Logout,
   Storage as MasterDataIcon,
+  AccountTree as OrgChartIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -59,6 +60,7 @@ const allMenuItems: MenuItem[] = [
   },
   { text: 'Attendance', icon: <ScheduleIcon />, path: '/attendance' }, // All roles
   { text: 'Leave Management', icon: <LeaveIcon />, path: '/leave' }, // All roles
+  { text: 'Org Chart', icon: <OrgChartIcon />, path: '/org-chart' }, // All roles
   {
     text: 'Performance',
     icon: <PerformanceIcon />,

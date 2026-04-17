@@ -10,6 +10,8 @@ import { config } from '../config/config';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
 import jwt, { SignOptions } from 'jsonwebtoken';
+import tenantInitializationService from './tenantInitializationService';
+import logger from '../utils/logger';
 
 export class RegistrationService {
   private registrationRepo: Repository<CompanyRegistration>;
@@ -240,13 +242,18 @@ export class RegistrationService {
 
       await queryRunner.manager.save(onboardingProgress);
 
-      // 5. Update Registration Status
+      // 5. Initialize tenant with default data (templates, policies)
+      logger.info('Initializing tenant with default data...');
+      await tenantInitializationService.initializeTenant(savedTenant.tenantId, queryRunner);
+
+      // 6. Update Registration Status
       registration.status = RegistrationStatus.COMPLETED;
       registration.tenantId = savedTenant.tenantId;
       registration.completedAt = new Date();
       await queryRunner.manager.save(registration);
 
       await queryRunner.commitTransaction();
+      logger.info('Registration completed successfully');
 
       // Generate JWT tokens
       const tokenPayload = {

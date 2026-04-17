@@ -176,85 +176,94 @@ const InvitationsTab: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">User Invitations</h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Invite new users to join your organization
-          </p>
+      {/* Stats Cards and Send Invitation Button in One Row */}
+      <div className="flex flex-col lg:flex-row items-stretch gap-3">
+        {/* Stats Cards */}
+        <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Total Invitations */}
+          <button
+            onClick={() => setStatusFilter('all')}
+            className={`bg-white rounded-lg shadow-sm border-2 transition-all hover:shadow-md hover:scale-105 p-3 text-left ${
+              statusFilter === 'all' ? 'border-purple-500' : 'border-gray-200'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-gray-600">Total Invitations</p>
+                <p className="text-xl font-bold text-gray-900 mt-0.5">{stats.total}</p>
+              </div>
+              <EnvelopeIcon className="w-8 h-8 text-gray-400" />
+            </div>
+          </button>
+
+          {/* Pending */}
+          <button
+            onClick={() => setStatusFilter('pending')}
+            className={`bg-white rounded-lg shadow-sm border-2 transition-all hover:shadow-md hover:scale-105 p-3 text-left ${
+              statusFilter === 'pending' ? 'border-yellow-500' : 'border-gray-200'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-gray-600">Pending</p>
+                <p className="text-xl font-bold text-yellow-600 mt-0.5">{stats.pending}</p>
+              </div>
+              <ClockIcon className="w-8 h-8 text-yellow-400" />
+            </div>
+          </button>
+
+          {/* Accepted */}
+          <button
+            onClick={() => setStatusFilter('accepted')}
+            className={`bg-white rounded-lg shadow-sm border-2 transition-all hover:shadow-md hover:scale-105 p-3 text-left ${
+              statusFilter === 'accepted' ? 'border-green-500' : 'border-gray-200'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-gray-600">Accepted</p>
+                <p className="text-xl font-bold text-green-600 mt-0.5">{stats.accepted}</p>
+              </div>
+              <CheckCircleIcon className="w-8 h-8 text-green-400" />
+            </div>
+          </button>
+
+          {/* Expired */}
+          <button
+            onClick={() => setStatusFilter('expired')}
+            className={`bg-white rounded-lg shadow-sm border-2 transition-all hover:shadow-md hover:scale-105 p-3 text-left ${
+              statusFilter === 'expired' ? 'border-red-500' : 'border-gray-200'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-gray-600">Expired</p>
+                <p className="text-xl font-bold text-red-600 mt-0.5">{stats.expired}</p>
+              </div>
+              <XCircleIcon className="w-8 h-8 text-red-400" />
+            </div>
+          </button>
         </div>
+
+        {/* Send Invitation Button */}
         <button
           onClick={() => setShowModal(true)}
-          className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 shadow-sm"
+          className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-all hover:shadow-lg flex items-center justify-center gap-2 shadow-sm whitespace-nowrap lg:w-auto"
         >
           <UserPlusIcon className="w-5 h-5" />
-          Send Invitation
+          <span className="font-medium">Send Invitation</span>
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Invitations</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
-            </div>
-            <EnvelopeIcon className="w-10 h-10 text-gray-400" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Pending</p>
-              <p className="text-2xl font-bold text-yellow-600 mt-1">{stats.pending}</p>
-            </div>
-            <ClockIcon className="w-10 h-10 text-yellow-400" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Accepted</p>
-              <p className="text-2xl font-bold text-green-600 mt-1">{stats.accepted}</p>
-            </div>
-            <CheckCircleIcon className="w-10 h-10 text-green-400" />
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Expired</p>
-              <p className="text-2xl font-bold text-red-600 mt-1">{stats.expired}</p>
-            </div>
-            <XCircleIcon className="w-10 h-10 text-red-400" />
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex-1">
-          <input
-            type="text"
-            placeholder="Search by email or name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          />
-        </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-        >
-          <option value="all">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="accepted">Accepted</option>
-          <option value="expired">Expired</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
+      {/* Search Only */}
+      <div>
+        <input
+          type="text"
+          placeholder="Search by email or name..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+        />
       </div>
 
       {/* Invitations Table */}

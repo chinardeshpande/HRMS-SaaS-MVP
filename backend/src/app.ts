@@ -33,10 +33,12 @@ import dashboardRoutes from './routes/dashboardRoutes';
 import professionalHistoryRoutes from './routes/professionalHistoryRoutes';
 import calendarRoutes from './routes/calendarRoutes';
 import activityRoutes from './routes/activityRoutes';
+import reportingRoutes from './routes/reportingRoutes';
+import templateGenerationRoutes from './routes/templateGenerationRoutes';
+import orgStructureRoutes from './routes/orgStructureRoutes';
 // import pmsRoutes from './routes/pmsRoutes';
 // import transferRoutes from './routes/transferRoutes';
 // import confirmationRoutes from './routes/confirmationRoutes';
-// import reportRoutes from './routes/reportRoutes';
 // import adminRoutes from './routes/adminRoutes';
 
 const app: Application = express();
@@ -85,7 +87,14 @@ const swaggerOptions = {
 // const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "img-src": ["'self'", "data:", "blob:", "http://localhost:5000"],
+    },
+  },
+}));
 
 // CORS configuration
 const allowedOrigins = [
@@ -195,10 +204,12 @@ apiRouter.use('/chat', chatRoutes);
 apiRouter.use('/helpdesk', ticketRoutes);
 apiRouter.use('/settings', settingsRoutes);
 apiRouter.use('/payment-methods', paymentMethodRoutes);
+apiRouter.use('/reports', reportingRoutes);
+apiRouter.use('/document-templates', templateGenerationRoutes);
+apiRouter.use('/org-structure', orgStructureRoutes);
 // apiRouter.use('/pms', pmsRoutes);
 // apiRouter.use('/transfer', transferRoutes);
 // apiRouter.use('/confirmation', confirmationRoutes);
-// apiRouter.use('/reports', reportRoutes);
 // apiRouter.use('/admin', adminRoutes);
 
 // Welcome endpoint

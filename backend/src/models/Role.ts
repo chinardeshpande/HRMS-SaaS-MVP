@@ -17,29 +17,29 @@ import { Employee } from './Employee';
 @Entity('roles')
 export class Role {
   @PrimaryGeneratedColumn('uuid')
-  roleId: string;
+  roleId!: string;
 
-  @Column()
-  tenantId: string;
+  @Column({ type: 'uuid' })
+  tenantId!: string;
 
   @ManyToOne(() => Tenant, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'tenantId' })
-  tenant: Tenant;
+  tenant!: Tenant;
 
-  @Column({ length: 100 })
-  roleName: string;
+  @Column({ type: 'varchar', length: 100 })
+  roleName!: string;
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  description?: string;
 
-  @Column({ default: false })
-  isSystemRole: boolean; // Cannot be deleted (e.g., Super Admin, Admin, Employee)
+  @Column({ type: 'boolean', default: false })
+  isSystemRole!: boolean; // Cannot be deleted (e.g., Super Admin, Admin, Employee)
 
-  @Column({ default: true })
-  isActive: boolean;
+  @Column({ type: 'boolean', default: true })
+  isActive!: boolean;
 
   @Column({ type: 'int', default: 0 })
-  level: number; // Hierarchy level - higher is more privileged
+  level!: number; // Hierarchy level - higher is more privileged
 
   @ManyToMany(() => Permission, permission => permission.roles, { cascade: true })
   @JoinTable({
@@ -47,16 +47,16 @@ export class Role {
     joinColumn: { name: 'roleId', referencedColumnName: 'roleId' },
     inverseJoinColumn: { name: 'permissionId', referencedColumnName: 'permissionId' },
   })
-  permissions: Permission[];
+  permissions!: Permission[];
 
   @OneToMany(() => Employee, employee => employee.role)
-  employees: Employee[];
+  employees!: Employee[];
 
   @Column({ type: 'int', default: 0 })
-  employeeCount: number;
+  employeeCount!: number;
 
   @Column({ type: 'jsonb', nullable: true })
-  dataAccessRules: {
+  dataAccessRules?: {
     ownDataOnly?: boolean;
     departmentDataOnly?: boolean;
     teamDataOnly?: boolean;
@@ -66,14 +66,14 @@ export class Role {
   };
 
   @Column({ type: 'jsonb', nullable: true })
-  customPermissions: Record<string, boolean>; // For additional custom permissions
+  customPermissions?: Record<string, boolean>; // For additional custom permissions
 
   @Column({ type: 'text', nullable: true })
-  notes: string;
+  notes?: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

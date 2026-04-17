@@ -1,6 +1,7 @@
 import { ReactNode, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { UserRole } from '../../types';
 import {
   HomeIcon,
   UsersIcon,
@@ -20,6 +21,8 @@ import {
   MagnifyingGlassIcon,
   ChevronDownIcon,
   ChatBubbleLeftRightIcon,
+  DocumentDuplicateIcon,
+  BuildingOffice2Icon,
 } from '@heroicons/react/24/outline';
 
 interface ModernLayoutProps {
@@ -32,6 +35,7 @@ interface NavItem {
   icon: typeof HomeIcon;
   badge?: string;
   children?: NavItem[];
+  roles?: UserRole[]; // Allowed roles for this menu item (undefined = all roles)
 }
 
 export const ModernLayout = ({ children }: ModernLayoutProps) => {
@@ -41,28 +45,81 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
 
-  const navigation: NavItem[] = [
-    { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-    { name: 'Employees', href: '/employees', icon: UsersIcon },
-    { name: 'Onboarding', href: '/onboarding', icon: UserPlusIcon },
-    { name: 'Attendance', href: '/attendance', icon: CalendarIcon },
-    { name: 'Leave Management', href: '/leave', icon: ClipboardDocumentCheckIcon },
-    { name: 'Performance', href: '/performance', icon: ChartBarIcon },
-    { name: 'Exit Management', href: '/exit', icon: ArrowRightStartOnRectangleIcon },
-    { name: 'Calendar', href: '/calendar', icon: CalendarDaysIcon },
-    { name: 'HR Connect', href: '/hr-connect', icon: ChatBubbleLeftRightIcon },
+  const allNavigation: NavItem[] = [
+    { name: 'Dashboard', href: '/dashboard', icon: HomeIcon }, // All roles
+    {
+      name: 'Employees',
+      href: '/employees',
+      icon: UsersIcon,
+      roles: [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN, UserRole.MANAGER],
+    },
+    {
+      name: 'Onboarding',
+      href: '/onboarding',
+      icon: UserPlusIcon,
+      roles: [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN],
+    },
+    { name: 'Attendance', href: '/attendance', icon: CalendarIcon }, // All roles
+    { name: 'Leave Management', href: '/leave', icon: ClipboardDocumentCheckIcon }, // All roles
+    {
+      name: 'Performance',
+      href: '/performance',
+      icon: ChartBarIcon,
+      roles: [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN, UserRole.MANAGER],
+    },
+    {
+      name: 'Exit Management',
+      href: '/exit',
+      icon: ArrowRightStartOnRectangleIcon,
+      roles: [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN, UserRole.MANAGER],
+    },
+    { name: 'Calendar', href: '/calendar', icon: CalendarDaysIcon }, // All roles
+    { name: 'HR Connect', href: '/hr-connect', icon: ChatBubbleLeftRightIcon }, // All roles
+    { name: 'Org Chart', href: '/org-chart', icon: BuildingOffice2Icon }, // All roles
     {
       name: 'Master Data',
       href: '/master-data',
       icon: BuildingOfficeIcon,
+      roles: [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN],
       children: [
-        { name: 'Departments', href: '/departments', icon: BuildingOfficeIcon },
-        { name: 'Designations', href: '/designations', icon: BriefcaseIcon },
+        {
+          name: 'Departments',
+          href: '/departments',
+          icon: BuildingOfficeIcon,
+          roles: [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN],
+        },
+        {
+          name: 'Designations',
+          href: '/designations',
+          icon: BriefcaseIcon,
+          roles: [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN],
+        },
       ],
     },
-    { name: 'Reports', href: '/reports', icon: DocumentTextIcon },
-    { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
+    {
+      name: 'Reports',
+      href: '/reports',
+      icon: DocumentTextIcon,
+      roles: [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN],
+    },
+    {
+      name: 'Documents',
+      href: '/documents',
+      icon: DocumentDuplicateIcon,
+      roles: [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN, UserRole.MANAGER],
+    },
+    { name: 'Settings', href: '/settings', icon: Cog6ToothIcon }, // All roles
   ];
+
+  // Filter navigation items based on user role
+  const navigation = allNavigation.filter((item) => {
+    // If no roles specified, item is visible to all users
+    if (!item.roles) return true;
+    // Check if user's role is in the allowed roles for this menu item
+    // Case-insensitive comparison to handle backend sending lowercase roles
+    const userRoleUpper = String(user?.role).toUpperCase();
+    return item.roles.some((role) => String(role).toUpperCase() === userRoleUpper);
+  });
 
   const handleLogout = () => {
     logout();

@@ -64,6 +64,10 @@ import { BusinessRules } from '../models/BusinessRules';
 import { CompanyRegistration } from '../models/CompanyRegistration';
 import { OnboardingProgress } from '../models/OnboardingProgress';
 import { UserInvitation } from '../models/UserInvitation';
+// Reporting & Analytics entities
+import { SavedReport } from '../models/SavedReport';
+import { GeneratedDocument } from '../models/GeneratedDocument';
+import { AnalyticsMetric } from '../models/AnalyticsMetric';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -137,6 +141,10 @@ export const AppDataSource = new DataSource({
     CompanyRegistration,
     OnboardingProgress,
     UserInvitation,
+    // Reporting & Analytics
+    SavedReport,
+    GeneratedDocument,
+    AnalyticsMetric,
   ],
   migrations: ['dist/backend/src/migrations/*.js'],
   subscribers: [],

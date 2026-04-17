@@ -18,7 +18,7 @@ export enum LeaveStatus {
 }
 
 export interface LeaveRequest {
-  leaveRequestId: string;
+  leaveId: string;  // Backend uses leaveId, not leaveRequestId
   employeeId: string;
   tenantId: string;
   leaveType: string;
@@ -31,7 +31,7 @@ export interface LeaveRequest {
   status: LeaveStatus;
   approverId?: string;
   approvedAt?: string;
-  comments?: string;
+  approverComments?: string;  // Backend uses approverComments, not comments
   createdAt: string;
   updatedAt: string;
   employee?: {
@@ -45,16 +45,20 @@ export interface LeaveRequest {
 }
 
 export interface LeaveBalance {
-  leaveBalanceId: string;
+  balanceId: string;  // Backend uses balanceId
   employeeId: string;
   tenantId: string;
+  policyId: string;
   leaveType: string;
   year: number;
-  totalDays: number;
-  usedDays: number;
-  pendingDays: number;
-  remainingDays: number;
-  carryForwardDays: number;
+  totalAllocated: number;  // Backend uses totalAllocated
+  used: number;  // Backend uses used
+  pending: number;  // Backend uses pending
+  carriedForward: number;  // Backend uses carriedForward
+  encashed: number;
+  available?: number;  // Computed getter from backend
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface LeaveStatistics {

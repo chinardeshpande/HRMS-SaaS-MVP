@@ -196,9 +196,10 @@ export default function UsersTab() {
 
   return (
     <div className="space-y-6">
-      {/* Header Actions */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex-1 w-full sm:w-auto">
+      {/* Search, Filters, and Actions in One Row */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
+        {/* Search Input */}
+        <div className="flex-1">
           <div className="relative">
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
@@ -210,38 +211,12 @@ export default function UsersTab() {
             />
           </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => {
-              setEditingUser(null);
-              setUserFormData({
-                firstName: '',
-                lastName: '',
-                email: '',
-                phone: '',
-                employeeCode: '',
-                departmentId: '',
-                designationId: '',
-                roleId: '',
-                userRole: 'employee',
-                dateOfJoining: new Date().toISOString().split('T')[0],
-              });
-              setShowUserModal(true);
-            }}
-            className="btn btn-primary flex items-center space-x-2"
-          >
-            <UserPlusIcon className="h-5 w-5" />
-            <span>Add User</span>
-          </button>
-        </div>
-      </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3">
+        {/* Status Filter */}
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="input"
+          className="input w-full lg:w-auto"
         >
           <option value="all">All Statuses</option>
           <option value="active">Active</option>
@@ -249,10 +224,11 @@ export default function UsersTab() {
           <option value="exited">Exited</option>
         </select>
 
+        {/* Role Filter */}
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
-          className="input"
+          className="input w-full lg:w-auto"
         >
           <option value="all">All Roles</option>
           {roles.map((role) => (
@@ -261,6 +237,30 @@ export default function UsersTab() {
             </option>
           ))}
         </select>
+
+        {/* Add User Button */}
+        <button
+          onClick={() => {
+            setEditingUser(null);
+            setUserFormData({
+              firstName: '',
+              lastName: '',
+              email: '',
+              phone: '',
+              employeeCode: '',
+              departmentId: '',
+              designationId: '',
+              roleId: '',
+              userRole: 'employee',
+              dateOfJoining: new Date().toISOString().split('T')[0],
+            });
+            setShowUserModal(true);
+          }}
+          className="btn btn-primary flex items-center justify-center space-x-2 whitespace-nowrap"
+        >
+          <UserPlusIcon className="h-5 w-5" />
+          <span>Add User</span>
+        </button>
       </div>
 
       {/* Stats */}

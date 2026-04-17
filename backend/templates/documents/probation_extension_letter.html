@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;font-size:11pt;line-height:1.6;color:#333;max-width:800px;margin:0 auto;padding:40px}.header{text-align:right;margin-bottom:30px;border-bottom:2px solid #333;padding-bottom:15px}.company-name{font-size:18pt;font-weight:bold;color:#f59e0b}.document-title{text-align:center;font-size:14pt;font-weight:bold;margin:30px 0 20px 0;text-decoration:underline}.warning-box{background-color:#fffbeb;border-left:4px solid #f59e0b;padding:15px;margin:20px 0}.footer{margin-top:50px;padding-top:15px;border-top:1px solid #ddd;font-size:8pt;color:#666;text-align:center}</style></head>
+<body>
+  <div class="header"><div class="company-name">{{company.name}}</div><div style="font-size:9pt;color:#666;">{{#if company.email}}{{company.email}}{{/if}}</div></div>
+  <div style="margin-bottom:20px;font-size:9pt;">Ref: {{document.documentNumber}}<br>Date: {{formatDate document.issueDate 'long'}}</div>
+  <div style="margin-bottom:30px;"><strong>{{recipient.fullName}}</strong><br>Employee Code: {{recipient.code}}</div>
+  <div class="document-title">PROBATION EXTENSION LETTER</div>
+  <div style="margin-bottom:15px;">Dear {{recipient.firstName}},</div>
+  <div style="text-align:justify;margin:15px 0;">This letter is to inform you that your probation period, which was scheduled to end on {{formatDate recipient.probationEndDate 'long'}}, is being extended.</div>
+  <div class="warning-box"><strong>Extension Details:</strong><br><br>
+  <strong>Original Probation End Date:</strong> {{formatDate recipient.probationEndDate 'long'}}<br>
+  <strong>New Probation End Date:</strong> {{formatDate custom.newProbationEndDate 'long'}}<br>
+  <strong>Extension Period:</strong> {{#if custom.extensionMonths}}{{custom.extensionMonths}} months{{else}}As specified above{{/if}}
+  </div>
+  <div style="text-align:justify;margin:15px 0;"><strong>Reason for Extension:</strong><br>{{#if custom.extensionReason}}{{custom.extensionReason}}{{else}}To allow for further assessment of performance and suitability for the role.{{/if}}</div>
+  <div style="text-align:justify;margin:15px 0;">{{#if custom.improvementAreas}}<strong>Areas for Improvement:</strong><br>{{custom.improvementAreas}}<br><br>{{/if}}During this extended probation period, we expect you to focus on the areas mentioned above and demonstrate improvement in your performance.</div>
+  <div style="text-align:justify;margin:15px 0;">We are confident that with focused effort, you will be able to meet the required standards. Your performance will be reviewed at the end of the extended probation period.</div>
+  <div style="margin-top:40px;">Sincerely,<br><br><div style="margin-top:60px;"><strong>Human Resources</strong><br>{{company.name}}</div></div>
+  <div class="footer">Confidential - {{company.name}} | Document Number: {{document.documentNumber}}</div>
+</body>
+</html>

@@ -5,6 +5,11 @@ import {
   SparklesIcon,
   ArrowUpCircleIcon,
   XCircleIcon,
+  CreditCardIcon,
+  UserGroupIcon,
+  ServerIcon,
+  CalendarIcon,
+  CurrencyDollarIcon,
 } from '@heroicons/react/24/outline';
 
 export default function SubscriptionTab() {
@@ -105,7 +110,7 @@ export default function SubscriptionTab() {
       name: 'Professional',
       value: 'professional' as const,
       price: 99,
-      features: ['Up to 200 users', '200GB storage', 'API access', 'Custom branding', 'Priority support', 'AI insights'],
+      features: ['Up to 200 users', '200GB storage', 'API access', 'Custom branding', 'Priority support'],
       color: 'purple',
       popular: true,
     },
@@ -113,7 +118,7 @@ export default function SubscriptionTab() {
       name: 'Enterprise',
       value: 'enterprise' as const,
       price: 299,
-      features: ['Unlimited users', '1TB storage', 'SSO integration', 'Dedicated support', 'Custom workflows', 'SLA guarantee'],
+      features: ['Unlimited users', '1TB storage', 'SSO integration', 'Dedicated support', 'SLA guarantee'],
       color: 'indigo',
     },
   ];
@@ -139,15 +144,15 @@ export default function SubscriptionTab() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-start space-x-3">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+          <div className="flex items-start space-x-2">
             <XCircleIcon className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <div>
+            <div className="flex-1">
               <h4 className="text-sm font-medium text-red-800">Error Loading Subscription</h4>
-              <p className="text-sm text-red-700 mt-1">{error}</p>
+              <p className="text-sm text-red-700 mt-0.5">{error}</p>
               <button
                 onClick={loadSubscription}
                 className="mt-2 text-sm text-red-600 hover:text-red-800 font-medium"
@@ -161,98 +166,116 @@ export default function SubscriptionTab() {
 
       {/* No Subscription Message */}
       {!subscription && !error && (
-        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl p-8 text-center">
-          <SparklesIcon className="h-16 w-16 text-purple-500 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 mb-2">No Active Subscription</h3>
-          <p className="text-gray-600 mb-6">Get started by choosing a plan below to unlock all features</p>
-          <div className="inline-flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium">
-            <ArrowUpCircleIcon className="h-5 w-5 mr-2" />
-            Select a plan to get started
-          </div>
+        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-6 text-center">
+          <SparklesIcon className="h-12 w-12 text-purple-500 mx-auto mb-3" />
+          <h3 className="text-lg font-bold text-gray-900 mb-1">No Active Subscription</h3>
+          <p className="text-sm text-gray-600 mb-4">Choose a plan below to unlock all features</p>
         </div>
       )}
 
-      {/* Current Subscription */}
+      {/* Current Subscription - Compact */}
       {subscription && (
-        <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl p-6 text-white">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h3 className="text-2xl font-bold">{subscription.plan.toUpperCase()} Plan</h3>
-              <p className="text-purple-100 mt-1">Your current subscription</p>
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <CreditCardIcon className="h-5 w-5 text-white" />
+              <div>
+                <h3 className="text-lg font-bold text-white">{subscription.plan.toUpperCase()} Plan</h3>
+                <p className="text-xs text-purple-100">Your current subscription</p>
+              </div>
             </div>
             {getStatusBadge(subscription.status)}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-            <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-purple-100 text-sm">Users</p>
-              <p className="text-2xl font-bold mt-1">
+          {/* Stats Grid - Compact */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-4 bg-gray-50">
+            <div className="bg-white rounded-lg p-3 border border-gray-200">
+              <div className="flex items-center space-x-2 mb-1">
+                <UserGroupIcon className="h-4 w-4 text-purple-600" />
+                <p className="text-xs text-gray-600">Users</p>
+              </div>
+              <p className="text-xl font-bold text-gray-900">
                 {subscription.currentUsers}/{subscription.maxUsers}
               </p>
             </div>
-            <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-purple-100 text-sm">Storage</p>
-              <p className="text-2xl font-bold mt-1">
+
+            <div className="bg-white rounded-lg p-3 border border-gray-200">
+              <div className="flex items-center space-x-2 mb-1">
+                <ServerIcon className="h-4 w-4 text-blue-600" />
+                <p className="text-xs text-gray-600">Storage</p>
+              </div>
+              <p className="text-xl font-bold text-gray-900">
                 {Number(subscription.currentStorageGB).toFixed(1)}/{subscription.maxStorageGB}GB
               </p>
             </div>
-            <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-purple-100 text-sm">Billing Cycle</p>
-              <p className="text-2xl font-bold mt-1 capitalize">{subscription.billingCycle}</p>
+
+            <div className="bg-white rounded-lg p-3 border border-gray-200">
+              <div className="flex items-center space-x-2 mb-1">
+                <CalendarIcon className="h-4 w-4 text-green-600" />
+                <p className="text-xs text-gray-600">Billing</p>
+              </div>
+              <p className="text-xl font-bold text-gray-900 capitalize">{subscription.billingCycle}</p>
             </div>
-            <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-purple-100 text-sm">Price</p>
-              <p className="text-2xl font-bold mt-1">${Number(subscription.price).toFixed(2)}/mo</p>
+
+            <div className="bg-white rounded-lg p-3 border border-gray-200">
+              <div className="flex items-center space-x-2 mb-1">
+                <CurrencyDollarIcon className="h-4 w-4 text-orange-600" />
+                <p className="text-xs text-gray-600">Price</p>
+              </div>
+              <p className="text-xl font-bold text-gray-900">${Number(subscription.price).toFixed(0)}/mo</p>
             </div>
           </div>
 
-          {subscription.nextBillingDate && (
-            <div className="mt-4 text-sm text-purple-100">
-              Next billing date: {new Date(subscription.nextBillingDate).toLocaleDateString()}
-            </div>
-          )}
-
-          {/* Billing Settings */}
-          <div className="mt-6 pt-6 border-t border-white/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-white">Billing Cycle</p>
-                <p className="text-xs text-purple-100 mt-1">Change how often you're billed</p>
+          {/* Billing Settings - Compact Inline */}
+          <div className="px-4 py-3 border-t border-gray-200 bg-white space-y-3">
+            {subscription.nextBillingDate && (
+              <div className="text-xs text-gray-600">
+                Next billing: <span className="font-medium text-gray-900">{new Date(subscription.nextBillingDate).toLocaleDateString()}</span>
               </div>
-              <select
-                value={subscription.billingCycle}
-                onChange={(e) => handleChangeBillingCycle(e.target.value as Subscription['billingCycle'])}
-                className="input text-sm bg-white/10 text-white border-white/20"
-              >
-                <option value="monthly">Monthly</option>
-                <option value="quarterly">Quarterly</option>
-                <option value="yearly">Yearly</option>
-              </select>
-            </div>
+            )}
 
-            <div className="flex items-center justify-between mt-4">
-              <div>
-                <p className="text-sm font-medium text-white">Auto-Renew</p>
-                <p className="text-xs text-purple-100 mt-1">Automatically renew subscription</p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center space-x-3">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Billing Cycle</label>
+                  <p className="text-xs text-gray-500">Change frequency</p>
+                </div>
+                <select
+                  value={subscription.billingCycle}
+                  onChange={(e) => handleChangeBillingCycle(e.target.value as Subscription['billingCycle'])}
+                  className="input text-sm w-32"
+                >
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={subscription.autoRenew}
-                  onChange={handleToggleAutoRenew}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-white/20 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-white/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white/40"></div>
-              </label>
+
+              <div className="flex items-center space-x-3">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Auto-Renew</label>
+                  <p className="text-xs text-gray-500">Automatic renewal</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={subscription.autoRenew}
+                    onChange={handleToggleAutoRenew}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                </label>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Available Plans */}
+      {/* Available Plans - Compact */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Available Plans</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <h3 className="text-base font-semibold text-gray-900 mb-3">Available Plans</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {plans.map((plan) => {
             const isCurrentPlan = subscription?.plan === plan.value;
             const colorClasses: Record<string, string> = {
@@ -265,52 +288,52 @@ export default function SubscriptionTab() {
             return (
               <div
                 key={plan.value}
-                className={`relative rounded-xl border-2 ${
+                className={`relative rounded-lg border-2 ${
                   isCurrentPlan ? 'border-purple-600 shadow-lg' : 'border-gray-200'
-                } bg-white overflow-hidden transition-all hover:shadow-xl`}
+                } bg-white overflow-hidden transition-all hover:shadow-lg`}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 right-0">
-                    <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
+                  <div className="absolute top-0 right-0 z-10">
+                    <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-bl-lg">
                       POPULAR
                     </div>
                   </div>
                 )}
 
-                <div className={`bg-gradient-to-br ${colorClasses[plan.color]} p-6 text-white`}>
-                  <h4 className="text-xl font-bold">{plan.name}</h4>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold">${plan.price}</span>
-                    <span className="text-white/80">/month</span>
+                <div className={`bg-gradient-to-br ${colorClasses[plan.color]} p-4 text-white`}>
+                  <h4 className="text-lg font-bold">{plan.name}</h4>
+                  <div className="mt-2">
+                    <span className="text-3xl font-bold">${plan.price}</span>
+                    <span className="text-sm text-white/80">/mo</span>
                   </div>
                 </div>
 
-                <div className="p-6">
-                  <ul className="space-y-3 mb-6">
-                    {plan.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start space-x-2 text-sm">
-                        <CheckCircleIcon className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                <div className="p-4">
+                  <ul className="space-y-2 mb-4">
+                    {plan.features.slice(0, 4).map((feature, idx) => (
+                      <li key={idx} className="flex items-start space-x-2 text-xs">
+                        <CheckCircleIcon className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
                         <span className="text-gray-700">{feature}</span>
                       </li>
                     ))}
                   </ul>
 
                   {isCurrentPlan ? (
-                    <button disabled className="btn btn-secondary w-full cursor-not-allowed">
+                    <button disabled className="w-full px-3 py-2 text-sm rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed">
                       Current Plan
                     </button>
                   ) : (
                     <button
                       onClick={() => handleUpgrade(plan.value)}
                       disabled={upgrading}
-                      className="btn btn-primary w-full"
+                      className="w-full px-3 py-2 text-sm rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors flex items-center justify-center space-x-1"
                     >
                       {upgrading ? (
                         'Upgrading...'
                       ) : (
                         <>
-                          <ArrowUpCircleIcon className="h-5 w-5 mr-2" />
-                          Upgrade
+                          <ArrowUpCircleIcon className="h-4 w-4" />
+                          <span>Upgrade</span>
                         </>
                       )}
                     </button>
@@ -322,45 +345,20 @@ export default function SubscriptionTab() {
         </div>
       </div>
 
-      {/* Features Comparison */}
-      {subscription && subscription.features && (
-        <div className="card">
-          <div className="card-header">
-            <h3 className="text-lg font-semibold text-gray-900">Your Features</h3>
-          </div>
-          <div className="card-body">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {Object.entries(subscription.features).map(([key, enabled]) => (
-                <div key={key} className="flex items-center space-x-2">
-                  {enabled ? (
-                    <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                  ) : (
-                    <XCircleIcon className="h-5 w-5 text-gray-300" />
-                  )}
-                  <span className={`text-sm ${enabled ? 'text-gray-900' : 'text-gray-400'}`}>
-                    {key
-                      .replace(/([A-Z])/g, ' $1')
-                      .trim()
-                      .split(' ')
-                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                      .join(' ')}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Actions */}
+      {/* Danger Zone - Compact */}
       {subscription && subscription.status === 'active' && (
-        <div className="card border-red-200 bg-red-50">
-          <div className="card-body">
-            <h3 className="text-lg font-semibold text-red-900 mb-2">Danger Zone</h3>
-            <p className="text-sm text-red-700 mb-4">
-              Cancel your subscription. You will lose access at the end of your billing period.
-            </p>
-            <button onClick={handleCancelSubscription} className="btn bg-red-600 hover:bg-red-700 text-white">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold text-red-900">Cancel Subscription</h3>
+              <p className="text-xs text-red-700 mt-0.5">
+                You will lose access at the end of your billing period
+              </p>
+            </div>
+            <button
+              onClick={handleCancelSubscription}
+              className="px-4 py-2 text-sm rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors whitespace-nowrap"
+            >
               Cancel Subscription
             </button>
           </div>

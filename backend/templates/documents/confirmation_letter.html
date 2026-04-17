@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 40px; }
+    .header { text-align: right; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px; }
+    .company-name { font-size: 18pt; font-weight: bold; color: #10b981; }
+    .company-details { font-size: 9pt; color: #666; }
+    .document-title { text-align: center; font-size: 14pt; font-weight: bold; margin: 30px 0 20px 0; text-decoration: underline; }
+    .content { text-align: justify; margin: 15px 0; }
+    .highlight-box { background-color: #f0fdf4; border-left: 4px solid #10b981; padding: 15px; margin: 20px 0; }
+    .footer { margin-top: 50px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 8pt; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="company-name">{{company.name}}</div>
+    <div class="company-details">
+      {{#if company.address}}{{company.address}}, {{company.city}}, {{company.state}} {{company.postalCode}}<br>{{/if}}
+      {{#if company.email}}Email: {{company.email}}{{/if}}
+    </div>
+  </div>
+
+  <div style="margin-bottom: 20px; font-size: 9pt;">
+    Ref: {{document.documentNumber}}<br>
+    Date: {{formatDate document.issueDate 'long'}}
+  </div>
+
+  <div style="margin-bottom: 30px;">
+    <strong>{{recipient.fullName}}</strong><br>
+    Employee Code: {{recipient.code}}<br>
+    {{recipient.designation}}, {{recipient.department}}
+  </div>
+
+  <div class="document-title">CONFIRMATION OF EMPLOYMENT</div>
+
+  <div style="margin-bottom: 15px;">Dear {{recipient.firstName}},</div>
+
+  <div class="content">
+    We are pleased to inform you that you have successfully completed your probationary period with
+    {{company.name}}. Based on your performance and conduct during this period, we are happy to
+    confirm your employment with us.
+  </div>
+
+  <div class="highlight-box">
+    <strong>Effective Date of Confirmation:</strong> {{formatDate custom.confirmationDate 'long'}}<br>
+    <strong>Probation Period:</strong> {{formatDate recipient.dateOfJoining 'long'}} to {{formatDate recipient.probationEndDate 'long'}}
+  </div>
+
+  <div class="content">
+    Your designation, department, and other terms of employment remain unchanged as per your
+    appointment letter dated {{formatDate recipient.dateOfJoining 'long'}}.
+  </div>
+
+  <div class="content">
+    {{#if custom.newCtc}}
+    Your revised annual CTC effective from the confirmation date will be {{currency custom.newCtc custom.currency}}.
+    {{/if}}
+  </div>
+
+  <div class="content">
+    {{#if custom.performanceNotes}}
+    <strong>Performance Summary:</strong><br>
+    {{custom.performanceNotes}}
+    {{/if}}
+  </div>
+
+  <div class="content">
+    We appreciate your contributions and commitment to the organization. We look forward to your
+    continued dedication and success with {{company.name}}.
+  </div>
+
+  <div style="margin-top: 40px;">
+    Congratulations!<br><br>
+    <div style="margin-top: 60px;">
+      {{#if custom.signatoryName}}
+        <strong>{{custom.signatoryName}}</strong><br>
+        {{custom.signatoryDesignation}}<br>
+      {{else}}
+        <strong>Human Resources</strong><br>
+      {{/if}}
+      {{company.name}}
+    </div>
+  </div>
+
+  <div class="footer">
+    Confidential - {{company.name}} | Document Number: {{document.documentNumber}}
+  </div>
+</body>
+</html>

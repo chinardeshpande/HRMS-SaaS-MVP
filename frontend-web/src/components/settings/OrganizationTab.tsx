@@ -1,13 +1,27 @@
 import { useState, useEffect } from 'react';
 import settingsService, { OrganizationSettings } from '../../services/settingsService';
-import { BuildingOfficeIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import {
+  BuildingOfficeIcon,
+  PhotoIcon,
+  PencilIcon,
+  CheckIcon,
+  XMarkIcon,
+  InformationCircleIcon,
+  PhoneIcon,
+  GlobeAltIcon,
+  ShieldCheckIcon,
+} from '@heroicons/react/24/outline';
+
+type OrganizationSubTab = 'company' | 'contact' | 'regional' | 'security';
 
 export default function OrganizationTab() {
   const [settings, setSettings] = useState<OrganizationSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Partial<OrganizationSettings>>({});
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [activeSubTab, setActiveSubTab] = useState<OrganizationSubTab>('company');
 
   useEffect(() => {
     loadSettings();
@@ -25,6 +39,15 @@ export default function OrganizationTab() {
     }
   };
 
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setFormData(settings || {});
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -32,6 +55,7 @@ export default function OrganizationTab() {
     try {
       await settingsService.updateOrganizationSettings(formData);
       await loadSettings();
+      setIsEditing(false);
       alert('Settings updated successfully!');
     } catch (error) {
       console.error('Error updating settings:', error);
@@ -97,6 +121,33 @@ export default function OrganizationTab() {
     }
   };
 
+  const subTabs = [
+    {
+      id: 'company' as OrganizationSubTab,
+      name: 'Company Info',
+      icon: BuildingOfficeIcon,
+      description: 'Basic company details',
+    },
+    {
+      id: 'contact' as OrganizationSubTab,
+      name: 'Contact Details',
+      icon: PhoneIcon,
+      description: 'Contact information',
+    },
+    {
+      id: 'regional' as OrganizationSubTab,
+      name: 'Regional Settings',
+      icon: GlobeAltIcon,
+      description: 'Timezone, currency & formats',
+    },
+    {
+      id: 'security' as OrganizationSubTab,
+      name: 'Security',
+      icon: ShieldCheckIcon,
+      description: 'Security policies',
+    },
+  ];
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -106,351 +157,599 @@ export default function OrganizationTab() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Company Information */}
-      <div className="card">
-        <div className="card-header">
-          <div className="flex items-center space-x-2">
-            <BuildingOfficeIcon className="h-5 w-5 text-gray-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Company Information</h3>
-          </div>
+    <div className="space-y-6">
+      {/* Header with Edit Button */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">Organization Settings</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            {isEditing ? 'Make changes to your organization details' : 'View your organization information'}
+          </p>
         </div>
-        <div className="card-body space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Company Name *</label>
-              <input
-                type="text"
-                value={formData.companyName || ''}
-                onChange={(e) => handleChange('companyName', e.target.value)}
-                required
-                className="input w-full"
-                placeholder="Acme Corporation"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Industry</label>
-              <input
-                type="text"
-                value={formData.industry || ''}
-                onChange={(e) => handleChange('industry', e.target.value)}
-                className="input w-full"
-                placeholder="Technology"
-              />
-            </div>
-          </div>
+        <div className="flex items-center space-x-2">
+          {!isEditing ? (
+            <button
+              onClick={handleEdit}
+              className="btn btn-primary flex items-center space-x-2"
+            >
+              <PencilIcon className="h-4 w-4" />
+              <span>Edit</span>
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={handleCancel}
+                className="btn btn-secondary flex items-center space-x-2"
+              >
+                <XMarkIcon className="h-4 w-4" />
+                <span>Cancel</span>
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={saving}
+                className="btn btn-primary flex items-center space-x-2"
+              >
+                <CheckIcon className="h-4 w-4" />
+                <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+              </button>
+            </>
+          )}
+        </div>
+      </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Company Description</label>
-            <textarea
-              value={formData.companyDescription || ''}
-              onChange={(e) => handleChange('companyDescription', e.target.value)}
-              rows={3}
-              className="input w-full"
-              placeholder="Brief description of your company..."
-            />
-          </div>
+      {/* Sub-Tabs Navigation */}
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="border-b border-gray-200 bg-gray-50">
+          <nav className="flex overflow-x-auto">
+            {subTabs.map((subTab) => {
+              const Icon = subTab.icon;
+              return (
+                <button
+                  key={subTab.id}
+                  onClick={() => setActiveSubTab(subTab.id)}
+                  className={`flex items-center space-x-2 px-6 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                    activeSubTab === subTab.id
+                      ? 'border-purple-600 text-purple-600 bg-white'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-white/50'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <div className="text-left">
+                    <div>{subTab.name}</div>
+                    <div className="text-xs text-gray-400 font-normal hidden lg:block">
+                      {subTab.description}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Registration Number</label>
-              <input
-                type="text"
-                value={formData.registrationNumber || ''}
-                onChange={(e) => handleChange('registrationNumber', e.target.value)}
-                className="input w-full"
-                placeholder="REG-123456"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tax ID</label>
-              <input
-                type="text"
-                value={formData.taxId || ''}
-                onChange={(e) => handleChange('taxId', e.target.value)}
-                className="input w-full"
-                placeholder="TAX-789012"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Company Logo</label>
-            <div className="flex items-center space-x-4">
-              {formData.logo ? (
-                <img src={formData.logo} alt="Logo" className="h-16 w-16 rounded-lg object-cover border" />
-              ) : (
-                <div className="h-16 w-16 rounded-lg bg-gray-100 flex items-center justify-center border">
-                  <PhotoIcon className="h-8 w-8 text-gray-400" />
+        {/* Sub-Tab Content */}
+        <form onSubmit={handleSubmit} className="p-6">
+          {/* Company Information */}
+          {activeSubTab === 'company' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Company Name *
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={formData.companyName || ''}
+                      onChange={(e) => handleChange('companyName', e.target.value)}
+                      required
+                      className="input w-full"
+                      placeholder="Acme Corporation"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 font-medium bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.companyName || '—'}
+                    </div>
+                  )}
                 </div>
-              )}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Industry</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={formData.industry || ''}
+                      onChange={(e) => handleChange('industry', e.target.value)}
+                      className="input w-full"
+                      placeholder="Technology"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.industry || '—'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoUpload}
-                  className="hidden"
-                  id="logo-upload"
-                />
-                <label htmlFor="logo-upload" className="btn btn-secondary cursor-pointer">
-                  {uploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Company Description
                 </label>
-                {formData.logo && (
-                  <button
-                    type="button"
-                    onClick={() => setFormData((prev) => ({ ...prev, logo: '' }))}
-                    className="ml-2 text-sm text-red-600 hover:text-red-800"
-                  >
-                    Remove
-                  </button>
+                {isEditing ? (
+                  <textarea
+                    value={formData.companyDescription || ''}
+                    onChange={(e) => handleChange('companyDescription', e.target.value)}
+                    rows={4}
+                    className="input w-full"
+                    placeholder="Brief description of your company..."
+                  />
+                ) : (
+                  <div className="text-base text-gray-900 bg-gray-50 px-4 py-3 rounded-lg border border-gray-200 min-h-[100px]">
+                    {formData.companyDescription || '—'}
+                  </div>
                 )}
               </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Registration Number
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={formData.registrationNumber || ''}
+                      onChange={(e) => handleChange('registrationNumber', e.target.value)}
+                      className="input w-full"
+                      placeholder="REG-123456"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.registrationNumber || '—'}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tax ID</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={formData.taxId || ''}
+                      onChange={(e) => handleChange('taxId', e.target.value)}
+                      className="input w-full"
+                      placeholder="TAX-789012"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.taxId || '—'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Company Logo</label>
+                <div className="flex items-start space-x-4">
+                  {formData.logo ? (
+                    <img
+                      src={formData.logo}
+                      alt="Logo"
+                      className="h-20 w-20 rounded-lg object-cover border border-gray-300 shadow-sm"
+                    />
+                  ) : (
+                    <div className="h-20 w-20 rounded-lg bg-gray-100 flex items-center justify-center border border-gray-300">
+                      <PhotoIcon className="h-10 w-10 text-gray-400" />
+                    </div>
+                  )}
+                  {isEditing && (
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="hidden"
+                        id="logo-upload"
+                      />
+                      <label htmlFor="logo-upload" className="btn btn-secondary cursor-pointer inline-block">
+                        {uploadingLogo ? 'Uploading...' : 'Upload New Logo'}
+                      </label>
+                      {formData.logo && (
+                        <button
+                          type="button"
+                          onClick={() => setFormData((prev) => ({ ...prev, logo: '' }))}
+                          className="ml-3 text-sm text-red-600 hover:text-red-800"
+                        >
+                          Remove Logo
+                        </button>
+                      )}
+                      <p className="text-xs text-gray-500 mt-2">
+                        Max file size: 2MB. Accepted formats: JPG, PNG, GIF
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Max file size: 2MB. Accepted formats: JPG, PNG, GIF</p>
-          </div>
-        </div>
+          )}
+
+          {/* Contact Information */}
+          {activeSubTab === 'contact' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  {isEditing ? (
+                    <input
+                      type="email"
+                      value={formData.email || ''}
+                      onChange={(e) => handleChange('email', e.target.value)}
+                      className="input w-full"
+                      placeholder="contact@company.com"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.email || '—'}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  {isEditing ? (
+                    <input
+                      type="tel"
+                      value={formData.phone || ''}
+                      onChange={(e) => handleChange('phone', e.target.value)}
+                      className="input w-full"
+                      placeholder="+1 (555) 123-4567"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.phone || '—'}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Website</label>
+                  {isEditing ? (
+                    <input
+                      type="url"
+                      value={formData.website || ''}
+                      onChange={(e) => handleChange('website', e.target.value)}
+                      className="input w-full"
+                      placeholder="https://company.com"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.website ? (
+                        <a
+                          href={formData.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-purple-600 hover:text-purple-700"
+                        >
+                          {formData.website}
+                        </a>
+                      ) : (
+                        '—'
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                {isEditing ? (
+                  <textarea
+                    value={formData.address || ''}
+                    onChange={(e) => handleChange('address', e.target.value)}
+                    rows={2}
+                    className="input w-full"
+                    placeholder="123 Main Street, Suite 100"
+                  />
+                ) : (
+                  <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                    {formData.address || '—'}
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={formData.city || ''}
+                      onChange={(e) => handleChange('city', e.target.value)}
+                      className="input w-full"
+                      placeholder="San Francisco"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.city || '—'}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    State/Province
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={formData.state || ''}
+                      onChange={(e) => handleChange('state', e.target.value)}
+                      className="input w-full"
+                      placeholder="California"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.state || '—'}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={formData.postalCode || ''}
+                      onChange={(e) => handleChange('postalCode', e.target.value)}
+                      className="input w-full"
+                      placeholder="94102"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.postalCode || '—'}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={formData.country || ''}
+                      onChange={(e) => handleChange('country', e.target.value)}
+                      className="input w-full"
+                      placeholder="United States"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.country || '—'}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Regional Settings */}
+          {activeSubTab === 'regional' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
+                  {isEditing ? (
+                    <select
+                      value={formData.timezone || 'UTC'}
+                      onChange={(e) => handleChange('timezone', e.target.value)}
+                      className="input w-full"
+                    >
+                      <option value="UTC">UTC</option>
+                      <option value="America/New_York">Eastern Time (ET)</option>
+                      <option value="America/Chicago">Central Time (CT)</option>
+                      <option value="America/Denver">Mountain Time (MT)</option>
+                      <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                      <option value="Europe/London">London (GMT)</option>
+                      <option value="Asia/Kolkata">India (IST)</option>
+                    </select>
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.timezone || 'UTC'}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                  {isEditing ? (
+                    <select
+                      value={formData.currency || 'USD'}
+                      onChange={(e) => handleChange('currency', e.target.value)}
+                      className="input w-full"
+                    >
+                      <option value="USD">USD - US Dollar</option>
+                      <option value="EUR">EUR - Euro</option>
+                      <option value="GBP">GBP - British Pound</option>
+                      <option value="INR">INR - Indian Rupee</option>
+                    </select>
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.currency || 'USD'}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+                  {isEditing ? (
+                    <select
+                      value={formData.defaultLanguage || 'en'}
+                      onChange={(e) => handleChange('defaultLanguage', e.target.value)}
+                      className="input w-full"
+                    >
+                      <option value="en">English</option>
+                      <option value="es">Spanish</option>
+                      <option value="fr">French</option>
+                      <option value="de">German</option>
+                    </select>
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.defaultLanguage === 'en'
+                        ? 'English'
+                        : formData.defaultLanguage === 'es'
+                        ? 'Spanish'
+                        : formData.defaultLanguage === 'fr'
+                        ? 'French'
+                        : formData.defaultLanguage === 'de'
+                        ? 'German'
+                        : 'English'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Date Format</label>
+                  {isEditing ? (
+                    <select
+                      value={formData.dateFormat || 'MM/DD/YYYY'}
+                      onChange={(e) => handleChange('dateFormat', e.target.value)}
+                      className="input w-full"
+                    >
+                      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                      <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                      <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                    </select>
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.dateFormat || 'MM/DD/YYYY'}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Time Format</label>
+                  {isEditing ? (
+                    <select
+                      value={formData.timeFormat || '12h'}
+                      onChange={(e) => handleChange('timeFormat', e.target.value)}
+                      className="input w-full"
+                    >
+                      <option value="12h">12-hour (AM/PM)</option>
+                      <option value="24h">24-hour</option>
+                    </select>
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.timeFormat === '12h' ? '12-hour (AM/PM)' : '24-hour'}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Security Settings */}
+          {activeSubTab === 'security' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div>
+                  <p className="font-medium text-gray-900">Two-Factor Authentication</p>
+                  <p className="text-sm text-gray-500">Require 2FA for all users</p>
+                </div>
+                {isEditing ? (
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.twoFactorAuthRequired || false}
+                      onChange={(e) => handleChange('twoFactorAuthRequired', e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                  </label>
+                ) : (
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      formData.twoFactorAuthRequired
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    {formData.twoFactorAuthRequired ? 'Enabled' : 'Disabled'}
+                  </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Password Expiry (days)
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="number"
+                      value={formData.passwordExpiryDays || 30}
+                      onChange={(e) => handleChange('passwordExpiryDays', parseInt(e.target.value))}
+                      min="0"
+                      className="input w-full"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.passwordExpiryDays || 30} days
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Max Login Attempts
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="number"
+                      value={formData.maxLoginAttempts || 5}
+                      onChange={(e) => handleChange('maxLoginAttempts', parseInt(e.target.value))}
+                      min="1"
+                      className="input w-full"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.maxLoginAttempts || 5} attempts
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Session Timeout (minutes)
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="number"
+                      value={formData.sessionTimeoutMinutes || 30}
+                      onChange={(e) => handleChange('sessionTimeoutMinutes', parseInt(e.target.value))}
+                      min="5"
+                      className="input w-full"
+                    />
+                  ) : (
+                    <div className="text-base text-gray-900 bg-gray-50 px-4 py-2.5 rounded-lg border border-gray-200">
+                      {formData.sessionTimeoutMinutes || 30} minutes
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </form>
       </div>
 
-      {/* Contact Information */}
-      <div className="card">
-        <div className="card-header">
-          <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
-        </div>
-        <div className="card-body space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input
-                type="email"
-                value={formData.email || ''}
-                onChange={(e) => handleChange('email', e.target.value)}
-                className="input w-full"
-                placeholder="contact@company.com"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-              <input
-                type="tel"
-                value={formData.phone || ''}
-                onChange={(e) => handleChange('phone', e.target.value)}
-                className="input w-full"
-                placeholder="+1 (555) 123-4567"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
-              <input
-                type="url"
-                value={formData.website || ''}
-                onChange={(e) => handleChange('website', e.target.value)}
-                className="input w-full"
-                placeholder="https://company.com"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-            <textarea
-              value={formData.address || ''}
-              onChange={(e) => handleChange('address', e.target.value)}
-              rows={2}
-              className="input w-full"
-              placeholder="123 Main Street, Suite 100"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-              <input
-                type="text"
-                value={formData.city || ''}
-                onChange={(e) => handleChange('city', e.target.value)}
-                className="input w-full"
-                placeholder="San Francisco"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">State/Province</label>
-              <input
-                type="text"
-                value={formData.state || ''}
-                onChange={(e) => handleChange('state', e.target.value)}
-                className="input w-full"
-                placeholder="California"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
-              <input
-                type="text"
-                value={formData.postalCode || ''}
-                onChange={(e) => handleChange('postalCode', e.target.value)}
-                className="input w-full"
-                placeholder="94102"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
-              <input
-                type="text"
-                value={formData.country || ''}
-                onChange={(e) => handleChange('country', e.target.value)}
-                className="input w-full"
-                placeholder="United States"
-              />
-            </div>
+      {/* Info message when in display mode */}
+      {!isEditing && (
+        <div className="flex items-start space-x-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <InformationCircleIcon className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-blue-700">
+            Click the <strong>Edit</strong> button above to make changes to your organization settings.
           </div>
         </div>
-      </div>
-
-      {/* Regional Settings */}
-      <div className="card">
-        <div className="card-header">
-          <h3 className="text-lg font-semibold text-gray-900">Regional & Format Settings</h3>
-        </div>
-        <div className="card-body space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
-              <select
-                value={formData.timezone || 'UTC'}
-                onChange={(e) => handleChange('timezone', e.target.value)}
-                className="input w-full"
-              >
-                <option value="UTC">UTC</option>
-                <option value="America/New_York">Eastern Time (ET)</option>
-                <option value="America/Chicago">Central Time (CT)</option>
-                <option value="America/Denver">Mountain Time (MT)</option>
-                <option value="America/Los_Angeles">Pacific Time (PT)</option>
-                <option value="Europe/London">London (GMT)</option>
-                <option value="Asia/Kolkata">India (IST)</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-              <select
-                value={formData.currency || 'USD'}
-                onChange={(e) => handleChange('currency', e.target.value)}
-                className="input w-full"
-              >
-                <option value="USD">USD - US Dollar</option>
-                <option value="EUR">EUR - Euro</option>
-                <option value="GBP">GBP - British Pound</option>
-                <option value="INR">INR - Indian Rupee</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
-              <select
-                value={formData.defaultLanguage || 'en'}
-                onChange={(e) => handleChange('defaultLanguage', e.target.value)}
-                className="input w-full"
-              >
-                <option value="en">English</option>
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date Format</label>
-              <select
-                value={formData.dateFormat || 'MM/DD/YYYY'}
-                onChange={(e) => handleChange('dateFormat', e.target.value)}
-                className="input w-full"
-              >
-                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Time Format</label>
-              <select
-                value={formData.timeFormat || '12h'}
-                onChange={(e) => handleChange('timeFormat', e.target.value)}
-                className="input w-full"
-              >
-                <option value="12h">12-hour (AM/PM)</option>
-                <option value="24h">24-hour</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Security Settings */}
-      <div className="card">
-        <div className="card-header">
-          <h3 className="text-lg font-semibold text-gray-900">Security Settings</h3>
-        </div>
-        <div className="card-body space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium text-gray-900">Two-Factor Authentication</p>
-              <p className="text-sm text-gray-500">Require 2FA for all users</p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.twoFactorAuthRequired || false}
-                onChange={(e) => handleChange('twoFactorAuthRequired', e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-            </label>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password Expiry (days)</label>
-              <input
-                type="number"
-                value={formData.passwordExpiryDays || 30}
-                onChange={(e) => handleChange('passwordExpiryDays', parseInt(e.target.value))}
-                min="0"
-                className="input w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Max Login Attempts</label>
-              <input
-                type="number"
-                value={formData.maxLoginAttempts || 5}
-                onChange={(e) => handleChange('maxLoginAttempts', parseInt(e.target.value))}
-                min="1"
-                className="input w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Session Timeout (minutes)</label>
-              <input
-                type="number"
-                value={formData.sessionTimeoutMinutes || 30}
-                onChange={(e) => handleChange('sessionTimeoutMinutes', parseInt(e.target.value))}
-                min="5"
-                className="input w-full"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Save Button */}
-      <div className="flex justify-end space-x-3">
-        <button type="button" onClick={loadSettings} className="btn btn-secondary">
-          Reset
-        </button>
-        <button type="submit" disabled={saving} className="btn btn-primary">
-          {saving ? 'Saving...' : 'Save Changes'}
-        </button>
-      </div>
-    </form>
+      )}
+    </div>
   );
 }

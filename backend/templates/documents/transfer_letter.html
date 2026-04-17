@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;font-size:11pt;line-height:1.6;color:#333;max-width:800px;margin:0 auto;padding:40px}.header{text-align:right;margin-bottom:30px;border-bottom:2px solid #333;padding-bottom:15px}.company-name{font-size:18pt;font-weight:bold;color:#2563eb}.document-title{text-align:center;font-size:14pt;font-weight:bold;margin:30px 0 20px 0;text-decoration:underline}.footer{margin-top:50px;padding-top:15px;border-top:1px solid #ddd;font-size:8pt;color:#666;text-align:center}</style></head>
+<body>
+  <div class="header"><div class="company-name">{{company.name}}</div><div style="font-size:9pt;color:#666;">{{#if company.email}}{{company.email}}{{/if}}</div></div>
+  <div style="margin-bottom:20px;font-size:9pt;">Ref: {{document.documentNumber}}<br>Date: {{formatDate document.issueDate 'long'}}</div>
+  <div style="margin-bottom:30px;"><strong>{{recipient.fullName}}</strong><br>Employee Code: {{recipient.code}}</div>
+  <div class="document-title">TRANSFER LETTER</div>
+  <div style="margin-bottom:15px;">Dear {{recipient.firstName}},</div>
+  <div style="text-align:justify;margin:15px 0;">This is to inform you that you are being transferred from your current location/department to a new assignment, effective {{formatDate custom.effectiveDate 'long'}}.</div>
+  <div style="background-color:#f9fafb;border:1px solid #e5e7eb;padding:15px;margin:20px 0;"><strong>Transfer Details:</strong><br><br><table style="width:100%;">
+  <tr><td style="padding:5px 0;width:40%;"><strong>Current Department:</strong></td><td>{{recipient.department}}</td></tr>
+  <tr><td style="padding:5px 0;"><strong>New Department:</strong></td><td>{{custom.newDepartment}}</td></tr>
+  {{#if custom.newLocation}}<tr><td style="padding:5px 0;"><strong>New Location:</strong></td><td>{{custom.newLocation}}</td></tr>{{/if}}
+  <tr><td style="padding:5px 0;"><strong>Effective Date:</strong></td><td>{{formatDate custom.effectiveDate 'long'}}</td></tr>
+  {{#if custom.newManager}}<tr><td style="padding:5px 0;"><strong>Reporting To:</strong></td><td>{{custom.newManager}}</td></tr>{{/if}}
+  </table></div>
+  <div style="text-align:justify;margin:15px 0;">All other terms and conditions of your employment remain unchanged. We trust you will continue to excel in your new role.</div>
+  <div style="margin-top:40px;">Sincerely,<br><br><div style="margin-top:60px;"><strong>Human Resources</strong></div></div>
+  <div class="footer">{{company.name}} | Document Number: {{document.documentNumber}}</div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 40px; }
+    .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px; }
+    .company-name { font-size: 20pt; font-weight: bold; color: #2563eb; }
+    .company-details { font-size: 9pt; color: #666; }
+    .document-title { text-align: center; font-size: 14pt; font-weight: bold; margin: 30px 0 20px 0; text-decoration: underline; }
+    .content { text-align: justify; margin: 15px 0; }
+    .footer { margin-top: 50px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 8pt; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="company-name">{{company.name}}</div>
+    <div class="company-details">
+      {{#if company.address}}{{company.address}}, {{company.city}}, {{company.state}} {{company.postalCode}}<br>{{/if}}
+      {{#if company.phone}}Phone: {{company.phone}} | {{/if}}
+      {{#if company.email}}Email: {{company.email}}{{/if}}
+    </div>
+  </div>
+
+  <div style="text-align: right; margin-bottom: 20px; font-size: 9pt;">
+    Ref: {{document.documentNumber}}<br>
+    Date: {{formatDate document.issueDate 'long'}}
+  </div>
+
+  <div style="margin-bottom: 30px;">
+    <strong>{{recipient.fullName}}</strong><br>
+    Employee Code: {{recipient.code}}<br>
+    {{#if recipient.email}}Email: {{recipient.email}}{{/if}}
+  </div>
+
+  <div class="document-title">RELIEVING LETTER</div>
+
+  <div style="margin-bottom: 15px;">Dear {{recipient.firstName}},</div>
+
+  <div class="content">
+    This is to acknowledge receipt of your resignation letter dated {{formatDate custom.resignationDate 'long'}}.
+    We hereby accept your resignation and relieve you from the services of {{company.name}} with effect
+    from close of business hours on {{formatDate custom.lastWorkingDate 'long'}}.
+  </div>
+
+  <div class="content">
+    Your employment details during your tenure with us are as follows:
+  </div>
+
+  <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; margin: 20px 0;">
+    <table style="width: 100%;">
+      <tr>
+        <td style="padding: 5px 0; width: 40%;"><strong>Employee Code:</strong></td>
+        <td style="padding: 5px 0;">{{recipient.code}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px 0;"><strong>Designation:</strong></td>
+        <td style="padding: 5px 0;">{{recipient.designation}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px 0;"><strong>Department:</strong></td>
+        <td style="padding: 5px 0;">{{recipient.department}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px 0;"><strong>Date of Joining:</strong></td>
+        <td style="padding: 5px 0;">{{formatDate recipient.dateOfJoining 'long'}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px 0;"><strong>Last Working Day:</strong></td>
+        <td style="padding: 5px 0;">{{formatDate custom.lastWorkingDate 'long'}}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="content">
+    {{#if custom.clearanceCompleted}}
+    We confirm that you have completed all exit formalities and handed over your responsibilities.
+    All company assets assigned to you have been returned in good condition.
+    {{else}}
+    Please ensure completion of all exit formalities and handover of responsibilities and company assets.
+    {{/if}}
+  </div>
+
+  <div class="content">
+    {{#if custom.duesCleared}}
+    Your full and final settlement will be processed as per company policy, and any outstanding dues
+    will be settled shortly.
+    {{/if}}
+  </div>
+
+  <div class="content">
+    We appreciate your contributions during your tenure with {{company.name}} and wish you all the
+    best in your future endeavors.
+  </div>
+
+  <div style="margin-top: 40px;">
+    Sincerely,<br><br>
+    <div style="margin-top: 60px;">
+      For <strong>{{company.name}}</strong><br><br>
+      {{#if custom.signatoryName}}
+        <strong>{{custom.signatoryName}}</strong><br>
+        {{custom.signatoryDesignation}}<br>
+      {{else}}
+        <strong>Authorized Signatory</strong><br>
+        Human Resources Department<br>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="footer">
+    Confidential - {{company.name}} | Document Number: {{document.documentNumber}}
+  </div>
+</body>
+</html>

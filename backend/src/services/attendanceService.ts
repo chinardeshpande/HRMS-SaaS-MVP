@@ -2,12 +2,14 @@ import { AppDataSource } from '../config/database';
 import { Attendance, AttendanceStatus } from '../models/Attendance';
 import { Employee } from '../models/Employee';
 import { AttendancePolicy } from '../models/AttendancePolicy';
+import { TimeEntryEdit, TimeEntryEditStatus } from '../models/TimeEntryEdit';
 import { Between, In } from 'typeorm';
 
 export class AttendanceService {
   private attendanceRepository = AppDataSource.getRepository(Attendance);
   private employeeRepository = AppDataSource.getRepository(Employee);
   private policyRepository = AppDataSource.getRepository(AttendancePolicy);
+  private timeEntryEditRepository = AppDataSource.getRepository(TimeEntryEdit);
 
   /**
    * Employee: Clock In
@@ -139,6 +141,11 @@ export class AttendanceService {
    * Employee: Get my attendance history
    */
   async getMyAttendance(employeeId: string, startDate: Date, endDate: Date) {
+    // Return empty array if no employeeId (admin users without employee records)
+    if (!employeeId) {
+      return [];
+    }
+
     return await this.attendanceRepository.find({
       where: {
         employeeId,
@@ -336,6 +343,183 @@ export class AttendanceService {
       .getRawMany();
 
     return result;
+  }
+
+  /**
+   * Employee: Request time entry regularization
+   */
+  async requestRegularization(
+    employeeId: string,
+    tenantId: string,
+    date: Date,
+    requestedCheckIn?: Date,
+    requestedCheckOut?: Date,
+    reason?: string
+  ) {
+    // Find or create attendance record for the date
+    let attendance = await this.attendanceRepository.findOne({
+      where: { employeeId, date },
+    });
+
+    if (!attendance) {
+      attendance = this.attendanceRepository.create({
+        employeeId,
+        tenantId,
+        date,
+        status: AttendanceStatus.ABSENT,
+      });
+      attendance = await this.attendanceRepository.save(attendance);
+    }
+
+    // Create time entry edit request
+    const timeEntryEdit = this.timeEntryEditRepository.create({
+      employeeId,
+      tenantId,
+      attendanceId: attendance.attendanceId,
+      originalCheckIn: attendance.checkIn,
+      originalCheckOut: attendance.checkOut,
+      requestedCheckIn,
+      requestedCheckOut,
+      reason: reason || '',
+      status: TimeEntryEditStatus.PENDING,
+    });
+
+    return await this.timeEntryEditRepository.save(timeEntryEdit);
+  }
+
+  /**
+   * Employee: Get my regularization requests
+   */
+  async getMyRegularizationRequests(employeeId: string) {
+    return await this.timeEntryEditRepository.find({
+      where: { employeeId },
+      relations: ['attendance', 'approver'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  /**
+   * Manager/HR: Get pending regularization requests
+   */
+  async getPendingRegularizations(tenantId: string, employeeIds?: string[]) {
+    const queryBuilder = this.timeEntryEditRepository
+      .createQueryBuilder('edit')
+      .leftJoinAndSelect('edit.employee', 'employee')
+      .leftJoinAndSelect('edit.attendance', 'attendance')
+      .leftJoinAndSelect('employee.department', 'department')
+      .where('edit.tenantId = :tenantId', { tenantId })
+      .andWhere('edit.status = :status', { status: TimeEntryEditStatus.PENDING });
+
+    if (employeeIds && employeeIds.length > 0) {
+      queryBuilder.andWhere('edit.employeeId IN (:...employeeIds)', { employeeIds });
+    }
+
+    return await queryBuilder.orderBy('edit.createdAt', 'ASC').getMany();
+  }
+
+  /**
+   * Manager/HR: Approve regularization request
+   */
+  async approveRegularization(
+    editId: string,
+    approverId: string,
+    comments?: string
+  ) {
+    const edit = await this.timeEntryEditRepository.findOne({
+      where: { editId },
+      relations: ['attendance'],
+    });
+
+    if (!edit) {
+      throw new Error('Regularization request not found');
+    }
+
+    if (edit.status !== TimeEntryEditStatus.PENDING) {
+      throw new Error('Request is not pending');
+    }
+
+    // Update the regularization request
+    edit.status = TimeEntryEditStatus.APPROVED;
+    edit.approverId = approverId;
+    edit.approvedAt = new Date();
+    edit.approverComments = comments;
+
+    await this.timeEntryEditRepository.save(edit);
+
+    // Update the attendance record
+    if (edit.attendance) {
+      if (edit.requestedCheckIn) {
+        edit.attendance.checkIn = edit.requestedCheckIn;
+      }
+      if (edit.requestedCheckOut) {
+        edit.attendance.checkOut = edit.requestedCheckOut;
+      }
+
+      // Recalculate work minutes
+      if (edit.attendance.checkIn && edit.attendance.checkOut) {
+        const workMs = edit.attendance.checkOut.getTime() - edit.attendance.checkIn.getTime();
+        edit.attendance.workMinutes = Math.floor(workMs / 60000);
+        edit.attendance.status = AttendanceStatus.PRESENT;
+      }
+
+      await this.attendanceRepository.save(edit.attendance);
+    }
+
+    return edit;
+  }
+
+  /**
+   * Manager/HR: Reject regularization request
+   */
+  async rejectRegularization(
+    editId: string,
+    approverId: string,
+    comments: string
+  ) {
+    const edit = await this.timeEntryEditRepository.findOne({
+      where: { editId },
+    });
+
+    if (!edit) {
+      throw new Error('Regularization request not found');
+    }
+
+    if (edit.status !== TimeEntryEditStatus.PENDING) {
+      throw new Error('Request is not pending');
+    }
+
+    edit.status = TimeEntryEditStatus.REJECTED;
+    edit.approverId = approverId;
+    edit.approvedAt = new Date();
+    edit.approverComments = comments;
+
+    return await this.timeEntryEditRepository.save(edit);
+  }
+
+  /**
+   * Manager: Get team attendance
+   */
+  async getTeamAttendance(
+    tenantId: string,
+    employeeIds: string[],
+    startDate: Date,
+    endDate: Date
+  ) {
+    if (!employeeIds || employeeIds.length === 0) {
+      return [];
+    }
+
+    return await this.attendanceRepository.find({
+      where: {
+        tenantId,
+        employeeId: In(employeeIds),
+        date: Between(startDate, endDate),
+      },
+      relations: ['employee', 'employee.department', 'employee.designation'],
+      order: {
+        date: 'DESC',
+      },
+    });
   }
 }
 

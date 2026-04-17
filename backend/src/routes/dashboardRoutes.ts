@@ -1,19 +1,31 @@
 import { Router } from 'express';
 import dashboardService from '../services/dashboardService';
 import { authenticate } from '../middleware/auth';
+import { UserRole } from '../../../shared/types';
 
 const router = Router();
 
 /**
  * @route   GET /api/v1/dashboard/stats
- * @desc    Get dashboard statistics for tenant
+ * @desc    Get dashboard statistics for tenant (role-based)
  * @access  Private
+ *
+ * ROLE-BASED STATS:
+ * - EMPLOYEE: Personal stats only
+ * - MANAGER: Team stats (direct reports)
+ * - HR_ADMIN/SYSTEM_ADMIN: Organization-wide stats
  */
 router.get('/stats', authenticate, async (req, res) => {
   try {
     const tenantId = req.user!.tenantId;
+    const userRole = req.user!.role as UserRole;
+    const employeeId = req.user!.employeeId || null;
 
-    const stats = await dashboardService.getDashboardStats(tenantId);
+    const stats = await dashboardService.getDashboardStatsByRole(
+      tenantId,
+      userRole,
+      employeeId
+    );
 
     res.json({
       success: true,

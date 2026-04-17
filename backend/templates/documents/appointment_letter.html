@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 40px; }
+    .header { text-align: right; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px; }
+    .company-name { font-size: 18pt; font-weight: bold; color: #2563eb; }
+    .company-details { font-size: 9pt; color: #666; }
+    .document-title { text-align: center; font-size: 14pt; font-weight: bold; margin: 30px 0 20px 0; text-decoration: underline; }
+    .content { text-align: justify; margin: 15px 0; }
+    .terms-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    .terms-table td { padding: 8px; border: 1px solid #ddd; }
+    .terms-table td:first-child { font-weight: bold; width: 40%; background-color: #f9fafb; }
+    .footer { margin-top: 50px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 8pt; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="company-name">{{company.name}}</div>
+    <div class="company-details">
+      {{#if company.address}}{{company.address}}, {{company.city}}, {{company.state}} {{company.postalCode}}<br>{{/if}}
+      {{#if company.phone}}Phone: {{company.phone}} | {{/if}}
+      {{#if company.email}}Email: {{company.email}}{{/if}}
+    </div>
+  </div>
+
+  <div style="margin-bottom: 20px; font-size: 9pt;">
+    Ref: {{document.documentNumber}}<br>
+    Date: {{formatDate document.issueDate 'long'}}
+  </div>
+
+  <div style="margin-bottom: 30px;">
+    <strong>{{recipient.fullName}}</strong><br>
+    Employee Code: {{recipient.code}}<br>
+    {{#if recipient.email}}Email: {{recipient.email}}{{/if}}
+  </div>
+
+  <div class="document-title">APPOINTMENT LETTER</div>
+
+  <div style="margin-bottom: 15px;">Dear {{recipient.firstName}},</div>
+
+  <div class="content">
+    We are pleased to confirm your appointment as <strong>{{recipient.designation}}</strong> in the
+    <strong>{{recipient.department}}</strong> department of {{company.name}}, effective
+    {{formatDate recipient.dateOfJoining 'long'}}.
+  </div>
+
+  <div class="content">
+    <strong>Terms and Conditions of Employment:</strong>
+    <table class="terms-table">
+      <tr><td>Employee Code</td><td>{{recipient.code}}</td></tr>
+      <tr><td>Designation</td><td>{{recipient.designation}}</td></tr>
+      <tr><td>Department</td><td>{{recipient.department}}</td></tr>
+      <tr><td>Date of Joining</td><td>{{formatDate recipient.dateOfJoining 'long'}}</td></tr>
+      <tr><td>Employment Type</td><td>{{uppercase recipient.employmentType}}</td></tr>
+      <tr><td>Probation Period</td><td>{{#if recipient.probationEndDate}}Until {{formatDate recipient.probationEndDate 'long'}}{{else}}As per company policy{{/if}}</td></tr>
+      <tr><td>Reporting To</td><td>{{#if recipient.manager}}{{recipient.manager}}{{else}}As assigned{{/if}}</td></tr>
+      <tr><td>Work Location</td><td>{{#if custom.workLocation}}{{custom.workLocation}}{{else}}{{company.city}}{{/if}}</td></tr>
+      {{#if custom.ctc}}<tr><td>Annual CTC</td><td>{{currency custom.ctc custom.currency}}</td></tr>{{/if}}
+    </table>
+  </div>
+
+  <div class="content">
+    <strong>Duties and Responsibilities:</strong><br>
+    You will be responsible for performing all duties and responsibilities as assigned from time to time
+    in relation to your position. You agree to devote your full time, attention, and skills to the
+    performance of your duties.
+  </div>
+
+  <div class="content">
+    <strong>Code of Conduct:</strong><br>
+    You are required to comply with all company policies, procedures, and code of conduct as communicated
+    to you. You agree to maintain confidentiality of all proprietary and confidential information of the company.
+  </div>
+
+  <div class="content">
+    <strong>Termination:</strong><br>
+    {{#if custom.noticePeriod}}
+    Either party may terminate this employment by providing {{custom.noticePeriod}} notice in writing,
+    or payment in lieu thereof, after successful completion of probation period.
+    {{else}}
+    Termination will be governed by the company's standard employment policies and applicable labor laws.
+    {{/if}}
+  </div>
+
+  <div class="content">
+    We welcome you to {{company.name}} and wish you a long and successful career with us.
+  </div>
+
+  <div style="margin-top: 40px;">
+    Sincerely,<br><br>
+    <div style="margin-top: 60px;">
+      {{#if custom.signatoryName}}
+        <strong>{{custom.signatoryName}}</strong><br>
+        {{custom.signatoryDesignation}}<br>
+      {{else}}
+        <strong>Human Resources</strong><br>
+      {{/if}}
+      {{company.name}}
+    </div>
+  </div>
+
+  <div style="margin-top: 60px; border-top: 1px dashed #ccc; padding-top: 20px;">
+    <strong>ACKNOWLEDGMENT</strong><br><br>
+    I, {{recipient.fullName}}, acknowledge receipt of this appointment letter and accept the terms
+    and conditions of employment as stated above.<br><br>
+    Signature: ___________________________<br><br>
+    Date: ___________________________
+  </div>
+
+  <div class="footer">
+    Confidential - {{company.name}} | Document Number: {{document.documentNumber}}
+  </div>
+</body>
+</html>

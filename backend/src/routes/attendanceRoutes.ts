@@ -46,4 +46,34 @@ router.get(
   attendanceController.getByDepartment
 );
 
+// Time Entry Edit (Regularization) routes
+router.post('/regularization/request', authenticate, attendanceController.requestRegularization);
+router.get('/regularization/my-requests', authenticate, attendanceController.getMyRegularizationRequests);
+router.get(
+  '/regularization/pending',
+  authenticate,
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
+  attendanceController.getPendingRegularizations
+);
+router.put(
+  '/regularization/:editId/approve',
+  authenticate,
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
+  attendanceController.approveRegularization
+);
+router.put(
+  '/regularization/:editId/reject',
+  authenticate,
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
+  attendanceController.rejectRegularization
+);
+
+// Team attendance (for managers)
+router.get(
+  '/team',
+  authenticate,
+  authorize(UserRole.MANAGER, UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
+  attendanceController.getTeamAttendance
+);
+
 export default router;

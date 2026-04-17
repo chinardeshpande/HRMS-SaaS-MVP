@@ -1,72 +1,103 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { useAuth } from '../context/AuthContext';
+import { UserRole } from '../types';
 import {
   CogIcon,
   BuildingOfficeIcon,
   CreditCardIcon,
   UserGroupIcon,
-  ShieldCheckIcon,
   DocumentTextIcon,
-  EnvelopeIcon,
+  UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import SubscriptionTab from '../components/settings/SubscriptionTab';
 import OrganizationTab from '../components/settings/OrganizationTab';
 import PaymentsTab from '../components/settings/PaymentsTab';
-import UsersTab from '../components/settings/UsersTab';
-import InvitationsTab from '../components/settings/InvitationsTab';
-import RolesPermissionsTab from '../components/settings/RolesPermissionsTab';
+import UserManagementTab from '../components/settings/UserManagementTab';
 import BusinessRulesTab from '../components/settings/BusinessRulesTab';
+import EmployeeSettingsTab from '../components/settings/EmployeeSettingsTab';
 
-type SettingsTab = 'subscription' | 'organization' | 'payments' | 'users' | 'invitations' | 'roles' | 'business-rules';
+type SettingsTab =
+  | 'employee-preferences'
+  | 'subscription'
+  | 'organization'
+  | 'payments'
+  | 'user-management'
+  | 'business-rules';
 
 function ModernSettingsContent() {
-  const [activeTab, setActiveTab] = useState<SettingsTab>('subscription');
+  const { user } = useAuth();
+  const userRole = user?.role?.toUpperCase();
+  const isEmployee = userRole === 'EMPLOYEE';
+  const isManager = userRole === 'MANAGER';
+  const isAdmin = userRole === 'HR_ADMIN' || userRole === 'SYSTEM_ADMIN';
 
-  const tabs = [
+  // Default tab based on role
+  const getDefaultTab = (): SettingsTab => {
+    if (isEmployee || isManager) return 'employee-preferences';
+    return 'subscription';
+  };
+
+  const [activeTab, setActiveTab] = useState<SettingsTab>(getDefaultTab());
+
+  // Update default tab when user changes
+  useEffect(() => {
+    setActiveTab(getDefaultTab());
+  }, [userRole]);
+
+  // Define all possible tabs with roles
+  const allTabs = [
+    {
+      id: 'employee-preferences' as SettingsTab,
+      name: 'My Preferences',
+      icon: UserCircleIcon,
+      description: 'Personal settings and notifications',
+      roles: [UserRole.EMPLOYEE, UserRole.MANAGER, UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
+    },
     {
       id: 'subscription' as SettingsTab,
       name: 'Subscription',
       icon: CreditCardIcon,
       description: 'Manage your plan and billing',
+      roles: [UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
     },
     {
       id: 'organization' as SettingsTab,
       name: 'Organization',
       icon: BuildingOfficeIcon,
       description: 'Company details and settings',
+      roles: [UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
     },
     {
       id: 'payments' as SettingsTab,
       name: 'Payments',
       icon: CreditCardIcon,
       description: 'Payment history and invoices',
+      roles: [UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
     },
     {
-      id: 'users' as SettingsTab,
-      name: 'Users',
+      id: 'user-management' as SettingsTab,
+      name: 'User Management',
       icon: UserGroupIcon,
-      description: 'Manage users and access',
-    },
-    {
-      id: 'invitations' as SettingsTab,
-      name: 'Invitations',
-      icon: EnvelopeIcon,
-      description: 'Send and manage user invitations',
-    },
-    {
-      id: 'roles' as SettingsTab,
-      name: 'Roles & Permissions',
-      icon: ShieldCheckIcon,
-      description: 'Configure roles and permissions',
+      description: 'Users, invitations, and permissions',
+      roles: [UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
     },
     {
       id: 'business-rules' as SettingsTab,
       name: 'Business Rules',
       icon: DocumentTextIcon,
       description: 'HR policies and workflows',
+      roles: [UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
     },
   ];
+
+  // Filter tabs based on user role
+  const tabs = allTabs.filter((tab) => {
+    if (!tab.roles) return true;
+    const userRoleUpper = String(user?.role).toUpperCase();
+    return tab.roles.some((role) => String(role).toUpperCase() === userRoleUpper);
+  });
 
   return (
     <ModernLayout>
@@ -111,12 +142,11 @@ function ModernSettingsContent() {
           {/* Tab Content */}
           <div className="p-6">
             <ErrorBoundary>
+              {activeTab === 'employee-preferences' && <EmployeeSettingsTab />}
               {activeTab === 'subscription' && <SubscriptionTab />}
               {activeTab === 'organization' && <OrganizationTab />}
               {activeTab === 'payments' && <PaymentsTab />}
-              {activeTab === 'users' && <UsersTab />}
-              {activeTab === 'invitations' && <InvitationsTab />}
-              {activeTab === 'roles' && <RolesPermissionsTab />}
+              {activeTab === 'user-management' && <UserManagementTab />}
               {activeTab === 'business-rules' && <BusinessRulesTab />}
             </ErrorBoundary>
           </div>

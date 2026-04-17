@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import leaveService from '../services/leaveService';
 import { LeaveStatus } from '../models/LeaveRequest';
 import { LeaveType } from '../models/LeavePolicy';
+import managerTeamService from '../services/managerTeamService';
+import { UserRole } from '../../../shared/types';
+import logger from '../utils/logger';
 
 /**
  * @swagger
@@ -288,7 +291,7 @@ export class LeaveController {
    * @swagger
    * /leave/all-requests:
    *   get:
-   *     summary: Get all leave requests (HR only)
+   *     summary: Get all leave requests (role-based filtering)
    *     tags: [Leave]
    *     parameters:
    *       - in: query
@@ -312,12 +315,20 @@ export class LeaveController {
    *     responses:
    *       200:
    *         description: All leave requests retrieved
+   *
+   * ROLE-BASED FILTERING:
+   * - EMPLOYEE: Only see own leave requests (use getMyRequests instead)
+   * - MANAGER: Only see team's leave requests
+   * - HR_ADMIN/SYSTEM_ADMIN: See all leave requests
    */
   async getAllRequests(req: Request, res: Response) {
     try {
       const tenantId = (req as any).user.tenantId;
+      const userRole = (req as any).user.role as UserRole;
+      const employeeId = (req as any).user.employeeId;
       const { status, departmentId, startDate, endDate } = req.query;
 
+      // Get all leave requests
       const leaves = await leaveService.getAllLeaveRequests(
         tenantId,
         status as LeaveStatus,
@@ -326,10 +337,36 @@ export class LeaveController {
         endDate ? new Date(endDate as string) : undefined
       );
 
+      // Filter by role
+      let filteredLeaves = leaves;
+
+      if (userRole === UserRole.MANAGER && employeeId) {
+        // Managers can only see their team's leave requests
+        const teamEmployeeIds = await managerTeamService.getTeamEmployeeIds(
+          employeeId,
+          tenantId
+        );
+
+        filteredLeaves = leaves.filter((leave: any) =>
+          teamEmployeeIds.includes(leave.employeeId) || leave.employeeId === employeeId
+        );
+
+        logger.info(
+          `Manager ${employeeId} leave requests filtered: ${leaves.length} -> ${filteredLeaves.length}`
+        );
+      } else if (userRole === UserRole.EMPLOYEE && employeeId) {
+        // Employees should only see their own requests
+        filteredLeaves = leaves.filter((leave: any) => leave.employeeId === employeeId);
+
+        logger.info(
+          `Employee ${employeeId} leave requests filtered: ${leaves.length} -> ${filteredLeaves.length}`
+        );
+      }
+
       res.json({
         success: true,
-        data: leaves,
-        count: leaves.length,
+        data: filteredLeaves,
+        count: filteredLeaves.length,
       });
     } catch (error: any) {
       res.status(400).json({

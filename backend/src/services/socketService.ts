@@ -79,6 +79,12 @@ export class SocketService {
     if (!this.io) return;
 
     this.io.on('connection', (socket: AuthenticatedSocket) => {
+      console.log('🔌 [WEBSOCKET] Client connected:', {
+        socketId: socket.id,
+        email: socket.email,
+        employeeId: socket.employeeId,
+        tenantId: socket.tenantId,
+      });
       logger.info(`🔌 Client connected: ${socket.id} (${socket.email})`);
 
       // Track user's socket
@@ -87,6 +93,10 @@ export class SocketService {
           this.userSockets.set(socket.employeeId, new Set());
         }
         this.userSockets.get(socket.employeeId)!.add(socket.id);
+        console.log('👤 User sockets updated:', {
+          employeeId: socket.employeeId,
+          socketCount: this.userSockets.get(socket.employeeId)!.size,
+        });
 
         // Notify online status
         this.broadcastUserStatus(socket.employeeId, 'online');
@@ -95,8 +105,18 @@ export class SocketService {
       // Join conversation rooms
       socket.on('join_conversation', async (conversationId: string) => {
         try {
+          console.log('📥 [WEBSOCKET] Join conversation request:', {
+            conversationId,
+            email: socket.email,
+            socketId: socket.id,
+          });
+
           socket.join(`conversation:${conversationId}`);
           logger.info(`📥 ${socket.email} joined conversation: ${conversationId}`);
+
+          // Verify room membership
+          const room = this.io?.sockets.adapter.rooms.get(`conversation:${conversationId}`);
+          console.log('✅ Room joined. Members:', room ? Array.from(room) : 'none');
 
           // Mark messages as read
           if (socket.employeeId && socket.tenantId) {
@@ -110,6 +130,7 @@ export class SocketService {
             });
           }
         } catch (error) {
+          console.error('❌ Error joining conversation:', error);
           logger.error('Error joining conversation:', error);
           socket.emit('error', { message: 'Failed to join conversation' });
         }
@@ -129,11 +150,20 @@ export class SocketService {
         attachments?: any[];
       }) => {
         try {
+          console.log('📨 [WEBSOCKET] Received send_message event:', {
+            conversationId: data.conversationId,
+            content: data.content,
+            from: socket.email,
+            socketId: socket.id,
+          });
+
           if (!socket.employeeId || !socket.tenantId) {
+            console.error('❌ Socket not authenticated');
             socket.emit('error', { message: 'Not authenticated' });
             return;
           }
 
+          console.log('💾 Saving message to database...');
           const message = await chatService.sendMessage({
             tenantId: socket.tenantId,
             conversationId: data.conversationId,
@@ -142,12 +172,27 @@ export class SocketService {
             replyToMessageId: data.replyToMessageId,
             attachments: data.attachments,
           });
+          console.log('✅ Message saved:', message.messageId);
 
-          // Emit to sender immediately
-          socket.emit('new_message', message);
+          // BROADCAST TO ENTIRE ROOM (including sender)
+          console.log('📡 Broadcasting to ENTIRE room:', `conversation:${data.conversationId}`);
 
-          // Broadcast to other participants in the conversation (excluding sender)
-          socket.broadcast.to(`conversation:${data.conversationId}`).emit('new_message', message);
+          if (this.io) {
+            // Emit to ALL sockets in the room
+            this.io.to(`conversation:${data.conversationId}`).emit('new_message', message);
+            console.log('✅ Message broadcast to entire room');
+          } else {
+            console.error('❌ Socket.IO instance not available!');
+          }
+
+          // Log room members
+          const room = this.io?.sockets.adapter.rooms.get(`conversation:${data.conversationId}`);
+          if (room) {
+            console.log('👥 Room members count:', room.size);
+            console.log('👥 Room socket IDs:', Array.from(room));
+          } else {
+            console.warn('⚠️ No room found for conversation:', data.conversationId);
+          }
 
           // Send notification to offline users
           const participants = await chatService.getParticipants(data.conversationId, socket.tenantId);
@@ -163,6 +208,7 @@ export class SocketService {
 
           logger.info(`💬 Message sent in conversation ${data.conversationId} by ${socket.email}`);
         } catch (error) {
+          console.error('❌ Error sending message:', error);
           logger.error('Error sending message:', error);
           socket.emit('error', { message: 'Failed to send message' });
         }

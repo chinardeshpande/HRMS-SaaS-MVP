@@ -13,6 +13,7 @@ import {
   EllipsisVerticalIcon,
   PhoneIcon,
   VideoCameraIcon,
+  ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline';
 
 export default function ChatConversation() {
@@ -29,6 +30,7 @@ export default function ChatConversation() {
   const [callType, setCallType] = useState<'audio' | 'video' | null>(null);
   const [incomingCall, setIncomingCall] = useState<any>(null);
   const [remoteSocketId, setRemoteSocketId] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<{url: string, fileName: string} | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -39,58 +41,130 @@ export default function ChatConversation() {
   const localStreamRef = useRef<MediaStream | null>(null);
   const remoteSocketIdRef = useRef<string | null>(null);
 
+  // Set up WebSocket listener ONCE on mount
   useEffect(() => {
     if (!conversationId) return;
 
+    console.log('🔧 [MOUNT] Setting up WebSocket for conversation:', conversationId);
+
     // Initialize WebSocket connection
     const tokens = localStorage.getItem('tokens');
-    if (tokens) {
-      const { token } = JSON.parse(tokens);
+    if (!tokens) return;
+
+    const { token } = JSON.parse(tokens);
+
+    if (!socketService.isConnected()) {
+      console.log('🔌 WebSocket not connected, connecting...');
       socketService.connect(token);
+    } else {
+      console.log('✅ WebSocket already connected');
+    }
 
-      // Join conversation
-      socketService.joinConversation(conversationId);
+    // Get socket directly and attach listener
+    const socket = socketService.getSocket();
+    if (!socket) {
+      console.error('❌ No socket available!');
+      return;
+    }
 
-      // Listen for new messages
-      socketService.onNewMessage((message: ChatMessage) => {
-        console.log('📨 New message received:', message);
-        if (message.conversationId === conversationId) {
-          // Avoid duplicates by checking if message already exists
-          setMessages(prev => {
-            const exists = prev.some(m => m.messageId === message.messageId);
-            if (exists) {
-              console.log('⚠️ Message already exists, skipping:', message.messageId);
-              return prev;
+    // Create message handler
+    const handleMessage = (message: ChatMessage) => {
+      console.log('📨 [RAW WEBSOCKET] Message received - FULL OBJECT:', message);
+      console.log('📨 Message details:', {
+        messageId: message.messageId,
+        conversationId: message.conversationId,
+        content: message.content,
+        senderId: message.senderId,
+        senderName: message.senderName,
+        sender: message.sender,
+        createdAt: message.createdAt,
+        messageType: message.messageType,
+        attachments: message.attachments,
+        currentConversation: conversationId
+      });
+
+      if (message.attachments && message.attachments.length > 0) {
+        console.log('📎 [WEBSOCKET] Message has attachments:', message.attachments);
+      }
+
+      // CRITICAL: Check if message is for THIS conversation
+      if (message.conversationId !== conversationId) {
+        console.log('⚠️ Message is for different conversation, ignoring');
+        return;
+      }
+
+      console.log('✅ Message is for THIS conversation, updating UI');
+
+      try {
+        setMessages(prev => {
+          // Check if already exists
+          const exists = prev.some(m => m.messageId === message.messageId);
+          if (exists) {
+            console.log('⚠️ Duplicate message, skipping');
+            return prev;
+          }
+
+          // Remove optimistic message if exists
+          const filtered = prev.filter(m => {
+            if (m.messageId?.startsWith('temp-') &&
+                m.senderId === message.senderId &&
+                m.content === message.content &&
+                m.createdAt && message.createdAt &&
+                Math.abs(new Date(m.createdAt).getTime() - new Date(message.createdAt).getTime()) < 5000) {
+              console.log('🔄 Replacing optimistic message');
+              return false;
             }
-            return [...prev, message];
+            return true;
           });
-          scrollToBottom();
-        }
-      });
 
-      // Listen for typing indicators
-      socketService.onUserTyping((data) => {
-        if (data.conversationId === conversationId) {
-          setIsTyping(true);
-          setTimeout(() => setIsTyping(false), 3000);
-        }
-      });
-
-      socketService.onUserStoppedTyping((data) => {
-        if (data.conversationId === conversationId) {
-          setIsTyping(false);
-        }
-      });
-
-      // WebRTC Call Listeners
-      const socket = socketService.getSocket();
-      if (socket) {
-        socket.on('incoming_call', (data: any) => {
-          console.log('📞 Incoming call:', data);
-          setIncomingCall(data);
+          const updated = [...filtered, message];
+          console.log('✅ UI UPDATED! New count:', updated.length);
+          console.log('✅ Updated messages array:', updated);
+          return updated;
         });
 
-        socket.on('call_answered', async (data: any) => {
+        setTimeout(() => scrollToBottom(), 100);
+      } catch (error) {
+        console.error('❌ ERROR updating messages state:', error);
+        console.error('❌ Problematic message:', message);
+      }
+    };
+
+    // Attach listener directly to socket
+    console.log('📡 Attaching new_message listener to socket');
+    socket.on('new_message', handleMessage);
+
+    // Join conversation after a short delay
+    setTimeout(() => {
+      console.log('📥 Joining conversation room:', conversationId);
+      socketService.joinConversation(conversationId);
+    }, 500);
+
+    // Typing indicators
+    const handleTyping = (data: any) => {
+      if (data.conversationId === conversationId) {
+        setIsTyping(true);
+        setTimeout(() => setIsTyping(false), 3000);
+      }
+    };
+
+    const handleStoppedTyping = (data: any) => {
+      if (data.conversationId === conversationId) {
+        setIsTyping(false);
+      }
+    };
+
+    socket.on('user_typing', handleTyping);
+    socket.on('user_stopped_typing', handleStoppedTyping);
+
+    // WebRTC Call Listeners
+    if (socket) {
+      socket.on('incoming_call', (data: any) => {
+        console.log('📞 Incoming call:', data);
+        setIncomingCall(data);
+      });
+
+      socket.on('call_answered', async (data: any) => {
           console.log('📞 Call answered:', data);
 
           // Set remote socket ID
@@ -195,19 +269,24 @@ export default function ChatConversation() {
           }
         });
       }
-    }
+
 
     // Load conversation and messages
     loadConversation();
     loadMessages();
 
     return () => {
+      console.log('🧹 [UNMOUNT] Cleaning up WebSocket listeners');
+
       if (conversationId) {
         socketService.leaveConversation(conversationId);
       }
 
       const socket = socketService.getSocket();
       if (socket) {
+        socket.off('new_message', handleMessage);
+        socket.off('user_typing', handleTyping);
+        socket.off('user_stopped_typing', handleStoppedTyping);
         socket.off('incoming_call');
         socket.off('call_answered');
         socket.off('call_rejected');
@@ -215,6 +294,7 @@ export default function ChatConversation() {
         socket.off('webrtc_offer');
         socket.off('webrtc_answer');
         socket.off('webrtc_ice_candidate');
+        console.log('✅ All listeners removed');
       }
 
       endCall();
@@ -231,28 +311,75 @@ export default function ChatConversation() {
     }
   }, [isCallActive, localStreamRef.current]);
 
+  // WebSocket connection monitoring
+  useEffect(() => {
+    console.log('🔌 WebSocket connected:', socketService.isConnected());
+
+    const interval = setInterval(() => {
+      if (!socketService.isConnected()) {
+        console.log('⚠️ WebSocket disconnected, reconnecting...');
+        const tokens = localStorage.getItem('tokens');
+        if (tokens) {
+          const { token } = JSON.parse(tokens);
+          socketService.connect(token);
+          if (conversationId) {
+            socketService.joinConversation(conversationId);
+          }
+        }
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [conversationId]);
+
+  // Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedImage) {
+        setSelectedImage(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [selectedImage]);
+
   const loadConversation = async () => {
-    if (!conversationId) return;
+    if (!conversationId) {
+      console.error('❌ No conversation ID provided');
+      return;
+    }
+
+    console.log('📂 Loading conversation:', conversationId);
     try {
       const data = await chatService.getConversationById(conversationId);
+      console.log('✅ Conversation loaded:', data);
       setConversation(data);
     } catch (error) {
-      console.error('Error loading conversation:', error);
+      console.error('❌ Error loading conversation:', error);
+      alert('Failed to load conversation. Please try again.');
     }
   };
 
   const loadMessages = async () => {
-    if (!conversationId) return;
+    if (!conversationId) {
+      console.error('❌ No conversation ID for loading messages');
+      return;
+    }
+
+    console.log('📨 Loading messages for conversation:', conversationId);
     setLoading(true);
     try {
       const data = await chatService.getMessages(conversationId);
+      console.log('✅ Messages loaded:', data.length, 'messages');
       setMessages(data);
       scrollToBottom();
 
       // Mark messages as read
       await chatService.markAsRead(conversationId);
     } catch (error) {
-      console.error('Error loading messages:', error);
+      console.error('❌ Error loading messages:', error);
+      alert('Failed to load messages. Please refresh the page.');
     } finally {
       setLoading(false);
     }
@@ -305,11 +432,45 @@ export default function ChatConversation() {
     const content = messageInput.trim();
     setSending(true);
 
+    // Create optimistic message for instant UI update
+    const optimisticMessage: ChatMessage = {
+      messageId: `temp-${Date.now()}`,
+      conversationId: conversationId,
+      senderId: currentUserId,
+      senderName: currentUser?.firstName + ' ' + currentUser?.lastName || 'You',
+      content: content || (selectedFile ? 'Uploading...' : ''),
+      messageType: selectedFile ? (selectedFile.type.startsWith('image/') ? 'image' : 'file') : 'text',
+      createdAt: new Date().toISOString(),
+      isEdited: false,
+      status: 'sent',
+      attachments: [],
+    };
+
+    console.log('💬 [OPTIMISTIC] Adding optimistic message:', optimisticMessage.messageId);
+
+    // Add optimistic message immediately
+    setMessages(prev => {
+      console.log('📊 Messages before optimistic:', prev.length);
+      const updated = [...prev, optimisticMessage];
+      console.log('📊 Messages after optimistic:', updated.length);
+      return updated;
+    });
+    scrollToBottom();
+
+    // Clear input immediately for better UX
+    const messageCopy = messageInput;
+    const fileCopy = selectedFile;
+    setMessageInput('');
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+
     try {
-      if (selectedFile) {
+      if (fileCopy) {
         // Upload file using FormData
         const formData = new FormData();
-        formData.append('file', selectedFile);
+        formData.append('file', fileCopy);
         if (content) {
           formData.append('caption', content);
         }
@@ -318,7 +479,7 @@ export default function ChatConversation() {
         if (!tokens) throw new Error('No authentication token');
 
         const { token } = JSON.parse(tokens);
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
         console.log('📤 Uploading file to:', `${apiUrl}/chat/conversations/${conversationId}/upload`);
 
@@ -340,24 +501,75 @@ export default function ChatConversation() {
 
         const result = await response.json();
         console.log('✅ File uploaded successfully:', result);
+        console.log('📎 [FRONTEND] Received message data:', result.data);
+        console.log('📎 [FRONTEND] Attachments in response:', result.data?.attachments);
 
-        // Message will be broadcast via WebSocket and deduplicated in the listener
+        // Remove optimistic message and add real one
+        setMessages(prev => prev.filter(m => m.messageId !== optimisticMessage.messageId));
+        if (result.data) {
+          console.log('📥 [FRONTEND] Adding uploaded message to state:', {
+            messageId: result.data.messageId,
+            messageType: result.data.messageType,
+            attachments: result.data.attachments,
+          });
+          setMessages(prev => {
+            const exists = prev.some(m => m.messageId === result.data.messageId);
+            if (!exists) {
+              return [...prev, result.data];
+            }
+            return prev;
+          });
+        } else {
+          // Refetch messages to get the latest
+          await loadMessages();
+        }
       } else {
         // For text messages, use WebSocket for real-time delivery
+        console.log('📤 [FRONTEND] Sending message via WebSocket:', {
+          conversationId,
+          content,
+          optimisticMessageId: optimisticMessage.messageId,
+        });
+
+        if (!socketService.isConnected()) {
+          console.error('❌ WebSocket not connected! Cannot send message.');
+          throw new Error('WebSocket not connected');
+        }
+
         socketService.sendMessage({
           conversationId,
           content,
         });
+        console.log('✅ Message sent via WebSocket, waiting for confirmation...');
+
+        // The real message will come back via WebSocket and replace the optimistic one
+        // If it doesn't come back in 3 seconds, refetch
+        const optimisticId = optimisticMessage.messageId;
+        setTimeout(async () => {
+          setMessages(currentMessages => {
+            const stillHasOptimistic = currentMessages.some(m => m.messageId === optimisticId);
+            if (stillHasOptimistic) {
+              console.log('⚠️ WebSocket message not received in 3 seconds, refetching...');
+              loadMessages();
+            } else {
+              console.log('✅ Optimistic message was replaced by real message');
+            }
+            return currentMessages;
+          });
+        }, 3000);
       }
 
-      setMessageInput('');
-      setSelectedFile(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
       scrollToBottom();
     } catch (error) {
       console.error('❌ Error sending message:', error);
+
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(m => m.messageId !== optimisticMessage.messageId));
+
+      // Restore input values
+      setMessageInput(messageCopy);
+      setSelectedFile(fileCopy);
+
       alert(`Failed to send message: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setSending(false);
@@ -652,6 +864,57 @@ export default function ChatConversation() {
   const currentUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null;
   const currentUserId = currentUser?.employeeId;
 
+  // Diagnostic test function
+  const runWebSocketDiagnostic = () => {
+    console.log('=== WEBSOCKET DIAGNOSTIC TEST ===');
+    console.log('1. WebSocket connected:', socketService.isConnected());
+
+    const socket = socketService.getSocket();
+    console.log('2. Socket ID:', socket?.id);
+    console.log('3. Socket connected:', socket?.connected);
+    console.log('4. Conversation ID:', conversationId);
+
+    if (!conversationId || !socket) {
+      console.error('❌ Cannot run test - missing conversation or socket');
+      alert('WebSocket Error: Socket not connected or no conversation ID');
+      return;
+    }
+
+    console.log('5. Manually joining conversation...');
+    socketService.joinConversation(conversationId);
+
+    console.log('6. Setting up one-time test listener...');
+    socket.once('new_message', (msg: any) => {
+      console.log('✅ ✅ ✅ WEBSOCKET WORKING! Received:', msg);
+      alert('✅ WebSocket IS WORKING! Check console for details.');
+    });
+
+    console.log('7. Sending diagnostic test message...');
+    socketService.sendMessage({
+      conversationId,
+      content: 'DIAGNOSTIC_TEST_' + Date.now()
+    });
+
+    setTimeout(() => {
+      console.log('=== DIAGNOSTIC TEST TIMEOUT (3s) ===');
+      alert('⚠️ If you didn\'t see success message, WebSocket is NOT working. Check console.');
+    }, 3000);
+  };
+
+  // Show loading while conversation data is being fetched
+  if (loading && !conversation) {
+    return (
+      <ModernLayout>
+        <div className="h-[calc(100vh-120px)] flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-pink-600 mx-auto mb-4"></div>
+            <p className="text-gray-500">Loading conversation...</p>
+          </div>
+        </div>
+      </ModernLayout>
+    );
+  }
+
   return (
     <ModernLayout>
       <div className="h-[calc(100vh-120px)] flex flex-col bg-white rounded-xl shadow-sm border border-gray-200">
@@ -665,10 +928,10 @@ export default function ChatConversation() {
               <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
             </button>
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-white font-semibold shadow-md">
-              {conversation?.name?.charAt(0) || '?'}
+              {(conversation?.name || 'U').charAt(0).toUpperCase()}
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">{conversation?.name || 'Loading...'}</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{conversation?.name || 'Unknown'}</h2>
               <p className="text-sm text-gray-500">
                 {conversation?.type === 'group'
                   ? `${conversation?.participants?.length || 0} participants`
@@ -677,6 +940,14 @@ export default function ChatConversation() {
             </div>
           </div>
           <div className="flex items-center space-x-2">
+            {/* Diagnostic Test Button */}
+            <button
+              onClick={runWebSocketDiagnostic}
+              className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-semibold rounded transition-colors"
+              title="Test WebSocket Real-Time"
+            >
+              🔧 Test WS
+            </button>
             <button
               onClick={startAudioCall}
               className="p-2 hover:bg-white rounded-lg transition-colors group"
@@ -714,8 +985,16 @@ export default function ChatConversation() {
           ) : (
             <>
               {messages.map((message, index) => {
+                // Skip invalid messages
+                if (!message || !message.messageId) {
+                  console.error('⚠️ Invalid message object:', message);
+                  return null;
+                }
+
                 const isOwnMessage = message.senderId === currentUserId;
-                const showAvatar = index === 0 || messages[index - 1].senderId !== message.senderId;
+                const showAvatar = index === 0 || messages[index - 1]?.senderId !== message.senderId;
+                const senderName = message.senderName || message.sender?.firstName + ' ' + message.sender?.lastName || 'Unknown';
+                const senderInitial = senderName ? senderName.charAt(0).toUpperCase() : 'U';
 
                 return (
                   <div
@@ -724,12 +1003,12 @@ export default function ChatConversation() {
                   >
                     {!isOwnMessage && (
                       <div className={`w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-semibold ${showAvatar ? '' : 'invisible'}`}>
-                        {message.senderName.charAt(0)}
+                        {senderInitial}
                       </div>
                     )}
                     <div className={`flex flex-col max-w-md ${isOwnMessage ? 'items-end' : 'items-start'}`}>
                       {showAvatar && !isOwnMessage && (
-                        <span className="text-xs text-gray-500 mb-1 ml-2">{message.senderName}</span>
+                        <span className="text-xs text-gray-500 mb-1 ml-2">{senderName}</span>
                       )}
                       <div
                         className={`px-4 py-2 rounded-2xl shadow-sm ${
@@ -740,25 +1019,29 @@ export default function ChatConversation() {
                       >
                         {/* Image attachment */}
                         {message.messageType === 'image' && message.attachments && message.attachments.length > 0 && (
-                          <div className="mb-2">
-                            <a
-                              href={`${import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:3000'}${message.attachments[0].fileUrl}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="block"
-                            >
-                              <img
-                                src={`${import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:3000'}${message.attachments[0].fileUrl}`}
-                                alt={message.attachments[0].fileName}
-                                className="max-w-xs max-h-64 rounded-lg object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                              />
-                            </a>
+                          <div
+                            className="mb-2 cursor-pointer"
+                            onClick={() => {
+                              console.log('🖼️ [IMAGE CLICK] Full message:', message);
+                              console.log('🖼️ [IMAGE CLICK] Attachment:', message.attachments[0]);
+                              console.log('🖼️ [IMAGE CLICK] FileURL:', message.attachments[0].fileUrl);
+                              setSelectedImage({
+                                url: message.attachments[0].fileUrl,
+                                fileName: message.attachments[0].fileName || 'image.png'
+                              });
+                            }}
+                          >
+                            <img
+                              src={`http://localhost:5000${encodeURI(message.attachments[0].fileUrl)}`}
+                              alt={message.attachments[0].fileName}
+                              className="max-w-xs max-h-64 rounded-lg object-cover hover:opacity-90 transition-opacity"
+                            />
                           </div>
                         )}
                         {/* File attachment */}
                         {message.messageType === 'file' && message.attachments && message.attachments.length > 0 && (
                           <a
-                            href={`${import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:3000'}${message.attachments[0].fileUrl}`}
+                            href={`http://localhost:5000${encodeURI(message.attachments[0].fileUrl)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             download={message.attachments[0].fileName}
@@ -771,10 +1054,10 @@ export default function ChatConversation() {
                             </div>
                           </a>
                         )}
-                        <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                        <p className="text-sm whitespace-pre-wrap break-words">{message.content || '(no content)'}</p>
                       </div>
                       <span className={`text-xs text-gray-400 mt-1 ${isOwnMessage ? 'mr-2' : 'ml-2'}`}>
-                        {getRelativeTime(message.createdAt)}
+                        {message.createdAt ? getRelativeTime(message.createdAt) : 'Just now'}
                       </span>
                     </div>
                   </div>
@@ -924,6 +1207,82 @@ export default function ChatConversation() {
           peerConnection={peerConnectionRef.current}
           localStream={localStreamRef.current}
         />
+      )}
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-50 bg-black bg-opacity-95 flex items-center justify-center p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-7xl max-h-screen" onClick={(e) => e.stopPropagation()}>
+            {(() => {
+              const baseUrl = 'http://localhost:5000';
+              const encodedUrl = encodeURI(selectedImage.url);
+              const fullUrl = `${baseUrl}${encodedUrl}`;
+              console.log('🖼️ [MODAL] Constructing image URL:');
+              console.log('  Base URL:', baseUrl);
+              console.log('  Image URL (raw):', selectedImage.url);
+              console.log('  Image URL (encoded):', encodedUrl);
+              console.log('  Full URL:', fullUrl);
+              return null;
+            })()}
+            <img
+              src={`http://localhost:5000${encodeURI(selectedImage.url)}`}
+              alt={selectedImage.fileName}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg bg-gray-900"
+              onError={(e) => {
+                console.error('❌ Image failed to load:', selectedImage.url);
+                console.error('Full URL tried:', e.currentTarget.src);
+                console.error('Actual src attribute:', e.currentTarget.getAttribute('src'));
+                e.currentTarget.style.display = 'none';
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'text-white text-center p-8';
+                errorDiv.innerHTML = `
+                  <p class="text-xl mb-2">⚠️ Image failed to load</p>
+                  <p class="text-sm text-gray-400">URL: ${selectedImage.url}</p>
+                  <button onclick="window.location.reload()" class="mt-4 px-4 py-2 bg-pink-600 rounded">Reload Page</button>
+                `;
+                e.currentTarget.parentElement?.appendChild(errorDiv);
+              }}
+              onLoad={() => {
+                console.log('✅ Image loaded successfully:', selectedImage.url);
+              }}
+            />
+
+            {/* Close button */}
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 bg-white text-gray-800 rounded-full p-2 hover:bg-gray-100 transition-colors shadow-lg"
+              title="Close (Esc)"
+            >
+              <XMarkIcon className="w-6 h-6" />
+            </button>
+
+            {/* Download button */}
+            <a
+              href={`http://localhost:5000${encodeURI(selectedImage.url)}`}
+              download={selectedImage.fileName}
+              className="absolute bottom-4 right-4 bg-gradient-to-br from-pink-500 to-rose-600 text-white px-4 py-2 rounded-lg hover:from-pink-600 hover:to-rose-700 flex items-center gap-2 transition-all shadow-lg hover:shadow-xl"
+              onClick={(e) => {
+                console.log('📥 Downloading image:', selectedImage.url);
+              }}
+            >
+              <ArrowDownTrayIcon className="w-5 h-5" />
+              Download
+            </a>
+
+            {/* Image info */}
+            <div className="absolute bottom-4 left-4 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg text-sm">
+              {selectedImage.fileName}
+            </div>
+
+            {/* Debug info - remove in production */}
+            <div className="absolute top-4 left-4 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs">
+              {`${import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:5000'}${selectedImage.url}`.substring(0, 50)}...
+            </div>
+          </div>
+        </div>
       )}
     </ModernLayout>
   );

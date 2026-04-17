@@ -9,9 +9,11 @@ import { Candidate } from '../models/Candidate';
 import { ProbationCase } from '../models/ProbationCase';
 import { Department } from '../models/Department';
 import { Designation } from '../models/Designation';
-import { EmploymentStatus } from '../../../shared/types';
+import { EmploymentStatus, UserRole } from '../../../shared/types';
 import { ProbationState } from '../models/enums/ProbationState';
 import { ExitState } from '../models/enums/ExitState';
+import managerTeamService from './managerTeamService';
+import logger from '../utils/logger';
 
 export interface DashboardStats {
   // Employee stats
@@ -87,6 +89,228 @@ export class DashboardService {
       ...exitStats,
       ...approvalStats,
       ...quickStats,
+    };
+  }
+
+  /**
+   * Get dashboard statistics filtered by user role
+   *
+   * ROLE-BASED STATS:
+   * - EMPLOYEE: Personal stats only (own attendance, own leave balance)
+   * - MANAGER: Team stats (team attendance, team leave requests, direct reports)
+   * - HR_ADMIN/SYSTEM_ADMIN: Organization-wide stats
+   */
+  async getDashboardStatsByRole(
+    tenantId: string,
+    userRole: UserRole,
+    employeeId: string | null
+  ): Promise<DashboardStats> {
+    logger.info(`Getting dashboard stats for role: ${userRole}`);
+
+    switch (userRole) {
+      case UserRole.SYSTEM_ADMIN:
+      case UserRole.HR_ADMIN:
+        // HR and System Admins get full organization stats
+        return this.getDashboardStats(tenantId);
+
+      case UserRole.MANAGER:
+        // Managers get team-specific stats
+        if (!employeeId) {
+          logger.warn('Manager has no employeeId, returning empty stats');
+          return this.getEmptyStats();
+        }
+        return this.getManagerDashboardStats(tenantId, employeeId);
+
+      case UserRole.EMPLOYEE:
+        // Employees get personal stats only
+        if (!employeeId) {
+          logger.warn('Employee has no employeeId, returning empty stats');
+          return this.getEmptyStats();
+        }
+        return this.getEmployeeDashboardStats(tenantId, employeeId);
+
+      default:
+        logger.warn(`Unknown role: ${userRole}, returning empty stats`);
+        return this.getEmptyStats();
+    }
+  }
+
+  /**
+   * Get dashboard stats for a manager (team-specific)
+   */
+  private async getManagerDashboardStats(
+    tenantId: string,
+    managerId: string
+  ): Promise<DashboardStats> {
+    // Get manager's direct reports
+    const teamEmployeeIds = await managerTeamService.getTeamEmployeeIds(
+      managerId,
+      tenantId
+    );
+
+    if (teamEmployeeIds.length === 0) {
+      logger.info(`Manager ${managerId} has no direct reports`);
+      return this.getEmptyStats();
+    }
+
+    // Get team employee stats
+    const totalEmployees = teamEmployeeIds.length;
+    const activeEmployees = teamEmployeeIds.length; // All in team are active
+
+    // Get team attendance today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [presentToday, onLeaveToday] = await Promise.all([
+      this.attendanceRepo.count({
+        where: {
+          tenantId,
+          date: today,
+          status: AttendanceStatus.PRESENT,
+          employeeId: teamEmployeeIds.length > 0 ? undefined : 'none', // Avoid IN query with empty array
+        },
+      }),
+      this.attendanceRepo.count({
+        where: {
+          tenantId,
+          date: today,
+          status: AttendanceStatus.ON_LEAVE,
+          employeeId: teamEmployeeIds.length > 0 ? undefined : 'none',
+        },
+      }),
+    ]);
+
+    const absentToday = totalEmployees - presentToday - onLeaveToday;
+
+    // Get pending leave approvals for team
+    const pendingLeaveApprovals = await this.leaveRepo
+      .createQueryBuilder('leave')
+      .where('leave.tenantId = :tenantId', { tenantId })
+      .andWhere('leave.status = :status', { status: LeaveStatus.PENDING })
+      .andWhere('leave.employeeId IN (:...employeeIds)', {
+        employeeIds: teamEmployeeIds,
+      })
+      .getCount();
+
+    // Get probation cases for team
+    const activeProbation = await this.employeeRepo
+      .createQueryBuilder('employee')
+      .where('employee.tenantId = :tenantId', { tenantId })
+      .andWhere('employee.employeeId IN (:...employeeIds)', {
+        employeeIds: teamEmployeeIds,
+      })
+      .andWhere('employee.probationEndDate IS NOT NULL')
+      .andWhere('employee.probationEndDate >= :today', { today: new Date() })
+      .getCount();
+
+    return {
+      totalEmployees,
+      activeEmployees,
+      employeeTrend: 0,
+      presentToday,
+      absentToday,
+      onLeaveToday,
+      attendanceTrend: 0,
+      upcomingOnboarding: 0,
+      activeProbation,
+      probationEndingSoon: 0,
+      upcomingExits: 0,
+      exitThisMonth: 0,
+      pendingLeaveApprovals,
+      pendingApprovals: pendingLeaveApprovals,
+      departmentCount: 0,
+      designationCount: 0,
+    };
+  }
+
+  /**
+   * Get dashboard stats for an employee (personal stats)
+   */
+  private async getEmployeeDashboardStats(
+    tenantId: string,
+    employeeId: string
+  ): Promise<DashboardStats> {
+    // Get employee data
+    const employee = await this.employeeRepo.findOne({
+      where: { employeeId, tenantId },
+    });
+
+    if (!employee) {
+      return this.getEmptyStats();
+    }
+
+    // Check attendance today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const attendanceToday = await this.attendanceRepo.findOne({
+      where: {
+        employeeId,
+        tenantId,
+        date: today,
+      },
+    });
+
+    const presentToday = attendanceToday?.status === AttendanceStatus.PRESENT ? 1 : 0;
+    const onLeaveToday = attendanceToday?.status === AttendanceStatus.ON_LEAVE ? 1 : 0;
+    const absentToday = attendanceToday ? 0 : 1;
+
+    // Check if on probation
+    const isOnProbation =
+      employee.probationEndDate && new Date(employee.probationEndDate) > new Date()
+        ? 1
+        : 0;
+
+    // Get pending leave requests
+    const pendingLeaveApprovals = await this.leaveRepo.count({
+      where: {
+        employeeId,
+        tenantId,
+        status: LeaveStatus.PENDING,
+      },
+    });
+
+    return {
+      totalEmployees: 1,
+      activeEmployees: 1,
+      employeeTrend: 0,
+      presentToday,
+      absentToday,
+      onLeaveToday,
+      attendanceTrend: 0,
+      upcomingOnboarding: 0,
+      activeProbation: isOnProbation,
+      probationEndingSoon: 0,
+      upcomingExits: 0,
+      exitThisMonth: 0,
+      pendingLeaveApprovals,
+      pendingApprovals: pendingLeaveApprovals,
+      departmentCount: 0,
+      designationCount: 0,
+    };
+  }
+
+  /**
+   * Return empty stats structure
+   */
+  private getEmptyStats(): DashboardStats {
+    return {
+      totalEmployees: 0,
+      activeEmployees: 0,
+      employeeTrend: 0,
+      presentToday: 0,
+      absentToday: 0,
+      onLeaveToday: 0,
+      attendanceTrend: 0,
+      upcomingOnboarding: 0,
+      activeProbation: 0,
+      probationEndingSoon: 0,
+      upcomingExits: 0,
+      exitThisMonth: 0,
+      pendingLeaveApprovals: 0,
+      pendingApprovals: 0,
+      departmentCount: 0,
+      designationCount: 0,
     };
   }
 

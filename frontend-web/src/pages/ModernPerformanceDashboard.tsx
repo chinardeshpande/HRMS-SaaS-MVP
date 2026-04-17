@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import PerformanceStatusChip from '../components/performance/PerformanceStatusChip';
+import { EmptyState } from '../components/common/EmptyState';
+import performanceService, { PerformanceReview as APIPerformanceReview } from '../services/performanceService';
 import {
   ClipboardDocumentListIcon,
   ChartBarIcon,
@@ -9,32 +11,19 @@ import {
   CheckCircleIcon,
   UserGroupIcon,
   DocumentTextIcon,
+  PlusIcon,
 } from '@heroicons/react/24/outline';
-
-interface PerformanceReview {
-  reviewId: string;
-  employeeId: string;
-  employee: {
-    employeeCode: string;
-    firstName: string;
-    lastName: string;
-    department: { name: string };
-    designation: { name: string };
-  };
-  reviewCycle: string;
-  currentState: string;
-  overallRating?: number;
-  updatedAt: string;
-}
 
 export default function ModernPerformanceDashboard() {
   const navigate = useNavigate();
-  const [reviews, setReviews] = useState<PerformanceReview[]>([]);
-  const [filteredReviews, setFilteredReviews] = useState<PerformanceReview[]>([]);
+  const [reviews, setReviews] = useState<APIPerformanceReview[]>([]);
+  const [filteredReviews, setFilteredReviews] = useState<APIPerformanceReview[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [activeView, setActiveView] = useState<'all-reviews' | 'pending' | 'due-reviews'>('all-reviews');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState({ total: 0, goalSetting: 0, midYear: 0, annualReview: 0, rating: 0 });
 
   useEffect(() => {
     fetchReviews();
@@ -47,88 +36,15 @@ export default function ModernPerformanceDashboard() {
   const fetchReviews = async () => {
     try {
       setLoading(true);
-      // Mock data - replace with actual API call
-      const mockReviews: PerformanceReview[] = [
-        {
-          reviewId: '1',
-          employeeId: 'emp1',
-          employee: {
-            employeeCode: 'EMP001',
-            firstName: 'John',
-            lastName: 'Doe',
-            department: { name: 'Engineering' },
-            designation: { name: 'Senior Software Engineer' },
-          },
-          reviewCycle: '2026',
-          currentState: 'goals_approved',
-          overallRating: undefined,
-          updatedAt: '2026-02-15T10:00:00Z',
-        },
-        {
-          reviewId: '2',
-          employeeId: 'emp2',
-          employee: {
-            employeeCode: 'EMP002',
-            firstName: 'Jane',
-            lastName: 'Smith',
-            department: { name: 'Product' },
-            designation: { name: 'Product Manager' },
-          },
-          reviewCycle: '2026',
-          currentState: 'mid_year_completed',
-          overallRating: undefined,
-          updatedAt: '2026-06-20T14:30:00Z',
-        },
-        {
-          reviewId: '3',
-          employeeId: 'emp3',
-          employee: {
-            employeeCode: 'EMP003',
-            firstName: 'Mike',
-            lastName: 'Johnson',
-            department: { name: 'Sales' },
-            designation: { name: 'Account Executive' },
-          },
-          reviewCycle: '2026',
-          currentState: 'annual_review_submitted',
-          overallRating: undefined,
-          updatedAt: '2025-12-10T09:15:00Z',
-        },
-        {
-          reviewId: '4',
-          employeeId: 'emp4',
-          employee: {
-            employeeCode: 'EMP004',
-            firstName: 'Sarah',
-            lastName: 'Williams',
-            department: { name: 'Marketing' },
-            designation: { name: 'Marketing Manager' },
-          },
-          reviewCycle: '2026',
-          currentState: 'rating_approved',
-          overallRating: 4.5,
-          updatedAt: '2026-01-05T16:45:00Z',
-        },
-        {
-          reviewId: '5',
-          employeeId: 'emp5',
-          employee: {
-            employeeCode: 'EMP005',
-            firstName: 'David',
-            lastName: 'Brown',
-            department: { name: 'Engineering' },
-            designation: { name: 'DevOps Engineer' },
-          },
-          reviewCycle: '2026',
-          currentState: 'goal_setting',
-          overallRating: undefined,
-          updatedAt: '2026-01-10T11:20:00Z',
-        },
-      ];
+      setError(null);
 
-      setReviews(mockReviews);
-    } catch (error) {
+      const response = await performanceService.getAllReviews();
+      setReviews(response.data.reviews || []);
+      setStats(response.data.stats || { total: 0, goalSetting: 0, midYear: 0, annualReview: 0, rating: 0 });
+    } catch (error: any) {
       console.error('Failed to fetch reviews:', error);
+      setError(error.response?.data?.error?.message || 'Failed to load performance reviews');
+      setReviews([]);
     } finally {
       setLoading(false);
     }
@@ -192,8 +108,6 @@ export default function ModernPerformanceDashboard() {
     // TODO: Implement CSV export functionality
     console.log('Exporting performance reviews to CSV');
   };
-
-  const stats = getStatistics();
 
   return (
     <ModernLayout title="Performance Management">
@@ -395,14 +309,42 @@ export default function ModernPerformanceDashboard() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
-                      Loading...
+                    <td colSpan={7} className="px-4 py-12 text-center">
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <span className="text-gray-600">Loading reviews...</span>
+                      </div>
                     </td>
                   </tr>
                 ) : filteredReviews.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
-                      No performance reviews found
+                    <td colSpan={7} className="px-4">
+                      <EmptyState
+                        icon={<ChartBarIcon className="h-16 w-16 text-gray-400" />}
+                        title={reviews.length === 0 ? "No Performance Reviews Yet" : "No Matching Reviews"}
+                        description={
+                          reviews.length === 0
+                            ? "Get started by creating performance reviews for your employees. Set goals, track progress, and conduct annual reviews all in one place."
+                            : "Try adjusting your filters or search terms to find what you're looking for."
+                        }
+                        primaryAction={
+                          reviews.length === 0
+                            ? {
+                                label: "Create Review",
+                                onClick: () => navigate('/employees'),
+                                icon: <PlusIcon className="h-5 w-5 mr-2" />,
+                              }
+                            : undefined
+                        }
+                        secondaryAction={
+                          reviews.length === 0
+                            ? {
+                                label: "View Employees",
+                                onClick: () => navigate('/employees'),
+                              }
+                            : undefined
+                        }
+                      />
                     </td>
                   </tr>
                 ) : (

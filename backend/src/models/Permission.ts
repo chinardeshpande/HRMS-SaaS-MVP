@@ -43,41 +43,41 @@ export enum PermissionAction {
 @Entity('permissions')
 export class Permission {
   @PrimaryGeneratedColumn('uuid')
-  permissionId: string;
+  permissionId!: string;
 
-  @Column({ length: 100, unique: true })
-  permissionCode: string; // e.g., "employees.view", "payroll.create"
+  @Column({ type: 'varchar', length: 100, unique: true })
+  permissionCode!: string; // e.g., "employees.view", "payroll.create"
 
-  @Column({ length: 255 })
-  permissionName: string; // e.g., "View Employees", "Create Payroll"
+  @Column({ type: 'varchar', length: 255 })
+  permissionName!: string; // e.g., "View Employees", "Create Payroll"
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  description?: string;
 
   @Column({
     type: 'enum',
     enum: PermissionModule,
   })
-  module: PermissionModule;
+  module!: PermissionModule;
 
   @Column({
     type: 'enum',
     enum: PermissionAction,
   })
-  action: PermissionAction;
+  action!: PermissionAction;
 
-  @Column({ default: true })
-  isActive: boolean;
+  @Column({ type: 'boolean', default: true })
+  isActive!: boolean;
 
-  @Column({ default: false })
-  isSystemPermission: boolean; // Cannot be deleted
+  @Column({ type: 'boolean', default: false })
+  isSystemPermission!: boolean; // Cannot be deleted
 
   @ManyToMany(() => Role, role => role.permissions)
-  roles: Role[];
+  roles!: Role[];
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

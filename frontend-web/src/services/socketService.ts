@@ -11,7 +11,7 @@ class SocketService {
     }
 
     this.token = token;
-    const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:3000';
+    const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:5000';
 
     console.log('🔌 Connecting to WebSocket server:', SOCKET_URL);
 

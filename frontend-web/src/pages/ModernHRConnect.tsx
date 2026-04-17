@@ -5,6 +5,8 @@ import hrConnectService, { Post, Group } from '../services/hrConnectService';
 import chatService, { ChatConversation } from '../services/chatService';
 import ticketService, { HRTicket } from '../services/ticketService';
 import socketService from '../services/socketService';
+import employeeService from '../services/employeeService';
+import { useAuth } from '../context/AuthContext';
 import {
   ChatBubbleLeftRightIcon,
   MegaphoneIcon,
@@ -24,6 +26,7 @@ export default function ModernHRConnect() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const tabParam = searchParams.get('tab') as 'feed' | 'chat' | 'groups' | 'helpdesk' | null;
+  const { user } = useAuth();
 
   const [activeTab, setActiveTab] = useState<'feed' | 'chat' | 'groups' | 'helpdesk'>(tabParam || 'feed');
   const [posts, setPosts] = useState<Post[]>([]);
@@ -49,6 +52,8 @@ export default function ModernHRConnect() {
 
   // Chat state
   const [showNewChatModal, setShowNewChatModal] = useState(false);
+  const [availableEmployees, setAvailableEmployees] = useState<any[]>([]);
+  const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
 
   // Ticket creation modal
   const [showTicketModal, setShowTicketModal] = useState(false);
@@ -207,6 +212,17 @@ export default function ModernHRConnect() {
       console.error('Error fetching groups:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAvailableEmployees = async () => {
+    try {
+      const data = await employeeService.getAll({ status: 'active' });
+      // Filter out current user from the list
+      const filtered = data.filter(emp => emp.employeeId !== user?.employeeId);
+      setAvailableEmployees(filtered);
+    } catch (error) {
+      console.error('Error fetching employees:', error);
     }
   };
 
@@ -416,7 +432,13 @@ export default function ModernHRConnect() {
                 </button>
               )}
               {activeTab === 'chat' && (
-                <button onClick={() => setShowNewChatModal(true)} className="btn btn-primary flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setShowNewChatModal(true);
+                    fetchAvailableEmployees();
+                  }}
+                  className="btn btn-primary flex items-center gap-2"
+                >
                   <PlusIcon className="h-5 w-5" />
                   New Chat
                 </button>
@@ -643,7 +665,10 @@ export default function ModernHRConnect() {
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">Messages</h2>
                 <button
-                  onClick={() => setShowNewChatModal(true)}
+                  onClick={() => {
+                    setShowNewChatModal(true);
+                    fetchAvailableEmployees();
+                  }}
                   className="btn btn-primary btn-sm"
                 >
                   <PlusIcon className="h-4 w-4 mr-2" />
@@ -661,7 +686,10 @@ export default function ModernHRConnect() {
                   <ChatBubbleLeftRightIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-500">No conversations yet</p>
                   <button
-                    onClick={() => setShowNewChatModal(true)}
+                    onClick={() => {
+                      setShowNewChatModal(true);
+                      fetchAvailableEmployees();
+                    }}
                     className="btn btn-primary mt-4"
                   >
                     Start a Conversation
@@ -1066,12 +1094,24 @@ export default function ModernHRConnect() {
       {showNewChatModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex min-h-screen items-center justify-center p-4">
-            <div className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" onClick={() => setShowNewChatModal(false)} />
+            <div
+              className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"
+              onClick={() => {
+                setShowNewChatModal(false);
+                setEmployeeSearchTerm('');
+              }}
+            />
             <div className="relative w-full max-w-lg transform overflow-hidden rounded-xl bg-white shadow-2xl transition-all">
               <div className="border-b border-gray-200 bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold text-white">New Message</h2>
-                  <button onClick={() => setShowNewChatModal(false)} className="text-white hover:text-gray-200">
+                  <button
+                    onClick={() => {
+                      setShowNewChatModal(false);
+                      setEmployeeSearchTerm('');
+                    }}
+                    className="text-white hover:text-gray-200"
+                  >
                     <XMarkIcon className="h-6 w-6" />
                   </button>
                 </div>
@@ -1083,6 +1123,8 @@ export default function ModernHRConnect() {
                     <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <input
                       type="text"
+                      value={employeeSearchTerm}
+                      onChange={(e) => setEmployeeSearchTerm(e.target.value)}
                       placeholder="Search by name or email..."
                       className="input w-full pl-10"
                     />
@@ -1090,55 +1132,72 @@ export default function ModernHRConnect() {
                 </div>
 
                 <div className="mb-4">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Suggested contacts</h3>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                    {employeeSearchTerm ? 'Search Results' : 'Available Colleagues'}
+                  </h3>
                   <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {[
-                      { id: '1', name: 'Sarah Williams', role: 'HR Manager', email: 'sarah.w@company.com', online: true },
-                      { id: '2', name: 'John Smith', role: 'Engineering Lead', email: 'john.s@company.com', online: false },
-                      { id: '3', name: 'Emma Johnson', role: 'Product Manager', email: 'emma.j@company.com', online: true },
-                      { id: '4', name: 'Michael Brown', role: 'Sales Director', email: 'michael.b@company.com', online: false },
-                      { id: '5', name: 'Lisa Davis', role: 'Marketing Manager', email: 'lisa.d@company.com', online: true },
-                    ].map((contact) => (
-                      <button
-                        key={contact.id}
-                        onClick={async () => {
-                          try {
-                            const newConv = await chatService.createConversation({
-                              conversationType: 'direct',
-                              name: contact.name,
-                              participantIds: ['current', contact.id],
-                            });
-                            setShowNewChatModal(false);
-                            navigate(`/chat/${newConv.conversationId}`);
-                          } catch (error) {
-                            console.error('Error creating conversation:', error);
-                          }
-                        }}
-                        className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors text-left"
-                      >
-                        <div className="relative">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
-                            {contact.name.charAt(0)}
-                          </div>
-                          {contact.online && (
-                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-gray-900">{contact.name}</p>
-                          <p className="text-xs text-gray-500">{contact.role}</p>
-                        </div>
-                        {contact.online && (
-                          <span className="text-xs text-green-600 font-medium">Active</span>
-                        )}
-                      </button>
-                    ))}
+                    {availableEmployees.length === 0 ? (
+                      <div className="text-center py-8">
+                        <UserGroupIcon className="h-12 w-12 text-gray-300 mx-auto mb-2" />
+                        <p className="text-sm text-gray-500">No employees found</p>
+                      </div>
+                    ) : (
+                      availableEmployees
+                        .filter(emp => {
+                          if (!employeeSearchTerm) return true;
+                          const searchLower = employeeSearchTerm.toLowerCase();
+                          const fullName = `${emp.firstName} ${emp.lastName}`.toLowerCase();
+                          return fullName.includes(searchLower) || emp.email.toLowerCase().includes(searchLower);
+                        })
+                        .map((employee) => (
+                          <button
+                            key={employee.employeeId}
+                            onClick={async () => {
+                              try {
+                                console.log('Creating conversation with employee:', employee.employeeId);
+                                const newConv = await chatService.createConversation({
+                                  conversationType: 'direct',
+                                  name: `${employee.firstName} ${employee.lastName}`,
+                                  participantIds: [employee.employeeId], // Backend will add current user automatically
+                                });
+                                console.log('Conversation created:', newConv);
+                                setShowNewChatModal(false);
+                                setEmployeeSearchTerm('');
+                                navigate(`/chat/${newConv.conversationId}`);
+                              } catch (error: any) {
+                                console.error('Error creating conversation:', error);
+                                console.error('Error details:', error.response?.data);
+                                alert(`Failed to create conversation: ${error.response?.data?.error?.message || error.message || 'Unknown error'}`);
+                              }
+                            }}
+                            className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors text-left"
+                          >
+                            <div className="relative">
+                              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
+                                {employee.firstName.charAt(0)}{employee.lastName.charAt(0)}
+                              </div>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-gray-900">
+                                {employee.firstName} {employee.lastName}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {employee.designation?.title || 'No Designation'} • {employee.department?.name || 'No Department'}
+                              </p>
+                              <p className="text-xs text-gray-400">{employee.email}</p>
+                            </div>
+                          </button>
+                        ))
+                    )}
                   </div>
                 </div>
 
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
                   <button
-                    onClick={() => setShowNewChatModal(false)}
+                    onClick={() => {
+                      setShowNewChatModal(false);
+                      setEmployeeSearchTerm('');
+                    }}
                     className="btn btn-secondary"
                   >
                     Cancel

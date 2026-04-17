@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 40px; }
+    .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px; }
+    .company-name { font-size: 20pt; font-weight: bold; color: #2563eb; margin-bottom: 5px; }
+    .company-details { font-size: 9pt; color: #666; }
+    .document-title { text-align: center; font-size: 14pt; font-weight: bold; margin: 30px 0 20px 0; text-decoration: underline; }
+    .content { text-align: justify; margin: 15px 0; }
+    .info-box { background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; margin: 20px 0; }
+    .footer { margin-top: 50px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 8pt; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="company-name">{{company.name}}</div>
+    <div class="company-details">
+      {{#if company.address}}{{company.address}}, {{company.city}}, {{company.state}} {{company.postalCode}}<br>{{/if}}
+      {{#if company.phone}}Phone: {{company.phone}} | {{/if}}
+      {{#if company.email}}Email: {{company.email}}{{/if}}
+      {{#if company.website}}<br>Website: {{company.website}}{{/if}}
+    </div>
+  </div>
+
+  <div style="text-align: right; margin-bottom: 20px; font-size: 9pt;">
+    Ref: {{document.documentNumber}}<br>
+    Date: {{formatDate document.issueDate 'long'}}
+  </div>
+
+  <div class="document-title">TO WHOMSOEVER IT MAY CONCERN</div>
+
+  <div class="content">
+    This is to certify that <strong>{{recipient.fullName}}</strong> (Employee Code: <strong>{{recipient.code}}</strong>)
+    was employed with {{company.name}} from <strong>{{formatDate recipient.dateOfJoining 'long'}}</strong>
+    to <strong>{{formatDate custom.lastWorkingDate 'long'}}</strong>.
+  </div>
+
+  <div class="info-box">
+    <strong>Employment Details:</strong><br><br>
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td style="padding: 5px 0; width: 40%;"><strong>Employee Name:</strong></td>
+        <td style="padding: 5px 0;">{{recipient.fullName}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px 0;"><strong>Employee Code:</strong></td>
+        <td style="padding: 5px 0;">{{recipient.code}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px 0;"><strong>Designation:</strong></td>
+        <td style="padding: 5px 0;">{{recipient.designation}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px 0;"><strong>Department:</strong></td>
+        <td style="padding: 5px 0;">{{recipient.department}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px 0;"><strong>Date of Joining:</strong></td>
+        <td style="padding: 5px 0;">{{formatDate recipient.dateOfJoining 'long'}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px 0;"><strong>Last Working Day:</strong></td>
+        <td style="padding: 5px 0;">{{formatDate custom.lastWorkingDate 'long'}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px 0;"><strong>Period of Service:</strong></td>
+        <td style="padding: 5px 0;">{{#if custom.serviceYears}}{{custom.serviceYears}} years {{custom.serviceMonths}} months{{else}}As mentioned above{{/if}}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="content">
+    During {{recipient.firstName}}'s tenure with us, {{#ifEquals custom.gender 'Female'}}she{{else}}he{{/ifEquals}}
+    worked as {{recipient.designation}} in the {{recipient.department}} department. {{#ifEquals custom.gender 'Female'}}She{{else}}He{{/ifEquals}}
+    was responsible for {{#if custom.responsibilities}}{{custom.responsibilities}}{{else}}performing duties assigned in relation to the position{{/if}}.
+  </div>
+
+  <div class="content">
+    {{#if custom.performanceRemarks}}
+    <strong>Performance:</strong><br>
+    {{custom.performanceRemarks}}
+    {{else}}
+    {{#ifEquals custom.gender 'Female'}}She{{else}}He{{/ifEquals}} discharged {{#ifEquals custom.gender 'Female'}}her{{else}}his{{/ifEquals}}
+    duties with sincerity and dedication during the period of employment.
+    {{/if}}
+  </div>
+
+  <div class="content">
+    We wish {{#ifEquals custom.gender 'Female'}}her{{else}}him{{/ifEquals}} all the best in
+    {{#ifEquals custom.gender 'Female'}}her{{else}}his{{/ifEquals}} future endeavors.
+  </div>
+
+  <div style="margin-top: 60px;">
+    For <strong>{{company.name}}</strong><br><br>
+    <div style="margin-top: 60px;">
+      {{#if custom.signatoryName}}
+        <strong>{{custom.signatoryName}}</strong><br>
+        {{custom.signatoryDesignation}}<br>
+      {{else}}
+        <strong>Authorized Signatory</strong><br>
+        Human Resources Department<br>
+      {{/if}}
+      Date: {{formatDate document.issueDate 'long'}}
+    </div>
+  </div>
+
+  <div class="footer">
+    This is a computer-generated document. For verification, please contact {{company.email}}<br>
+    {{company.name}} | Document Number: {{document.documentNumber}}
+  </div>
+</body>
+</html>

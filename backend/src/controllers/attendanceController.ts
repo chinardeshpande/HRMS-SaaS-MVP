@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import attendanceService from '../services/attendanceService';
 import { AttendanceStatus } from '../models/Attendance';
+import managerTeamService from '../services/managerTeamService';
+import { UserRole } from '../../../shared/types';
+import logger from '../utils/logger';
 
 /**
  * @swagger
@@ -223,15 +226,21 @@ export class AttendanceController {
    * @swagger
    * /attendance/company-wide:
    *   get:
-   *     summary: Get company-wide attendance (HR only)
+   *     summary: Get company-wide attendance (role-based filtering)
    *     tags: [Attendance]
    *     responses:
    *       200:
    *         description: Company-wide attendance retrieved
+   *
+   * ROLE-BASED FILTERING:
+   * - MANAGER: Only see direct reports' attendance
+   * - HR_ADMIN/SYSTEM_ADMIN: See all attendance
    */
   async getCompanyWide(req: Request, res: Response) {
     try {
       const tenantId = (req as any).user.tenantId;
+      const userRole = (req as any).user.role as UserRole;
+      const employeeId = (req as any).user.employeeId;
       const { startDate, endDate, departmentId } = req.query;
 
       const start = startDate
@@ -239,6 +248,7 @@ export class AttendanceController {
         : new Date(new Date().setDate(1));
       const end = endDate ? new Date(endDate as string) : new Date();
 
+      // Get all attendance records
       const attendance = await attendanceService.getCompanyWideAttendance(
         tenantId,
         start,
@@ -246,9 +256,28 @@ export class AttendanceController {
         departmentId as string
       );
 
+      // Filter by role
+      let filteredAttendance = attendance;
+
+      if (userRole === UserRole.MANAGER && employeeId) {
+        // Managers can only see their team's attendance
+        const teamEmployeeIds = await managerTeamService.getTeamEmployeeIds(
+          employeeId,
+          tenantId
+        );
+
+        filteredAttendance = attendance.filter((record: any) =>
+          teamEmployeeIds.includes(record.employeeId) || record.employeeId === employeeId
+        );
+
+        logger.info(
+          `Manager ${employeeId} attendance filtered: ${attendance.length} -> ${filteredAttendance.length}`
+        );
+      }
+
       res.json({
         success: true,
-        data: attendance,
+        data: filteredAttendance,
       });
     } catch (error: any) {
       res.status(400).json({
@@ -326,6 +355,319 @@ export class AttendanceController {
         success: true,
         data: result,
       });
+    } catch (error: any) {
+      res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * @swagger
+   * /attendance/regularization/request:
+   *   post:
+   *     summary: Request time entry regularization
+   *     tags: [Attendance]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               date:
+   *                 type: string
+   *                 format: date
+   *               requestedCheckIn:
+   *                 type: string
+   *                 format: date-time
+   *               requestedCheckOut:
+   *                 type: string
+   *                 format: date-time
+   *               reason:
+   *                 type: string
+   *     responses:
+   *       200:
+   *         description: Regularization request submitted
+   */
+  async requestRegularization(req: Request, res: Response) {
+    try {
+      const employeeId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
+      const { date, requestedCheckIn, requestedCheckOut, reason } = req.body;
+
+      const dateObj = new Date(date);
+      dateObj.setHours(0, 0, 0, 0);
+
+      const requestedCheckInDate = requestedCheckIn ? new Date(requestedCheckIn) : undefined;
+      const requestedCheckOutDate = requestedCheckOut ? new Date(requestedCheckOut) : undefined;
+
+      const regularization = await attendanceService.requestRegularization(
+        employeeId,
+        tenantId,
+        dateObj,
+        requestedCheckInDate,
+        requestedCheckOutDate,
+        reason
+      );
+
+      res.json({
+        success: true,
+        data: regularization,
+        message: 'Regularization request submitted successfully',
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * @swagger
+   * /attendance/regularization/my-requests:
+   *   get:
+   *     summary: Get my regularization requests
+   *     tags: [Attendance]
+   *     responses:
+   *       200:
+   *         description: Regularization requests retrieved
+   */
+  async getMyRegularizationRequests(req: Request, res: Response) {
+    try {
+      const employeeId = (req as any).user.employeeId;
+
+      const requests = await attendanceService.getMyRegularizationRequests(employeeId);
+
+      res.json({
+        success: true,
+        data: requests,
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * @swagger
+   * /attendance/regularization/pending:
+   *   get:
+   *     summary: Get pending regularization requests (Manager/HR)
+   *     tags: [Attendance]
+   *     responses:
+   *       200:
+   *         description: Pending regularization requests retrieved
+   */
+  async getPendingRegularizations(req: Request, res: Response) {
+    try {
+      const tenantId = (req as any).user.tenantId;
+      const userRole = (req as any).user.role as UserRole;
+      const employeeId = (req as any).user.employeeId;
+
+      let employeeIds: string[] | undefined;
+
+      if (userRole === UserRole.MANAGER) {
+        // Managers can only see their team's regularization requests
+        employeeIds = await managerTeamService.getTeamEmployeeIds(
+          employeeId,
+          tenantId
+        );
+      }
+
+      const requests = await attendanceService.getPendingRegularizations(
+        tenantId,
+        employeeIds
+      );
+
+      res.json({
+        success: true,
+        data: requests,
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * @swagger
+   * /attendance/regularization/{editId}/approve:
+   *   put:
+   *     summary: Approve regularization request (Manager/HR)
+   *     tags: [Attendance]
+   *     parameters:
+   *       - in: path
+   *         name: editId
+   *         required: true
+   *         schema:
+   *           type: string
+   *     requestBody:
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               comments:
+   *                 type: string
+   *     responses:
+   *       200:
+   *         description: Regularization approved
+   */
+  async approveRegularization(req: Request, res: Response) {
+    try {
+      const { editId } = req.params;
+      const approverId = (req as any).user.employeeId;
+      const { comments } = req.body;
+
+      const result = await attendanceService.approveRegularization(
+        editId,
+        approverId,
+        comments
+      );
+
+      res.json({
+        success: true,
+        data: result,
+        message: 'Regularization request approved successfully',
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * @swagger
+   * /attendance/regularization/{editId}/reject:
+   *   put:
+   *     summary: Reject regularization request (Manager/HR)
+   *     tags: [Attendance]
+   *     parameters:
+   *       - in: path
+   *         name: editId
+   *         required: true
+   *         schema:
+   *           type: string
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - comments
+   *             properties:
+   *               comments:
+   *                 type: string
+   *     responses:
+   *       200:
+   *         description: Regularization rejected
+   */
+  async rejectRegularization(req: Request, res: Response) {
+    try {
+      const { editId } = req.params;
+      const approverId = (req as any).user.employeeId;
+      const { comments } = req.body;
+
+      if (!comments) {
+        return res.status(400).json({
+          success: false,
+          error: 'Comments are required when rejecting a regularization request',
+        });
+      }
+
+      const result = await attendanceService.rejectRegularization(
+        editId,
+        approverId,
+        comments
+      );
+
+      res.json({
+        success: true,
+        data: result,
+        message: 'Regularization request rejected',
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * @swagger
+   * /attendance/team:
+   *   get:
+   *     summary: Get team attendance (Manager/HR)
+   *     tags: [Attendance]
+   *     parameters:
+   *       - in: query
+   *         name: startDate
+   *         schema:
+   *           type: string
+   *           format: date
+   *       - in: query
+   *         name: endDate
+   *         schema:
+   *           type: string
+   *           format: date
+   *     responses:
+   *       200:
+   *         description: Team attendance retrieved
+   */
+  async getTeamAttendance(req: Request, res: Response) {
+    try {
+      const tenantId = (req as any).user.tenantId;
+      const userRole = (req as any).user.role as UserRole;
+      const employeeId = (req as any).user.employeeId;
+      const { startDate, endDate } = req.query;
+
+      const start = startDate
+        ? new Date(startDate as string)
+        : new Date(new Date().setDate(1));
+      const end = endDate ? new Date(endDate as string) : new Date();
+
+      // For managers, filter by team. For HR/Admin, use getCompanyWideAttendance instead
+      if (userRole === UserRole.MANAGER) {
+        const employeeIds = await managerTeamService.getTeamEmployeeIds(
+          employeeId,
+          tenantId
+        );
+
+        const attendance = await attendanceService.getTeamAttendance(
+          tenantId,
+          employeeIds,
+          start,
+          end
+        );
+
+        res.json({
+          success: true,
+          data: attendance,
+        });
+      } else {
+        // HR/Admin: use company-wide attendance endpoint
+        const attendance = await attendanceService.getCompanyWideAttendance(
+          tenantId,
+          start,
+          end
+        );
+
+        res.json({
+          success: true,
+          data: attendance,
+        });
+      }
     } catch (error: any) {
       res.status(400).json({
         success: false,

@@ -50,12 +50,11 @@ export default function ModernEmployees() {
 
   // Fetch data on mount
   useEffect(() => {
-    fetchEmployees();
     fetchDepartments();
     fetchStats();
   }, []);
 
-  // Apply filters when they change
+  // Apply filters when they change (includes initial fetch with empty filters)
   useEffect(() => {
     const filters: EmployeeFilters = {
       search: searchTerm || undefined,

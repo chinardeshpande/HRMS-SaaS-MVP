@@ -89,7 +89,7 @@ export class LeaveService {
     const saved = await this.leaveRequestRepository.save(leaveRequest);
 
     // Update pending leave balance
-    balance.pending += numberOfDays;
+    balance.pending = Number(balance.pending) + numberOfDays;
     await this.leaveBalanceRepository.save(balance);
 
     return saved;
@@ -131,7 +131,7 @@ export class LeaveService {
     const saved = await this.leaveRequestRepository.save(leaveRequest);
 
     // Update leave balance
-    const year = leaveRequest.startDate.getFullYear();
+    const year = new Date(leaveRequest.startDate).getFullYear();
     const balance = await this.leaveBalanceRepository.findOne({
       where: {
         employeeId: leaveRequest.employeeId,
@@ -141,10 +141,11 @@ export class LeaveService {
     });
 
     if (balance) {
-      balance.pending -= leaveRequest.numberOfDays;
+      const numberOfDays = Number(leaveRequest.numberOfDays);
+      balance.pending = Number(balance.pending) - numberOfDays;
 
       if (status === LeaveStatus.APPROVED) {
-        balance.used += leaveRequest.numberOfDays;
+        balance.used = Number(balance.used) + numberOfDays;
       }
 
       await this.leaveBalanceRepository.save(balance);
@@ -181,7 +182,7 @@ export class LeaveService {
     const saved = await this.leaveRequestRepository.save(leaveRequest);
 
     // Update leave balance
-    const year = leaveRequest.startDate.getFullYear();
+    const year = new Date(leaveRequest.startDate).getFullYear();
     const balance = await this.leaveBalanceRepository.findOne({
       where: {
         employeeId: leaveRequest.employeeId,
@@ -191,10 +192,11 @@ export class LeaveService {
     });
 
     if (balance) {
+      const numberOfDays = Number(leaveRequest.numberOfDays);
       if (previousStatus === LeaveStatus.PENDING) {
-        balance.pending -= leaveRequest.numberOfDays;
+        balance.pending = Number(balance.pending) - numberOfDays;
       } else if (previousStatus === LeaveStatus.APPROVED) {
-        balance.used -= leaveRequest.numberOfDays;
+        balance.used = Number(balance.used) - numberOfDays;
       }
 
       await this.leaveBalanceRepository.save(balance);
@@ -211,6 +213,11 @@ export class LeaveService {
     status?: LeaveStatus,
     year?: number
   ) {
+    // Return empty array if no employeeId (admin users without employee records)
+    if (!employeeId) {
+      return [];
+    }
+
     const where: any = { employeeId };
 
     if (status) {
@@ -234,6 +241,11 @@ export class LeaveService {
    * Employee: Get leave balance
    */
   async getMyLeaveBalance(employeeId: string, year?: number) {
+    // Return empty array if no employeeId (admin users without employee records)
+    if (!employeeId) {
+      return [];
+    }
+
     const currentYear = year || new Date().getFullYear();
 
     return await this.leaveBalanceRepository.find({

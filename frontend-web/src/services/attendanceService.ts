@@ -59,6 +59,43 @@ export interface DepartmentAttendance {
   totalWorkMinutes: number;
 }
 
+export enum TimeEntryEditStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
+}
+
+export interface TimeEntryEdit {
+  editId: string;
+  employeeId: string;
+  tenantId: string;
+  attendanceId: string;
+  originalCheckIn?: string;
+  originalCheckOut?: string;
+  requestedCheckIn?: string;
+  requestedCheckOut?: string;
+  reason: string;
+  status: TimeEntryEditStatus;
+  approverId?: string;
+  approvedAt?: string;
+  approverComments?: string;
+  createdAt: string;
+  updatedAt: string;
+  employee?: {
+    employeeId: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    department?: { name: string };
+    designation?: { name: string };
+  };
+  attendance?: Attendance;
+  approver?: {
+    firstName: string;
+    lastName: string;
+  };
+}
+
 class AttendanceService {
   /**
    * Employee: Clock In
@@ -161,6 +198,67 @@ class AttendanceService {
     if (endDate) params.append('endDate', endDate);
 
     const response = await api.get(`/attendance/by-department?${params.toString()}`);
+    return response.data || [];
+  }
+
+  /**
+   * Employee: Request time entry regularization
+   */
+  async requestRegularization(data: {
+    date: string;
+    requestedCheckIn?: string;
+    requestedCheckOut?: string;
+    reason?: string;
+  }): Promise<TimeEntryEdit> {
+    const response = await api.post('/attendance/regularization/request', data);
+    return response.data!;
+  }
+
+  /**
+   * Employee: Get my regularization requests
+   */
+  async getMyRegularizationRequests(): Promise<TimeEntryEdit[]> {
+    const response = await api.get('/attendance/regularization/my-requests');
+    return response.data || [];
+  }
+
+  /**
+   * Manager/HR: Get pending regularization requests
+   */
+  async getPendingRegularizations(): Promise<TimeEntryEdit[]> {
+    const response = await api.get('/attendance/regularization/pending');
+    return response.data || [];
+  }
+
+  /**
+   * Manager/HR: Approve regularization request
+   */
+  async approveRegularization(editId: string, comments?: string): Promise<TimeEntryEdit> {
+    const response = await api.put(`/attendance/regularization/${editId}/approve`, {
+      comments,
+    });
+    return response.data!;
+  }
+
+  /**
+   * Manager/HR: Reject regularization request
+   */
+  async rejectRegularization(editId: string, comments: string): Promise<TimeEntryEdit> {
+    const response = await api.put(`/attendance/regularization/${editId}/reject`, {
+      comments,
+    });
+    return response.data!;
+  }
+
+  /**
+   * Manager/HR: Get team attendance
+   */
+  async getTeamAttendance(startDate?: string, endDate?: string): Promise<Attendance[]> {
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+
+    const response = await api.get(`/attendance/team?${params.toString()}`);
     return response.data || [];
   }
 }

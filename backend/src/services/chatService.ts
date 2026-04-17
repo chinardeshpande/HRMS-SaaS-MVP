@@ -31,6 +31,12 @@ export class ChatService {
     description?: string;
     participantIds: string[];
   }): Promise<ChatConversation> {
+    console.log('🔵 ChatService: Creating conversation', {
+      conversationType: data.conversationType,
+      participantCount: data.participantIds.length,
+      participantIds: data.participantIds,
+    });
+
     // Check if direct conversation already exists between these participants
     if (data.conversationType === ConversationType.DIRECT && data.participantIds.length === 2) {
       const existingConversation = await this.findDirectConversation(
@@ -39,6 +45,7 @@ export class ChatService {
         data.participantIds[1]
       );
       if (existingConversation) {
+        console.log('✅ ChatService: Found existing conversation', existingConversation.conversationId);
         return existingConversation;
       }
     }
@@ -52,21 +59,36 @@ export class ChatService {
     });
 
     const savedConversation = await this.conversationRepo.save(conversation);
+    console.log('✅ ChatService: Conversation created', savedConversation.conversationId);
 
     // Add participants
+    console.log('🔵 ChatService: Adding participants...');
     for (const employeeId of data.participantIds) {
-      await this.addParticipant({
-        tenantId: data.tenantId,
-        conversationId: savedConversation.conversationId,
-        employeeId,
-        role: employeeId === data.createdBy ? ParticipantRole.ADMIN : ParticipantRole.MEMBER,
-      });
+      console.log(`  Adding participant: ${employeeId}`);
+      try {
+        const participant = await this.addParticipant({
+          tenantId: data.tenantId,
+          conversationId: savedConversation.conversationId,
+          employeeId,
+          role: employeeId === data.createdBy ? ParticipantRole.ADMIN : ParticipantRole.MEMBER,
+        });
+        console.log(`  ✅ Participant added: ${employeeId}, role: ${participant.role}`);
+      } catch (error: any) {
+        console.error(`  ❌ Error adding participant ${employeeId}:`, error.message);
+        throw error;
+      }
     }
 
     const savedConversationWithRelations = await this.getConversationById(savedConversation.conversationId, data.tenantId);
     if (!savedConversationWithRelations) {
       throw new Error('Failed to retrieve created conversation');
     }
+
+    console.log('✅ ChatService: Conversation ready with participants', {
+      conversationId: savedConversationWithRelations.conversationId,
+      participantCount: savedConversationWithRelations.participants?.length || 0,
+    });
+
     return savedConversationWithRelations;
   }
 
