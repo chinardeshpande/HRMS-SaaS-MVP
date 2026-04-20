@@ -36,6 +36,7 @@ import activityRoutes from './routes/activityRoutes';
 import reportingRoutes from './routes/reportingRoutes';
 import templateGenerationRoutes from './routes/templateGenerationRoutes';
 import orgStructureRoutes from './routes/orgStructureRoutes';
+import digitalLibraryRoutes from './routes/digitalLibraryRoutes';
 // import pmsRoutes from './routes/pmsRoutes';
 // import transferRoutes from './routes/transferRoutes';
 // import confirmationRoutes from './routes/confirmationRoutes';
@@ -152,7 +153,14 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Compression middleware (commented out due to TypeScript type conflicts)
 // app.use(compression() as any);
 
-// Serve static files (uploaded files)
+// Serve static files (uploaded files) with CORS headers
+app.use('/uploads', (_req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+});
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Request logging
@@ -207,6 +215,7 @@ apiRouter.use('/payment-methods', paymentMethodRoutes);
 apiRouter.use('/reports', reportingRoutes);
 apiRouter.use('/document-templates', templateGenerationRoutes);
 apiRouter.use('/org-structure', orgStructureRoutes);
+apiRouter.use('/digital-library', digitalLibraryRoutes);
 // apiRouter.use('/pms', pmsRoutes);
 // apiRouter.use('/transfer', transferRoutes);
 // apiRouter.use('/confirmation', confirmationRoutes);

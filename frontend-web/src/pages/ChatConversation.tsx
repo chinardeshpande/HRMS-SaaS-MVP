@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import VideoCall from '../components/VideoCall';
+import SaveChoicesModal from '../components/chat/SaveChoicesModal';
 import chatService, { ChatMessage } from '../services/chatService';
 import socketService from '../services/socketService';
+import { digitalLibraryService } from '../services/digitalLibraryService';
 import {
   PaperAirplaneIcon,
   PaperClipIcon,
@@ -30,7 +32,10 @@ export default function ChatConversation() {
   const [callType, setCallType] = useState<'audio' | 'video' | null>(null);
   const [incomingCall, setIncomingCall] = useState<any>(null);
   const [remoteSocketId, setRemoteSocketId] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<{url: string, fileName: string} | null>(null);
+  const [selectedImage, setSelectedImage] = useState<{url: string, fileName: string, senderId?: string} | null>(null);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [filePermissions, setFilePermissions] = useState<any>(null);
+  const [selectedFileForSave, setSelectedFileForSave] = useState<any>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -1027,7 +1032,8 @@ export default function ChatConversation() {
                               console.log('🖼️ [IMAGE CLICK] FileURL:', message.attachments[0].fileUrl);
                               setSelectedImage({
                                 url: message.attachments[0].fileUrl,
-                                fileName: message.attachments[0].fileName || 'image.png'
+                                fileName: message.attachments[0].fileName || 'image.png',
+                                senderId: message.senderId
                               });
                             }}
                           >
@@ -1259,18 +1265,56 @@ export default function ChatConversation() {
               <XMarkIcon className="w-6 h-6" />
             </button>
 
-            {/* Download button */}
-            <a
-              href={`http://localhost:5000${encodeURI(selectedImage.url)}`}
-              download={selectedImage.fileName}
-              className="absolute bottom-4 right-4 bg-gradient-to-br from-pink-500 to-rose-600 text-white px-4 py-2 rounded-lg hover:from-pink-600 hover:to-rose-700 flex items-center gap-2 transition-all shadow-lg hover:shadow-xl"
-              onClick={(e) => {
-                console.log('📥 Downloading image:', selectedImage.url);
+            {/* Download/Save button */}
+            <button
+              onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                console.log('🔘 Save button clicked!');
+                console.log('Selected image:', selectedImage);
+                console.log('Current user ID:', currentUserId);
+
+                const isOwnedByMe = selectedImage.senderId === currentUserId;
+                console.log('Is owned by me:', isOwnedByMe);
+
+                // Prepare file info for modal
+                const fileInfo = {
+                  fileName: selectedImage.fileName,
+                  fileUrl: selectedImage.url,
+                  fileType: 'image/png', // Default, will be inferred
+                  fileSize: 0, // Will be fetched
+                  senderId: selectedImage.senderId,
+                };
+
+                setSelectedFileForSave(fileInfo);
+                console.log('File info prepared:', fileInfo);
+
+                // Check permissions
+                try {
+                  console.log('📡 Calling checkDownloadPermission API...');
+                  const permissions = await digitalLibraryService.checkDownloadPermission({
+                    fileUrl: selectedImage.url,
+                    originalOwnerId: selectedImage.senderId,
+                    isPaid: false, // Can be extended with actual metadata
+                    accessLevel: isOwnedByMe ? 'private' : 'shared',
+                  });
+
+                  console.log('✅ Permissions received:', permissions);
+                  setFilePermissions(permissions);
+                  setShowSaveModal(true);
+                  console.log('✅ Modal should now be visible!');
+                } catch (error: any) {
+                  console.error('❌ Error checking permissions:', error);
+                  console.error('❌ Error details:', error.message, error.response?.data);
+                  alert(`Failed to check file permissions: ${error.message || 'Unknown error'}`);
+                }
               }}
+              className="absolute bottom-4 right-4 bg-gradient-to-br from-pink-500 to-rose-600 text-white px-4 py-2 rounded-lg hover:from-pink-600 hover:to-rose-700 flex items-center gap-2 transition-all shadow-lg hover:shadow-xl cursor-pointer z-10"
             >
               <ArrowDownTrayIcon className="w-5 h-5" />
-              Download
-            </a>
+              Save
+            </button>
 
             {/* Image info */}
             <div className="absolute bottom-4 left-4 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg text-sm">
@@ -1283,6 +1327,78 @@ export default function ChatConversation() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Save Choices Modal */}
+      {showSaveModal && selectedFileForSave && filePermissions && (
+        <SaveChoicesModal
+          isOpen={showSaveModal}
+          onClose={() => {
+            setShowSaveModal(false);
+            setSelectedFileForSave(null);
+            setFilePermissions(null);
+          }}
+          fileName={selectedFileForSave.fileName}
+          fileSize={selectedFileForSave.fileSize || 0}
+          fileType={selectedFileForSave.fileType}
+          isOwnedByMe={selectedFileForSave.senderId === currentUserId}
+          permissions={filePermissions}
+          onDownloadLocal={async () => {
+            // Download to local machine
+            try {
+              const response = await fetch(`http://localhost:5000${encodeURI(selectedFileForSave.fileUrl)}`);
+              const blob = await response.blob();
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = selectedFileForSave.fileName;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(url);
+              console.log('✅ Downloaded to local machine:', selectedFileForSave.fileName);
+              alert('File downloaded successfully!');
+            } catch (error) {
+              console.error('❌ Download failed:', error);
+              alert('Failed to download file');
+            }
+          }}
+          onSaveToLibrary={async (options) => {
+            // Save to Digital Library
+            try {
+              // Fetch file size if not available
+              let fileSize = selectedFileForSave.fileSize;
+              if (!fileSize) {
+                const response = await fetch(`http://localhost:5000${encodeURI(selectedFileForSave.fileUrl)}`, { method: 'HEAD' });
+                fileSize = parseInt(response.headers.get('Content-Length') || '0');
+              }
+
+              await digitalLibraryService.saveToLibrary({
+                fileName: selectedFileForSave.fileName,
+                fileUrl: selectedFileForSave.fileUrl,
+                fileType: selectedFileForSave.fileType,
+                fileSize: fileSize || 0,
+                originalOwnerId: selectedFileForSave.senderId,
+                sourceType: 'chat',
+                sourceId: conversationId,
+                isPaid: filePermissions.isPaid,
+                accessLevel: filePermissions.accessLevel,
+                canDownload: filePermissions.canDownloadLocally,
+                canShare: true,
+                canEdit: false,
+                category: options.category,
+                tags: options.tags,
+                description: options.description,
+              });
+
+              console.log('✅ Saved to Digital Library:', selectedFileForSave.fileName);
+              alert('File saved to your Digital Library!');
+            } catch (error) {
+              console.error('❌ Save to library failed:', error);
+              alert('Failed to save to Digital Library');
+            }
+          }}
+        />
       )}
     </ModernLayout>
   );

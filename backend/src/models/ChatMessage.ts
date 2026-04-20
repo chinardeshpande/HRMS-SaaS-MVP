@@ -78,6 +78,13 @@ export class ChatMessage {
     fileUrl: string;
     fileType: string;
     fileSize: number;
+    // Permission attributes for Digital Library
+    isPaid?: boolean;
+    accessLevel?: 'private' | 'shared' | 'public';
+    canDownload?: boolean;
+    canShare?: boolean;
+    canEdit?: boolean;
+    expiresAt?: string;
   }[];
 
   @Column({ type: 'uuid', nullable: true })
