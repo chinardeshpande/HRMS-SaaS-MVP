@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
 
@@ -13,7 +14,7 @@ export default new DataSource({
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
   synchronize: false, // Never auto-sync when running migrations
   logging: true,
-  entities: ['src/models/**/*.ts'],
-  migrations: ['src/migrations/**/*.ts'],
+  entities: [path.join(__dirname, 'models/*.{js,ts}')],
+  migrations: [path.join(__dirname, 'migrations/*.{js,ts}')],
   subscribers: [],
 });

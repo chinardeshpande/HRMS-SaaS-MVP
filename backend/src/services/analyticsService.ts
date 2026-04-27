@@ -23,6 +23,22 @@ export interface InsightResult {
   followUpQuestions?: string[];
 }
 
+type CoreMetricDefinition = Pick<
+  AnalyticsMetric,
+  | 'metricName'
+  | 'displayName'
+  | 'description'
+  | 'category'
+  | 'metricType'
+  | 'aggregation'
+  | 'queryConfig'
+  | 'dimensions'
+  | 'unit'
+  | 'thresholds'
+  | 'tags'
+  | 'synonyms'
+>;
+
 /**
  * Analytics Service
  * Provides semantic metrics layer and conversational analytics capabilities
@@ -31,7 +47,7 @@ export class AnalyticsService {
   private metricRepo: Repository<AnalyticsMetric>;
 
   // Predefined safe metrics catalog
-  private static readonly CORE_METRICS = [
+  private static readonly CORE_METRICS: CoreMetricDefinition[] = [
     {
       metricName: 'headcount',
       displayName: 'Total Headcount',
