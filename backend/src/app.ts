@@ -45,6 +45,10 @@ import documentCategoryRoutes from './routes/documentCategoryRoutes';
 
 const app: Application = express();
 
+if (config.nodeEnv !== 'development') {
+  app.set('trust proxy', 1);
+}
+
 // Swagger configuration
 const swaggerOptions = {
   definition: {
