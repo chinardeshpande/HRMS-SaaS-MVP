@@ -39,6 +39,14 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Build Backend
+        working-directory: ./backend
+        run: npm run build
+
       - name: Install Frontend Dependencies
         working-directory: ./frontend-web
         run: yarn install --frozen-lockfile
