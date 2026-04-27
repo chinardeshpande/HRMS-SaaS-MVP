@@ -58,6 +58,7 @@ export class AddSettingsTables1234567890123 implements MigrationInterface {
         "weekStartDay" integer NOT NULL DEFAULT 0,
         "workingHours" jsonb,
         "notificationSettings" jsonb,
+        "smtpConfig" jsonb,
         "twoFactorAuthRequired" boolean NOT NULL DEFAULT true,
         "passwordExpiryDays" integer NOT NULL DEFAULT 30,
         "maxLoginAttempts" integer NOT NULL DEFAULT 5,
