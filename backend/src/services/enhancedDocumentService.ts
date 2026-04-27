@@ -141,7 +141,7 @@ export class EnhancedDocumentService {
     });
 
     // Conditional helper
-    Handlebars.registerHelper('ifEquals', function (arg1, arg2, options: any) {
+    Handlebars.registerHelper('ifEquals', function (this: any, arg1, arg2, options: any) {
       return arg1 === arg2 ? options.fn(this) : options.inverse(this);
     });
 
@@ -268,7 +268,7 @@ export class EnhancedDocumentService {
       company: {
         name: orgSettings?.companyName || 'Company Name',
         legalName: orgSettings?.companyName,
-        logo: orgSettings?.companyLogo,
+        logo: orgSettings?.logo || orgSettings?.branding?.logoUrl,
         address: orgSettings?.address,
         city: orgSettings?.city,
         state: orgSettings?.state,
