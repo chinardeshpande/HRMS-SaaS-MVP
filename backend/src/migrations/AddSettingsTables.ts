@@ -179,14 +179,24 @@ export class AddSettingsTables1234567890123 implements MigrationInterface {
       )
     `);
 
-    // Add roleId column to employees table
-    await queryRunner.query(`
-      ALTER TABLE "employees" ADD COLUMN "roleId" uuid
-    `);
+    // Add roleId column to employees table if it does not already exist.
+    // Some production databases were bootstrapped before migrations were tracked.
+    const hasEmployeeRoleId = await queryRunner.hasColumn('employees', 'roleId');
+    if (!hasEmployeeRoleId) {
+      await queryRunner.query(`
+        ALTER TABLE "employees" ADD COLUMN "roleId" uuid
+      `);
+    }
 
-    await queryRunner.query(`
-      ALTER TABLE "employees" ADD CONSTRAINT "FK_employee_role" FOREIGN KEY ("roleId") REFERENCES "roles"("roleId") ON DELETE SET NULL
-    `);
+    const employeesTable = await queryRunner.getTable('employees');
+    const hasEmployeeRoleFk = employeesTable?.foreignKeys.some((foreignKey) =>
+      foreignKey.columnNames.includes('roleId')
+    );
+    if (!hasEmployeeRoleFk) {
+      await queryRunner.query(`
+        ALTER TABLE "employees" ADD CONSTRAINT "FK_employee_role" FOREIGN KEY ("roleId") REFERENCES "roles"("roleId") ON DELETE SET NULL
+      `);
+    }
 
     // Create indexes
     await queryRunner.query(`CREATE INDEX "IDX_subscription_tenant" ON "subscriptions" ("tenantId")`);
@@ -209,8 +219,8 @@ export class AddSettingsTables1234567890123 implements MigrationInterface {
     await queryRunner.query(`DROP INDEX "IDX_subscription_tenant"`);
 
     // Drop foreign key and column from employees
-    await queryRunner.query(`ALTER TABLE "employees" DROP CONSTRAINT "FK_employee_role"`);
-    await queryRunner.query(`ALTER TABLE "employees" DROP COLUMN "roleId"`);
+    await queryRunner.query(`ALTER TABLE "employees" DROP CONSTRAINT IF EXISTS "FK_employee_role"`);
+    await queryRunner.query(`ALTER TABLE "employees" DROP COLUMN IF EXISTS "roleId"`);
 
     // Drop tables
     await queryRunner.query(`DROP TABLE "business_rules"`);
