@@ -1,13 +1,17 @@
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { AppDataSource } from '../config/database';
 import { OnboardingCase } from '../models/OnboardingCase';
 import { OnboardingTask } from '../models/OnboardingTask';
 import { ProbationCase } from '../models/ProbationCase';
 import { ProbationTask } from '../models/ProbationTask';
-import { PerformanceReview } from '../models/PerformanceReview';
-import { Goal } from '../models/Goal';
+import { PerformanceReview, PerformanceState } from '../models/PerformanceReview';
+import { Goal, GoalStatus } from '../models/Goal';
 import { ExitCase } from '../models/ExitCase';
 import { Clearance } from '../models/Clearance';
+import { TaskStatus } from '../models/enums/TaskStatus';
+import { ProbationState } from '../models/enums/ProbationState';
+import { ExitState } from '../models/enums/ExitState';
+import { ClearanceStatus } from '../models/enums/ClearanceStatus';
 
 export interface ProgressData {
   id: string;
@@ -78,24 +82,24 @@ export class ProgressTrackingService {
     }
 
     const tasks = await this.onboardingTaskRepo.find({
-      where: { caseId, tenantId },
+      where: { candidateId: onboardingCase.candidateId, tenantId },
       order: { dueDate: 'ASC' },
     });
 
     const totalTasks = tasks.length;
-    const completedTasks = tasks.filter((t) => t.status === 'completed').length;
-    const pendingTasks = tasks.filter((t) => t.status !== 'completed').length;
+    const completedTasks = tasks.filter((t) => t.status === TaskStatus.COMPLETED).length;
+    const pendingTasks = tasks.filter((t) => t.status !== TaskStatus.COMPLETED).length;
     const overdueTasks = tasks.filter(
-      (t) => t.status !== 'completed' && t.dueDate && new Date(t.dueDate) < new Date()
+      (t) => t.status !== TaskStatus.COMPLETED && t.dueDate && new Date(t.dueDate) < new Date()
     ).length;
 
     const completionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
     // Find next milestone
-    const nextTask = tasks.find((t) => t.status !== 'completed');
+    const nextTask = tasks.find((t) => t.status !== TaskStatus.COMPLETED);
     const nextMilestone = nextTask
       ? {
-          name: nextTask.taskName,
+          name: nextTask.title,
           dueDate: nextTask.dueDate,
           daysRemaining: nextTask.dueDate
             ? Math.ceil((new Date(nextTask.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
@@ -127,8 +131,8 @@ export class ProgressTrackingService {
         id: onboardingCase.candidateId,
         name: `${onboardingCase.candidate.firstName} ${onboardingCase.candidate.lastName}`,
       },
-      currentStage: onboardingCase.status,
-      status: onboardingCase.status,
+      currentStage: onboardingCase.currentState,
+      status: onboardingCase.currentState,
       completionPercentage,
       totalTasks,
       completedTasks,
@@ -136,7 +140,7 @@ export class ProgressTrackingService {
       overdueTasks,
       nextMilestone,
       blockers: blockers.length > 0 ? blockers : undefined,
-      eta: onboardingCase.expectedJoiningDate,
+      eta: onboardingCase.candidate.expectedJoinDate,
       slaStatus,
     };
   }
@@ -146,7 +150,7 @@ export class ProgressTrackingService {
    */
   async getProbationProgress(caseId: string, tenantId: string): Promise<ProgressData> {
     const probationCase = await this.probationCaseRepo.findOne({
-      where: { caseId, tenantId },
+      where: { probationId: caseId, tenantId },
       relations: ['employee', 'employee.department'],
     });
 
@@ -155,15 +159,15 @@ export class ProgressTrackingService {
     }
 
     const tasks = await this.probationTaskRepo.find({
-      where: { caseId, tenantId },
+      where: { probationId: probationCase.probationId, tenantId },
       order: { dueDate: 'ASC' },
     });
 
     const totalTasks = tasks.length;
-    const completedTasks = tasks.filter((t) => t.status === 'completed').length;
-    const pendingTasks = tasks.filter((t) => t.status !== 'completed').length;
+    const completedTasks = tasks.filter((t) => t.status === TaskStatus.COMPLETED).length;
+    const pendingTasks = tasks.filter((t) => t.status !== TaskStatus.COMPLETED).length;
     const overdueTasks = tasks.filter(
-      (t) => t.status !== 'completed' && t.dueDate && new Date(t.dueDate) < new Date()
+      (t) => t.status !== TaskStatus.COMPLETED && t.dueDate && new Date(t.dueDate) < new Date()
     ).length;
 
     const completionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
@@ -185,7 +189,7 @@ export class ProgressTrackingService {
     if (overdueTasks > 0) {
       blockers.push(`${overdueTasks} overdue review(s)`);
     }
-    if (!probationCase.reviewStatus || probationCase.reviewStatus === 'pending') {
+    if (!probationCase.finalReviewCompleted) {
       blockers.push('Performance review not completed');
     }
 
@@ -205,8 +209,8 @@ export class ProgressTrackingService {
         name: `${probationCase.employee.firstName} ${probationCase.employee.lastName}`,
         code: probationCase.employee.employeeCode,
       },
-      currentStage: probationCase.status,
-      status: probationCase.status,
+      currentStage: probationCase.currentState,
+      status: probationCase.currentState,
       completionPercentage,
       totalTasks,
       completedTasks,
@@ -240,36 +244,36 @@ export class ProgressTrackingService {
     let completedTasks = 0;
 
     // Count completed goals
-    completedTasks += goals.filter((g) => g.status === 'completed').length;
+    completedTasks += goals.filter((g) => g.status === GoalStatus.ACHIEVED).length;
 
     // Check review stages
-    if (review.selfReviewSubmitted) completedTasks++;
-    if (review.managerReviewSubmitted) completedTasks++;
-    if (review.status === 'calibrated') completedTasks++;
-    if (review.status === 'completed') completedTasks++;
+    if (review.midYearSubmittedDate || review.annualSubmittedDate) completedTasks++;
+    if (review.midYearCompletedDate || review.annualCompletedDate) completedTasks++;
+    if (review.currentState === PerformanceState.RATING_APPROVED) completedTasks++;
+    if (review.currentState === PerformanceState.CYCLE_COMPLETE) completedTasks++;
 
     const completionPercentage = Math.round((completedTasks / totalTasks) * 100);
     const pendingTasks = totalTasks - completedTasks;
 
     // Determine next milestone
     let nextMilestoneName = '';
-    if (!review.selfReviewSubmitted) {
+    if (!review.midYearSubmittedDate && !review.annualSubmittedDate) {
       nextMilestoneName = 'Self-review submission';
-    } else if (!review.managerReviewSubmitted) {
+    } else if (!review.midYearCompletedDate && !review.annualCompletedDate) {
       nextMilestoneName = 'Manager review submission';
-    } else if (review.status !== 'calibrated') {
-      nextMilestoneName = 'Calibration';
+    } else if (review.currentState !== PerformanceState.RATING_APPROVED) {
+      nextMilestoneName = 'Rating approval';
     } else {
       nextMilestoneName = 'Finalization';
     }
 
-    const daysRemaining = review.dueDate
-      ? Math.ceil((new Date(review.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+    const daysRemaining = review.reviewEndDate
+      ? Math.ceil((new Date(review.reviewEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
       : undefined;
 
     // Blockers
     const blockers: string[] = [];
-    const incompleteGoals = goals.filter((g) => g.status !== 'completed').length;
+    const incompleteGoals = goals.filter((g) => g.status !== GoalStatus.ACHIEVED).length;
     if (incompleteGoals > 0) {
       blockers.push(`${incompleteGoals} incomplete goal(s)`);
     }
@@ -293,8 +297,8 @@ export class ProgressTrackingService {
         name: `${review.employee.firstName} ${review.employee.lastName}`,
         code: review.employee.employeeCode,
       },
-      currentStage: review.status,
-      status: review.status,
+      currentStage: review.currentState,
+      status: review.currentState,
       completionPercentage,
       totalTasks,
       completedTasks,
@@ -302,11 +306,11 @@ export class ProgressTrackingService {
       overdueTasks: daysRemaining && daysRemaining < 0 ? pendingTasks : 0,
       nextMilestone: {
         name: nextMilestoneName,
-        dueDate: review.dueDate,
+        dueDate: review.reviewEndDate,
         daysRemaining,
       },
       blockers: blockers.length > 0 ? blockers : undefined,
-      eta: review.dueDate,
+      eta: review.reviewEndDate,
       slaStatus,
     };
   }
@@ -316,7 +320,7 @@ export class ProgressTrackingService {
    */
   async getExitProgress(caseId: string, tenantId: string): Promise<ProgressData> {
     const exitCase = await this.exitCaseRepo.findOne({
-      where: { caseId, tenantId },
+      where: { exitId: caseId, tenantId },
       relations: ['employee'],
     });
 
@@ -325,23 +329,23 @@ export class ProgressTrackingService {
     }
 
     const clearances = await this.clearanceRepo.find({
-      where: { exitCaseId: caseId, tenantId },
+      where: { exitId: exitCase.exitId, tenantId },
     });
 
     const totalTasks = clearances.length;
-    const completedTasks = clearances.filter((c) => c.status === 'cleared').length;
-    const pendingTasks = clearances.filter((c) => c.status !== 'cleared').length;
+    const completedTasks = clearances.filter((c) => c.status === ClearanceStatus.CLEARED).length;
+    const pendingTasks = clearances.filter((c) => c.status !== ClearanceStatus.CLEARED).length;
     const overdueTasks = clearances.filter(
-      (c) => c.status !== 'cleared' && c.dueDate && new Date(c.dueDate) < new Date()
+      (c) => c.status !== ClearanceStatus.CLEARED && c.dueDate && new Date(c.dueDate) < new Date()
     ).length;
 
     const completionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
     // Next milestone
-    const nextClearance = clearances.find((c) => c.status !== 'cleared');
+    const nextClearance = clearances.find((c) => c.status !== ClearanceStatus.CLEARED);
     const nextMilestone = nextClearance
       ? {
-          name: `${nextClearance.clearanceType} clearance`,
+          name: nextClearance.clearanceName || `${nextClearance.departmentType} clearance`,
           dueDate: nextClearance.dueDate,
           daysRemaining: nextClearance.dueDate
             ? Math.ceil((new Date(nextClearance.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
@@ -360,7 +364,7 @@ export class ProgressTrackingService {
     if (overdueTasks > 0) {
       blockers.push(`${overdueTasks} overdue clearance(s)`);
     }
-    if (!exitCase.interviewCompleted) {
+    if (!exitCase.exitInterviewCompleted) {
       blockers.push('Exit interview not completed');
     }
 
@@ -380,8 +384,8 @@ export class ProgressTrackingService {
         name: `${exitCase.employee.firstName} ${exitCase.employee.lastName}`,
         code: exitCase.employee.employeeCode,
       },
-      currentStage: exitCase.status,
-      status: exitCase.status,
+      currentStage: exitCase.currentState,
+      status: exitCase.currentState,
       completionPercentage,
       totalTasks,
       completedTasks,
@@ -407,15 +411,45 @@ export class ProgressTrackingService {
 
     // Check for active probation
     const probation = await this.probationCaseRepo.findOne({
-      where: { employeeId, tenantId, status: In(['initiated', 'in_progress']) },
+      where: {
+        employeeId,
+        tenantId,
+        currentState: In([
+          ProbationState.PROBATION_ACTIVE,
+          ProbationState.REVIEW_30_PENDING,
+          ProbationState.REVIEW_60_PENDING,
+          ProbationState.FINAL_REVIEW_PENDING,
+          ProbationState.DECISION_PENDING,
+          ProbationState.PROBATION_EXTENDED,
+          ProbationState.EXTENDED_PROBATION_ACTIVE,
+        ]),
+      },
     });
     if (probation) {
-      summary.probation = await this.getProbationProgress(probation.caseId, tenantId);
+      summary.probation = await this.getProbationProgress(probation.probationId, tenantId);
     }
 
     // Check for active performance reviews
     const reviews = await this.performanceReviewRepo.find({
-      where: { employeeId, tenantId, status: In(['pending', 'in_progress']) },
+      where: {
+        employeeId,
+        tenantId,
+        currentState: In([
+          PerformanceState.GOAL_SETTING,
+          PerformanceState.GOALS_SUBMITTED,
+          PerformanceState.GOALS_APPROVED,
+          PerformanceState.MID_YEAR_PENDING,
+          PerformanceState.MID_YEAR_SUBMITTED,
+          PerformanceState.MID_YEAR_COMPLETED,
+          PerformanceState.ANNUAL_REVIEW_PENDING,
+          PerformanceState.ANNUAL_REVIEW_SUBMITTED,
+          PerformanceState.ANNUAL_REVIEW_COMPLETED,
+          PerformanceState.RATING_PENDING,
+          PerformanceState.RATING_SUBMITTED,
+          PerformanceState.RATING_APPROVED,
+          PerformanceState.DEVELOPMENT_PLAN,
+        ]),
+      },
     });
     if (reviews.length > 0) {
       summary.performance = await Promise.all(
@@ -425,10 +459,27 @@ export class ProgressTrackingService {
 
     // Check for active exit
     const exit = await this.exitCaseRepo.findOne({
-      where: { employeeId, tenantId, status: In(['initiated', 'in_progress']) },
+      where: {
+        employeeId,
+        tenantId,
+        currentState: In([
+          ExitState.RESIGNATION_SUBMITTED,
+          ExitState.RESIGNATION_APPROVED,
+          ExitState.NOTICE_PERIOD_ACTIVE,
+          ExitState.NOTICE_PERIOD_BUYOUT,
+          ExitState.CLEARANCE_INITIATED,
+          ExitState.CLEARANCE_IN_PROGRESS,
+          ExitState.ASSETS_PENDING,
+          ExitState.ASSETS_RETURNED,
+          ExitState.EXIT_INTERVIEW_PENDING,
+          ExitState.EXIT_INTERVIEW_COMPLETED,
+          ExitState.SETTLEMENT_CALCULATED,
+          ExitState.SETTLEMENT_APPROVED,
+        ]),
+      },
     });
     if (exit) {
-      summary.exit = await this.getExitProgress(exit.caseId, tenantId);
+      summary.exit = await this.getExitProgress(exit.exitId, tenantId);
     }
 
     return summary;
