@@ -41,6 +41,7 @@ import ModernSettings from './pages/ModernSettings';
 import ModernReports from './pages/ModernReports';
 import ModernDocuments from './pages/ModernDocuments';
 import ModernOrgChart from './pages/ModernOrgChart';
+import MyHRDocuments from './pages/MyHRDocuments';
 
 // Employee Action Pages
 import ModernEditProfile from './pages/ModernEditProfile';
@@ -99,6 +100,7 @@ function App() {
               <Route path="/groups" element={<GroupManagement />} />
               <Route path="/reports" element={<ModernReports />} />
               <Route path="/documents" element={<ModernDocuments />} />
+              <Route path="/my-hr-documents" element={<MyHRDocuments />} />
               <Route path="/org-chart" element={<ModernOrgChart />} />
               <Route path="/settings" element={<ModernSettings />} />
 

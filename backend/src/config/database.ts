@@ -68,6 +68,9 @@ import { UserInvitation } from '../models/UserInvitation';
 import { SavedReport } from '../models/SavedReport';
 import { GeneratedDocument } from '../models/GeneratedDocument';
 import { AnalyticsMetric } from '../models/AnalyticsMetric';
+// Digital Library entities
+import { DigitalLibrary } from '../models/DigitalLibrary';
+import { DocumentCategory } from '../models/DocumentCategory';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -145,6 +148,9 @@ export const AppDataSource = new DataSource({
     SavedReport,
     GeneratedDocument,
     AnalyticsMetric,
+    // Digital Library
+    DigitalLibrary,
+    DocumentCategory,
   ],
   migrations: ['dist/backend/src/migrations/*.js'],
   subscribers: [],

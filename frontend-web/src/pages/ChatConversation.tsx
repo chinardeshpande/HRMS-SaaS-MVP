@@ -1392,10 +1392,20 @@ export default function ChatConversation() {
               });
 
               console.log('✅ Saved to Digital Library:', selectedFileForSave.fileName);
-              alert('File saved to your Digital Library!');
+
+              // Close modal
+              setShowSaveModal(false);
+              setSelectedFileForSave(null);
+              setFilePermissions(null);
+
+              // Show success message with option to view
+              const viewNow = window.confirm('File saved to My HR Documents successfully!\n\nWould you like to view your documents now?');
+              if (viewNow) {
+                navigate('/my-hr-documents');
+              }
             } catch (error) {
               console.error('❌ Save to library failed:', error);
-              alert('Failed to save to Digital Library');
+              alert('Failed to save to Digital Library. Please try again.');
             }
           }}
         />

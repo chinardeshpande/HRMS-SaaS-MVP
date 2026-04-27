@@ -23,6 +23,7 @@ import {
   ChatBubbleLeftRightIcon,
   DocumentDuplicateIcon,
   BuildingOffice2Icon,
+  FolderIcon,
 } from '@heroicons/react/24/outline';
 
 interface ModernLayoutProps {
@@ -107,6 +108,12 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
       href: '/documents',
       icon: DocumentDuplicateIcon,
       roles: [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN, UserRole.MANAGER],
+    },
+    {
+      name: 'My HR Documents',
+      href: '/my-hr-documents',
+      icon: FolderIcon,
+      // Available to all employees - their personal document library
     },
     { name: 'Settings', href: '/settings', icon: Cog6ToothIcon }, // All roles
   ];

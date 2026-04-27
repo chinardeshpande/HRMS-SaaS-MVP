@@ -76,10 +76,8 @@ class DigitalLibraryService {
       const response = await api.post('/digital-library/check-permission', request);
       console.log('✅ [Digital Library] Full response:', response);
       console.log('✅ [Digital Library] response.data:', response.data);
-      console.log('✅ [Digital Library] response.data.data:', response.data.data);
-      console.log('✅ [Digital Library] Type of response.data.data:', typeof response.data.data);
 
-      const result = response.data.data;
+      const result = response.data;  // ApiClient already unwraps response.data
       console.log('✅ [Digital Library] Final result to return:', result);
       return result;
     } catch (error: any) {
@@ -93,7 +91,7 @@ class DigitalLibraryService {
 
   async saveToLibrary(request: SaveToLibraryRequest): Promise<LibraryItem> {
     const response = await api.post('/digital-library/save', request);
-    return response.data.data;
+    return response.data;  // ApiClient already unwraps response.data
   }
 
   async getLibraryItems(params?: {
@@ -105,12 +103,12 @@ class DigitalLibraryService {
     offset?: number;
   }): Promise<{ items: LibraryItem[]; total: number }> {
     const response = await api.get('/digital-library', { params });
-    return response.data.data;
+    return response.data;  // ApiClient already unwraps response.data
   }
 
   async downloadFromLibrary(libraryId: string): Promise<{ fileUrl: string }> {
     const response = await api.post(`/digital-library/${libraryId}/download`);
-    return response.data.data;
+    return response.data;  // ApiClient already unwraps response.data
   }
 
   async updateLibraryItem(
@@ -123,7 +121,7 @@ class DigitalLibraryService {
     }
   ): Promise<LibraryItem> {
     const response = await api.put(`/digital-library/${libraryId}`, updates);
-    return response.data.data;
+    return response.data;  // ApiClient already unwraps response.data
   }
 
   async deleteLibraryItem(libraryId: string): Promise<void> {
@@ -132,7 +130,7 @@ class DigitalLibraryService {
 
   async getLibraryStats(): Promise<LibraryStats> {
     const response = await api.get('/digital-library/stats');
-    return response.data.data;
+    return response.data;  // ApiClient already unwraps response.data
   }
 }
 
