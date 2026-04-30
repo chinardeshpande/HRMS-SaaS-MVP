@@ -64,6 +64,7 @@ jobs:
           name: backend-build
           path: |
             backend/dist
+            backend/scripts/production-smoke-test.js
             backend/templates
             backend/package.json
             backend/package-lock.json
@@ -164,6 +165,7 @@ jobs:
               -exec rm -rf {} +
             tar -xzf /tmp/backend-deploy.tar.gz
             npm ci --omit=dev
+            npm run migrate
             pm2 restart aurorahr-backend || pm2 start npm --name aurorahr-backend -- start
 
             # Deploy frontend
@@ -202,6 +204,14 @@ jobs:
           fi
 
           echo "✅ Backend and frontend deployed successfully!"
+
+      - name: Authenticated API Smoke Test
+        run: |
+          ssh root@${{ secrets.PRODUCTION_SERVER_IP }} << 'ENDSSH'
+            set -e
+            cd /var/www/hrms-app/backend
+            SMOKE_TEST_BASE_URL=http://localhost:3000/api/v1 node scripts/production-smoke-test.js
+          ENDSSH
 
       - name: Cleanup Old Backups
         if: success()
