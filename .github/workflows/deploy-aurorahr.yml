@@ -249,6 +249,10 @@ jobs:
             SMOKE_TEST_BASE_URL=http://localhost:3000/api/v1 node scripts/production-smoke-test.js
           ENDSSH
 
+      - name: Frontend Smoke Test
+        run: |
+          FRONTEND_SMOKE_BASE_URL=https://aurorahr.in node frontend-web/scripts/production-frontend-smoke-test.js
+
       - name: Cleanup Old Backups
         if: success()
         run: |
