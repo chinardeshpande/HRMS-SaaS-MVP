@@ -165,6 +165,39 @@ jobs:
               -exec rm -rf {} +
             tar -xzf /tmp/backend-deploy.tar.gz
             npm ci --omit=dev
+
+            # Backup production database immediately before migrations.
+            # Migrations in this deploy path must be backward-compatible with the previous app version.
+            set -a
+            . ./.env
+            set +a
+            db_backup_dir=/var/backups/hrms
+            db_backup_file="$db_backup_dir/hrms_pre_migration_$(date -u +%Y%m%dT%H%M%SZ).dump"
+            mkdir -p "$db_backup_dir"
+            if command -v docker >/dev/null 2>&1; then
+              docker run --rm --network host \
+                -e PGPASSWORD="$DB_PASSWORD" \
+                -v "$db_backup_dir:/backup" \
+                postgres:15 \
+                pg_dump \
+                  -h "${DB_HOST:-localhost}" \
+                  -p "${DB_PORT:-5432}" \
+                  -U "${DB_USER:-postgres}" \
+                  -d "${DB_NAME:-hrms_prod}" \
+                  -Fc \
+                  -f "/backup/$(basename "$db_backup_file")"
+            else
+              PGPASSWORD="$DB_PASSWORD" pg_dump \
+                -h "${DB_HOST:-localhost}" \
+                -p "${DB_PORT:-5432}" \
+                -U "${DB_USER:-postgres}" \
+                -d "${DB_NAME:-hrms_prod}" \
+                -Fc \
+                -f "$db_backup_file"
+            fi
+            test -s "$db_backup_file"
+            echo "Created production database backup: $db_backup_file"
+
             npm run migrate
             pm2 restart aurorahr-backend || pm2 start npm --name aurorahr-backend -- start
 
@@ -217,9 +250,10 @@ jobs:
         if: success()
         run: |
           ssh root@${{ secrets.PRODUCTION_SERVER_IP }} << 'ENDSSH'
-            # Keep only last 3 backend and frontend backups
+            # Keep only last 3 app backups and last 10 pre-migration database backups
             cd /var/www/hrms-app
             ls -dt backend.backup.* 2>/dev/null | tail -n +4 | xargs rm -rf 2>/dev/null || true
+            find /var/backups/hrms -maxdepth 1 -name 'hrms_pre_migration_*.dump' -type f -printf '%T@ %p\n' 2>/dev/null | sort -rn | tail -n +11 | cut -d' ' -f2- | xargs rm -f 2>/dev/null || true
             cd /var/www/hrms-app/frontend-web
             ls -dt dist.backup.* 2>/dev/null | tail -n +4 | xargs rm -rf 2>/dev/null || true
           ENDSSH
