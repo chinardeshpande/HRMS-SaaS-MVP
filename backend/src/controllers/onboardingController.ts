@@ -38,7 +38,8 @@ export const getAllCandidates = async (req: Request, res: Response) => {
 export const getCandidateById = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
-    const candidate = await onboardingService.getCandidateById(candidateId);
+    const tenantId = req.user!.tenantId;
+    const candidate = await onboardingService.getCandidateById(candidateId, tenantId);
 
     if (!candidate) {
       return sendError(res, { code: 'NOT_FOUND', message: 'Candidate not found' }, 404);
@@ -55,7 +56,8 @@ export const sendOffer = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
     const userId = req.user!.userId;
-    await onboardingService.sendOffer(candidateId, userId);
+    const tenantId = req.user!.tenantId;
+    await onboardingService.sendOffer(candidateId, tenantId, userId);
     return sendSuccess(res, { message: 'Offer sent successfully' });
   } catch (error: any) {
     logger.error('Send offer error:', error);
@@ -67,7 +69,8 @@ export const acceptOffer = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
     const userId = req.user?.userId; // Get userId if authenticated
-    await onboardingService.acceptOffer(candidateId, req.body, userId);
+    const tenantId = req.user!.tenantId;
+    await onboardingService.acceptOffer(candidateId, tenantId, req.body, userId);
     return sendSuccess(res, { message: 'Offer accepted successfully' });
   } catch (error: any) {
     logger.error('Accept offer error:', error);
@@ -78,6 +81,7 @@ export const acceptOffer = async (req: Request, res: Response) => {
 export const uploadDocument = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
+    const tenantId = req.user!.tenantId;
     const { documentType } = req.body;
 
     // Check if file was uploaded
@@ -93,6 +97,7 @@ export const uploadDocument = async (req: Request, res: Response) => {
 
     const document = await onboardingService.uploadDocument(
       candidateId,
+      tenantId,
       { fileName, filePath },
       documentType,
       {
@@ -113,9 +118,10 @@ export const verifyDocument = async (req: Request, res: Response) => {
   try {
     const { documentId } = req.params;
     const userId = req.user!.userId;
+    const tenantId = req.user!.tenantId;
     const { status, notes } = req.body;
 
-    await onboardingService.verifyDocument(documentId, userId, status, notes);
+    await onboardingService.verifyDocument(documentId, tenantId, userId, status, notes);
     return sendSuccess(res, { message: 'Document verified successfully' });
   } catch (error: any) {
     logger.error('Verify document error:', error);
@@ -128,6 +134,12 @@ export const transitionState = async (req: Request, res: Response) => {
     const { candidateId } = req.params;
     const { toState, reason, metadata } = req.body;
     const userId = req.user!.userId;
+    const tenantId = req.user!.tenantId;
+
+    const candidate = await onboardingService.getCandidateById(candidateId, tenantId);
+    if (!candidate) {
+      return sendError(res, { code: 'NOT_FOUND', message: 'Candidate not found' }, 404);
+    }
 
     const result = await onboardingFSMService.transition(candidateId, toState, userId, reason, metadata);
 
@@ -156,7 +168,8 @@ export const getOnboardingPipeline = async (req: Request, res: Response) => {
 export const getCandidateTasks = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
-    const tasks = await onboardingService.getCandidateTasks(candidateId);
+    const tenantId = req.user!.tenantId;
+    const tasks = await onboardingService.getCandidateTasks(candidateId, tenantId);
     return sendSuccess(res, tasks);
   } catch (error: any) {
     logger.error('Get tasks error:', error);
@@ -167,9 +180,10 @@ export const getCandidateTasks = async (req: Request, res: Response) => {
 export const downloadDocument = async (req: Request, res: Response) => {
   try {
     const { documentId } = req.params;
+    const tenantId = req.user!.tenantId;
     const documentRepo = AppDataSource.getRepository(OnboardingDocument);
 
-    const document = await documentRepo.findOne({ where: { documentId } });
+    const document = await documentRepo.findOne({ where: { documentId, tenantId } });
 
     if (!document) {
       return sendError(res, { code: 'NOT_FOUND', message: 'Document not found' }, 404);
@@ -197,9 +211,10 @@ export const completeTask = async (req: Request, res: Response) => {
   try {
     const { taskId } = req.params;
     const userId = req.user!.userId;
+    const tenantId = req.user!.tenantId;
     const { notes } = req.body;
 
-    await onboardingService.completeTask(taskId, userId, notes);
+    await onboardingService.completeTask(taskId, tenantId, userId, notes);
     return sendSuccess(res, { message: 'Task completed successfully' });
   } catch (error: any) {
     logger.error('Complete task error:', error);
@@ -211,8 +226,9 @@ export const signDocument = async (req: Request, res: Response) => {
   try {
     const { documentId } = req.params;
     const userId = req.user!.userId;
+    const tenantId = req.user!.tenantId;
 
-    await onboardingService.signDocument(documentId, userId);
+    await onboardingService.signDocument(documentId, tenantId, userId);
     return sendSuccess(res, { message: 'Document signed successfully' });
   } catch (error: any) {
     logger.error('Sign document error:', error);
@@ -223,7 +239,8 @@ export const signDocument = async (req: Request, res: Response) => {
 export const getCandidateDocuments = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
-    const documents = await onboardingService.getCandidateDocuments(candidateId);
+    const tenantId = req.user!.tenantId;
+    const documents = await onboardingService.getCandidateDocuments(candidateId, tenantId);
     return sendSuccess(res, documents);
   } catch (error: any) {
     logger.error('Get candidate documents error:', error);
@@ -235,8 +252,9 @@ export const signAllRequiredDocuments = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
     const userId = req.user!.userId;
+    const tenantId = req.user!.tenantId;
 
-    await onboardingService.signAllRequiredDocuments(candidateId, userId);
+    await onboardingService.signAllRequiredDocuments(candidateId, tenantId, userId);
     return sendSuccess(res, { message: 'All required documents signed successfully' });
   } catch (error: any) {
     logger.error('Sign all documents error:', error);
@@ -247,6 +265,12 @@ export const signAllRequiredDocuments = async (req: Request, res: Response) => {
 export const getStateTransitionHistory = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
+    const tenantId = req.user!.tenantId;
+    const candidate = await onboardingService.getCandidateById(candidateId, tenantId);
+    if (!candidate) {
+      return sendError(res, { code: 'NOT_FOUND', message: 'Candidate not found' }, 404);
+    }
+
     const history = await onboardingService.getStateTransitionHistory(candidateId);
     return sendSuccess(res, history);
   } catch (error: any) {
@@ -259,7 +283,8 @@ export const updateCandidate = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
     const userId = req.user!.userId;
-    const updated = await onboardingService.updateCandidate(candidateId, req.body, userId);
+    const tenantId = req.user!.tenantId;
+    const updated = await onboardingService.updateCandidate(candidateId, tenantId, req.body, userId);
     return sendSuccess(res, updated);
   } catch (error: any) {
     logger.error('Update candidate error:', error);
@@ -271,7 +296,8 @@ export const generateAndSignDocuments = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
     const userId = req.user!.userId;
-    await onboardingService.generateAndSignRequiredDocuments(candidateId, userId);
+    const tenantId = req.user!.tenantId;
+    await onboardingService.generateAndSignRequiredDocuments(candidateId, tenantId, userId);
     return sendSuccess(res, { message: 'All required documents generated and signed successfully' });
   } catch (error: any) {
     logger.error('Generate documents error:', error);
@@ -393,8 +419,9 @@ export const updateTask = async (req: Request, res: Response) => {
   try {
     const { taskId } = req.params;
     const userId = req.user!.userId;
+    const tenantId = req.user!.tenantId;
 
-    const task = await onboardingService.updateTask(taskId, req.body, userId);
+    const task = await onboardingService.updateTask(taskId, tenantId, req.body, userId);
     return sendSuccess(res, task);
   } catch (error: any) {
     logger.error('Update task error:', error);
@@ -406,8 +433,9 @@ export const deleteTask = async (req: Request, res: Response) => {
   try {
     const { taskId } = req.params;
     const userId = req.user!.userId;
+    const tenantId = req.user!.tenantId;
 
-    await onboardingService.deleteTask(taskId, userId);
+    await onboardingService.deleteTask(taskId, tenantId, userId);
     return sendSuccess(res, { message: 'Task deleted successfully' });
   } catch (error: any) {
     logger.error('Delete task error:', error);
@@ -421,8 +449,9 @@ export const updateDocument = async (req: Request, res: Response) => {
   try {
     const { documentId } = req.params;
     const userId = req.user!.userId;
+    const tenantId = req.user!.tenantId;
 
-    const document = await onboardingService.updateDocument(documentId, req.body, userId);
+    const document = await onboardingService.updateDocument(documentId, tenantId, req.body, userId);
     return sendSuccess(res, document);
   } catch (error: any) {
     logger.error('Update document error:', error);
@@ -434,8 +463,9 @@ export const deleteDocument = async (req: Request, res: Response) => {
   try {
     const { documentId } = req.params;
     const userId = req.user!.userId;
+    const tenantId = req.user!.tenantId;
 
-    await onboardingService.deleteDocument(documentId, userId);
+    await onboardingService.deleteDocument(documentId, tenantId, userId);
     return sendSuccess(res, { message: 'Document deleted successfully' });
   } catch (error: any) {
     logger.error('Delete document error:', error);
@@ -449,9 +479,10 @@ export const updateBGVStatus = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
     const userId = req.user!.userId;
+    const tenantId = req.user!.tenantId;
     const { bgvStatus, bgvVendor, bgvReferenceId, bgvInitiatedDate, bgvCompletedDate, bgvRemarks } = req.body;
 
-    const updated = await onboardingService.updateBGVStatus(candidateId, {
+    const updated = await onboardingService.updateBGVStatus(candidateId, tenantId, {
       bgvStatus,
       bgvVendor,
       bgvReferenceId,
@@ -470,7 +501,8 @@ export const updateBGVStatus = async (req: Request, res: Response) => {
 export const getBGVDetails = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
-    const bgvDetails = await onboardingService.getBGVDetails(candidateId);
+    const tenantId = req.user!.tenantId;
+    const bgvDetails = await onboardingService.getBGVDetails(candidateId, tenantId);
     return sendSuccess(res, bgvDetails);
   } catch (error: any) {
     logger.error('Get BGV details error:', error);
@@ -484,8 +516,9 @@ export const updateOnboardingCase = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
     const userId = req.user!.userId;
+    const tenantId = req.user!.tenantId;
 
-    const onboardingCase = await onboardingService.updateOnboardingCase(candidateId, req.body, userId);
+    const onboardingCase = await onboardingService.updateOnboardingCase(candidateId, tenantId, req.body, userId);
     return sendSuccess(res, onboardingCase);
   } catch (error: any) {
     logger.error('Update onboarding case error:', error);
@@ -496,7 +529,8 @@ export const updateOnboardingCase = async (req: Request, res: Response) => {
 export const getOnboardingCase = async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.params;
-    const onboardingCase = await onboardingService.getOnboardingCase(candidateId);
+    const tenantId = req.user!.tenantId;
+    const onboardingCase = await onboardingService.getOnboardingCase(candidateId, tenantId);
 
     if (!onboardingCase) {
       return sendError(res, { code: 'NOT_FOUND', message: 'Onboarding case not found' }, 404);
