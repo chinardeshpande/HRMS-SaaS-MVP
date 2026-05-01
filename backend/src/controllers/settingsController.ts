@@ -1005,11 +1005,12 @@ export const reactivateUser = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error('Error reactivating user:', error);
-    res.status(500).json({
+    res.status(error.statusCode || 500).json({
       success: false,
       error: {
-        code: 'INTERNAL_ERROR',
+        code: error.code || 'INTERNAL_ERROR',
         message: error.message,
+        details: error.details,
       },
     });
   }

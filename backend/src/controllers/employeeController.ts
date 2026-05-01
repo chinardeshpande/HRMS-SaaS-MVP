@@ -9,6 +9,7 @@ import { EmploymentStatus, UserRole } from '../../../shared/types';
 import professionalHistoryService from '../services/professionalHistoryService';
 import managerTeamService from '../services/managerTeamService';
 import logger from '../utils/logger';
+import subscriptionEnforcementService from '../services/subscriptionEnforcementService';
 
 /**
  * Get all employees with optional filters
@@ -212,6 +213,11 @@ export const createEmployee = async (req: Request, res: Response) => {
 
     const employeeRepo = AppDataSource.getRepository(Employee);
     const userRepo = AppDataSource.getRepository(User);
+    const shouldCreateUser = Boolean(createUser && userRole && password);
+
+    if (shouldCreateUser) {
+      await subscriptionEnforcementService.assertCanAddUser(tenantId);
+    }
 
     // Check if employee code already exists
     const existingEmployee = await employeeRepo.findOne({
@@ -269,7 +275,7 @@ export const createEmployee = async (req: Request, res: Response) => {
     }
 
     // Create user account if requested
-    if (createUser && userRole && password) {
+    if (shouldCreateUser) {
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = userRepo.create({
         tenantId,
@@ -281,6 +287,7 @@ export const createEmployee = async (req: Request, res: Response) => {
         isActive: true,
       });
       await userRepo.save(user);
+      await subscriptionEnforcementService.syncCurrentUsers(tenantId);
     }
 
     // Fetch the created employee with relations
@@ -292,7 +299,15 @@ export const createEmployee = async (req: Request, res: Response) => {
     return sendCreated(res, createdEmployee);
   } catch (error: any) {
     console.error('Error creating employee:', error);
-    return sendError(res, { code: 'CREATE_ERROR', message: error.message || 'Failed to create employee' }, 500);
+    return sendError(
+      res,
+      {
+        code: error.code || 'CREATE_ERROR',
+        message: error.message || 'Failed to create employee',
+        details: error.details,
+      },
+      error.statusCode || 500
+    );
   }
 };
 
@@ -436,6 +451,7 @@ export const deleteEmployee = async (req: Request, res: Response) => {
     if (user) {
       user.isActive = false;
       await userRepo.save(user);
+      await subscriptionEnforcementService.syncCurrentUsers(tenantId);
     }
 
     return sendSuccess(res, { message: 'Employee marked as exited successfully' });

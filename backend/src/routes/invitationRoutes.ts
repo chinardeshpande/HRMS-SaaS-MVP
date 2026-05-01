@@ -41,9 +41,11 @@ router.post('/accept/:token', async (req: Request, res: Response) => {
       message: 'Invitation accepted successfully',
     });
   } catch (error: any) {
-    res.status(400).json({
+    res.status(error.statusCode || 400).json({
       success: false,
       error: {
+        code: error.code,
+        details: error.details,
         message: error.message || 'Failed to accept invitation',
       },
     });
@@ -134,9 +136,11 @@ router.post(
         data: result,
       });
     } catch (error: any) {
-      res.status(400).json({
+      res.status(error.statusCode || 400).json({
         success: false,
         error: {
+          code: error.code,
+          details: error.details,
           message: error.message || 'Failed to send invitation',
         },
       });
