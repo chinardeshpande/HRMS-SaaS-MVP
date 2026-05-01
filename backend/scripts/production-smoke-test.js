@@ -506,6 +506,21 @@ async function runAdminBoundaryWorkflow() {
     });
     expectStatus('block employee onboarding wizard access', onboardingAsEmployee.response, 403);
 
+    const onboardingCandidatesAsEmployee = await request('/onboarding/candidates', {
+      headers: { Authorization: `Bearer ${employeeToken}` },
+    });
+    expectStatus('block employee onboarding candidate access', onboardingCandidatesAsEmployee.response, 403);
+
+    const probationCasesAsEmployee = await request('/probation/cases', {
+      headers: { Authorization: `Bearer ${employeeToken}` },
+    });
+    expectStatus('block employee probation cases access', probationCasesAsEmployee.response, 403);
+
+    const exitCasesAsEmployee = await request('/exit/cases', {
+      headers: { Authorization: `Bearer ${employeeToken}` },
+    });
+    expectStatus('block employee exit cases access', exitCasesAsEmployee.response, 403);
+
     inactiveUser = await createTemporaryUser('hr_admin');
     const inactiveToken = await authenticateCredentials(inactiveUser.email, password);
     await dataSource.query('update users set "isActive" = false where email = $1', [inactiveUser.email]);
