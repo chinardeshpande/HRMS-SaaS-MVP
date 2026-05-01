@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { authenticate } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth';
 import { uploadSingle } from '../middleware/upload';
+import { UserRole } from '../../../shared/types';
 import {
   createCandidate,
   getAllCandidates,
@@ -36,6 +37,7 @@ const router = Router();
 
 // All routes require authentication
 router.use(authenticate);
+router.use(authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN));
 
 // Pipeline stats
 router.get('/pipeline', getOnboardingPipeline);
