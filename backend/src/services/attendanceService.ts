@@ -14,28 +14,38 @@ export class AttendanceService {
   /**
    * Employee: Clock In
    */
-  async clockIn(employeeId: string, ipAddress?: string, location?: string) {
+  async clockIn(
+    employeeId: string,
+    tenantId: string,
+    ipAddress?: string,
+    location?: string
+  ) {
+    if (!employeeId) {
+      throw new Error('Employee profile is required to clock in');
+    }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+
+    const employee = await this.employeeRepository.findOne({
+      where: { employeeId, tenantId },
+    });
+
+    if (!employee) {
+      throw new Error('Employee not found');
+    }
 
     // Check if already clocked in today
     const existing = await this.attendanceRepository.findOne({
       where: {
         employeeId,
+        tenantId,
         date: today,
       },
     });
 
     if (existing && existing.checkIn) {
       throw new Error('Already clocked in today');
-    }
-
-    const employee = await this.employeeRepository.findOne({
-      where: { employeeId },
-    });
-
-    if (!employee) {
-      throw new Error('Employee not found');
     }
 
     const now = new Date();
@@ -50,7 +60,7 @@ export class AttendanceService {
 
     const attendance = this.attendanceRepository.create({
       employeeId,
-      tenantId: employee.tenantId,
+      tenantId,
       date: today,
       checkIn: now,
       status: AttendanceStatus.PRESENT,
@@ -64,13 +74,18 @@ export class AttendanceService {
   /**
    * Employee: Clock Out
    */
-  async clockOut(employeeId: string) {
+  async clockOut(employeeId: string, tenantId: string) {
+    if (!employeeId) {
+      throw new Error('Employee profile is required to clock out');
+    }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     const attendance = await this.attendanceRepository.findOne({
       where: {
         employeeId,
+        tenantId,
         date: today,
       },
     });
@@ -94,7 +109,7 @@ export class AttendanceService {
 
     // Get policy to determine if it's a half day
     const employee = await this.employeeRepository.findOne({
-      where: { employeeId },
+      where: { employeeId, tenantId },
     });
 
     if (employee) {
@@ -140,7 +155,12 @@ export class AttendanceService {
   /**
    * Employee: Get my attendance history
    */
-  async getMyAttendance(employeeId: string, startDate: Date, endDate: Date) {
+  async getMyAttendance(
+    employeeId: string,
+    tenantId: string,
+    startDate: Date,
+    endDate: Date
+  ) {
     // Return empty array if no employeeId (admin users without employee records)
     if (!employeeId) {
       return [];
@@ -149,6 +169,7 @@ export class AttendanceService {
     return await this.attendanceRepository.find({
       where: {
         employeeId,
+        tenantId,
         date: Between(startDate, endDate),
       },
       order: {
@@ -161,6 +182,7 @@ export class AttendanceService {
    * HR: Bulk update attendance
    */
   async bulkUpdateAttendance(
+    tenantId: string,
     attendanceUpdates: Array<{
       attendanceId: string;
       status?: AttendanceStatus;
@@ -171,17 +193,28 @@ export class AttendanceService {
     overriddenBy: string,
     overrideReason: string
   ) {
+    if (!Array.isArray(attendanceUpdates)) {
+      throw new Error('Attendance updates must be an array');
+    }
+
     const results = [];
 
     for (const update of attendanceUpdates) {
       const attendance = await this.attendanceRepository.findOne({
-        where: { attendanceId: update.attendanceId },
+        where: { attendanceId: update.attendanceId, tenantId },
       });
 
       if (attendance) {
+        const checkIn = update.checkIn
+          ? this.parseDate(update.checkIn, 'checkIn')
+          : undefined;
+        const checkOut = update.checkOut
+          ? this.parseDate(update.checkOut, 'checkOut')
+          : undefined;
+
         if (update.status) attendance.status = update.status;
-        if (update.checkIn) attendance.checkIn = update.checkIn;
-        if (update.checkOut) attendance.checkOut = update.checkOut;
+        if (checkIn) attendance.checkIn = checkIn;
+        if (checkOut) attendance.checkOut = checkOut;
         if (update.notes) attendance.notes = update.notes;
 
         attendance.isManualOverride = true;
@@ -189,11 +222,7 @@ export class AttendanceService {
         attendance.overriddenAt = new Date();
         attendance.overrideReason = overrideReason;
 
-        // Recalculate work minutes if both check-in and check-out are present
-        if (attendance.checkIn && attendance.checkOut) {
-          const workMs = attendance.checkOut.getTime() - attendance.checkIn.getTime();
-          attendance.workMinutes = Math.floor(workMs / 60000);
-        }
+        this.recalculateWorkMinutes(attendance);
 
         const saved = await this.attendanceRepository.save(attendance);
         results.push(saved);
@@ -207,30 +236,37 @@ export class AttendanceService {
    * HR: Override attendance status
    */
   async overrideAttendance(
+    tenantId: string,
     attendanceId: string,
     updates: Partial<Attendance>,
     overriddenBy: string,
     overrideReason: string
   ) {
     const attendance = await this.attendanceRepository.findOne({
-      where: { attendanceId },
+      where: { attendanceId, tenantId },
     });
 
     if (!attendance) {
       throw new Error('Attendance record not found');
     }
 
-    Object.assign(attendance, updates);
+    const checkIn = updates.checkIn
+      ? this.parseDate(updates.checkIn, 'checkIn')
+      : undefined;
+    const checkOut = updates.checkOut
+      ? this.parseDate(updates.checkOut, 'checkOut')
+      : undefined;
+
+    if (updates.status) attendance.status = updates.status;
+    if (checkIn) attendance.checkIn = checkIn;
+    if (checkOut) attendance.checkOut = checkOut;
+    if (updates.notes) attendance.notes = updates.notes;
     attendance.isManualOverride = true;
     attendance.overriddenBy = overriddenBy;
     attendance.overriddenAt = new Date();
     attendance.overrideReason = overrideReason;
 
-    // Recalculate work minutes if both check-in and check-out are present
-    if (attendance.checkIn && attendance.checkOut) {
-      const workMs = attendance.checkOut.getTime() - attendance.checkIn.getTime();
-      attendance.workMinutes = Math.floor(workMs / 60000);
-    }
+    this.recalculateWorkMinutes(attendance);
 
     return await this.attendanceRepository.save(attendance);
   }
@@ -356,9 +392,21 @@ export class AttendanceService {
     requestedCheckOut?: Date,
     reason?: string
   ) {
+    if (!employeeId) {
+      throw new Error('Employee profile is required to request regularization');
+    }
+
+    const employee = await this.employeeRepository.findOne({
+      where: { employeeId, tenantId },
+    });
+
+    if (!employee) {
+      throw new Error('Employee not found');
+    }
+
     // Find or create attendance record for the date
     let attendance = await this.attendanceRepository.findOne({
-      where: { employeeId, date },
+      where: { employeeId, tenantId, date },
     });
 
     if (!attendance) {
@@ -369,6 +417,19 @@ export class AttendanceService {
         status: AttendanceStatus.ABSENT,
       });
       attendance = await this.attendanceRepository.save(attendance);
+    }
+
+    const existingPending = await this.timeEntryEditRepository.findOne({
+      where: {
+        attendanceId: attendance.attendanceId,
+        employeeId,
+        tenantId,
+        status: TimeEntryEditStatus.PENDING,
+      },
+    });
+
+    if (existingPending) {
+      throw new Error('A pending regularization request already exists for this date');
     }
 
     // Create time entry edit request
@@ -390,9 +451,13 @@ export class AttendanceService {
   /**
    * Employee: Get my regularization requests
    */
-  async getMyRegularizationRequests(employeeId: string) {
+  async getMyRegularizationRequests(employeeId: string, tenantId: string) {
+    if (!employeeId) {
+      return [];
+    }
+
     return await this.timeEntryEditRepository.find({
-      where: { employeeId },
+      where: { employeeId, tenantId },
       relations: ['attendance', 'approver'],
       order: { createdAt: 'DESC' },
     });
@@ -402,6 +467,10 @@ export class AttendanceService {
    * Manager/HR: Get pending regularization requests
    */
   async getPendingRegularizations(tenantId: string, employeeIds?: string[]) {
+    if (employeeIds && employeeIds.length === 0) {
+      return [];
+    }
+
     const queryBuilder = this.timeEntryEditRepository
       .createQueryBuilder('edit')
       .leftJoinAndSelect('edit.employee', 'employee')
@@ -422,11 +491,13 @@ export class AttendanceService {
    */
   async approveRegularization(
     editId: string,
-    approverId: string,
-    comments?: string
+    approverId: string | undefined,
+    tenantId: string,
+    comments?: string,
+    allowedEmployeeIds?: string[]
   ) {
     const edit = await this.timeEntryEditRepository.findOne({
-      where: { editId },
+      where: { editId, tenantId },
       relations: ['attendance'],
     });
 
@@ -436,6 +507,14 @@ export class AttendanceService {
 
     if (edit.status !== TimeEntryEditStatus.PENDING) {
       throw new Error('Request is not pending');
+    }
+
+    if (allowedEmployeeIds && !allowedEmployeeIds.includes(edit.employeeId)) {
+      throw new Error('You are not authorized to approve this regularization request');
+    }
+
+    if (approverId && approverId === edit.employeeId) {
+      throw new Error('Employee cannot approve their own regularization request');
     }
 
     // Update the regularization request
@@ -455,10 +534,8 @@ export class AttendanceService {
         edit.attendance.checkOut = edit.requestedCheckOut;
       }
 
-      // Recalculate work minutes
       if (edit.attendance.checkIn && edit.attendance.checkOut) {
-        const workMs = edit.attendance.checkOut.getTime() - edit.attendance.checkIn.getTime();
-        edit.attendance.workMinutes = Math.floor(workMs / 60000);
+        this.recalculateWorkMinutes(edit.attendance);
         edit.attendance.status = AttendanceStatus.PRESENT;
       }
 
@@ -473,11 +550,13 @@ export class AttendanceService {
    */
   async rejectRegularization(
     editId: string,
-    approverId: string,
-    comments: string
+    approverId: string | undefined,
+    tenantId: string,
+    comments: string,
+    allowedEmployeeIds?: string[]
   ) {
     const edit = await this.timeEntryEditRepository.findOne({
-      where: { editId },
+      where: { editId, tenantId },
     });
 
     if (!edit) {
@@ -486,6 +565,14 @@ export class AttendanceService {
 
     if (edit.status !== TimeEntryEditStatus.PENDING) {
       throw new Error('Request is not pending');
+    }
+
+    if (allowedEmployeeIds && !allowedEmployeeIds.includes(edit.employeeId)) {
+      throw new Error('You are not authorized to reject this regularization request');
+    }
+
+    if (approverId && approverId === edit.employeeId) {
+      throw new Error('Employee cannot reject their own regularization request');
     }
 
     edit.status = TimeEntryEditStatus.REJECTED;
@@ -520,6 +607,30 @@ export class AttendanceService {
         date: 'DESC',
       },
     });
+  }
+
+  private parseDate(value: Date | string, fieldName: string): Date {
+    const date = value instanceof Date ? value : new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      throw new Error(`Invalid ${fieldName}`);
+    }
+
+    return date;
+  }
+
+  private recalculateWorkMinutes(attendance: Attendance) {
+    if (!attendance.checkIn || !attendance.checkOut) {
+      return;
+    }
+
+    const workMs = attendance.checkOut.getTime() - attendance.checkIn.getTime();
+
+    if (workMs < 0) {
+      throw new Error('Check-out time cannot be before check-in time');
+    }
+
+    attendance.workMinutes = Math.floor(workMs / 60000);
   }
 }
 

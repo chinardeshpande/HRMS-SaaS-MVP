@@ -54,6 +54,7 @@ export class LeaveController {
   async applyLeave(req: Request, res: Response) {
     try {
       const employeeId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
       const {
         leaveType,
         startDate,
@@ -65,6 +66,7 @@ export class LeaveController {
 
       const leave = await leaveService.applyLeave(
         employeeId,
+        tenantId,
         leaveType as LeaveType,
         new Date(startDate),
         new Date(endDate),
@@ -121,12 +123,20 @@ export class LeaveController {
       const { leaveId } = req.params;
       const { status, comments } = req.body;
       const approverId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
+      const userRole = (req as any).user.role as UserRole;
+      const employeeIds =
+        userRole === UserRole.MANAGER
+          ? await managerTeamService.getTeamEmployeeIds(approverId, tenantId)
+          : undefined;
 
       const leave = await leaveService.approveOrRejectLeave(
         leaveId,
         approverId,
+        tenantId,
         status as LeaveStatus.APPROVED | LeaveStatus.REJECTED,
-        comments
+        comments,
+        employeeIds
       );
 
       res.json({
@@ -162,8 +172,9 @@ export class LeaveController {
     try {
       const { leaveId } = req.params;
       const employeeId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
 
-      const leave = await leaveService.cancelLeave(leaveId, employeeId);
+      const leave = await leaveService.cancelLeave(leaveId, employeeId, tenantId);
 
       res.json({
         success: true,
@@ -201,10 +212,12 @@ export class LeaveController {
   async getMyRequests(req: Request, res: Response) {
     try {
       const employeeId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
       const { status, year } = req.query;
 
       const leaves = await leaveService.getMyLeaveRequests(
         employeeId,
+        tenantId,
         status as LeaveStatus,
         year ? parseInt(year as string) : undefined
       );
@@ -239,10 +252,12 @@ export class LeaveController {
   async getMyBalance(req: Request, res: Response) {
     try {
       const employeeId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
       const { year } = req.query;
 
       const balances = await leaveService.getMyLeaveBalance(
         employeeId,
+        tenantId,
         year ? parseInt(year as string) : undefined
       );
 
@@ -271,8 +286,13 @@ export class LeaveController {
   async getPendingApprovals(req: Request, res: Response) {
     try {
       const managerId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
+      const userRole = (req as any).user.role as UserRole;
 
-      const leaves = await leaveService.getPendingApprovals(managerId);
+      const leaves =
+        userRole === UserRole.MANAGER
+          ? await leaveService.getPendingApprovals(managerId, tenantId)
+          : await leaveService.getAllLeaveRequests(tenantId, LeaveStatus.PENDING);
 
       res.json({
         success: true,
@@ -452,9 +472,11 @@ export class LeaveController {
   async initializeBalance(req: Request, res: Response) {
     try {
       const { employeeId, year } = req.body;
+      const tenantId = (req as any).user.tenantId;
 
       const balances = await leaveService.initializeLeaveBalance(
         employeeId,
+        tenantId,
         year
       );
 
