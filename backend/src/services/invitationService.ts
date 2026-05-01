@@ -110,20 +110,19 @@ export class InvitationService {
     const companyName = tenant?.companyName || 'Our Company';
     const inviterName = inviter?.fullName || 'Your colleague';
 
-    // Send invitation email
-    try {
-      await emailService.sendInvitationEmail({
+    // Do not block invitation creation on SMTP availability.
+    emailService
+      .sendInvitationEmail({
         to: data.email,
         fullName: data.fullName,
         inviterName,
         companyName,
         token,
         role: this.getRoleDisplayName(data.role),
+      })
+      .catch((emailError) => {
+        console.error('Failed to send invitation email:', emailError);
       });
-    } catch (emailError) {
-      console.error('Failed to send invitation email:', emailError);
-      // Don't fail the invitation if email fails - the user can resend
-    }
 
     return {
       invitationId: invitation.invitationId,
