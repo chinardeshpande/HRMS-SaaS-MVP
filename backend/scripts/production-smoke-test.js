@@ -498,6 +498,18 @@ async function runAdminBoundaryWorkflow() {
   }
 }
 
+async function runIdentityUniquenessCheck() {
+  const duplicates = await dataSource.query(
+    'select lower(email) as email from users group by lower(email) having count(*) > 1'
+  );
+
+  if (duplicates.length > 0) {
+    throw new Error(`Duplicate login emails detected: ${duplicates.length}`);
+  }
+
+  console.log('OK 0 duplicate login emails');
+}
+
 async function main() {
   await dataSource.initialize();
   await createSmokeUser();
@@ -508,6 +520,7 @@ async function main() {
     await runDigitalLibraryWorkflow(token);
     await runSettingsWorkflow(token);
     await runAdminBoundaryWorkflow();
+    await runIdentityUniquenessCheck();
   } finally {
     await deleteSmokeUser();
   }

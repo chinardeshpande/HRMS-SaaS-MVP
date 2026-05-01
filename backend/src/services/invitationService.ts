@@ -30,11 +30,22 @@ export class InvitationService {
     departmentId?: string;
     invitedBy: string;
   }): Promise<{ invitationId: string; message: string }> {
+    const normalizedEmail = data.email.toLowerCase();
+
+    // Login is email-only, so prevent duplicate identities across tenants.
+    const existingGlobalUser = await this.userRepo.findOne({
+      where: { email: normalizedEmail },
+    });
+
+    if (existingGlobalUser) {
+      throw new Error('User with this email already exists');
+    }
+
     // Check if user already exists
     const existingUser = await this.userRepo.findOne({
       where: {
         tenantId: data.tenantId,
-        email: data.email.toLowerCase(),
+        email: normalizedEmail,
       },
     });
 
@@ -42,11 +53,22 @@ export class InvitationService {
       throw new Error('User with this email already exists in your organization');
     }
 
+    const existingGlobalInvitation = await this.invitationRepo.findOne({
+      where: {
+        email: normalizedEmail,
+        status: InvitationStatus.PENDING,
+      },
+    });
+
+    if (existingGlobalInvitation) {
+      throw new Error('An invitation has already been sent to this email');
+    }
+
     // Check if there's already a pending invitation
     const existingInvitation = await this.invitationRepo.findOne({
       where: {
         tenantId: data.tenantId,
-        email: data.email.toLowerCase(),
+        email: normalizedEmail,
         status: InvitationStatus.PENDING,
       },
     });
@@ -63,7 +85,7 @@ export class InvitationService {
     // Create invitation
     const invitation = this.invitationRepo.create({
       tenantId: data.tenantId,
-      email: data.email.toLowerCase(),
+      email: normalizedEmail,
       fullName: data.fullName,
       role: data.role,
       departmentId: data.departmentId,
@@ -134,10 +156,7 @@ export class InvitationService {
 
     // Check if user already exists (race condition check)
     const existingUser = await this.userRepo.findOne({
-      where: {
-        tenantId: invitation.tenantId,
-        email: invitation.email,
-      },
+      where: { email: invitation.email.toLowerCase() },
     });
 
     if (existingUser) {
