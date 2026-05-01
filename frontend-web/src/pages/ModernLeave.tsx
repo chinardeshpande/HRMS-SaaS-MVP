@@ -498,7 +498,7 @@ export default function ModernLeave() {
             )}
 
             {/* Stats Cards - Clickable - Compact */}
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div
                 onClick={() => setSelectedStatus('all')}
                 className={`bg-white rounded-lg shadow-sm border-2 p-3 cursor-pointer transition-all hover:shadow-md ${
@@ -745,7 +745,7 @@ export default function ModernLeave() {
         {activeView === 'approvals' && (
           <div className="space-y-4">
             {/* Team Stats Cards - Clickable - Compact */}
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div
                 onClick={() => setSelectedStatus('all')}
                 className={`bg-white rounded-lg shadow-sm border-2 p-3 cursor-pointer transition-all hover:shadow-md ${
