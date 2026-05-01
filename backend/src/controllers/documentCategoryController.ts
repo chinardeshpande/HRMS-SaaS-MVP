@@ -3,6 +3,10 @@ import { AppDataSource } from '../config/database';
 import { DocumentCategory } from '../models/DocumentCategory';
 import { sendSuccess, sendError, sendCreated } from '../utils/responses';
 
+const normalizeCategoryName = (name: unknown): string => {
+  return typeof name === 'string' ? name.trim().replace(/\s+/g, ' ') : '';
+};
+
 export const getCategories = async (req: Request, res: Response) => {
   try {
     const tenantId = req.user?.tenantId;
@@ -57,7 +61,8 @@ export const createCategory = async (req: Request, res: Response) => {
       return sendError(res, { code: 'TENANT_NOT_FOUND', message: 'Tenant ID not found' }, 400);
     }
 
-    const { name, description, color, icon } = req.body;
+    const { description, color, icon } = req.body;
+    const name = normalizeCategoryName(req.body.name);
 
     if (!name) {
       return sendError(res, { code: 'VALIDATION_ERROR', message: 'Category name is required' }, 400);
@@ -66,11 +71,25 @@ export const createCategory = async (req: Request, res: Response) => {
     const categoryRepo = AppDataSource.getRepository(DocumentCategory);
 
     // Check if category already exists
-    const existingCategory = await categoryRepo.findOne({
-      where: { tenantId, name },
-    });
+    const existingCategory = await categoryRepo
+      .createQueryBuilder('category')
+      .where('category.tenantId = :tenantId', { tenantId })
+      .andWhere('LOWER(category.name) = LOWER(:name)', { name })
+      .getOne();
 
     if (existingCategory) {
+      if (!existingCategory.isActive && !existingCategory.isDefault) {
+        Object.assign(existingCategory, {
+          name,
+          description,
+          color,
+          icon,
+          isActive: true,
+        });
+        await categoryRepo.save(existingCategory);
+        return sendCreated(res, existingCategory);
+      }
+
       return sendError(res, { code: 'DUPLICATE_ERROR', message: 'Category with this name already exists' }, 400);
     }
 
@@ -114,20 +133,33 @@ export const updateCategory = async (req: Request, res: Response) => {
       return sendError(res, { code: 'FORBIDDEN', message: 'Cannot update system default categories' }, 403);
     }
 
-    const { name, description, color, icon } = req.body;
+    const { description, color, icon } = req.body;
+    const name = req.body.name !== undefined ? normalizeCategoryName(req.body.name) : undefined;
+
+    if (req.body.name !== undefined && !name) {
+      return sendError(res, { code: 'VALIDATION_ERROR', message: 'Category name is required' }, 400);
+    }
 
     // Check for duplicate name
     if (name && name !== category.name) {
-      const existingCategory = await categoryRepo.findOne({
-        where: { tenantId, name },
-      });
+      const existingCategory = await categoryRepo
+        .createQueryBuilder('category')
+        .where('category.tenantId = :tenantId', { tenantId })
+        .andWhere('category.categoryId != :categoryId', { categoryId: id })
+        .andWhere('LOWER(category.name) = LOWER(:name)', { name })
+        .getOne();
 
       if (existingCategory) {
         return sendError(res, { code: 'DUPLICATE_ERROR', message: 'Category with this name already exists' }, 400);
       }
     }
 
-    Object.assign(category, { name, description, color, icon });
+    Object.assign(category, {
+      ...(name !== undefined ? { name } : {}),
+      ...(description !== undefined ? { description } : {}),
+      ...(color !== undefined ? { color } : {}),
+      ...(icon !== undefined ? { icon } : {}),
+    });
     await categoryRepo.save(category);
 
     return sendSuccess(res, category);

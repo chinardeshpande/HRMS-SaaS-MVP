@@ -207,7 +207,7 @@ export class DigitalLibraryService {
 
     if (options.searchTerm) {
       query.andWhere(
-        '(lib.fileName ILIKE :searchTerm OR lib.description ILIKE :searchTerm OR :searchTerm = ANY(lib.tags))',
+        '(lib.fileName ILIKE :searchTerm OR lib.description ILIKE :searchTerm OR lib.tags ILIKE :searchTerm)',
         { searchTerm: `%${options.searchTerm}%` }
       );
     }
