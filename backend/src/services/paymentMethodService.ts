@@ -1,5 +1,5 @@
 import { AppDataSource } from '../config/database';
-import { PaymentMethod, PaymentMethodType } from '../models/PaymentMethod';
+import { PaymentMethod } from '../models/PaymentMethod';
 
 export class PaymentMethodService {
   private static instance: PaymentMethodService;
@@ -17,7 +17,7 @@ export class PaymentMethodService {
   // Get all payment methods for a tenant
   async getAllPaymentMethods(tenantId: string): Promise<PaymentMethod[]> {
     return await this.paymentMethodRepo.find({
-      where: { tenantId },
+      where: { tenantId, isActive: true },
       order: { isDefault: 'DESC', createdAt: 'DESC' },
     });
   }
@@ -69,24 +69,44 @@ export class PaymentMethodService {
 
   // Delete payment method
   async deletePaymentMethod(paymentMethodId: string, tenantId: string): Promise<boolean> {
-    const result = await this.paymentMethodRepo.delete({ paymentMethodId, tenantId });
-    return (result.affected ?? 0) > 0;
+    const paymentMethod = await this.paymentMethodRepo.findOne({
+      where: { paymentMethodId, tenantId, isActive: true },
+    });
+
+    if (!paymentMethod) return false;
+
+    const wasDefault = paymentMethod.isDefault;
+    paymentMethod.isActive = false;
+    paymentMethod.isDefault = false;
+    await this.paymentMethodRepo.save(paymentMethod);
+
+    if (wasDefault) {
+      const replacement = await this.paymentMethodRepo.findOne({
+        where: { tenantId, isActive: true },
+        order: { createdAt: 'DESC' },
+      });
+
+      if (replacement) {
+        replacement.isDefault = true;
+        await this.paymentMethodRepo.save(replacement);
+      }
+    }
+
+    return true;
   }
 
   // Set as default
   async setDefaultPaymentMethod(paymentMethodId: string, tenantId: string): Promise<PaymentMethod | null> {
-    // Unset all defaults first
+    const paymentMethod = await this.paymentMethodRepo.findOne({
+      where: { paymentMethodId, tenantId, isActive: true },
+    });
+
+    if (!paymentMethod) return null;
+
     await this.paymentMethodRepo.update(
       { tenantId, isDefault: true },
       { isDefault: false }
     );
-
-    // Set the new default
-    const paymentMethod = await this.paymentMethodRepo.findOne({
-      where: { paymentMethodId, tenantId },
-    });
-
-    if (!paymentMethod) return null;
 
     paymentMethod.isDefault = true;
     return await this.paymentMethodRepo.save(paymentMethod);

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { settingsService } from '../services/settingsService';
-import { SubscriptionPlan, BillingCycle } from '../models/Subscription';
+import { Subscription, SubscriptionPlan, BillingCycle } from '../models/Subscription';
+import { OrganizationSettings } from '../models/OrganizationSettings';
 import { PaymentStatus } from '../models/PaymentHistory';
 import { RuleCategory } from '../models/BusinessRules';
 import { PermissionModule } from '../models/Permission';
@@ -8,6 +9,89 @@ import leavePolicyService from '../services/leavePolicyService';
 import attendancePolicyService from '../services/attendancePolicyService';
 
 // ==================== SUBSCRIPTION CONTROLLERS ====================
+
+const allowedSubscriptionUpdateFields: Array<keyof Subscription> = [
+  'billingCycle',
+  'autoRenew',
+  'notes',
+];
+
+const allowedOrganizationUpdateFields: Array<keyof OrganizationSettings> = [
+  'companyName',
+  'companyDescription',
+  'industry',
+  'registrationNumber',
+  'taxId',
+  'logo',
+  'email',
+  'phone',
+  'website',
+  'address',
+  'city',
+  'state',
+  'postalCode',
+  'country',
+  'timezone',
+  'defaultLanguage',
+  'currency',
+  'dateFormat',
+  'timeFormat',
+  'fiscalYearStartMonth',
+  'weekStartDay',
+  'workingHours',
+  'notificationSettings',
+  'smtpConfig',
+  'twoFactorAuthRequired',
+  'passwordExpiryDays',
+  'maxLoginAttempts',
+  'sessionTimeoutMinutes',
+  'ipWhitelistEnabled',
+  'allowedIpAddresses',
+  'branding',
+  'customFields',
+];
+
+function pickAllowedFields<T extends object>(
+  body: Record<string, any>,
+  allowedFields: Array<keyof T>
+): Partial<T> {
+  return allowedFields.reduce((updates, field) => {
+    if (body[field as string] !== undefined) {
+      (updates as Record<string, any>)[field as string] = body[field as string];
+    }
+
+    return updates;
+  }, {} as Partial<T>);
+}
+
+function validateSubscriptionUpdates(updates: Partial<Subscription>) {
+  if (
+    updates.billingCycle &&
+    !Object.values(BillingCycle).includes(updates.billingCycle as BillingCycle)
+  ) {
+    throw new Error('A valid billing cycle is required');
+  }
+}
+
+function validateOrganizationUpdates(updates: Partial<OrganizationSettings>) {
+  if (updates.companyName !== undefined && !String(updates.companyName).trim()) {
+    throw new Error('Company name cannot be blank');
+  }
+
+  if (
+    updates.fiscalYearStartMonth !== undefined &&
+    (Number(updates.fiscalYearStartMonth) < 1 || Number(updates.fiscalYearStartMonth) > 12)
+  ) {
+    throw new Error('Fiscal year start month must be between 1 and 12');
+  }
+
+  if (
+    updates.weekStartDay !== undefined &&
+    (Number(updates.weekStartDay) < 0 || Number(updates.weekStartDay) > 6)
+  ) {
+    throw new Error('Week start day must be between 0 and 6');
+  }
+}
 
 export const getSubscription = async (req: Request, res: Response) => {
   try {
@@ -82,7 +166,8 @@ export const createSubscription = async (req: Request, res: Response) => {
 export const updateSubscription = async (req: Request, res: Response) => {
   try {
     const { tenantId } = req as any;
-    const updates = req.body;
+    const updates = pickAllowedFields<Subscription>(req.body, allowedSubscriptionUpdateFields);
+    validateSubscriptionUpdates(updates);
 
     const subscription = await settingsService.updateSubscription(tenantId, updates);
 
@@ -102,10 +187,10 @@ export const updateSubscription = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error('Error updating subscription:', error);
-    res.status(500).json({
+    res.status(error.message?.includes('valid') ? 400 : 500).json({
       success: false,
       error: {
-        code: 'INTERNAL_ERROR',
+        code: error.message?.includes('valid') ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR',
         message: error.message,
       },
     });
@@ -224,7 +309,8 @@ export const getOrganizationSettings = async (req: Request, res: Response) => {
 export const updateOrganizationSettings = async (req: Request, res: Response) => {
   try {
     const { tenantId } = req as any;
-    const updates = req.body;
+    const updates = pickAllowedFields<OrganizationSettings>(req.body, allowedOrganizationUpdateFields);
+    validateOrganizationUpdates(updates);
 
     let settings = await settingsService.getOrganizationSettings(tenantId);
 
@@ -244,10 +330,10 @@ export const updateOrganizationSettings = async (req: Request, res: Response) =>
     });
   } catch (error: any) {
     console.error('Error updating organization settings:', error);
-    res.status(500).json({
+    res.status(error.message?.includes('must') || error.message?.includes('blank') ? 400 : 500).json({
       success: false,
       error: {
-        code: 'INTERNAL_ERROR',
+        code: error.message?.includes('must') || error.message?.includes('blank') ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR',
         message: error.message,
       },
     });

@@ -120,6 +120,12 @@ function expectStatus(label, response, expectedStatus) {
   console.log(`OK ${response.status} ${label}`);
 }
 
+async function requestWithStatus(path, options, label, expectedStatus) {
+  const result = await request(path, options);
+  expectStatus(label, result.response, expectedStatus);
+  return result.body?.data;
+}
+
 async function runDigitalLibraryWorkflow(token) {
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -229,6 +235,198 @@ async function runDigitalLibraryWorkflow(token) {
   }
 }
 
+async function runSettingsWorkflow(token) {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  };
+  const authHeaders = { Authorization: `Bearer ${token}` };
+  const suffix = Date.now();
+  let previousDefaultPaymentMethodId;
+  let createdPaymentMethodId;
+  let originalSubscription;
+  let originalOrganizationCustomFields;
+
+  try {
+    originalSubscription = await requestWithStatus(
+      '/settings/subscription',
+      { headers: authHeaders },
+      'get subscription for settings workflow',
+      200
+    );
+
+    await requestWithStatus(
+      '/settings/subscription',
+      {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ autoRenew: !originalSubscription.autoRenew }),
+      },
+      'update subscription auto-renew',
+      200
+    );
+
+    await requestWithStatus(
+      '/settings/subscription',
+      {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ autoRenew: originalSubscription.autoRenew }),
+      },
+      'restore subscription auto-renew',
+      200
+    );
+    originalSubscription = undefined;
+
+    const organization = await requestWithStatus(
+      '/settings/organization',
+      { headers: authHeaders },
+      'get organization settings for workflow',
+      200
+    );
+    originalOrganizationCustomFields = organization.customFields || {};
+
+    await requestWithStatus(
+      '/settings/organization',
+      {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({
+          customFields: {
+            ...originalOrganizationCustomFields,
+            codexSmokeLastRunAt: new Date().toISOString(),
+          },
+        }),
+      },
+      'update organization custom fields',
+      200
+    );
+
+    await requestWithStatus(
+      '/settings/organization',
+      {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ customFields: originalOrganizationCustomFields }),
+      },
+      'restore organization custom fields',
+      200
+    );
+    originalOrganizationCustomFields = undefined;
+
+    const previousDefault = await request('/payment-methods/default', { headers: authHeaders });
+    if (previousDefault.response.status === 200) {
+      previousDefaultPaymentMethodId = previousDefault.body?.data?.paymentMethodId;
+    } else if (previousDefault.response.status !== 404) {
+      throw new Error(`get default payment method expected 200 or 404, received ${previousDefault.response.status}`);
+    }
+    console.log(`OK ${previousDefault.response.status} get default payment method before workflow`);
+
+    const createdPaymentMethod = await requestWithStatus(
+      '/payment-methods',
+      {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          type: 'credit_card',
+          cardLast4: '4242',
+          cardBrand: 'visa',
+          expiryMonth: '12',
+          expiryYear: '2030',
+          cardholderName: 'Codex Smoke Test',
+          nickname: `Codex Smoke Card ${suffix}`,
+          billingCountry: 'India',
+          isDefault: false,
+        }),
+      },
+      'create payment method',
+      201
+    );
+    createdPaymentMethodId = createdPaymentMethod.paymentMethodId;
+
+    const defaultPaymentMethod = await requestWithStatus(
+      `/payment-methods/${createdPaymentMethodId}/set-default`,
+      { method: 'POST', headers: authHeaders },
+      'set payment method default',
+      200
+    );
+
+    if (defaultPaymentMethod.paymentMethodId !== createdPaymentMethodId || !defaultPaymentMethod.isDefault) {
+      throw new Error('Created payment method was not marked as default');
+    }
+
+    await requestWithStatus(
+      `/payment-methods/${createdPaymentMethodId}`,
+      {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ nickname: `Codex Smoke Card Updated ${suffix}` }),
+      },
+      'update payment method',
+      200
+    );
+
+    const paymentMethods = await requestWithStatus(
+      '/payment-methods',
+      { headers: authHeaders },
+      'list payment methods after create',
+      200
+    );
+
+    if (!paymentMethods.some((method) => method.paymentMethodId === createdPaymentMethodId)) {
+      throw new Error('Created payment method was not returned by list endpoint');
+    }
+
+    if (previousDefaultPaymentMethodId) {
+      await requestWithStatus(
+        `/payment-methods/${previousDefaultPaymentMethodId}/set-default`,
+        { method: 'POST', headers: authHeaders },
+        'restore previous default payment method',
+        200
+      );
+      previousDefaultPaymentMethodId = undefined;
+    }
+
+    await requestWithStatus(
+      `/payment-methods/${createdPaymentMethodId}`,
+      { method: 'DELETE', headers: authHeaders },
+      'delete payment method',
+      200
+    );
+    createdPaymentMethodId = undefined;
+  } finally {
+    if (previousDefaultPaymentMethodId) {
+      await request(`/payment-methods/${previousDefaultPaymentMethodId}/set-default`, {
+        method: 'POST',
+        headers: authHeaders,
+      }).catch(() => undefined);
+    }
+
+    if (createdPaymentMethodId) {
+      await request(`/payment-methods/${createdPaymentMethodId}`, {
+        method: 'DELETE',
+        headers: authHeaders,
+      }).catch(() => undefined);
+    }
+
+    if (originalSubscription) {
+      await request('/settings/subscription', {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ autoRenew: originalSubscription.autoRenew }),
+      }).catch(() => undefined);
+    }
+
+    if (originalOrganizationCustomFields) {
+      await request('/settings/organization', {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ customFields: originalOrganizationCustomFields }),
+      }).catch(() => undefined);
+    }
+  }
+}
+
 async function main() {
   await dataSource.initialize();
   await createSmokeUser();
@@ -237,6 +435,7 @@ async function main() {
     const token = await authenticate();
     await runEndpointChecks(token);
     await runDigitalLibraryWorkflow(token);
+    await runSettingsWorkflow(token);
   } finally {
     await deleteSmokeUser();
   }
