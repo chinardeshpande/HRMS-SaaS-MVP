@@ -5,6 +5,7 @@ import { Tenant } from '../models/Tenant';
 import { User } from '../models/User';
 import { Subscription, SubscriptionPlan, SubscriptionStatus, BillingCycle } from '../models/Subscription';
 import { OnboardingProgress } from '../models/OnboardingProgress';
+import { OrganizationSettings } from '../models/OrganizationSettings';
 import { UserRole } from '../../../shared/types';
 import { config } from '../config/config';
 import * as crypto from 'crypto';
@@ -226,12 +227,66 @@ export class RegistrationService {
         status: SubscriptionStatus.TRIAL,
         startDate: new Date(),
         trialEndDate: this.calculateTrialEndDate(14),
+        nextBillingDate: this.calculateTrialEndDate(14),
         billingCycle: BillingCycle.MONTHLY,
+        price: this.getPlanPrice(this.mapPlanType(registration.selectedPlan)),
+        maxUsers: this.getMaxUsersByPlan(this.mapPlanType(registration.selectedPlan)),
+        maxStorageGB: this.getMaxStorageByPlan(this.mapPlanType(registration.selectedPlan)),
+        features: this.getFeaturesByPlan(this.mapPlanType(registration.selectedPlan)),
       });
 
       await queryRunner.manager.save(subscription);
 
-      // 4. Create Onboarding Progress
+      // 4. Create Organization Settings baseline
+      const organizationSettings = queryRunner.manager.create(OrganizationSettings, {
+        tenantId: savedTenant.tenantId,
+        companyName: savedTenant.companyName,
+        email: registration.adminEmail,
+        phone: registration.phone,
+        industry: registration.industry,
+        timezone: 'Asia/Kolkata',
+        defaultLanguage: 'en',
+        currency: 'INR',
+        dateFormat: 'DD/MM/YYYY',
+        timeFormat: '24h',
+        fiscalYearStartMonth: 4,
+        weekStartDay: 1,
+        workingHours: this.getDefaultWorkingHours(),
+        notificationSettings: {
+          emailNotifications: true,
+          smsNotifications: false,
+          pushNotifications: true,
+          slackIntegration: false,
+          teamsIntegration: false,
+        },
+        smtpConfig: {
+          enabled: false,
+          host: '',
+          port: 587,
+          secure: false,
+          username: '',
+          password: '',
+          fromEmail: '',
+          fromName: '',
+        },
+        twoFactorAuthRequired: false,
+        passwordExpiryDays: 90,
+        maxLoginAttempts: 5,
+        sessionTimeoutMinutes: 60,
+        ipWhitelistEnabled: false,
+        branding: {
+          primaryColor: '#2563eb',
+          secondaryColor: '#64748b',
+          accentColor: '#10b981',
+          logoUrl: '',
+          faviconUrl: '',
+        },
+        customFields: {},
+      });
+
+      await queryRunner.manager.save(organizationSettings);
+
+      // 5. Create Onboarding Progress
       const onboardingProgress = queryRunner.manager.create(OnboardingProgress, {
         tenantId: savedTenant.tenantId,
         currentStep: 1,
@@ -242,11 +297,11 @@ export class RegistrationService {
 
       await queryRunner.manager.save(onboardingProgress);
 
-      // 5. Initialize tenant with default data (templates, policies)
+      // 6. Initialize tenant with default data (templates, policies, roles)
       logger.info('Initializing tenant with default data...');
       await tenantInitializationService.initializeTenant(savedTenant.tenantId, queryRunner);
 
-      // 6. Update Registration Status
+      // 7. Update Registration Status
       registration.status = RegistrationStatus.COMPLETED;
       registration.tenantId = savedTenant.tenantId;
       registration.completedAt = new Date();
@@ -388,6 +443,97 @@ export class RegistrationService {
       default:
         return SubscriptionPlan.FREE;
     }
+  }
+
+  private getPlanPrice(plan: SubscriptionPlan): number {
+    const prices: Record<SubscriptionPlan, number> = {
+      [SubscriptionPlan.FREE]: 0,
+      [SubscriptionPlan.STARTER]: 29,
+      [SubscriptionPlan.PROFESSIONAL]: 79,
+      [SubscriptionPlan.ENTERPRISE]: 0,
+    };
+    return prices[plan];
+  }
+
+  private getMaxUsersByPlan(plan: SubscriptionPlan): number {
+    const limits: Record<SubscriptionPlan, number> = {
+      [SubscriptionPlan.FREE]: 10,
+      [SubscriptionPlan.STARTER]: 50,
+      [SubscriptionPlan.PROFESSIONAL]: 200,
+      [SubscriptionPlan.ENTERPRISE]: 999999,
+    };
+    return limits[plan];
+  }
+
+  private getMaxStorageByPlan(plan: SubscriptionPlan): number {
+    const limits: Record<SubscriptionPlan, number> = {
+      [SubscriptionPlan.FREE]: 5,
+      [SubscriptionPlan.STARTER]: 50,
+      [SubscriptionPlan.PROFESSIONAL]: 200,
+      [SubscriptionPlan.ENTERPRISE]: 1000,
+    };
+    return limits[plan];
+  }
+
+  private getFeaturesByPlan(plan: SubscriptionPlan) {
+    const features: Record<SubscriptionPlan, Record<string, boolean>> = {
+      [SubscriptionPlan.FREE]: {
+        advancedReporting: false,
+        apiAccess: false,
+        customBranding: false,
+        ssoIntegration: false,
+        prioritySupport: false,
+        customWorkflows: false,
+        aiInsights: false,
+        multiCurrency: false,
+      },
+      [SubscriptionPlan.STARTER]: {
+        advancedReporting: true,
+        apiAccess: false,
+        customBranding: false,
+        ssoIntegration: false,
+        prioritySupport: false,
+        customWorkflows: false,
+        aiInsights: false,
+        multiCurrency: false,
+      },
+      [SubscriptionPlan.PROFESSIONAL]: {
+        advancedReporting: true,
+        apiAccess: true,
+        customBranding: true,
+        ssoIntegration: false,
+        prioritySupport: true,
+        customWorkflows: true,
+        aiInsights: true,
+        multiCurrency: true,
+      },
+      [SubscriptionPlan.ENTERPRISE]: {
+        advancedReporting: true,
+        apiAccess: true,
+        customBranding: true,
+        ssoIntegration: true,
+        prioritySupport: true,
+        customWorkflows: true,
+        aiInsights: true,
+        multiCurrency: true,
+      },
+    };
+    return features[plan];
+  }
+
+  private getDefaultWorkingHours() {
+    const weekday = { enabled: true, start: '09:00', end: '18:00' };
+    const weekend = { enabled: false, start: '09:00', end: '18:00' };
+
+    return {
+      monday: weekday,
+      tuesday: weekday,
+      wednesday: weekday,
+      thursday: weekday,
+      friday: weekday,
+      saturday: weekend,
+      sunday: weekend,
+    };
   }
 }
 

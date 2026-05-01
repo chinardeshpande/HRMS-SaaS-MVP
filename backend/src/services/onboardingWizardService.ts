@@ -189,6 +189,18 @@ export class OnboardingWizardService {
       // 3. Create leave policies from wizard data
       if (progress.stepData.businessRules?.leavePolicies) {
         for (const policy of progress.stepData.businessRules.leavePolicies) {
+          const existingPolicy = await queryRunner.manager.findOne(LeavePolicy, {
+            where: {
+              tenantId,
+              policyName: policy.name,
+              leaveType: policy.type as LeaveType,
+            },
+          });
+
+          if (existingPolicy) {
+            continue;
+          }
+
           const leavePolicy = queryRunner.manager.create(LeavePolicy, {
             tenantId,
             policyName: policy.name,
@@ -199,17 +211,28 @@ export class OnboardingWizardService {
           await queryRunner.manager.save(leavePolicy);
         }
       } else {
-        // Create default leave policies
-        await this.createDefaultLeavePolicies(queryRunner, tenantId);
+        const leavePolicyCount = await queryRunner.manager.count(LeavePolicy, { where: { tenantId } });
+        if (leavePolicyCount === 0) {
+          await this.createDefaultLeavePolicies(queryRunner, tenantId);
+        }
       }
 
       // 4. Create attendance policy from wizard data or defaults
       const wizardAttendance = progress.stepData.businessRules?.attendancePolicy;
       const workingDays = wizardAttendance?.workingDaysPerWeek || [1, 2, 3, 4, 5]; // Mon-Fri default
 
-      const attendancePolicy = queryRunner.manager.create(AttendancePolicy, {
-        tenantId,
-        policyName: 'Default Attendance Policy',
+      let attendancePolicy = await queryRunner.manager.findOne(AttendancePolicy, {
+        where: { tenantId, policyName: 'Default Attendance Policy' },
+      });
+
+      if (!attendancePolicy) {
+        attendancePolicy = queryRunner.manager.create(AttendancePolicy, {
+          tenantId,
+          policyName: 'Default Attendance Policy',
+        });
+      }
+
+      Object.assign(attendancePolicy, {
         standardCheckIn: '09:00:00', // 9 AM
         standardCheckOut: '18:00:00', // 6 PM
         requiredWorkMinutes: (wizardAttendance?.workingHoursPerDay || 8) * 60,
@@ -219,7 +242,7 @@ export class OnboardingWizardService {
         trackBreaks: false,
         allowOvertime: true,
         maxOvertimeMinutes: 120,
-        workingDays: workingDays,
+        workingDays,
         allowHalfDay: true,
         halfDayMinutes: 240,
         hasShifts: false,
@@ -281,7 +304,16 @@ export class OnboardingWizardService {
         };
       }
 
-      const orgSettings = queryRunner.manager.create(OrganizationSettings, orgSettingsData);
+      let orgSettings = await queryRunner.manager.findOne(OrganizationSettings, {
+        where: { tenantId },
+      });
+
+      if (!orgSettings) {
+        orgSettings = queryRunner.manager.create(OrganizationSettings, orgSettingsData);
+      } else {
+        Object.assign(orgSettings, orgSettingsData);
+      }
+
       await queryRunner.manager.save(orgSettings);
 
       // 6. Mark onboarding as complete
