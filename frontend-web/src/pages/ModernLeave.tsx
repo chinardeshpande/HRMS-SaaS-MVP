@@ -352,13 +352,13 @@ export default function ModernLeave() {
       <div className="max-w-7xl mx-auto">
         {/* Compact Header */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             {/* Left: Title with Icon */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 min-w-0">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
                 <CalendarDaysIcon className="h-5 w-5 text-white" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <h1 className="text-xl font-bold text-gray-900">Leave Management</h1>
                 <p className="text-xs text-gray-500">
                   {activeView === 'my-leave' ? 'My leave requests' : 'Team leave approvals'}
@@ -367,14 +367,14 @@ export default function ModernLeave() {
             </div>
 
             {/* Center: Tab Navigation */}
-            <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
+            <div className="flex max-w-full items-center space-x-1 overflow-x-auto bg-gray-100 p-1 rounded-lg">
               <button
                 onClick={() => {
                   setActiveView('my-leave');
                   setSelectedStatus('all');
                   setSelectedLeaveType('all');
                 }}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
+                className={`shrink-0 px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
                   activeView === 'my-leave'
                     ? 'bg-white text-purple-700 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
@@ -391,7 +391,7 @@ export default function ModernLeave() {
                     setSelectedStatus('all');
                     setSelectedLeaveType('all');
                   }}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 relative ${
+                  className={`shrink-0 px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 relative ${
                     activeView === 'approvals'
                       ? 'bg-white text-purple-700 shadow-sm'
                       : 'text-gray-600 hover:text-gray-900'
@@ -409,7 +409,7 @@ export default function ModernLeave() {
             </div>
 
             {/* Right: Actions */}
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={fetchAllData}
                 disabled={loading}
