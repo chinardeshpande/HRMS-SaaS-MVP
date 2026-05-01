@@ -498,6 +498,100 @@ async function runAdminBoundaryWorkflow() {
   }
 }
 
+async function runInvitationLifecycleWorkflow(token) {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  };
+  const suffix = Date.now();
+  const invitedEmail = `codex-invite-${suffix}@aurorahr.in`;
+  const invitedPassword = crypto.randomBytes(24).toString('base64url');
+  let invitationId;
+  let invitedToken;
+  let invitedEmployeeId;
+
+  try {
+    const invitation = await requestWithStatus(
+      '/invitations',
+      {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          email: invitedEmail,
+          fullName: 'Codex Invited User',
+          role: 'employee',
+        }),
+      },
+      'send user invitation',
+      201
+    );
+    invitationId = invitation.invitationId;
+
+    const invitationRows = await dataSource.query(
+      'select "invitationToken" from user_invitations where "invitationId" = $1',
+      [invitationId]
+    );
+    const invitationToken = invitationRows[0]?.invitationToken;
+    if (!invitationToken) {
+      throw new Error('Invitation token was not persisted');
+    }
+
+    await requestWithStatus(
+      `/invitations/accept/${invitationToken}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: invitedPassword }),
+      },
+      'accept user invitation',
+      200
+    );
+
+    invitedToken = await authenticateCredentials(invitedEmail, invitedPassword);
+
+    const invitedMe = await requestWithStatus(
+      '/auth/me',
+      { headers: { Authorization: `Bearer ${invitedToken}` } },
+      'get invited user profile',
+      200
+    );
+    invitedEmployeeId = invitedMe.employeeId;
+
+    if (!invitedEmployeeId) {
+      throw new Error('Accepted invitation did not link the user to an employee');
+    }
+
+    const users = await requestWithStatus(
+      `/settings/users?status=active`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      'list users after invitation acceptance',
+      200
+    );
+
+    if (!users.users.some((user) => user.employeeId === invitedEmployeeId)) {
+      throw new Error('Accepted invitation employee was not returned by user management');
+    }
+
+    await requestWithStatus(
+      `/settings/users/${invitedEmployeeId}/deactivate`,
+      { method: 'POST', headers: { Authorization: `Bearer ${token}` } },
+      'deactivate invited user',
+      200
+    );
+
+    const blockedAfterDeactivate = await request('/auth/me', {
+      headers: { Authorization: `Bearer ${invitedToken}` },
+    });
+    expectStatus('reject deactivated invited user token', blockedAfterDeactivate.response, 401);
+  } finally {
+    await dataSource.query('delete from users where email = $1', [invitedEmail]).catch(() => undefined);
+    await dataSource.query('delete from employees where email = $1', [invitedEmail]).catch(() => undefined);
+    if (invitationId) {
+      await dataSource.query('delete from user_invitations where "invitationId" = $1', [invitationId]).catch(() => undefined);
+    }
+  }
+}
+
 async function runIdentityUniquenessCheck() {
   const duplicates = await dataSource.query(
     'select lower(email) as email from users group by lower(email) having count(*) > 1'
@@ -551,6 +645,7 @@ async function main() {
     await runDigitalLibraryWorkflow(token);
     await runSettingsWorkflow(token);
     await runAdminBoundaryWorkflow();
+    await runInvitationLifecycleWorkflow(token);
     await runIdentityUniquenessCheck();
     await runTenantBaselineCheck();
   } finally {
