@@ -700,7 +700,7 @@ export default function ModernAttendance() {
             </div>
 
             {/* Stats - Clickable for Filtering - Compact */}
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div
                 onClick={() => setStatusFilter('present')}
                 className={`bg-white rounded-xl shadow-sm border-2 p-3 cursor-pointer transition-all hover:shadow-md ${
