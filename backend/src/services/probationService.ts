@@ -15,9 +15,9 @@ export class ProbationService {
   private taskRepo = AppDataSource.getRepository(ProbationTask);
   private employeeRepo = AppDataSource.getRepository(Employee);
 
-  async getProbationCase(probationId: string): Promise<ProbationCase | null> {
+  async getProbationCase(probationId: string, tenantId: string): Promise<ProbationCase | null> {
     return this.probationCaseRepo.findOne({
-      where: { probationId },
+      where: { probationId, tenantId },
       relations: ['employee', 'employee.department', 'employee.designation'],
     });
   }
@@ -65,12 +65,13 @@ export class ProbationService {
 
   async submitReview(
     probationId: string,
+    tenantId: string,
     managerId: string,
     reviewData: Partial<ProbationReview>
   ): Promise<ProbationReview> {
     // Get probation case to get employeeId and tenantId
     const probationCase = await this.probationCaseRepo.findOne({
-      where: { probationId },
+      where: { probationId, tenantId },
       relations: ['employee']
     });
 
@@ -135,8 +136,8 @@ export class ProbationService {
     return savedReview;
   }
 
-  async hrApproveReview(reviewId: string, hrId: string, approved: boolean, notes?: string): Promise<void> {
-    const review = await this.reviewRepo.findOne({ where: { reviewId } });
+  async hrApproveReview(reviewId: string, tenantId: string, hrId: string, approved: boolean, notes?: string): Promise<void> {
+    const review = await this.reviewRepo.findOne({ where: { reviewId, tenantId } });
 
     if (!review) {
       throw new Error('Review not found');
@@ -156,8 +157,8 @@ export class ProbationService {
     logger.info(`Review ${reviewId} ${approved ? 'approved' : 'rejected'} by HR`);
   }
 
-  async flagAtRisk(probationId: string, userId: string, reason: string, level: string): Promise<void> {
-    const probationCase = await this.probationCaseRepo.findOne({ where: { probationId } });
+  async flagAtRisk(probationId: string, tenantId: string, userId: string, reason: string, level: string): Promise<void> {
+    const probationCase = await this.probationCaseRepo.findOne({ where: { probationId, tenantId } });
 
     if (!probationCase) {
       throw new Error('Probation case not found');
@@ -193,6 +194,7 @@ export class ProbationService {
 
   async extendProbation(
     probationId: string,
+    tenantId: string,
     extensionDays: number,
     reason: string,
     improvementPlan: string,
@@ -210,7 +212,7 @@ export class ProbationService {
       throw new Error('Extension duration must be greater than 0');
     }
 
-    const probationCase = await this.probationCaseRepo.findOne({ where: { probationId } });
+    const probationCase = await this.probationCaseRepo.findOne({ where: { probationId, tenantId } });
 
     if (!probationCase) {
       throw new Error('Probation case not found');
@@ -236,8 +238,8 @@ export class ProbationService {
     logger.info(`Probation extended: ${probationId} by ${extensionDays} days`);
   }
 
-  async confirmEmployee(probationId: string, userId: string, confirmationDate?: Date): Promise<void> {
-    const probationCase = await this.probationCaseRepo.findOne({ where: { probationId } });
+  async confirmEmployee(probationId: string, tenantId: string, userId: string, confirmationDate?: Date): Promise<void> {
+    const probationCase = await this.probationCaseRepo.findOne({ where: { probationId, tenantId } });
 
     if (!probationCase) {
       throw new Error('Probation case not found');
@@ -258,12 +260,12 @@ export class ProbationService {
     logger.info(`Employee confirmed: ${probationCase.employeeId}`);
   }
 
-  async terminateProbation(probationId: string, reason: string, userId: string): Promise<void> {
+  async terminateProbation(probationId: string, tenantId: string, reason: string, userId: string): Promise<void> {
     if (!reason || reason.trim() === '') {
       throw new Error('Termination reason is required');
     }
 
-    const probationCase = await this.probationCaseRepo.findOne({ where: { probationId } });
+    const probationCase = await this.probationCaseRepo.findOne({ where: { probationId, tenantId } });
 
     if (!probationCase) {
       throw new Error('Probation case not found');
@@ -287,9 +289,10 @@ export class ProbationService {
     logger.info(`Probation terminated: ${probationId}`);
   }
 
-  async getDueReviews(managerId: string): Promise<ProbationReview[]> {
+  async getDueReviews(managerId: string, tenantId: string): Promise<ProbationReview[]> {
     return this.reviewRepo.find({
       where: {
+        tenantId,
         managerId,
         status: ReviewStatus.PENDING,
       },

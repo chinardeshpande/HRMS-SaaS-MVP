@@ -20,9 +20,10 @@ export const approveResignation = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
     const { notes } = req.body;
 
-    await exitService.approveResignation(exitId, userId, notes);
+    await exitService.approveResignation(exitId, tenantId, userId, notes);
     return sendSuccess(res, { message: 'Resignation approved successfully' });
   } catch (error: any) {
     logger.error('Approve resignation error:', error);
@@ -34,13 +35,14 @@ export const rejectResignation = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
     const { reason } = req.body;
 
     if (!reason) {
       return sendError(res, { code: 'VALIDATION_ERROR', message: 'Rejection reason is required' }, 400);
     }
 
-    await exitService.rejectResignation(exitId, userId, reason);
+    await exitService.rejectResignation(exitId, tenantId, userId, reason);
     return sendSuccess(res, { message: 'Resignation rejected successfully' });
   } catch (error: any) {
     logger.error('Reject resignation error:', error);
@@ -52,13 +54,14 @@ export const buyoutNoticePeriod = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
     const { buyoutAmount } = req.body;
 
     if (!buyoutAmount || buyoutAmount <= 0) {
       return sendError(res, { code: 'VALIDATION_ERROR', message: 'Valid buyout amount is required' }, 400);
     }
 
-    await exitService.buyoutNoticePeriod(exitId, userId, buyoutAmount);
+    await exitService.buyoutNoticePeriod(exitId, tenantId, userId, buyoutAmount);
     return sendSuccess(res, { message: 'Notice period buyout processed successfully' });
   } catch (error: any) {
     logger.error('Notice period buyout error:', error);
@@ -71,6 +74,12 @@ export const transitionState = async (req: Request, res: Response) => {
     const { exitId } = req.params;
     const { toState, reason } = req.body;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
+
+    const exitCase = await exitService.getExitCase(exitId, tenantId);
+    if (!exitCase) {
+      return sendError(res, { code: 'NOT_FOUND', message: 'Exit case not found' }, 404);
+    }
 
     const result = await exitFSMService.transition(exitId, toState, userId, reason);
 
@@ -89,8 +98,9 @@ export const updateClearance = async (req: Request, res: Response) => {
   try {
     const { clearanceId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    await exitService.updateClearance(clearanceId, userId, req.body);
+    await exitService.updateClearance(clearanceId, tenantId, userId, req.body);
     return sendSuccess(res, { message: 'Clearance updated successfully' });
   } catch (error: any) {
     logger.error('Update clearance error:', error);
@@ -102,8 +112,9 @@ export const approveClearance = async (req: Request, res: Response) => {
   try {
     const { clearanceId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    await exitService.approveClearance(clearanceId, userId);
+    await exitService.approveClearance(clearanceId, tenantId, userId);
     return sendSuccess(res, { message: 'Clearance approved successfully' });
   } catch (error: any) {
     logger.error('Approve clearance error:', error);
@@ -115,8 +126,9 @@ export const recordAssetReturn = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    const asset = await exitService.recordAssetReturn(exitId, req.body, userId);
+    const asset = await exitService.recordAssetReturn(exitId, tenantId, req.body, userId);
     return sendCreated(res, asset);
   } catch (error: any) {
     logger.error('Record asset return error:', error);
@@ -127,9 +139,10 @@ export const recordAssetReturn = async (req: Request, res: Response) => {
 export const scheduleExitInterview = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
+    const tenantId = req.user!.tenantId;
     const { scheduledDate, conductedBy } = req.body;
 
-    const interview = await exitService.scheduleExitInterview(exitId, new Date(scheduledDate), conductedBy);
+    const interview = await exitService.scheduleExitInterview(exitId, tenantId, new Date(scheduledDate), conductedBy);
     return sendCreated(res, interview);
   } catch (error: any) {
     logger.error('Schedule exit interview error:', error);
@@ -140,8 +153,9 @@ export const scheduleExitInterview = async (req: Request, res: Response) => {
 export const submitExitInterview = async (req: Request, res: Response) => {
   try {
     const { exitInterviewId } = req.params;
+    const tenantId = req.user!.tenantId;
 
-    const interview = await exitService.submitExitInterview(exitInterviewId, req.body);
+    const interview = await exitService.submitExitInterview(exitInterviewId, tenantId, req.body);
     return sendSuccess(res, interview);
   } catch (error: any) {
     logger.error('Submit exit interview error:', error);
@@ -153,8 +167,9 @@ export const calculateSettlement = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    const settlement = await exitService.calculateSettlement(exitId, req.body, userId);
+    const settlement = await exitService.calculateSettlement(exitId, tenantId, req.body, userId);
     return sendCreated(res, settlement);
   } catch (error: any) {
     logger.error('Calculate settlement error:', error);
@@ -166,9 +181,10 @@ export const approveSettlement = async (req: Request, res: Response) => {
   try {
     const { settlementId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
     const { notes } = req.body;
 
-    await exitService.approveSettlement(settlementId, userId, notes);
+    await exitService.approveSettlement(settlementId, tenantId, userId, notes);
     return sendSuccess(res, { message: 'Settlement approved successfully' });
   } catch (error: any) {
     logger.error('Approve settlement error:', error);
@@ -180,13 +196,14 @@ export const markSettlementPaid = async (req: Request, res: Response) => {
   try {
     const { settlementId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
     const { paymentDate, paymentMode, paymentReferenceNumber } = req.body;
 
     if (!paymentDate || !paymentMode || !paymentReferenceNumber) {
       return sendError(res, { code: 'VALIDATION_ERROR', message: 'Payment details are required' }, 400);
     }
 
-    await exitService.markSettlementPaid(settlementId, userId, {
+    await exitService.markSettlementPaid(settlementId, tenantId, userId, {
       paymentDate: new Date(paymentDate),
       paymentMode,
       paymentReferenceNumber,
@@ -202,7 +219,8 @@ export const markSettlementPaid = async (req: Request, res: Response) => {
 export const getExitCase = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
-    const exitCase = await exitService.getExitCase(exitId);
+    const tenantId = req.user!.tenantId;
+    const exitCase = await exitService.getExitCase(exitId, tenantId);
 
     if (!exitCase) {
       return sendError(res, { code: 'NOT_FOUND', message: 'Exit case not found' }, 404);
@@ -273,8 +291,9 @@ export const updateExitCase = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    const updated = await exitService.updateExitCase(exitId, req.body, userId);
+    const updated = await exitService.updateExitCase(exitId, tenantId, req.body, userId);
     return sendSuccess(res, updated);
   } catch (error: any) {
     logger.error('Update exit case error:', error);
@@ -286,8 +305,9 @@ export const deleteExitCase = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    await exitService.deleteExitCase(exitId, userId);
+    await exitService.deleteExitCase(exitId, tenantId, userId);
     return sendSuccess(res, { message: 'Exit case deleted successfully' });
   } catch (error: any) {
     logger.error('Delete exit case error:', error);
@@ -301,8 +321,9 @@ export const createClearance = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    const clearance = await exitService.createClearance(exitId, req.body, userId);
+    const clearance = await exitService.createClearance(exitId, tenantId, req.body, userId);
     return sendCreated(res, clearance);
   } catch (error: any) {
     logger.error('Create clearance error:', error);
@@ -313,8 +334,9 @@ export const createClearance = async (req: Request, res: Response) => {
 export const getClearancesByExitId = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
+    const tenantId = req.user!.tenantId;
 
-    const clearances = await exitService.getClearancesByExitId(exitId);
+    const clearances = await exitService.getClearancesByExitId(exitId, tenantId);
     return sendSuccess(res, clearances);
   } catch (error: any) {
     logger.error('Get clearances error:', error);
@@ -326,8 +348,9 @@ export const deleteClearance = async (req: Request, res: Response) => {
   try {
     const { clearanceId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    await exitService.deleteClearance(clearanceId, userId);
+    await exitService.deleteClearance(clearanceId, tenantId, userId);
     return sendSuccess(res, { message: 'Clearance deleted successfully' });
   } catch (error: any) {
     logger.error('Delete clearance error:', error);
@@ -341,8 +364,9 @@ export const updateAssetReturn = async (req: Request, res: Response) => {
   try {
     const { assetId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    const updated = await exitService.updateAssetReturn(assetId, req.body, userId);
+    const updated = await exitService.updateAssetReturn(assetId, tenantId, req.body, userId);
     return sendSuccess(res, updated);
   } catch (error: any) {
     logger.error('Update asset return error:', error);
@@ -353,8 +377,9 @@ export const updateAssetReturn = async (req: Request, res: Response) => {
 export const getAssetsByExitId = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
+    const tenantId = req.user!.tenantId;
 
-    const assets = await exitService.getAssetsByExitId(exitId);
+    const assets = await exitService.getAssetsByExitId(exitId, tenantId);
     return sendSuccess(res, assets);
   } catch (error: any) {
     logger.error('Get assets error:', error);
@@ -366,8 +391,9 @@ export const deleteAssetReturn = async (req: Request, res: Response) => {
   try {
     const { assetId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    await exitService.deleteAssetReturn(assetId, userId);
+    await exitService.deleteAssetReturn(assetId, tenantId, userId);
     return sendSuccess(res, { message: 'Asset return record deleted successfully' });
   } catch (error: any) {
     logger.error('Delete asset return error:', error);
@@ -381,8 +407,9 @@ export const updateExitInterview = async (req: Request, res: Response) => {
   try {
     const { exitInterviewId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    const updated = await exitService.updateExitInterview(exitInterviewId, req.body, userId);
+    const updated = await exitService.updateExitInterview(exitInterviewId, tenantId, req.body, userId);
     return sendSuccess(res, updated);
   } catch (error: any) {
     logger.error('Update exit interview error:', error);
@@ -393,8 +420,9 @@ export const updateExitInterview = async (req: Request, res: Response) => {
 export const getExitInterviewByExitId = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
+    const tenantId = req.user!.tenantId;
 
-    const interview = await exitService.getExitInterviewByExitId(exitId);
+    const interview = await exitService.getExitInterviewByExitId(exitId, tenantId);
     return sendSuccess(res, interview);
   } catch (error: any) {
     logger.error('Get exit interview error:', error);
@@ -406,8 +434,9 @@ export const deleteExitInterview = async (req: Request, res: Response) => {
   try {
     const { exitInterviewId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    await exitService.deleteExitInterview(exitInterviewId, userId);
+    await exitService.deleteExitInterview(exitInterviewId, tenantId, userId);
     return sendSuccess(res, { message: 'Exit interview deleted successfully' });
   } catch (error: any) {
     logger.error('Delete exit interview error:', error);
@@ -421,8 +450,9 @@ export const updateSettlement = async (req: Request, res: Response) => {
   try {
     const { settlementId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    const updated = await exitService.updateSettlement(settlementId, req.body, userId);
+    const updated = await exitService.updateSettlement(settlementId, tenantId, req.body, userId);
     return sendSuccess(res, updated);
   } catch (error: any) {
     logger.error('Update settlement error:', error);
@@ -433,8 +463,9 @@ export const updateSettlement = async (req: Request, res: Response) => {
 export const getSettlementByExitId = async (req: Request, res: Response) => {
   try {
     const { exitId } = req.params;
+    const tenantId = req.user!.tenantId;
 
-    const settlement = await exitService.getSettlementByExitId(exitId);
+    const settlement = await exitService.getSettlementByExitId(exitId, tenantId);
     return sendSuccess(res, settlement);
   } catch (error: any) {
     logger.error('Get settlement error:', error);
@@ -446,8 +477,9 @@ export const deleteSettlement = async (req: Request, res: Response) => {
   try {
     const { settlementId } = req.params;
     const userId = req.user!.employeeId!;
+    const tenantId = req.user!.tenantId;
 
-    await exitService.deleteSettlement(settlementId, userId);
+    await exitService.deleteSettlement(settlementId, tenantId, userId);
     return sendSuccess(res, { message: 'Settlement deleted successfully' });
   } catch (error: any) {
     logger.error('Delete settlement error:', error);

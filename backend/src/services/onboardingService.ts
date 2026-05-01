@@ -109,16 +109,16 @@ export class OnboardingService {
     });
   }
 
-  async getCandidateById(candidateId: string): Promise<Candidate | null> {
+  async getCandidateById(candidateId: string, tenantId: string): Promise<Candidate | null> {
     return this.candidateRepo.findOne({
-      where: { candidateId },
+      where: { candidateId, tenantId },
       relations: ['department', 'designation', 'reportingManager'],
     });
   }
 
-  async sendOffer(candidateId: string, userId: string): Promise<void> {
+  async sendOffer(candidateId: string, tenantId: string, userId: string): Promise<void> {
     const candidate = await this.candidateRepo.findOne({
-      where: { candidateId },
+      where: { candidateId, tenantId },
       relations: ['department', 'designation'],
     });
 
@@ -164,8 +164,8 @@ export class OnboardingService {
     logger.info(`Offer sent to candidate: ${candidateId}`);
   }
 
-  async acceptOffer(candidateId: string, acceptanceData: { acceptedDate: Date }, userId?: string): Promise<void> {
-    const candidate = await this.candidateRepo.findOne({ where: { candidateId } });
+  async acceptOffer(candidateId: string, tenantId: string, acceptanceData: { acceptedDate: Date }, userId?: string): Promise<void> {
+    const candidate = await this.candidateRepo.findOne({ where: { candidateId, tenantId } });
 
     if (!candidate) {
       throw new Error('Candidate not found');
@@ -194,11 +194,12 @@ export class OnboardingService {
 
   async uploadDocument(
     candidateId: string,
+    tenantId: string,
     file: { fileName: string; filePath: string },
     documentType: string,
     metadata?: Partial<OnboardingDocument>
   ): Promise<OnboardingDocument> {
-    const candidate = await this.candidateRepo.findOne({ where: { candidateId } });
+    const candidate = await this.candidateRepo.findOne({ where: { candidateId, tenantId } });
 
     if (!candidate) {
       throw new Error('Candidate not found');
@@ -224,11 +225,12 @@ export class OnboardingService {
 
   async verifyDocument(
     documentId: string,
+    tenantId: string,
     verifierId: string,
     status: VerificationStatus,
     notes?: string
   ): Promise<void> {
-    const document = await this.documentRepo.findOne({ where: { documentId } });
+    const document = await this.documentRepo.findOne({ where: { documentId, tenantId } });
 
     if (!document) {
       throw new Error('Document not found');
@@ -247,8 +249,8 @@ export class OnboardingService {
     logger.info(`Document verified: ${documentId} with status ${status}`);
   }
 
-  async signDocument(documentId: string, userId: string): Promise<void> {
-    const document = await this.documentRepo.findOne({ where: { documentId } });
+  async signDocument(documentId: string, tenantId: string, userId: string): Promise<void> {
+    const document = await this.documentRepo.findOne({ where: { documentId, tenantId } });
 
     if (!document) {
       throw new Error('Document not found');
@@ -265,17 +267,18 @@ export class OnboardingService {
     logger.info(`Document signed: ${documentId} by user ${userId}`);
   }
 
-  async getCandidateDocuments(candidateId: string): Promise<OnboardingDocument[]> {
+  async getCandidateDocuments(candidateId: string, tenantId: string): Promise<OnboardingDocument[]> {
     return this.documentRepo.find({
-      where: { candidateId },
+      where: { candidateId, tenantId },
       order: { createdAt: 'ASC' },
     });
   }
 
-  async signAllRequiredDocuments(candidateId: string, userId: string): Promise<void> {
+  async signAllRequiredDocuments(candidateId: string, tenantId: string, userId: string): Promise<void> {
     const documents = await this.documentRepo.find({
       where: {
         candidateId,
+        tenantId,
         requiresSignature: true,
         isSigned: false,
       },
@@ -307,8 +310,8 @@ export class OnboardingService {
     logger.info(`BGV initiated for candidate: ${candidateId}`);
   }
 
-  async updateBGVStatus(candidateId: string, bgvData: Partial<OnboardingCase> & { bgvRemarks?: string }, userId: string): Promise<OnboardingCase> {
-    const onboardingCase = await this.onboardingCaseRepo.findOne({ where: { candidateId } });
+  async updateBGVStatus(candidateId: string, tenantId: string, bgvData: Partial<OnboardingCase> & { bgvRemarks?: string }, userId: string): Promise<OnboardingCase> {
+    const onboardingCase = await this.onboardingCaseRepo.findOne({ where: { candidateId, tenantId } });
 
     if (!onboardingCase) {
       throw new Error('Onboarding case not found');
@@ -344,15 +347,20 @@ export class OnboardingService {
     return updated;
   }
 
-  async getBGVDetails(candidateId: string): Promise<OnboardingCase | null> {
+  async getBGVDetails(candidateId: string, tenantId: string): Promise<OnboardingCase | null> {
     return this.onboardingCaseRepo.findOne({
-      where: { candidateId },
+      where: { candidateId, tenantId },
     });
   }
 
   // ==================== TASK CRUD OPERATIONS ====================
 
   async createTask(tenantId: string, candidateId: string, taskData: Partial<OnboardingTask>, userId: string): Promise<OnboardingTask> {
+    const candidate = await this.candidateRepo.findOne({ where: { candidateId, tenantId } });
+    if (!candidate) {
+      throw new Error('Candidate not found');
+    }
+
     const task = this.taskRepo.create({
       ...taskData,
       tenantId,
@@ -365,8 +373,8 @@ export class OnboardingService {
     return savedTask;
   }
 
-  async updateTask(taskId: string, taskData: Partial<OnboardingTask>, userId: string): Promise<OnboardingTask> {
-    const task = await this.taskRepo.findOne({ where: { taskId } });
+  async updateTask(taskId: string, tenantId: string, taskData: Partial<OnboardingTask>, userId: string): Promise<OnboardingTask> {
+    const task = await this.taskRepo.findOne({ where: { taskId, tenantId } });
 
     if (!task) {
       throw new Error('Task not found');
@@ -378,8 +386,8 @@ export class OnboardingService {
     return updated;
   }
 
-  async deleteTask(taskId: string, userId: string): Promise<void> {
-    const task = await this.taskRepo.findOne({ where: { taskId } });
+  async deleteTask(taskId: string, tenantId: string, userId: string): Promise<void> {
+    const task = await this.taskRepo.findOne({ where: { taskId, tenantId } });
 
     if (!task) {
       throw new Error('Task not found');
@@ -391,8 +399,8 @@ export class OnboardingService {
 
   // ==================== DOCUMENT CRUD OPERATIONS ====================
 
-  async updateDocument(documentId: string, docData: Partial<OnboardingDocument>, userId: string): Promise<OnboardingDocument> {
-    const document = await this.documentRepo.findOne({ where: { documentId } });
+  async updateDocument(documentId: string, tenantId: string, docData: Partial<OnboardingDocument>, userId: string): Promise<OnboardingDocument> {
+    const document = await this.documentRepo.findOne({ where: { documentId, tenantId } });
 
     if (!document) {
       throw new Error('Document not found');
@@ -404,8 +412,8 @@ export class OnboardingService {
     return updated;
   }
 
-  async deleteDocument(documentId: string, userId: string): Promise<void> {
-    const document = await this.documentRepo.findOne({ where: { documentId } });
+  async deleteDocument(documentId: string, tenantId: string, userId: string): Promise<void> {
+    const document = await this.documentRepo.findOne({ where: { documentId, tenantId } });
 
     if (!document) {
       throw new Error('Document not found');
@@ -417,8 +425,8 @@ export class OnboardingService {
 
   // ==================== ONBOARDING CASE CRUD OPERATIONS ====================
 
-  async updateOnboardingCase(candidateId: string, caseData: Partial<OnboardingCase>, userId: string): Promise<OnboardingCase> {
-    const onboardingCase = await this.onboardingCaseRepo.findOne({ where: { candidateId } });
+  async updateOnboardingCase(candidateId: string, tenantId: string, caseData: Partial<OnboardingCase>, userId: string): Promise<OnboardingCase> {
+    const onboardingCase = await this.onboardingCaseRepo.findOne({ where: { candidateId, tenantId } });
 
     if (!onboardingCase) {
       throw new Error('Onboarding case not found');
@@ -430,9 +438,9 @@ export class OnboardingService {
     return updated;
   }
 
-  async getOnboardingCase(candidateId: string): Promise<OnboardingCase | null> {
+  async getOnboardingCase(candidateId: string, tenantId: string): Promise<OnboardingCase | null> {
     return this.onboardingCaseRepo.findOne({
-      where: { candidateId },
+      where: { candidateId, tenantId },
     });
   }
 
@@ -476,8 +484,8 @@ export class OnboardingService {
     return pipeline;
   }
 
-  async completeTask(taskId: string, userId: string, notes?: string): Promise<void> {
-    const task = await this.taskRepo.findOne({ where: { taskId } });
+  async completeTask(taskId: string, tenantId: string, userId: string, notes?: string): Promise<void> {
+    const task = await this.taskRepo.findOne({ where: { taskId, tenantId } });
 
     if (!task) {
       throw new Error('Task not found');
@@ -492,9 +500,9 @@ export class OnboardingService {
     logger.info(`Task completed: ${taskId}`);
   }
 
-  async getCandidateTasks(candidateId: string): Promise<OnboardingTask[]> {
+  async getCandidateTasks(candidateId: string, tenantId: string): Promise<OnboardingTask[]> {
     return this.taskRepo.find({
-      where: { candidateId },
+      where: { candidateId, tenantId },
       order: { dueDate: 'ASC' },
     });
   }
@@ -508,8 +516,8 @@ export class OnboardingService {
     });
   }
 
-  async updateCandidate(candidateId: string, data: Partial<Candidate>, userId: string): Promise<Candidate> {
-    const candidate = await this.candidateRepo.findOne({ where: { candidateId } });
+  async updateCandidate(candidateId: string, tenantId: string, data: Partial<Candidate>, userId: string): Promise<Candidate> {
+    const candidate = await this.candidateRepo.findOne({ where: { candidateId, tenantId } });
 
     if (!candidate) {
       throw new Error('Candidate not found');
@@ -523,8 +531,8 @@ export class OnboardingService {
     return updated;
   }
 
-  async generateAndSignRequiredDocuments(candidateId: string, userId: string): Promise<void> {
-    const candidate = await this.candidateRepo.findOne({ where: { candidateId } });
+  async generateAndSignRequiredDocuments(candidateId: string, tenantId: string, userId: string): Promise<void> {
+    const candidate = await this.candidateRepo.findOne({ where: { candidateId, tenantId } });
 
     if (!candidate) {
       throw new Error('Candidate not found');

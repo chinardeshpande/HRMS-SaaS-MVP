@@ -66,8 +66,8 @@ export class ExitService {
     return savedExitCase;
   }
 
-  async approveResignation(exitId: string, userId: string, notes?: string): Promise<void> {
-    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId } });
+  async approveResignation(exitId: string, tenantId: string, userId: string, notes?: string): Promise<void> {
+    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId, tenantId } });
 
     if (!exitCase) {
       throw new Error('Exit case not found');
@@ -99,12 +99,12 @@ export class ExitService {
     logger.info(`Resignation approved for exit case ${exitId}`);
   }
 
-  async rejectResignation(exitId: string, userId: string, reason: string): Promise<void> {
+  async rejectResignation(exitId: string, tenantId: string, userId: string, reason: string): Promise<void> {
     if (!reason || reason.trim() === '') {
       throw new Error('Rejection reason is required');
     }
 
-    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId } });
+    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId, tenantId } });
 
     if (!exitCase) {
       throw new Error('Exit case not found');
@@ -131,8 +131,8 @@ export class ExitService {
     logger.info(`Resignation rejected for exit case ${exitId}`);
   }
 
-  async buyoutNoticePeriod(exitId: string, userId: string, buyoutAmount: number): Promise<void> {
-    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId } });
+  async buyoutNoticePeriod(exitId: string, tenantId: string, userId: string, buyoutAmount: number): Promise<void> {
+    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId, tenantId } });
 
     if (!exitCase) {
       throw new Error('Exit case not found');
@@ -157,6 +157,7 @@ export class ExitService {
 
   async updateClearance(
     clearanceId: string,
+    tenantId: string,
     userId: string,
     data: {
       status?: ClearanceStatus;
@@ -165,7 +166,7 @@ export class ExitService {
       completedChecklistItems?: string[];
     }
   ): Promise<void> {
-    const clearance = await this.clearanceRepo.findOne({ where: { clearanceId } });
+    const clearance = await this.clearanceRepo.findOne({ where: { clearanceId, tenantId } });
 
     if (!clearance) {
       throw new Error('Clearance not found');
@@ -195,8 +196,8 @@ export class ExitService {
     await this.checkAndUpdateClearanceStatus(clearance.exitId);
   }
 
-  async approveClearance(clearanceId: string, userId: string): Promise<void> {
-    const clearance = await this.clearanceRepo.findOne({ where: { clearanceId } });
+  async approveClearance(clearanceId: string, tenantId: string, userId: string): Promise<void> {
+    const clearance = await this.clearanceRepo.findOne({ where: { clearanceId, tenantId } });
 
     if (!clearance) {
       throw new Error('Clearance not found');
@@ -240,6 +241,7 @@ export class ExitService {
 
   async recordAssetReturn(
     exitId: string,
+    tenantId: string,
     assetData: {
       assetType: string;
       assetName?: string;
@@ -255,7 +257,7 @@ export class ExitService {
     },
     userId: string
   ): Promise<AssetReturn> {
-    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId } });
+    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId, tenantId } });
 
     if (!exitCase) {
       throw new Error('Exit case not found');
@@ -311,10 +313,11 @@ export class ExitService {
 
   async scheduleExitInterview(
     exitId: string,
+    tenantId: string,
     scheduledDate: Date,
     conductedBy: string
   ): Promise<ExitInterview> {
-    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId } });
+    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId, tenantId } });
 
     if (!exitCase) {
       throw new Error('Exit case not found');
@@ -336,9 +339,10 @@ export class ExitService {
 
   async submitExitInterview(
     exitInterviewId: string,
+    tenantId: string,
     data: Partial<ExitInterview>
   ): Promise<ExitInterview> {
-    const interview = await this.interviewRepo.findOne({ where: { exitInterviewId } });
+    const interview = await this.interviewRepo.findOne({ where: { exitInterviewId, tenantId } });
 
     if (!interview) {
       throw new Error('Exit interview not found');
@@ -350,7 +354,7 @@ export class ExitService {
 
     const savedInterview = await this.interviewRepo.save(interview);
 
-    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId: interview.exitId } });
+    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId: interview.exitId, tenantId } });
 
     if (exitCase) {
       exitCase.exitInterviewCompleted = true;
@@ -364,16 +368,17 @@ export class ExitService {
 
   async calculateSettlement(
     exitId: string,
+    tenantId: string,
     settlementData: Partial<FinalSettlement>,
     userId: string
   ): Promise<FinalSettlement> {
-    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId } });
+    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId, tenantId } });
 
     if (!exitCase) {
       throw new Error('Exit case not found');
     }
 
-    let settlement = await this.settlementRepo.findOne({ where: { exitId } });
+    let settlement = await this.settlementRepo.findOne({ where: { exitId, tenantId } });
 
     if (!settlement) {
       settlement = this.settlementRepo.create({
@@ -462,8 +467,8 @@ export class ExitService {
     return savedSettlement;
   }
 
-  async approveSettlement(settlementId: string, userId: string, notes?: string): Promise<void> {
-    const settlement = await this.settlementRepo.findOne({ where: { settlementId } });
+  async approveSettlement(settlementId: string, tenantId: string, userId: string, notes?: string): Promise<void> {
+    const settlement = await this.settlementRepo.findOne({ where: { settlementId, tenantId } });
 
     if (!settlement) {
       throw new Error('Settlement not found');
@@ -480,6 +485,7 @@ export class ExitService {
 
   async markSettlementPaid(
     settlementId: string,
+    tenantId: string,
     userId: string,
     paymentData: {
       paymentDate: Date;
@@ -487,7 +493,7 @@ export class ExitService {
       paymentReferenceNumber: string;
     }
   ): Promise<void> {
-    const settlement = await this.settlementRepo.findOne({ where: { settlementId } });
+    const settlement = await this.settlementRepo.findOne({ where: { settlementId, tenantId } });
 
     if (!settlement) {
       throw new Error('Settlement not found');
@@ -509,9 +515,9 @@ export class ExitService {
     logger.info(`Settlement marked as paid: ${settlementId}`);
   }
 
-  async getExitCase(exitId: string): Promise<ExitCase | null> {
+  async getExitCase(exitId: string, tenantId: string): Promise<ExitCase | null> {
     return this.exitCaseRepo.findOne({
-      where: { exitId },
+      where: { exitId, tenantId },
       relations: ['employee', 'employee.department', 'employee.designation'],
     });
   }
@@ -590,8 +596,8 @@ export class ExitService {
 
   // ==================== EXIT CASE CRUD OPERATIONS ====================
 
-  async updateExitCase(exitId: string, data: Partial<ExitCase>, userId: string): Promise<ExitCase> {
-    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId } });
+  async updateExitCase(exitId: string, tenantId: string, data: Partial<ExitCase>, userId: string): Promise<ExitCase> {
+    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId, tenantId } });
 
     if (!exitCase) {
       throw new Error('Exit case not found');
@@ -603,8 +609,8 @@ export class ExitService {
     return updated;
   }
 
-  async deleteExitCase(exitId: string, userId: string): Promise<void> {
-    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId } });
+  async deleteExitCase(exitId: string, tenantId: string, userId: string): Promise<void> {
+    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId, tenantId } });
 
     if (!exitCase) {
       throw new Error('Exit case not found');
@@ -616,8 +622,8 @@ export class ExitService {
 
   // ==================== CLEARANCE CRUD OPERATIONS ====================
 
-  async createClearance(exitId: string, data: Partial<Clearance>, userId: string): Promise<Clearance> {
-    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId } });
+  async createClearance(exitId: string, tenantId: string, data: Partial<Clearance>, userId: string): Promise<Clearance> {
+    const exitCase = await this.exitCaseRepo.findOne({ where: { exitId, tenantId } });
 
     if (!exitCase) {
       throw new Error('Exit case not found');
@@ -636,15 +642,15 @@ export class ExitService {
     return saved;
   }
 
-  async getClearancesByExitId(exitId: string): Promise<Clearance[]> {
+  async getClearancesByExitId(exitId: string, tenantId: string): Promise<Clearance[]> {
     return this.clearanceRepo.find({
-      where: { exitId },
+      where: { exitId, tenantId },
       order: { dueDate: 'ASC' },
     });
   }
 
-  async deleteClearance(clearanceId: string, userId: string): Promise<void> {
-    const clearance = await this.clearanceRepo.findOne({ where: { clearanceId } });
+  async deleteClearance(clearanceId: string, tenantId: string, userId: string): Promise<void> {
+    const clearance = await this.clearanceRepo.findOne({ where: { clearanceId, tenantId } });
 
     if (!clearance) {
       throw new Error('Clearance not found');
@@ -656,8 +662,8 @@ export class ExitService {
 
   // ==================== ASSET RETURN CRUD OPERATIONS ====================
 
-  async updateAssetReturn(assetId: string, data: Partial<AssetReturn>, userId: string): Promise<AssetReturn> {
-    const asset = await this.assetReturnRepo.findOne({ where: { assetId } });
+  async updateAssetReturn(assetId: string, tenantId: string, data: Partial<AssetReturn>, userId: string): Promise<AssetReturn> {
+    const asset = await this.assetReturnRepo.findOne({ where: { assetReturnId: assetId, tenantId } });
 
     if (!asset) {
       throw new Error('Asset return record not found');
@@ -669,15 +675,15 @@ export class ExitService {
     return updated;
   }
 
-  async getAssetsByExitId(exitId: string): Promise<AssetReturn[]> {
+  async getAssetsByExitId(exitId: string, tenantId: string): Promise<AssetReturn[]> {
     return this.assetReturnRepo.find({
-      where: { exitId },
+      where: { exitId, tenantId },
       order: { createdAt: 'ASC' },
     });
   }
 
-  async deleteAssetReturn(assetId: string, userId: string): Promise<void> {
-    const asset = await this.assetReturnRepo.findOne({ where: { assetId } });
+  async deleteAssetReturn(assetId: string, tenantId: string, userId: string): Promise<void> {
+    const asset = await this.assetReturnRepo.findOne({ where: { assetReturnId: assetId, tenantId } });
 
     if (!asset) {
       throw new Error('Asset return record not found');
@@ -689,8 +695,8 @@ export class ExitService {
 
   // ==================== EXIT INTERVIEW CRUD OPERATIONS ====================
 
-  async updateExitInterview(exitInterviewId: string, data: Partial<ExitInterview>, userId: string): Promise<ExitInterview> {
-    const interview = await this.interviewRepo.findOne({ where: { exitInterviewId } });
+  async updateExitInterview(exitInterviewId: string, tenantId: string, data: Partial<ExitInterview>, userId: string): Promise<ExitInterview> {
+    const interview = await this.interviewRepo.findOne({ where: { exitInterviewId, tenantId } });
 
     if (!interview) {
       throw new Error('Exit interview not found');
@@ -702,14 +708,14 @@ export class ExitService {
     return updated;
   }
 
-  async getExitInterviewByExitId(exitId: string): Promise<ExitInterview | null> {
+  async getExitInterviewByExitId(exitId: string, tenantId: string): Promise<ExitInterview | null> {
     return this.interviewRepo.findOne({
-      where: { exitId },
+      where: { exitId, tenantId },
     });
   }
 
-  async deleteExitInterview(exitInterviewId: string, userId: string): Promise<void> {
-    const interview = await this.interviewRepo.findOne({ where: { exitInterviewId } });
+  async deleteExitInterview(exitInterviewId: string, tenantId: string, userId: string): Promise<void> {
+    const interview = await this.interviewRepo.findOne({ where: { exitInterviewId, tenantId } });
 
     if (!interview) {
       throw new Error('Exit interview not found');
@@ -721,8 +727,8 @@ export class ExitService {
 
   // ==================== SETTLEMENT CRUD OPERATIONS ====================
 
-  async updateSettlement(settlementId: string, data: Partial<FinalSettlement>, userId: string): Promise<FinalSettlement> {
-    const settlement = await this.settlementRepo.findOne({ where: { settlementId } });
+  async updateSettlement(settlementId: string, tenantId: string, data: Partial<FinalSettlement>, userId: string): Promise<FinalSettlement> {
+    const settlement = await this.settlementRepo.findOne({ where: { settlementId, tenantId } });
 
     if (!settlement) {
       throw new Error('Settlement not found');
@@ -734,14 +740,14 @@ export class ExitService {
     return updated;
   }
 
-  async getSettlementByExitId(exitId: string): Promise<FinalSettlement | null> {
+  async getSettlementByExitId(exitId: string, tenantId: string): Promise<FinalSettlement | null> {
     return this.settlementRepo.findOne({
-      where: { exitId },
+      where: { exitId, tenantId },
     });
   }
 
-  async deleteSettlement(settlementId: string, userId: string): Promise<void> {
-    const settlement = await this.settlementRepo.findOne({ where: { settlementId } });
+  async deleteSettlement(settlementId: string, tenantId: string, userId: string): Promise<void> {
+    const settlement = await this.settlementRepo.findOne({ where: { settlementId, tenantId } });
 
     if (!settlement) {
       throw new Error('Settlement not found');
