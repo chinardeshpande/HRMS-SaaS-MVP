@@ -1,9 +1,10 @@
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { AppDataSource } from '../config/database';
 import { UserInvitation, InvitationStatus } from '../models/UserInvitation';
 import { User } from '../models/User';
 import { Tenant } from '../models/Tenant';
-import { UserRole } from '../../../shared/types';
+import { Employee } from '../models/Employee';
+import { EmploymentStatus, UserRole } from '../../../shared/types';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { emailService } from './emailService';
@@ -12,11 +13,13 @@ export class InvitationService {
   private invitationRepo: Repository<UserInvitation>;
   private userRepo: Repository<User>;
   private tenantRepo: Repository<Tenant>;
+  private employeeRepo: Repository<Employee>;
 
   constructor() {
     this.invitationRepo = AppDataSource.getRepository(UserInvitation);
     this.userRepo = AppDataSource.getRepository(User);
     this.tenantRepo = AppDataSource.getRepository(Tenant);
+    this.employeeRepo = AppDataSource.getRepository(Employee);
   }
 
   /**
@@ -170,6 +173,10 @@ export class InvitationService {
     try {
       // Create user account
       const hashedPassword = await bcrypt.hash(password, 10);
+      const employee = await this.findOrCreateEmployeeForInvitation(
+        invitation,
+        queryRunner.manager
+      );
 
       const user = queryRunner.manager.create(User, {
         tenantId: invitation.tenantId,
@@ -177,6 +184,7 @@ export class InvitationService {
         passwordHash: hashedPassword,
         fullName: invitation.fullName,
         role: invitation.role,
+        employeeId: employee.employeeId,
         isActive: true,
       });
 
@@ -224,6 +232,67 @@ export class InvitationService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  private async findOrCreateEmployeeForInvitation(
+    invitation: UserInvitation,
+    manager: EntityManager
+  ): Promise<Employee> {
+    const employeeRepo = manager.getRepository(Employee);
+    const normalizedEmail = invitation.email.toLowerCase();
+    const existingEmployee = await employeeRepo.findOne({
+      where: {
+        tenantId: invitation.tenantId,
+        email: normalizedEmail,
+      },
+    });
+
+    if (existingEmployee) {
+      return existingEmployee;
+    }
+
+    const employeeCode = await this.generateEmployeeCode(invitation.tenantId, manager);
+    const { firstName, lastName } = this.splitFullName(invitation.fullName);
+
+    const employee = employeeRepo.create({
+      tenantId: invitation.tenantId,
+      employeeCode,
+      firstName,
+      lastName,
+      email: normalizedEmail,
+      departmentId: invitation.departmentId,
+      dateOfJoining: new Date(),
+      employmentType: 'full-time',
+      status: EmploymentStatus.ACTIVE,
+    });
+
+    return await employeeRepo.save(employee);
+  }
+
+  private async generateEmployeeCode(tenantId: string, manager?: EntityManager): Promise<string> {
+    const employeeRepo = manager?.getRepository(Employee) || this.employeeRepo;
+
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      const count = await employeeRepo.count({ where: { tenantId } });
+      const candidate = `EMP${String(count + attempt + 1).padStart(4, '0')}`;
+      const existing = await employeeRepo.findOne({
+        where: { tenantId, employeeCode: candidate },
+      });
+
+      if (!existing) {
+        return candidate;
+      }
+    }
+
+    return `EMP-${Date.now()}`;
+  }
+
+  private splitFullName(fullName: string): { firstName: string; lastName: string } {
+    const parts = fullName.trim().split(/\s+/).filter(Boolean);
+    const firstName = parts.shift() || 'Invited';
+    const lastName = parts.length > 0 ? parts.join(' ') : 'User';
+
+    return { firstName, lastName };
   }
 
   /**
