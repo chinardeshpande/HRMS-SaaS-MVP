@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import onboardingWizardService from '../services/onboardingWizardService';
-import { authenticate } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth';
+import { UserRole } from '../../../shared/types';
 
 const router = Router();
 
@@ -8,6 +9,7 @@ const router = Router();
  * All routes require authentication
  */
 router.use(authenticate);
+router.use(authorize(UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN));
 
 /**
  * GET /api/v1/onboarding-wizard/progress

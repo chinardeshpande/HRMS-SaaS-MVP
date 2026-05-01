@@ -6,6 +6,7 @@ import { BusinessRules, RuleCategory } from '../models/BusinessRules';
 import { Role } from '../models/Role';
 import { Permission, PermissionModule, PermissionAction } from '../models/Permission';
 import { Employee } from '../models/Employee';
+import { User } from '../models/User';
 import { In } from 'typeorm';
 
 export class SettingsService {
@@ -17,6 +18,7 @@ export class SettingsService {
   private roleRepo = AppDataSource.getRepository(Role);
   private permissionRepo = AppDataSource.getRepository(Permission);
   private employeeRepo = AppDataSource.getRepository(Employee);
+  private userRepo = AppDataSource.getRepository(User);
 
   private constructor() {}
 
@@ -480,7 +482,14 @@ export class SettingsService {
     if (!employee) return null;
 
     employee.status = 'inactive' as any;
-    return await this.employeeRepo.save(employee);
+    const savedEmployee = await this.employeeRepo.save(employee);
+
+    await this.userRepo.update(
+      { tenantId, employeeId },
+      { isActive: false }
+    );
+
+    return savedEmployee;
   }
 
   async reactivateUser(employeeId: string, tenantId: string): Promise<Employee | null> {
@@ -490,7 +499,14 @@ export class SettingsService {
     if (!employee) return null;
 
     employee.status = 'active' as any;
-    return await this.employeeRepo.save(employee);
+    const savedEmployee = await this.employeeRepo.save(employee);
+
+    await this.userRepo.update(
+      { tenantId, employeeId },
+      { isActive: true }
+    );
+
+    return savedEmployee;
   }
 
   // ==================== SMTP CONFIGURATION ====================

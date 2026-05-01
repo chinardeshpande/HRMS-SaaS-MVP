@@ -74,11 +74,50 @@ async function deleteSmokeUser() {
   console.log('CLEANUP deleted temporary smoke user');
 }
 
+async function createTemporaryUser(role) {
+  const tempEmail = `codex-${role.replace(/_/g, '-')}-${Date.now()}@aurorahr.in`;
+  const tenants = await dataSource.query(
+    'select "tenantId" from tenants order by "createdAt" limit 1'
+  );
+
+  if (!tenants.length) {
+    throw new Error('No tenant found for temporary smoke user');
+  }
+
+  const tenantId = tenants[0].tenantId;
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  await dataSource.query(
+    `insert into users (
+      "tenantId",
+      "email",
+      "passwordHash",
+      "fullName",
+      "role",
+      "isActive",
+      "createdAt",
+      "updatedAt"
+    ) values ($1, $2, $3, $4, $5, true, now(), now())`,
+    [tenantId, tempEmail.toLowerCase(), passwordHash, `Codex ${role} Smoke Test`, role]
+  );
+
+  return { email: tempEmail.toLowerCase(), tenantId };
+}
+
+async function deleteTemporaryUser(tempEmail) {
+  if (!tempEmail) return;
+  await dataSource.query('delete from users where email = $1', [tempEmail.toLowerCase()]);
+}
+
 async function authenticate() {
+  return authenticateCredentials(email, password);
+}
+
+async function authenticateCredentials(loginEmail, loginPassword) {
   const { response, body } = await request('/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email: loginEmail, password: loginPassword }),
   });
   const token = body?.data?.tokens?.token;
 
@@ -86,7 +125,7 @@ async function authenticate() {
     throw new Error(`Login failed: ${response.status} ${JSON.stringify(body).slice(0, 300)}`);
   }
 
-  console.log(`OK ${response.status} /auth/login`);
+  console.log(`OK ${response.status} /auth/login ${loginEmail}`);
   return token;
 }
 
@@ -427,6 +466,38 @@ async function runSettingsWorkflow(token) {
   }
 }
 
+async function runAdminBoundaryWorkflow() {
+  let employeeUser;
+  let inactiveUser;
+
+  try {
+    employeeUser = await createTemporaryUser('employee');
+    const employeeToken = await authenticateCredentials(employeeUser.email, password);
+
+    const settingsAsEmployee = await request('/settings/subscription', {
+      headers: { Authorization: `Bearer ${employeeToken}` },
+    });
+    expectStatus('block employee settings access', settingsAsEmployee.response, 403);
+
+    const onboardingAsEmployee = await request('/onboarding-wizard/progress', {
+      headers: { Authorization: `Bearer ${employeeToken}` },
+    });
+    expectStatus('block employee onboarding wizard access', onboardingAsEmployee.response, 403);
+
+    inactiveUser = await createTemporaryUser('hr_admin');
+    const inactiveToken = await authenticateCredentials(inactiveUser.email, password);
+    await dataSource.query('update users set "isActive" = false where email = $1', [inactiveUser.email]);
+
+    const inactiveMe = await request('/auth/me', {
+      headers: { Authorization: `Bearer ${inactiveToken}` },
+    });
+    expectStatus('reject inactive user token', inactiveMe.response, 401);
+  } finally {
+    await deleteTemporaryUser(employeeUser?.email);
+    await deleteTemporaryUser(inactiveUser?.email);
+  }
+}
+
 async function main() {
   await dataSource.initialize();
   await createSmokeUser();
@@ -436,6 +507,7 @@ async function main() {
     await runEndpointChecks(token);
     await runDigitalLibraryWorkflow(token);
     await runSettingsWorkflow(token);
+    await runAdminBoundaryWorkflow();
   } finally {
     await deleteSmokeUser();
   }
