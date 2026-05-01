@@ -46,12 +46,14 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
-    // Find user by email
+    // Find user by email. Login is email-only, so duplicate emails across tenants
+    // would make identity resolution ambiguous.
     const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOne({
+    const matchingUsers = await userRepository.find({
       where: { email: email.toLowerCase() },
       relations: ['employee', 'employee.department', 'employee.designation'],
     });
+    const user = matchingUsers[0];
 
     if (!user) {
       return res.status(401).json({
@@ -59,6 +61,16 @@ export const login = async (req: Request, res: Response) => {
         error: {
           code: 'INVALID_CREDENTIALS',
           message: 'Invalid email or password',
+        },
+      });
+    }
+
+    if (matchingUsers.length > 1) {
+      return res.status(409).json({
+        success: false,
+        error: {
+          code: 'AMBIGUOUS_ACCOUNT',
+          message: 'Multiple accounts use this email. Please contact support.',
         },
       });
     }

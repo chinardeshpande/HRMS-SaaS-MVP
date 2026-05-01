@@ -8,6 +8,7 @@ import { LeavePolicy, LeaveType } from '../models/LeavePolicy';
 import { AttendancePolicy } from '../models/AttendancePolicy';
 import { UserInvitation, InvitationStatus } from '../models/UserInvitation';
 import { OrganizationSettings } from '../models/OrganizationSettings';
+import { User } from '../models/User';
 import { UserRole } from '../../../shared/types';
 import crypto from 'crypto';
 
@@ -19,6 +20,7 @@ export class OnboardingWizardService {
   private leavePolicyRepo: Repository<LeavePolicy>;
   private attendancePolicyRepo: Repository<AttendancePolicy>;
   private userInvitationRepo: Repository<UserInvitation>;
+  private userRepo: Repository<User>;
 
   constructor() {
     this.onboardingRepo = AppDataSource.getRepository(OnboardingProgress);
@@ -28,6 +30,7 @@ export class OnboardingWizardService {
     this.leavePolicyRepo = AppDataSource.getRepository(LeavePolicy);
     this.attendancePolicyRepo = AppDataSource.getRepository(AttendancePolicy);
     this.userInvitationRepo = AppDataSource.getRepository(UserInvitation);
+    this.userRepo = AppDataSource.getRepository(User);
   }
 
   /**
@@ -125,9 +128,32 @@ export class OnboardingWizardService {
       const usersToInvite = progress.stepData.users || progress.stepData.invitedUsers || [];
       if (usersToInvite.length > 0) {
         for (const user of usersToInvite) {
+          const normalizedEmail = user.email?.toLowerCase();
+
           // Skip if email is invalid
-          if (!user.email || !user.email.includes('@')) {
+          if (!normalizedEmail || !normalizedEmail.includes('@')) {
             console.warn(`Skipping invalid user email: ${user.email}`);
+            continue;
+          }
+
+          const existingUser = await this.userRepo.findOne({
+            where: { email: normalizedEmail },
+          });
+
+          if (existingUser) {
+            console.warn(`Skipping invitation for existing user email: ${normalizedEmail}`);
+            continue;
+          }
+
+          const existingInvitation = await this.userInvitationRepo.findOne({
+            where: {
+              email: normalizedEmail,
+              status: InvitationStatus.PENDING,
+            },
+          });
+
+          if (existingInvitation) {
+            console.warn(`Skipping duplicate pending invitation: ${normalizedEmail}`);
             continue;
           }
 
@@ -146,8 +172,8 @@ export class OnboardingWizardService {
 
           const invitation = queryRunner.manager.create(UserInvitation, {
             tenantId,
-            email: user.email,
-            fullName: user.fullName || user.email.split('@')[0], // Fallback to email username if no name
+            email: normalizedEmail,
+            fullName: user.fullName || normalizedEmail.split('@')[0], // Fallback to email username if no name
             role: roleEnum,
             departmentId: user.departmentId,
             invitedBy: invitedBy,
