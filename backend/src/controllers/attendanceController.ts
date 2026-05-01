@@ -35,11 +35,13 @@ export class AttendanceController {
   async clockIn(req: Request, res: Response) {
     try {
       const employeeId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
       const { location } = req.body;
       const ipAddress = req.ip;
 
       const attendance = await attendanceService.clockIn(
         employeeId,
+        tenantId,
         ipAddress,
         location
       );
@@ -70,8 +72,9 @@ export class AttendanceController {
   async clockOut(req: Request, res: Response) {
     try {
       const employeeId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
 
-      const attendance = await attendanceService.clockOut(employeeId);
+      const attendance = await attendanceService.clockOut(employeeId, tenantId);
 
       res.json({
         success: true,
@@ -110,6 +113,7 @@ export class AttendanceController {
   async getMyAttendance(req: Request, res: Response) {
     try {
       const employeeId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
       const { startDate, endDate } = req.query;
 
       const start = startDate
@@ -119,6 +123,7 @@ export class AttendanceController {
 
       const attendance = await attendanceService.getMyAttendance(
         employeeId,
+        tenantId,
         start,
         end
       );
@@ -160,8 +165,10 @@ export class AttendanceController {
     try {
       const { updates, overrideReason } = req.body;
       const overriddenBy = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
 
       const result = await attendanceService.bulkUpdateAttendance(
+        tenantId,
         updates,
         overriddenBy,
         overrideReason
@@ -201,8 +208,10 @@ export class AttendanceController {
       const { attendanceId } = req.params;
       const { updates, overrideReason } = req.body;
       const overriddenBy = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
 
       const result = await attendanceService.overrideAttendance(
+        tenantId,
         attendanceId,
         updates,
         overriddenBy,
@@ -438,8 +447,12 @@ export class AttendanceController {
   async getMyRegularizationRequests(req: Request, res: Response) {
     try {
       const employeeId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
 
-      const requests = await attendanceService.getMyRegularizationRequests(employeeId);
+      const requests = await attendanceService.getMyRegularizationRequests(
+        employeeId,
+        tenantId
+      );
 
       res.json({
         success: true,
@@ -524,12 +537,20 @@ export class AttendanceController {
     try {
       const { editId } = req.params;
       const approverId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
+      const userRole = (req as any).user.role as UserRole;
       const { comments } = req.body;
+      const employeeIds =
+        userRole === UserRole.MANAGER
+          ? await managerTeamService.getTeamEmployeeIds(approverId, tenantId)
+          : undefined;
 
       const result = await attendanceService.approveRegularization(
         editId,
         approverId,
-        comments
+        tenantId,
+        comments,
+        employeeIds
       );
 
       res.json({
@@ -576,6 +597,8 @@ export class AttendanceController {
     try {
       const { editId } = req.params;
       const approverId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
+      const userRole = (req as any).user.role as UserRole;
       const { comments } = req.body;
 
       if (!comments) {
@@ -585,10 +608,17 @@ export class AttendanceController {
         });
       }
 
+      const employeeIds =
+        userRole === UserRole.MANAGER
+          ? await managerTeamService.getTeamEmployeeIds(approverId, tenantId)
+          : undefined;
+
       const result = await attendanceService.rejectRegularization(
         editId,
         approverId,
-        comments
+        tenantId,
+        comments,
+        employeeIds
       );
 
       res.json({

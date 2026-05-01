@@ -521,6 +521,21 @@ async function runAdminBoundaryWorkflow() {
     });
     expectStatus('block employee exit cases access', exitCasesAsEmployee.response, 403);
 
+    const attendanceCompanyWideAsEmployee = await request('/attendance/company-wide', {
+      headers: { Authorization: `Bearer ${employeeToken}` },
+    });
+    expectStatus('block employee attendance company-wide access', attendanceCompanyWideAsEmployee.response, 403);
+
+    const attendanceStatsAsEmployee = await request('/attendance/statistics', {
+      headers: { Authorization: `Bearer ${employeeToken}` },
+    });
+    expectStatus('block employee attendance statistics access', attendanceStatsAsEmployee.response, 403);
+
+    const leaveAllRequestsAsEmployee = await request('/leave/all-requests', {
+      headers: { Authorization: `Bearer ${employeeToken}` },
+    });
+    expectStatus('block employee leave all-requests access', leaveAllRequestsAsEmployee.response, 403);
+
     inactiveUser = await createTemporaryUser('hr_admin');
     const inactiveToken = await authenticateCredentials(inactiveUser.email, password);
     await dataSource.query('update users set "isActive" = false where email = $1', [inactiveUser.email]);

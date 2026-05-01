@@ -16,6 +16,7 @@ export class LeaveService {
    */
   async applyLeave(
     employeeId: string,
+    tenantId: string,
     leaveType: LeaveType,
     startDate: Date,
     endDate: Date,
@@ -23,8 +24,24 @@ export class LeaveService {
     emergencyContact?: string,
     attachmentUrl?: string
   ) {
+    if (!employeeId) {
+      throw new Error('Employee profile is required to apply for leave');
+    }
+
+    if (!Object.values(LeaveType).includes(leaveType)) {
+      throw new Error('Invalid leave type');
+    }
+
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+      throw new Error('Valid start and end dates are required');
+    }
+
+    if (endDate < startDate) {
+      throw new Error('End date cannot be before start date');
+    }
+
     const employee = await this.employeeRepository.findOne({
-      where: { employeeId },
+      where: { employeeId, tenantId },
     });
 
     if (!employee) {
@@ -34,11 +51,16 @@ export class LeaveService {
     // Calculate number of days (excluding weekends)
     const numberOfDays = this.calculateLeaveDays(startDate, endDate);
 
+    if (numberOfDays <= 0) {
+      throw new Error('Leave request must include at least one working day');
+    }
+
     // Check if employee has sufficient leave balance
     const year = startDate.getFullYear();
     const balance = await this.leaveBalanceRepository.findOne({
       where: {
         employeeId,
+        tenantId,
         leaveType,
         year,
       },
@@ -58,6 +80,7 @@ export class LeaveService {
     const overlapping = await this.leaveRequestRepository
       .createQueryBuilder('leave')
       .where('leave.employeeId = :employeeId', { employeeId })
+      .andWhere('leave.tenantId = :tenantId', { tenantId })
       .andWhere('leave.status != :cancelled', {
         cancelled: LeaveStatus.CANCELLED,
       })
@@ -74,7 +97,7 @@ export class LeaveService {
     // Create leave request
     const leaveRequest = this.leaveRequestRepository.create({
       employeeId,
-      tenantId: employee.tenantId,
+      tenantId,
       leaveType,
       startDate,
       endDate,
@@ -100,12 +123,18 @@ export class LeaveService {
    */
   async approveOrRejectLeave(
     leaveId: string,
-    approverId: string,
+    approverId: string | undefined,
+    tenantId: string,
     status: LeaveStatus.APPROVED | LeaveStatus.REJECTED,
-    comments?: string
+    comments?: string,
+    allowedEmployeeIds?: string[]
   ) {
+    if (![LeaveStatus.APPROVED, LeaveStatus.REJECTED].includes(status)) {
+      throw new Error('Invalid leave approval status');
+    }
+
     const leaveRequest = await this.leaveRequestRepository.findOne({
-      where: { leaveId },
+      where: { leaveId, tenantId },
       relations: ['employee'],
     });
 
@@ -117,8 +146,12 @@ export class LeaveService {
       throw new Error('Leave request is not pending');
     }
 
+    if (allowedEmployeeIds && !allowedEmployeeIds.includes(leaveRequest.employeeId)) {
+      throw new Error('You are not authorized to process this leave request');
+    }
+
     // Prevent self-approval
-    if (approverId === leaveRequest.employeeId) {
+    if (approverId && approverId === leaveRequest.employeeId) {
       throw new Error('Employee cannot approve their own leave request');
     }
 
@@ -135,6 +168,7 @@ export class LeaveService {
     const balance = await this.leaveBalanceRepository.findOne({
       where: {
         employeeId: leaveRequest.employeeId,
+        tenantId,
         leaveType: leaveRequest.leaveType,
         year,
       },
@@ -157,9 +191,13 @@ export class LeaveService {
   /**
    * Employee: Cancel leave request
    */
-  async cancelLeave(leaveId: string, employeeId: string) {
+  async cancelLeave(leaveId: string, employeeId: string, tenantId: string) {
+    if (!employeeId) {
+      throw new Error('Employee profile is required to cancel leave');
+    }
+
     const leaveRequest = await this.leaveRequestRepository.findOne({
-      where: { leaveId, employeeId },
+      where: { leaveId, employeeId, tenantId },
     });
 
     if (!leaveRequest) {
@@ -186,6 +224,7 @@ export class LeaveService {
     const balance = await this.leaveBalanceRepository.findOne({
       where: {
         employeeId: leaveRequest.employeeId,
+        tenantId,
         leaveType: leaveRequest.leaveType,
         year,
       },
@@ -210,6 +249,7 @@ export class LeaveService {
    */
   async getMyLeaveRequests(
     employeeId: string,
+    tenantId: string,
     status?: LeaveStatus,
     year?: number
   ) {
@@ -218,7 +258,7 @@ export class LeaveService {
       return [];
     }
 
-    const where: any = { employeeId };
+    const where: any = { employeeId, tenantId };
 
     if (status) {
       where.status = status;
@@ -240,7 +280,7 @@ export class LeaveService {
   /**
    * Employee: Get leave balance
    */
-  async getMyLeaveBalance(employeeId: string, year?: number) {
+  async getMyLeaveBalance(employeeId: string, tenantId: string, year?: number) {
     // Return empty array if no employeeId (admin users without employee records)
     if (!employeeId) {
       return [];
@@ -251,6 +291,7 @@ export class LeaveService {
     return await this.leaveBalanceRepository.find({
       where: {
         employeeId,
+        tenantId,
         year: currentYear,
       },
       relations: ['policy'],
@@ -260,10 +301,14 @@ export class LeaveService {
   /**
    * Manager: Get pending leave approvals for reportees
    */
-  async getPendingApprovals(managerId: string) {
+  async getPendingApprovals(managerId: string, tenantId: string) {
+    if (!managerId) {
+      return [];
+    }
+
     // Get all reportees
     const reportees = await this.employeeRepository.find({
-      where: { managerId },
+      where: { managerId, tenantId },
     });
 
     const reporteeIds = reportees.map((e) => e.employeeId);
@@ -275,6 +320,7 @@ export class LeaveService {
     return await this.leaveRequestRepository.find({
       where: {
         employeeId: In(reporteeIds),
+        tenantId,
         status: LeaveStatus.PENDING,
       },
       order: { createdAt: 'ASC' },
@@ -361,9 +407,9 @@ export class LeaveService {
   /**
    * HR: Initialize leave balance for employee
    */
-  async initializeLeaveBalance(employeeId: string, year: number) {
+  async initializeLeaveBalance(employeeId: string, tenantId: string, year: number) {
     const employee = await this.employeeRepository.findOne({
-      where: { employeeId },
+      where: { employeeId, tenantId },
     });
 
     if (!employee) {
@@ -373,7 +419,7 @@ export class LeaveService {
     // Get all active leave policies for the tenant
     const policies = await this.leavePolicyRepository.find({
       where: {
-        tenantId: employee.tenantId,
+        tenantId,
         isActive: true,
       },
     });
@@ -385,6 +431,7 @@ export class LeaveService {
       const existing = await this.leaveBalanceRepository.findOne({
         where: {
           employeeId,
+          tenantId,
           leaveType: policy.leaveType,
           year,
         },
