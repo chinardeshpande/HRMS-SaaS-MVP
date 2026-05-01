@@ -143,7 +143,9 @@ const MyHRDocuments: React.FC = () => {
 
       // Download file
       const link = document.createElement('a');
-      link.href = `http://localhost:5000${response.fileUrl}`;
+      link.href = response.fileUrl.startsWith('http')
+        ? response.fileUrl
+        : new URL(response.fileUrl, window.location.origin).toString();
       link.download = doc.fileName;
       document.body.appendChild(link);
       link.click();
@@ -173,12 +175,12 @@ const MyHRDocuments: React.FC = () => {
   };
 
   const getResourceIcon = (resourceType: string) => {
-    switch (resourceType) {
-      case 'IMAGE':
+    switch (resourceType.toLowerCase()) {
+      case 'image':
         return <PhotoIcon className="w-6 h-6" />;
-      case 'VIDEO':
+      case 'video':
         return <VideoCameraIcon className="w-6 h-6" />;
-      case 'AUDIO':
+      case 'audio':
         return <MusicalNoteIcon className="w-6 h-6" />;
       default:
         return <DocumentIcon className="w-6 h-6" />;
@@ -186,12 +188,12 @@ const MyHRDocuments: React.FC = () => {
   };
 
   const getResourceIconColor = (resourceType: string) => {
-    switch (resourceType) {
-      case 'IMAGE':
+    switch (resourceType.toLowerCase()) {
+      case 'image':
         return 'bg-green-50 text-green-600';
-      case 'VIDEO':
+      case 'video':
         return 'bg-purple-50 text-purple-600';
-      case 'AUDIO':
+      case 'audio':
         return 'bg-orange-50 text-orange-600';
       default:
         return 'bg-blue-50 text-blue-600';

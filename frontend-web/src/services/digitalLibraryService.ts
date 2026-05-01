@@ -66,7 +66,7 @@ export interface LibraryItem {
 export interface LibraryStats {
   totalItems: number;
   totalSize: number;
-  byResourceType: Record<string, number>;
+  byType: Record<string, number>;
 }
 
 class DigitalLibraryService {
