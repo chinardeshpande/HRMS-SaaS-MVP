@@ -4,6 +4,7 @@ import { DocumentTemplate } from '../models/DocumentTemplate';
 import { LeavePolicy, LeaveType } from '../models/LeavePolicy';
 import { AttendancePolicy } from '../models/AttendancePolicy';
 import { DocumentType } from '../models/enums/DocumentEnums';
+import { Role } from '../models/Role';
 import logger from '../utils/logger';
 
 /**
@@ -33,6 +34,7 @@ export class TenantInitializationService {
         await this.seedDocumentTemplates(tenantId, useQueryRunner);
         await this.seedLeavePolicies(tenantId, useQueryRunner);
         await this.seedAttendancePolicy(tenantId, useQueryRunner);
+        await this.seedRoles(tenantId, useQueryRunner);
 
         if (shouldManageTransaction) {
           await useQueryRunner.commitTransaction();
@@ -53,6 +55,71 @@ export class TenantInitializationService {
       logger.error(`Error initializing tenant ${tenantId}:`, error);
       throw new Error(`Tenant initialization failed: ${error.message}`);
     }
+  }
+
+  /**
+   * Seed default roles for tenant admin/user management
+   */
+  private async seedRoles(tenantId: string, queryRunner: QueryRunner): Promise<void> {
+    logger.info(`  🔐 Seeding roles...`);
+
+    const roleRepo = queryRunner.manager.getRepository(Role);
+    const existingCount = await roleRepo.count({ where: { tenantId } });
+
+    if (existingCount > 0) {
+      logger.info(`  ⏭️  Roles already exist - skipping`);
+      return;
+    }
+
+    const roles = [
+      {
+        tenantId,
+        roleName: 'System Admin',
+        description: 'Full tenant administration access',
+        isSystemRole: true,
+        isActive: true,
+        level: 100,
+        employeeCount: 0,
+        dataAccessRules: { allData: true },
+      },
+      {
+        tenantId,
+        roleName: 'HR Admin',
+        description: 'HR operations and employee administration access',
+        isSystemRole: true,
+        isActive: true,
+        level: 80,
+        employeeCount: 0,
+        dataAccessRules: { allData: true },
+      },
+      {
+        tenantId,
+        roleName: 'Manager',
+        description: 'Team management access',
+        isSystemRole: true,
+        isActive: true,
+        level: 50,
+        employeeCount: 0,
+        dataAccessRules: { teamDataOnly: true },
+      },
+      {
+        tenantId,
+        roleName: 'Employee',
+        description: 'Standard employee self-service access',
+        isSystemRole: true,
+        isActive: true,
+        level: 10,
+        employeeCount: 0,
+        dataAccessRules: { ownDataOnly: true },
+      },
+    ];
+
+    for (const role of roles) {
+      const newRole = queryRunner.manager.create(Role, role);
+      await queryRunner.manager.save(newRole);
+    }
+
+    logger.info(`  ✅ Created ${roles.length} roles`);
   }
 
   /**

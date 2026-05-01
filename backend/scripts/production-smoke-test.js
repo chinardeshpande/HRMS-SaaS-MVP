@@ -510,6 +510,37 @@ async function runIdentityUniquenessCheck() {
   console.log('OK 0 duplicate login emails');
 }
 
+async function runTenantBaselineCheck() {
+  const [settingsBaseline] = await dataSource.query(`
+    select
+      count(*)::int as tenants,
+      coalesce(sum(case when s."tenantId" is null then 1 else 0 end), 0)::int as missing_subscriptions,
+      coalesce(sum(case when os."tenantId" is null then 1 else 0 end), 0)::int as missing_org_settings
+    from tenants t
+    left join subscriptions s on s."tenantId" = t."tenantId"
+    left join organization_settings os on os."tenantId" = t."tenantId"
+  `);
+  const [roleBaseline] = await dataSource.query(`
+    select count(*)::int as tenants_missing_roles
+    from tenants t
+    where not exists (
+      select 1 from roles r where r."tenantId" = t."tenantId"
+    )
+  `);
+
+  if (
+    settingsBaseline.missing_subscriptions > 0 ||
+    settingsBaseline.missing_org_settings > 0 ||
+    roleBaseline.tenants_missing_roles > 0
+  ) {
+    throw new Error(
+      `Tenant baseline incomplete: ${JSON.stringify({ ...settingsBaseline, ...roleBaseline })}`
+    );
+  }
+
+  console.log(`OK ${settingsBaseline.tenants} tenants have settings and roles baseline`);
+}
+
 async function main() {
   await dataSource.initialize();
   await createSmokeUser();
@@ -521,6 +552,7 @@ async function main() {
     await runSettingsWorkflow(token);
     await runAdminBoundaryWorkflow();
     await runIdentityUniquenessCheck();
+    await runTenantBaselineCheck();
   } finally {
     await deleteSmokeUser();
   }
