@@ -8,6 +8,7 @@ import { Permission, PermissionModule, PermissionAction } from '../models/Permis
 import { Employee } from '../models/Employee';
 import { User } from '../models/User';
 import { In } from 'typeorm';
+import subscriptionEnforcementService from './subscriptionEnforcementService';
 
 export class SettingsService {
   private static instance: SettingsService;
@@ -488,6 +489,7 @@ export class SettingsService {
       { tenantId, employeeId },
       { isActive: false }
     );
+    await subscriptionEnforcementService.syncCurrentUsers(tenantId);
 
     return savedEmployee;
   }
@@ -498,6 +500,8 @@ export class SettingsService {
     });
     if (!employee) return null;
 
+    await subscriptionEnforcementService.assertCanAddUser(tenantId);
+
     employee.status = 'active' as any;
     const savedEmployee = await this.employeeRepo.save(employee);
 
@@ -505,6 +509,7 @@ export class SettingsService {
       { tenantId, employeeId },
       { isActive: true }
     );
+    await subscriptionEnforcementService.syncCurrentUsers(tenantId);
 
     return savedEmployee;
   }

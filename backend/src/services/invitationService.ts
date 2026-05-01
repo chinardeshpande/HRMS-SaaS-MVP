@@ -8,6 +8,7 @@ import { EmploymentStatus, UserRole } from '../../../shared/types';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { emailService } from './emailService';
+import subscriptionEnforcementService from './subscriptionEnforcementService';
 
 export class InvitationService {
   private invitationRepo: Repository<UserInvitation>;
@@ -34,6 +35,8 @@ export class InvitationService {
     invitedBy: string;
   }): Promise<{ invitationId: string; message: string }> {
     const normalizedEmail = data.email.toLowerCase();
+
+    await subscriptionEnforcementService.assertCanAddUser(data.tenantId);
 
     // Login is email-only, so prevent duplicate identities across tenants.
     const existingGlobalUser = await this.userRepo.findOne({
@@ -166,6 +169,8 @@ export class InvitationService {
       throw new Error('User account already exists');
     }
 
+    await subscriptionEnforcementService.assertCanAddUser(invitation.tenantId);
+
     const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -196,6 +201,7 @@ export class InvitationService {
       await queryRunner.manager.save(invitation);
 
       await queryRunner.commitTransaction();
+      await subscriptionEnforcementService.syncCurrentUsers(savedUser.tenantId);
 
       // Generate JWT tokens
       const jwt = require('jsonwebtoken');

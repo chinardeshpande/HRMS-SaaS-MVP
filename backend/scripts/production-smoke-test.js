@@ -70,7 +70,12 @@ async function createSmokeUser() {
 }
 
 async function deleteSmokeUser() {
+  const rows = await dataSource.query('select "tenantId" from users where email = $1', [email.toLowerCase()]);
+  const tenantId = rows[0]?.tenantId;
   await dataSource.query('delete from users where email = $1', [email.toLowerCase()]);
+  if (tenantId) {
+    await syncSubscriptionCurrentUsers(tenantId);
+  }
   console.log('CLEANUP deleted temporary smoke user');
 }
 
@@ -106,7 +111,24 @@ async function createTemporaryUser(role) {
 
 async function deleteTemporaryUser(tempEmail) {
   if (!tempEmail) return;
+  const rows = await dataSource.query('select "tenantId" from users where email = $1', [tempEmail.toLowerCase()]);
+  const tenantId = rows[0]?.tenantId;
   await dataSource.query('delete from users where email = $1', [tempEmail.toLowerCase()]);
+  if (tenantId) {
+    await syncSubscriptionCurrentUsers(tenantId);
+  }
+}
+
+async function syncSubscriptionCurrentUsers(tenantId) {
+  const [activeUsers] = await dataSource.query(
+    'select count(*)::int as count from users where "tenantId" = $1 and "isActive" = true',
+    [tenantId]
+  );
+
+  await dataSource.query(
+    'update subscriptions set "currentUsers" = $1, "updatedAt" = now() where "tenantId" = $2',
+    [activeUsers.count, tenantId]
+  );
 }
 
 async function authenticate() {
@@ -589,6 +611,116 @@ async function runInvitationLifecycleWorkflow(token) {
     if (invitationId) {
       await dataSource.query('delete from user_invitations where "invitationId" = $1', [invitationId]).catch(() => undefined);
     }
+    const tenantRows = await dataSource.query(
+      'select "tenantId" from users where email = $1',
+      [email.toLowerCase()]
+    ).catch(() => []);
+    if (tenantRows[0]?.tenantId) {
+      await syncSubscriptionCurrentUsers(tenantRows[0].tenantId).catch(() => undefined);
+    }
+  }
+}
+
+async function runSubscriptionEnforcementWorkflow(token) {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  };
+  const tenantRows = await dataSource.query(
+    'select "tenantId" from users where email = $1',
+    [email.toLowerCase()]
+  );
+  const tenantId = tenantRows[0]?.tenantId;
+
+  if (!tenantId) {
+    throw new Error('Smoke user tenant was not found for subscription enforcement check');
+  }
+
+  const [subscription] = await dataSource.query(
+    `select
+      "subscriptionId",
+      status,
+      "maxUsers",
+      "currentUsers",
+      "trialEndDate",
+      "updatedAt"
+    from subscriptions
+    where "tenantId" = $1
+    limit 1`,
+    [tenantId]
+  );
+
+  if (!subscription) {
+    throw new Error('Subscription was not found for subscription enforcement check');
+  }
+
+  const suffix = Date.now();
+  const limitEmail = `codex-limit-${suffix}@aurorahr.in`;
+  const suspendedEmail = `codex-suspended-${suffix}@aurorahr.in`;
+
+  try {
+    const [activeUsers] = await dataSource.query(
+      'select count(*)::int as count from users where "tenantId" = $1 and "isActive" = true',
+      [tenantId]
+    );
+
+    await dataSource.query(
+      `update subscriptions
+       set status = 'active', "maxUsers" = $1, "currentUsers" = $1, "updatedAt" = now()
+       where "tenantId" = $2`,
+      [activeUsers.count, tenantId]
+    );
+
+    const limitResult = await request('/invitations', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        email: limitEmail,
+        fullName: 'Codex Limit User',
+        role: 'employee',
+      }),
+    });
+    expectStatus('block invitation at subscription user limit', limitResult.response, 403);
+
+    await dataSource.query(
+      `update subscriptions
+       set status = 'suspended', "maxUsers" = $1, "currentUsers" = $2, "updatedAt" = now()
+       where "tenantId" = $3`,
+      [activeUsers.count + 10, activeUsers.count, tenantId]
+    );
+
+    const suspendedResult = await request('/invitations', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        email: suspendedEmail,
+        fullName: 'Codex Suspended User',
+        role: 'employee',
+      }),
+    });
+    expectStatus('block invitation for suspended subscription', suspendedResult.response, 403);
+  } finally {
+    await dataSource.query(
+      `update subscriptions
+       set status = $1,
+           "maxUsers" = $2,
+           "currentUsers" = $3,
+           "trialEndDate" = $4,
+           "updatedAt" = $5
+       where "subscriptionId" = $6`,
+      [
+        subscription.status,
+        subscription.maxUsers,
+        subscription.currentUsers,
+        subscription.trialEndDate,
+        subscription.updatedAt,
+        subscription.subscriptionId,
+      ]
+    ).catch(() => undefined);
+    await dataSource.query('delete from user_invitations where email in ($1, $2)', [
+      limitEmail,
+      suspendedEmail,
+    ]).catch(() => undefined);
   }
 }
 
@@ -646,6 +778,7 @@ async function main() {
     await runSettingsWorkflow(token);
     await runAdminBoundaryWorkflow();
     await runInvitationLifecycleWorkflow(token);
+    await runSubscriptionEnforcementWorkflow(token);
     await runIdentityUniquenessCheck();
     await runTenantBaselineCheck();
   } finally {
