@@ -3,6 +3,9 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config/config';
 import { AppError } from './errorHandler';
 import { UserRole } from '../../../shared/types';
+import { AppDataSource } from '../config/database';
+import { User } from '../models/User';
+import { Tenant } from '../models/Tenant';
 
 // Extend Express Request type to include user and tenant
 declare global {
@@ -49,17 +52,37 @@ export const authenticate = async (
     // Verify token
     const decoded = jwt.verify(token, config.jwt.secret) as JWTPayload;
 
+    const user = await AppDataSource.getRepository(User).findOne({
+      where: {
+        userId: decoded.userId,
+        tenantId: decoded.tenantId,
+        isActive: true,
+      },
+    });
+
+    if (!user) {
+      throw new AppError('User account is inactive or no longer exists', 401, 'ACCOUNT_INACTIVE');
+    }
+
+    const tenant = await AppDataSource.getRepository(Tenant).findOne({
+      where: { tenantId: decoded.tenantId },
+    });
+
+    if (!tenant || tenant.status !== 'active') {
+      throw new AppError('Tenant account is inactive', 403, 'TENANT_INACTIVE');
+    }
+
     // Attach user to request
     req.user = {
-      userId: decoded.userId,
-      tenantId: decoded.tenantId,
-      email: decoded.email,
-      role: decoded.role,
-      employeeId: decoded.employeeId,
+      userId: user.userId,
+      tenantId: user.tenantId,
+      email: user.email,
+      role: user.role,
+      employeeId: user.employeeId,
     };
 
     // Also set tenantId separately for easier access
-    req.tenantId = decoded.tenantId;
+    req.tenantId = user.tenantId;
 
     next();
   } catch (error) {

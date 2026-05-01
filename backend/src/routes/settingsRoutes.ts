@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import * as settingsController from '../controllers/settingsController';
-import { authenticate } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth';
+import { UserRole } from '../../../shared/types';
 
 const router = Router();
 
 // All routes require authentication
 router.use(authenticate);
+router.use(authorize(UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN));
 
 // ==================== SUBSCRIPTION ROUTES ====================
 router.get('/subscription', settingsController.getSubscription);
