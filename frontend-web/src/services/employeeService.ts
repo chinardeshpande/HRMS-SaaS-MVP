@@ -149,6 +149,11 @@ class EmployeeService {
   /**
    * Convenience aliases
    */
+  async getEmployees(filters?: EmployeeFilters): Promise<{ data: { employees: Employee[] } }> {
+    const employees = await this.getAll(filters);
+    return { data: { employees } };
+  }
+
   async getEmployee(id: string): Promise<{ data: Employee }> {
     const employee = await this.getById(id);
     return { data: employee };

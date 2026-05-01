@@ -542,13 +542,13 @@ export default function ModernAttendance() {
       <div className="max-w-7xl mx-auto">
         {/* Compact Header */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 mb-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             {/* Left: Title with Icon */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 min-w-0">
               <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-md">
                 <CalendarDaysIcon className="h-5 w-5 text-white" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <h1 className="text-lg font-bold text-gray-900">Attendance</h1>
                 <p className="text-xs text-gray-500">
                   {activeView === 'my-attendance' ? 'My records' :
@@ -558,13 +558,13 @@ export default function ModernAttendance() {
             </div>
 
             {/* Center: Tab Navigation */}
-            <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
+            <div className="flex max-w-full items-center space-x-1 overflow-x-auto bg-gray-100 p-1 rounded-lg">
               <button
                 onClick={() => {
                   setActiveView('my-attendance');
                   setStatusFilter('all');
                 }}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 ${
+                className={`shrink-0 px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 ${
                   activeView === 'my-attendance' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -579,7 +579,7 @@ export default function ModernAttendance() {
                       setActiveView('team');
                       setStatusFilter('all');
                     }}
-                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 ${
+                    className={`shrink-0 px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 ${
                       activeView === 'team' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
@@ -589,7 +589,7 @@ export default function ModernAttendance() {
 
                   <button
                     onClick={() => setActiveView('requests')}
-                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 relative ${
+                    className={`shrink-0 px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 relative ${
                       activeView === 'requests' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
@@ -606,14 +606,14 @@ export default function ModernAttendance() {
             </div>
 
             {/* Right: Date Selector + Actions Dropdown */}
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center gap-2">
               {/* Date Selector */}
               {activeView === 'my-attendance' && (
                 <input
                   type="month"
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="min-w-0 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               )}
 
@@ -622,7 +622,7 @@ export default function ModernAttendance() {
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="min-w-0 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               )}
 
