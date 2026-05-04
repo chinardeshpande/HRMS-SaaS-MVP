@@ -19,7 +19,8 @@ export default function ModernLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [demoLoading, setDemoLoading] = useState(false);
+  const { login, startDemo } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent) => {
@@ -39,6 +40,21 @@ export default function ModernLogin() {
       setError(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleStartDemo = async () => {
+    setError('');
+    setDemoLoading(true);
+
+    try {
+      await startDemo('hr');
+      navigate('/dashboard');
+    } catch (err: any) {
+      const errorMessage = err.message || err.response?.data?.error?.message || 'Demo mode is not available yet';
+      setError(errorMessage);
+    } finally {
+      setDemoLoading(false);
     }
   };
 
@@ -125,8 +141,8 @@ export default function ModernLogin() {
               <BriefcaseIcon className="h-8 w-8 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">HRMS</h1>
-              <p className="text-sm text-gray-500">Enterprise Edition</p>
+              <h1 className="text-2xl font-bold text-gray-900">AuroraHR</h1>
+              <p className="text-sm text-gray-500">Illuminate The Journey</p>
             </div>
           </div>
 
@@ -258,15 +274,26 @@ export default function ModernLogin() {
               </button>
             </form>
 
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={handleStartDemo}
+                disabled={demoLoading || loading}
+                className="w-full inline-flex items-center justify-center rounded-lg border border-primary-200 bg-primary-50 px-4 py-3 text-sm font-semibold text-primary-700 transition-colors hover:bg-primary-100 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {demoLoading ? 'Starting demo...' : 'Explore curated demo workspace'}
+              </button>
+            </div>
+
             {/* Demo credentials */}
             <div className="mt-6 p-4 bg-primary-50 rounded-lg">
-              <p className="text-xs font-medium text-primary-900 mb-2">Demo Credentials:</p>
+              <p className="text-xs font-medium text-primary-900 mb-2">Demo credentials:</p>
               <div className="space-y-1 text-xs text-primary-700">
                 <p>
-                  <span className="font-medium">Email:</span> sarah.johnson@acme.com
+                  <span className="font-medium">HR Lead:</span> demo.hr@aurorahr.in
                 </p>
                 <p>
-                  <span className="font-medium">Password:</span> password123
+                  <span className="font-medium">Password:</span> Demo@12345
                 </p>
               </div>
             </div>

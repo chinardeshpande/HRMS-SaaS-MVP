@@ -38,6 +38,7 @@ import templateGenerationRoutes from './routes/templateGenerationRoutes';
 import orgStructureRoutes from './routes/orgStructureRoutes';
 import digitalLibraryRoutes from './routes/digitalLibraryRoutes';
 import documentCategoryRoutes from './routes/documentCategoryRoutes';
+import demoRoutes from './routes/demoRoutes';
 // import pmsRoutes from './routes/pmsRoutes';
 // import transferRoutes from './routes/transferRoutes';
 // import confirmationRoutes from './routes/confirmationRoutes';
@@ -195,6 +196,7 @@ const apiRouter = express.Router();
 
 // Mount routes (uncomment as you create them)
 apiRouter.use('/auth', authRoutes);
+apiRouter.use('/demo', demoRoutes);
 apiRouter.use('/registration', registrationRoutes);
 apiRouter.use('/onboarding-wizard', onboardingWizardRoutes);
 apiRouter.use('/invitations', invitationRoutes);

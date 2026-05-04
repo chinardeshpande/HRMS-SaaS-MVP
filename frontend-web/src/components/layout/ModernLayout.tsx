@@ -40,11 +40,12 @@ interface NavItem {
 }
 
 export const ModernLayout = ({ children }: ModernLayoutProps) => {
-  const { user, logout } = useAuth();
+  const { user, logout, switchToDemo, exitDemo, isDemoMode } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
+  const [demoSwitching, setDemoSwitching] = useState(false);
 
   const allNavigation: NavItem[] = [
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon }, // All roles
@@ -133,6 +134,22 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
     navigate('/login');
   };
 
+  const handleDemoToggle = async () => {
+    if (isDemoMode) {
+      exitDemo();
+      navigate('/dashboard');
+      return;
+    }
+
+    setDemoSwitching(true);
+    try {
+      await switchToDemo('hr');
+      navigate('/dashboard');
+    } finally {
+      setDemoSwitching(false);
+    }
+  };
+
   const toggleMenu = (menuName: string) => {
     setExpandedMenus((prev) =>
       prev.includes(menuName) ? prev.filter((m) => m !== menuName) : [...prev, menuName]
@@ -160,6 +177,24 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
 
           {/* Navigation */}
           <nav className="mt-8 flex-1 px-3 space-y-1">
+            <div className="mb-4 px-3">
+              <button
+                onClick={handleDemoToggle}
+                disabled={demoSwitching}
+                className={`w-full rounded-lg border px-3 py-2 text-left text-xs font-semibold transition-colors ${
+                  isDemoMode
+                    ? 'border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100'
+                    : 'border-primary-200 bg-primary-50 text-primary-700 hover:bg-primary-100'
+                } disabled:cursor-not-allowed disabled:opacity-60`}
+              >
+                {isDemoMode ? 'Return to my account' : demoSwitching ? 'Switching...' : 'Switch to demo mode'}
+              </button>
+              {isDemoMode && (
+                <p className="mt-2 text-xs text-amber-700">
+                  Demo workspace: {user?.tenant?.companyName || 'AuroraHR Demo'}
+                </p>
+              )}
+            </div>
             {navigation.map((item) => {
               const hasChildren = item.children && item.children.length > 0;
               const isExpanded = expandedMenus.includes(item.name);
@@ -286,6 +321,20 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                   />
                 </div>
                 <nav className="mt-5 px-2 space-y-1">
+                  <button
+                    onClick={() => {
+                      handleDemoToggle();
+                      setSidebarOpen(false);
+                    }}
+                    disabled={demoSwitching}
+                    className={`mb-3 w-full rounded-lg border px-3 py-2 text-left text-sm font-semibold ${
+                      isDemoMode
+                        ? 'border-amber-300 bg-amber-50 text-amber-800'
+                        : 'border-primary-200 bg-primary-50 text-primary-700'
+                    } disabled:cursor-not-allowed disabled:opacity-60`}
+                  >
+                    {isDemoMode ? 'Return to my account' : 'Switch to demo mode'}
+                  </button>
                   {navigation.map((item) => (
                     <button
                       key={item.name}
@@ -344,6 +393,11 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
               </form>
             </div>
             <div className="ml-4 flex items-center md:ml-6 space-x-3">
+              {isDemoMode && (
+                <div className="hidden sm:flex items-center rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">
+                  Demo Mode
+                </div>
+              )}
               {/* Notifications */}
               <button className="p-2 rounded-lg text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors relative">
                 <BellIcon className="h-6 w-6" />
