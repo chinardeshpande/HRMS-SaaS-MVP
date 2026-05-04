@@ -2,6 +2,7 @@ import { ReactNode, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { UserRole } from '../../types';
+import DemoJourneyPanel from '../demo/DemoJourneyPanel';
 import {
   HomeIcon,
   UsersIcon,
@@ -425,6 +426,12 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
         <main className="flex-1">
           <div className="py-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+              {isDemoMode && (
+                <DemoJourneyPanel
+                  currentPath={location.pathname}
+                  onNavigate={(route) => navigate(route)}
+                />
+              )}
               {children}
             </div>
           </div>
