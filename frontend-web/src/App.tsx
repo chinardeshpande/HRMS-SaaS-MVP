@@ -5,6 +5,8 @@ import { AuthProvider } from './context/AuthContext';
 import LandingPage from './pages/LandingPage';
 import FeatureDetail from './pages/FeatureDetail';
 import ModernLogin from './pages/ModernLogin';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import CompanySignup from './pages/CompanySignup';
 import EmailVerification from './pages/EmailVerification';
 import EmailVerificationPending from './pages/EmailVerificationPending';
@@ -58,6 +60,8 @@ function App() {
         <Routes>
               {/* Public routes */}
               <Route path="/login" element={<ModernLogin />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
 
               {/* New Registration Flow */}
               <Route path="/register" element={<Signup />} />
