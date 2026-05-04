@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthTokens } from '../types';
 import { api } from '../services/api';
+import { demoService, DemoPersonaKey } from '../services/demoService';
 
 interface AuthContextType {
   user: User | null;
@@ -10,6 +11,10 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   refreshToken: () => Promise<void>;
+  startDemo: (persona?: DemoPersonaKey) => Promise<void>;
+  switchToDemo: (persona?: DemoPersonaKey) => Promise<void>;
+  exitDemo: () => void;
+  isDemoMode: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,6 +27,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [tokens, setTokens] = useState<AuthTokens | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const persistSession = (userData: User, tokenData: AuthTokens): void => {
+    setUser(userData);
+    setTokens(tokenData);
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('tokens', JSON.stringify(tokenData));
+  };
 
   // Load user from localStorage on mount
   useEffect(() => {
@@ -69,13 +81,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('✅ User data extracted:', userData);
       console.log('✅ Tokens extracted:', { hasToken: !!tokenData.token, hasRefresh: !!tokenData.refreshToken });
 
-      // Update state with actual user data from backend
-      setUser(userData);
-      setTokens(tokenData);
-
-      // Store in localStorage
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('tokens', JSON.stringify(tokenData));
+      persistSession(userData, tokenData);
+      localStorage.removeItem('preDemoSession');
 
       console.log('✅ Login successful - user and tokens stored');
     } catch (error: any) {
@@ -95,6 +102,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setTokens(null);
     localStorage.removeItem('user');
     localStorage.removeItem('tokens');
+    localStorage.removeItem('preDemoSession');
+  };
+
+  const startDemo = async (persona: DemoPersonaKey = 'hr'): Promise<void> => {
+    const session = await demoService.startDemo(persona);
+    localStorage.removeItem('preDemoSession');
+    persistSession(session.user, session.tokens);
+    localStorage.setItem('demoSession', JSON.stringify({ persona, startedAt: new Date().toISOString() }));
+  };
+
+  const switchToDemo = async (persona: DemoPersonaKey = 'hr'): Promise<void> => {
+    if (user && tokens && !user.isDemoMode) {
+      localStorage.setItem('preDemoSession', JSON.stringify({ user, tokens }));
+    }
+
+    const session = await demoService.switchToDemo(persona);
+    persistSession(session.user, session.tokens);
+    localStorage.setItem('demoSession', JSON.stringify({ persona, startedAt: new Date().toISOString() }));
+  };
+
+  const exitDemo = (): void => {
+    const storedOriginalSession = localStorage.getItem('preDemoSession');
+
+    if (storedOriginalSession) {
+      try {
+        const originalSession = JSON.parse(storedOriginalSession);
+        persistSession(originalSession.user, originalSession.tokens);
+      } catch (error) {
+        console.error('Error restoring pre-demo session:', error);
+        logout();
+      }
+    } else {
+      logout();
+    }
+
+    localStorage.removeItem('preDemoSession');
+    localStorage.removeItem('demoSession');
   };
 
   const refreshToken = async (): Promise<void> => {
@@ -126,6 +170,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     logout,
     refreshToken,
+    startDemo,
+    switchToDemo,
+    exitDemo,
+    isDemoMode: !!user?.isDemoMode,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

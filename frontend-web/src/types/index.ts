@@ -14,6 +14,12 @@ export interface User {
   fullName: string;
   role: UserRole;
   employeeId?: string;
+  isDemoMode?: boolean;
+  demoPersona?: string;
+  tenant?: {
+    companyName: string;
+    subdomain?: string;
+  };
   isActive: boolean;
   lastLogin?: Date;
   createdAt: Date;
@@ -22,7 +28,7 @@ export interface User {
 
 // Auth tokens
 export interface AuthTokens {
-  accessToken: string;
+  token: string;
   refreshToken: string;
 }
 
