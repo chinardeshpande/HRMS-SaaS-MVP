@@ -25,6 +25,7 @@ import { ExitState } from '../models/enums/ExitState';
 import { ResignationType } from '../models/enums/ResignationType';
 import { Subscription, BillingCycle, SubscriptionPlan, SubscriptionStatus } from '../models/Subscription';
 import { OrganizationSettings } from '../models/OrganizationSettings';
+import { Role } from '../models/Role';
 import { DEMO_PASSWORD, DEMO_TENANT_SUBDOMAIN, demoPersonas } from '../services/demoService';
 import { EmploymentStatus } from '../../../shared/types';
 
@@ -155,6 +156,7 @@ const seedDemoData = async () => {
     const designationRepo = AppDataSource.getRepository(Designation);
     const employeeRepo = AppDataSource.getRepository(Employee);
     const userRepo = AppDataSource.getRepository(User);
+    const roleRepo = AppDataSource.getRepository(Role);
     const leavePolicyRepo = AppDataSource.getRepository(LeavePolicy);
     const leaveBalanceRepo = AppDataSource.getRepository(LeaveBalance);
     const attendanceRepo = AppDataSource.getRepository(Attendance);
@@ -193,6 +195,49 @@ const seedDemoData = async () => {
     ]);
 
     const desigByName = new Map(designations.map((designation) => [designation.name, designation]));
+
+    await roleRepo.save([
+      roleRepo.create({
+        tenantId: tenant.tenantId,
+        roleName: 'System Admin',
+        description: 'Full demo tenant administration access',
+        isSystemRole: true,
+        isActive: true,
+        level: 100,
+        employeeCount: 1,
+        dataAccessRules: { allData: true },
+      }),
+      roleRepo.create({
+        tenantId: tenant.tenantId,
+        roleName: 'HR Admin',
+        description: 'Demo HR operations and employee administration access',
+        isSystemRole: true,
+        isActive: true,
+        level: 80,
+        employeeCount: 2,
+        dataAccessRules: { allData: true },
+      }),
+      roleRepo.create({
+        tenantId: tenant.tenantId,
+        roleName: 'Manager',
+        description: 'Demo people manager access',
+        isSystemRole: true,
+        isActive: true,
+        level: 50,
+        employeeCount: 2,
+        dataAccessRules: { teamDataOnly: true },
+      }),
+      roleRepo.create({
+        tenantId: tenant.tenantId,
+        roleName: 'Employee',
+        description: 'Demo employee self-service access',
+        isSystemRole: true,
+        isActive: true,
+        level: 10,
+        employeeCount: 7,
+        dataAccessRules: { ownDataOnly: true },
+      }),
+    ]);
 
     const employeeSpecs = [
       ['DEMO001', 'Aditi', 'Rao', 'demo.admin@aurorahr.in', 'Executive Office', 'Founder & CEO', undefined, -900, 'system_admin'],
