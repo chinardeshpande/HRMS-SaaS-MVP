@@ -232,9 +232,13 @@ export default function ModernLogin() {
                 </div>
 
                 <div className="text-sm">
-                  <a href="#" className="font-medium text-primary-600 hover:text-primary-500">
+                  <button
+                    type="button"
+                    onClick={() => navigate('/forgot-password')}
+                    className="font-medium text-primary-600 hover:text-primary-500"
+                  >
                     Forgot password?
-                  </a>
+                  </button>
                 </div>
               </div>
 
