@@ -26,6 +26,7 @@ import { ResignationType } from '../models/enums/ResignationType';
 import { Subscription, BillingCycle, SubscriptionPlan, SubscriptionStatus } from '../models/Subscription';
 import { OrganizationSettings } from '../models/OrganizationSettings';
 import { DEMO_PASSWORD, DEMO_TENANT_SUBDOMAIN, demoPersonas } from '../services/demoService';
+import { EmploymentStatus } from '../../../shared/types';
 
 const demoCompanyName = 'AuroraHR Demo Pvt Ltd';
 
@@ -210,8 +211,7 @@ const seedDemoData = async () => {
 
     const employeeByCode = new Map<string, Employee>();
     for (const [code, firstName, lastName, email, departmentName, designationName, , joiningDays] of employeeSpecs) {
-      const employee = await employeeRepo.save(
-        employeeRepo.create({
+      const employeeData = employeeRepo.create({
           tenantId: tenant.tenantId,
           employeeCode: code,
           firstName,
@@ -225,9 +225,9 @@ const seedDemoData = async () => {
           dateOfJoining: dateOnly(joiningDays),
           probationEndDate: joiningDays > -180 ? dateOnly(joiningDays + 90) : undefined,
           employmentType: 'full_time',
-          status: 'active',
-        })
-      );
+          status: EmploymentStatus.ACTIVE,
+        } as any) as unknown as Employee;
+      const employee = await employeeRepo.save(employeeData);
       employeeByCode.set(code, employee);
     }
 
@@ -463,7 +463,10 @@ const seedDemoData = async () => {
       organizationSettingsRepo.create({
         tenantId: tenant.tenantId,
         companyName: demoCompanyName,
-        legalName: 'AuroraHR Demo Private Limited',
+        companyDescription: 'Curated demo workspace for investor and customer walkthroughs.',
+        industry: 'SaaS HR Technology',
+        registrationNumber: 'DEMO-U74999KA2026PTC000001',
+        taxId: 'DEMO-GSTIN-29ABCDE1234F1Z5',
         email: 'people.demo@aurorahr.in',
         phone: '+91 80 4000 9000',
         website: 'https://aurorahr.in',
@@ -471,14 +474,31 @@ const seedDemoData = async () => {
         city: 'Bengaluru',
         state: 'Karnataka',
         country: 'India',
-        pincode: '560001',
+        postalCode: '560001',
         timezone: 'Asia/Kolkata',
+        defaultLanguage: 'en',
         currency: 'INR',
         dateFormat: 'DD/MM/YYYY',
-        fiscalYearStart: 'April',
-        employeeCodePrefix: 'DEMO',
-        nextEmployeeNumber: 13,
-      })
+        timeFormat: '24h',
+        fiscalYearStartMonth: 4,
+        weekStartDay: 1,
+        twoFactorAuthRequired: false,
+        passwordExpiryDays: 90,
+        maxLoginAttempts: 5,
+        sessionTimeoutMinutes: 60,
+        ipWhitelistEnabled: false,
+        branding: {
+          primaryColor: '#7c3aed',
+          secondaryColor: '#0f172a',
+          accentColor: '#06b6d4',
+          logoUrl: '/images/AuroraHR-logo.png',
+          faviconUrl: '/images/aurora-icon.svg',
+        },
+        customFields: {
+          demoWorkspace: true,
+          resetPolicy: 'Seed script restores curated sample data.',
+        },
+      } as any)
     );
 
     tenant.employeeCount = employeeByCode.size;
