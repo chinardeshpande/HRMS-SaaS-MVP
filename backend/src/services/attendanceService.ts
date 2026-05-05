@@ -358,7 +358,7 @@ export class AttendanceService {
       .leftJoin('attendance.employee', 'employee')
       .leftJoin('employee.department', 'department')
       .select('department.departmentId', 'departmentId')
-      .addSelect('department.departmentName', 'departmentName')
+      .addSelect('department.name', 'departmentName')
       .addSelect('COUNT(*)', 'totalRecords')
       .addSelect(
         "SUM(CASE WHEN attendance.status = 'present' THEN 1 ELSE 0 END)",
@@ -375,7 +375,7 @@ export class AttendanceService {
         endDate,
       })
       .groupBy('department.departmentId')
-      .addGroupBy('department.departmentName')
+      .addGroupBy('department.name')
       .getRawMany();
 
     return result;

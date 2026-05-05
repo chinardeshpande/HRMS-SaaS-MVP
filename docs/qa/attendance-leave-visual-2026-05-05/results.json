@@ -1,0 +1,326 @@
+{
+  "runId": "ALV-2026-05-05-1777961049976",
+  "runDate": "2026-05-05",
+  "baseUrl": "https://aurorahr.in",
+  "apiBaseUrl": "https://aurorahr.in/api/v1",
+  "results": [
+    {
+      "id": "AUTH_EMPLOYEE",
+      "title": "Demo login for employee",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "API /demo/login",
+      "notes": "demo.employee@aurorahr.in"
+    },
+    {
+      "id": "AUTH_MANAGER",
+      "title": "Demo login for manager",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "API /demo/login",
+      "notes": "demo.manager@aurorahr.in"
+    },
+    {
+      "id": "AUTH_HR",
+      "title": "Demo login for hr",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "API /demo/login",
+      "notes": "demo.hr@aurorahr.in"
+    },
+    {
+      "id": "AUTH_ADMIN",
+      "title": "Demo login for admin",
+      "role": "admin",
+      "status": "passed",
+      "evidence": "API /demo/login",
+      "notes": "demo.admin@aurorahr.in"
+    },
+    {
+      "id": "LEAVE_DATA_01",
+      "title": "Employee applies casual leave for manager approval",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "leaveId=3723231a-036b-413e-8076-648007f0a877",
+      "notes": ""
+    },
+    {
+      "id": "LEAVE_DATA_02",
+      "title": "Employee applies sick leave for rejection path",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "leaveId=33383ca9-639e-4514-8ce6-cda382e5fdc1",
+      "notes": ""
+    },
+    {
+      "id": "LEAVE_APPROVAL_01",
+      "title": "Manager approves one pending leave request",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "approved leaveId=3723231a-036b-413e-8076-648007f0a877",
+      "notes": ""
+    },
+    {
+      "id": "LEAVE_APPROVAL_02",
+      "title": "HR rejects one pending leave request",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "rejected leaveId=33383ca9-639e-4514-8ce6-cda382e5fdc1",
+      "notes": ""
+    },
+    {
+      "id": "ATT_REG_01",
+      "title": "Employee creates attendance regularization request",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "editId=444a0bad-fef0-47af-8867-757e5ee74012",
+      "notes": ""
+    },
+    {
+      "id": "ATT_REG_02",
+      "title": "Manager approves one attendance regularization",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "approved editId=444a0bad-fef0-47af-8867-757e5ee74012",
+      "notes": ""
+    },
+    {
+      "id": "ATT_REG_03",
+      "title": "Employee creates second attendance regularization request",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "editId=19390238-01aa-450f-9ceb-74426e62b6f5",
+      "notes": ""
+    },
+    {
+      "id": "ATT_REG_04",
+      "title": "HR rejects one attendance regularization",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "rejected editId=19390238-01aa-450f-9ceb-74426e62b6f5",
+      "notes": ""
+    },
+    {
+      "id": "ATT_DAILY_01",
+      "title": "Employee daily clock-in/clock-out endpoint behavior",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "clock endpoints verified; repeated execution is idempotency/error-guarded by backend",
+      "notes": ""
+    },
+    {
+      "id": "ATT_BULK_01",
+      "title": "HR bulk-updates existing attendance records through backend endpoint",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "bulk updated 2 records",
+      "notes": ""
+    },
+    {
+      "id": "REPORT_DATA_01",
+      "title": "HR retrieves attendance and leave reporting APIs",
+      "role": "hr",
+      "status": "failed",
+      "evidence": "runtime/API error",
+      "notes": "GET /attendance/by-department?startDate=2026-05-05&endDate=2026-05-05 failed: column department.departmentname does not exist"
+    },
+    {
+      "id": "VIS_ATT_EMP_01",
+      "title": "Employee attendance monthly and daily self-service view",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "screenshots/01-employee-attendance-my-monthly.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_ATT_EMP_02",
+      "title": "Employee regularization request modal",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "screenshots/02-employee-attendance-regularization-modal.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_LEAVE_EMP_01",
+      "title": "Employee leave balances, filters, and request history",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "screenshots/03-employee-leave-balances-requests.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_LEAVE_EMP_02",
+      "title": "Employee apply leave modal",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "screenshots/04-employee-leave-apply-modal.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_ATT_MGR_01",
+      "title": "Manager team attendance view",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "screenshots/05-manager-attendance-team-company.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_ATT_MGR_02",
+      "title": "Manager pending leave and regularization approvals in attendance module",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "screenshots/06-manager-attendance-requests.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_LEAVE_MGR_01",
+      "title": "Manager team leave approvals view",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "screenshots/07-manager-leave-approvals.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_ATT_HR_01",
+      "title": "HR company attendance daily control view",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/08-hr-attendance-company-daily.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_ATT_HR_02",
+      "title": "HR attendance mass update modal",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/09-hr-attendance-mass-update-modal.png",
+      "notes": "UI modal captured; backend bulk update was verified separately."
+    },
+    {
+      "id": "VIS_ATT_HR_03",
+      "title": "HR attendance device/file sync modal",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/10-hr-attendance-sync-modal.png",
+      "notes": "Current UI uses mock preview/save behavior."
+    },
+    {
+      "id": "VIS_ATT_HR_04",
+      "title": "HR attendance and leave intervention queue",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/11-hr-attendance-requests.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_LEAVE_HR_01",
+      "title": "HR all leave requests and intervention view",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/12-hr-leave-all-requests.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_ATT_ADMIN_01",
+      "title": "Leadership/admin attendance view",
+      "role": "admin",
+      "status": "passed",
+      "evidence": "screenshots/13-admin-attendance-leadership-view.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_LEAVE_ADMIN_01",
+      "title": "Leadership/admin leave view",
+      "role": "admin",
+      "status": "passed",
+      "evidence": "screenshots/14-admin-leave-leadership-view.png",
+      "notes": ""
+    }
+  ],
+  "screenshots": [
+    {
+      "id": "VIS_ATT_EMP_01",
+      "title": "Employee attendance monthly and daily self-service view",
+      "role": "employee",
+      "path": "screenshots/01-employee-attendance-my-monthly.png"
+    },
+    {
+      "id": "VIS_ATT_EMP_02",
+      "title": "Employee regularization request modal",
+      "role": "employee",
+      "path": "screenshots/02-employee-attendance-regularization-modal.png"
+    },
+    {
+      "id": "VIS_LEAVE_EMP_01",
+      "title": "Employee leave balances, filters, and request history",
+      "role": "employee",
+      "path": "screenshots/03-employee-leave-balances-requests.png"
+    },
+    {
+      "id": "VIS_LEAVE_EMP_02",
+      "title": "Employee apply leave modal",
+      "role": "employee",
+      "path": "screenshots/04-employee-leave-apply-modal.png"
+    },
+    {
+      "id": "VIS_ATT_MGR_01",
+      "title": "Manager team attendance view",
+      "role": "manager",
+      "path": "screenshots/05-manager-attendance-team-company.png"
+    },
+    {
+      "id": "VIS_ATT_MGR_02",
+      "title": "Manager pending leave and regularization approvals in attendance module",
+      "role": "manager",
+      "path": "screenshots/06-manager-attendance-requests.png"
+    },
+    {
+      "id": "VIS_LEAVE_MGR_01",
+      "title": "Manager team leave approvals view",
+      "role": "manager",
+      "path": "screenshots/07-manager-leave-approvals.png"
+    },
+    {
+      "id": "VIS_ATT_HR_01",
+      "title": "HR company attendance daily control view",
+      "role": "hr",
+      "path": "screenshots/08-hr-attendance-company-daily.png"
+    },
+    {
+      "id": "VIS_ATT_HR_02",
+      "title": "HR attendance mass update modal",
+      "role": "hr",
+      "path": "screenshots/09-hr-attendance-mass-update-modal.png"
+    },
+    {
+      "id": "VIS_ATT_HR_03",
+      "title": "HR attendance device/file sync modal",
+      "role": "hr",
+      "path": "screenshots/10-hr-attendance-sync-modal.png"
+    },
+    {
+      "id": "VIS_ATT_HR_04",
+      "title": "HR attendance and leave intervention queue",
+      "role": "hr",
+      "path": "screenshots/11-hr-attendance-requests.png"
+    },
+    {
+      "id": "VIS_LEAVE_HR_01",
+      "title": "HR all leave requests and intervention view",
+      "role": "hr",
+      "path": "screenshots/12-hr-leave-all-requests.png"
+    },
+    {
+      "id": "VIS_ATT_ADMIN_01",
+      "title": "Leadership/admin attendance view",
+      "role": "admin",
+      "path": "screenshots/13-admin-attendance-leadership-view.png"
+    },
+    {
+      "id": "VIS_LEAVE_ADMIN_01",
+      "title": "Leadership/admin leave view",
+      "role": "admin",
+      "path": "screenshots/14-admin-leave-leadership-view.png"
+    }
+  ]
+}
