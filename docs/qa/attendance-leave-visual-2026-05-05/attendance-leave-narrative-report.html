@@ -68,6 +68,7 @@
         <li>Navigation steps show how a user reaches the feature in AuroraHR.</li>
         <li>Expected and actual outcomes make the product behavior auditable.</li>
         <li>Screenshots are embedded as proof for investor, customer, and internal QA review.</li>
+        <li>Important boundary: live baseline screenshots and branch remediation are separated. Branch fixes require a post-deploy strict visual re-run before they are claimed as production-proven.</li>
       </ul>
     </aside>
   </main>
@@ -308,7 +309,7 @@
           </div>
           <div>
             <h3>Actual Outcome</h3>
-            <p>The visual controls rendered. Initial QA identified UI-only mass/sync behavior; this branch hardened both workflows.</p>
+            <p>The visual controls rendered on the live baseline. Initial QA identified UI-only mass/sync behavior; this branch hardened both workflows. A post-deploy strict re-run is required to visually prove the persisted mass/sync behavior.</p>
           </div>
         </div>
 
@@ -357,7 +358,7 @@
           </div>
           <div>
             <h3>Actual Outcome</h3>
-            <p>Initial production test exposed a bad department column. This branch fixes the query and adds the Reports tab.</p>
+            <p>Initial production test exposed a bad department column. This branch fixes the query and adds the Reports tab. The existing leadership screenshots are live-baseline evidence, not post-fix proof of the new Reports tab.</p>
           </div>
         </div>
 

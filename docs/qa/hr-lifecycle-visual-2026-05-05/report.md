@@ -7,7 +7,9 @@ API: https://aurorahr.in/api/v1
 
 ## Executive summary
 
-Executed 30 checks: 28 passed, 2 failed.
+Executed 30 checks in the original run: 28 were recorded as passed and 2 failed.
+
+Audit correction: the employee Performance and employee Exit visual checks were too weak because the runner treated screenshot capture as success. Those two checks should be read as **not production-proven**. The Exit screenshot does not show **Submit Resignation**, and the production API also returned `Route not found` for `/exit/my-case`.
 
 This test covers Onboarding, Probation, Performance Management, and Exit workflows across HR, manager, employee, and admin roles.
 
@@ -40,8 +42,8 @@ This test covers Onboarding, Probation, Performance Management, and Exit workflo
 | VIS_EXIT_HR_03 | HR exit case detail workflow view | hr | PASS | screenshots/08-hr-exit-case-detail.png |  |
 | VIS_PERF_MGR_01 | Manager performance queue | manager | PASS | screenshots/09-manager-performance-dashboard.png |  |
 | VIS_EXIT_MGR_01 | Manager exit approvals and management view | manager | PASS | screenshots/10-manager-exit-dashboard.png |  |
-| VIS_PERF_EMP_01 | Employee performance self-service view | employee | PASS | screenshots/11-employee-performance-self-service.png |  |
-| VIS_EXIT_EMP_01 | Employee exit self-service view | employee | PASS | screenshots/12-employee-exit-self-service.png |  |
+| VIS_PERF_EMP_01 | Employee performance self-service view | employee | FAIL | screenshots/11-employee-performance-self-service.png | Audit correction: screenshot capture alone did not prove employee self-service; strict re-run must assert employee-only controls. |
+| VIS_EXIT_EMP_01 | Employee exit self-service view | employee | FAIL | screenshots/12-employee-exit-self-service.png | Audit correction: Submit Resignation or My Resignation Status was not proven visible; production API also lacked /exit/my-case. |
 | VIS_ONB_ADMIN_01 | Admin onboarding leadership view | admin | PASS | screenshots/13-admin-onboarding-leadership-view.png |  |
 | VIS_PERF_ADMIN_01 | Admin performance leadership view | admin | PASS | screenshots/14-admin-performance-leadership-view.png |  |
 | VIS_EXIT_ADMIN_01 | Admin exit leadership view | admin | PASS | screenshots/15-admin-exit-leadership-view.png |  |
@@ -141,9 +143,9 @@ Role: admin
 
 ## Product gaps detected and addressed in this PR branch
 
+- Visual checks now assert critical employee self-service controls. A screenshot alone is not counted as a passed workflow.
 - Employee Performance page required manager/HR review-list access; this branch adds `/performance/my-reviews` and uses it for employees.
 - Manager Performance review list was tenant-wide; this branch scopes manager review lists to `reviewerId`.
 - Performance export was a placeholder; this branch implements CSV export.
 - Employee Exit page required manager/HR case-list access; this branch adds `/exit/my-case` and an employee resignation self-service view.
 - Onboarding and Exit tables used legacy `departmentName`/`designationName` only; this branch supports current `name` fields as well.
-

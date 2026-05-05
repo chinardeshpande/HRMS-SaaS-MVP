@@ -208,17 +208,17 @@
       "id": "VIS_PERF_EMP_01",
       "title": "Employee performance self-service view",
       "role": "employee",
-      "status": "passed",
+      "status": "failed",
       "evidence": "screenshots/11-employee-performance-self-service.png",
-      "notes": ""
+      "notes": "Audit correction: screenshot capture alone did not prove employee self-service; strict re-run must assert employee-only controls."
     },
     {
       "id": "VIS_EXIT_EMP_01",
       "title": "Employee exit self-service view",
       "role": "employee",
-      "status": "passed",
+      "status": "failed",
       "evidence": "screenshots/12-employee-exit-self-service.png",
-      "notes": ""
+      "notes": "Audit correction: Submit Resignation or My Resignation Status was not proven visible; production API also lacked /exit/my-case."
     },
     {
       "id": "VIS_ONB_ADMIN_01",

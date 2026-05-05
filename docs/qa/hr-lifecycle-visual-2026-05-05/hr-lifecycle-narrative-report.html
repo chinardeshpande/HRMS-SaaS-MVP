@@ -57,8 +57,8 @@
       <p class="subtitle">A storytelling walkthrough of Onboarding, Probation, Performance Management, and Exit testing across HR, manager, employee, and admin personas.</p>
       <div class="metrics">
         <div class="metric"><span>Total Checks</span><strong>30</strong></div>
-        <div class="metric"><span>Passed</span><strong>28</strong></div>
-        <div class="metric"><span>Needs Fix</span><strong>2</strong></div>
+        <div class="metric"><span>Passed</span><strong>26</strong></div>
+        <div class="metric"><span>Needs Fix</span><strong>4</strong></div>
       </div>
     </section>
     <aside class="panel">
@@ -68,6 +68,7 @@
         <li>Navigation steps show how a user reaches the feature in AuroraHR.</li>
         <li>Expected and actual outcomes make the product behavior auditable.</li>
         <li>Screenshots are embedded as proof for investor, customer, and internal QA review.</li>
+        <li>Important boundary: the employee Performance and Exit screenshots were captured from live production before the branch fixes. They prove the production gap; they do not prove the fix until the branch is deployed and strict visual QA is re-run.</li>
       </ul>
     </aside>
   </main>
@@ -75,7 +76,7 @@
   <section class="page page-break">
     <section class="summary">
       <h2>Executive Narrative</h2>
-      <p>This document follows the broader employee lifecycle: hiring and onboarding, probation tracking, performance review cycles, and eventual exit/offboarding. The QA pass validated HR and manager workflows and revealed missing employee self-service surfaces for Performance and Exit. Those gaps have been repaired in this PR branch with employee-safe APIs and UI paths.</p>
+      <p>This document follows the broader employee lifecycle: hiring and onboarding, probation tracking, performance review cycles, and eventual exit/offboarding. The QA pass validated several HR and manager workflows, but it also revealed missing employee self-service surfaces for Performance and Exit. Those gaps have been repaired in this PR branch with employee-safe APIs and UI paths; production proof requires deployment followed by strict visual re-verification.</p>
     </section>
     
       <section class="scenario">
@@ -259,14 +260,14 @@
           </div>
           <div>
             <h3>Actual Outcome</h3>
-            <p>Initial live API returned route not found. This branch adds `/performance/my-reviews` and routes employees to it.</p>
+            <p>Initial live API returned route not found, and the captured employee screenshot should be treated as baseline defect evidence rather than proof of the fix. This branch adds `/performance/my-reviews` and routes employees to it. Post-deploy visual QA must re-run and assert employee-only performance controls.</p>
           </div>
         </div>
 
         <table class="mini-table">
           <thead><tr><th>Check</th><th>Status</th><th>Evidence</th><th>Notes</th></tr></thead>
           <tbody>
-            <tr><td><code>PERF_API_03</code></td><td><span class="badge failed">Needs Fix</span></td><td>GET /performance/my-reviews</td><td>Route not found</td></tr><tr><td><code>VIS_PERF_EMP_01</code></td><td><span class="badge passed">Passed</span></td><td>screenshots/11-employee-performance-self-service.png</td><td></td></tr>
+            <tr><td><code>PERF_API_03</code></td><td><span class="badge failed">Needs Fix</span></td><td>GET /performance/my-reviews</td><td>Route not found</td></tr><tr><td><code>VIS_PERF_EMP_01</code></td><td><span class="badge failed">Needs Fix</span></td><td>screenshots/11-employee-performance-self-service.png</td><td>Audit correction: screenshot capture alone did not prove employee self-service; strict re-run must assert employee-only controls.</td></tr>
           </tbody>
         </table>
 
@@ -308,14 +309,14 @@
           </div>
           <div>
             <h3>Actual Outcome</h3>
-            <p>Initial live API returned route not found. This branch adds `/exit/my-case` and employee resignation self-service UI.</p>
+            <p>Initial live API returned route not found, and the captured employee screenshot does not show Submit Resignation. That screenshot confirms the production gap; it is not proof of the branch fix. This branch adds `/exit/my-case` and employee resignation self-service UI. Post-deploy visual QA must re-run and assert Submit Resignation or My Resignation Status is visible.</p>
           </div>
         </div>
 
         <table class="mini-table">
           <thead><tr><th>Check</th><th>Status</th><th>Evidence</th><th>Notes</th></tr></thead>
           <tbody>
-            <tr><td><code>EXIT_API_02</code></td><td><span class="badge failed">Needs Fix</span></td><td>GET /exit/my-case</td><td>Route not found</td></tr><tr><td><code>VIS_EXIT_EMP_01</code></td><td><span class="badge passed">Passed</span></td><td>screenshots/12-employee-exit-self-service.png</td><td></td></tr>
+            <tr><td><code>EXIT_API_02</code></td><td><span class="badge failed">Needs Fix</span></td><td>GET /exit/my-case</td><td>Route not found</td></tr><tr><td><code>VIS_EXIT_EMP_01</code></td><td><span class="badge failed">Needs Fix</span></td><td>screenshots/12-employee-exit-self-service.png</td><td>Audit correction: Submit Resignation or My Resignation Status was not proven visible; production API also lacked /exit/my-case.</td></tr>
           </tbody>
         </table>
 

@@ -231,6 +231,27 @@ async function capture(page, filename, id, title, role, notes = '') {
   record(id, title, role, 'passed', `screenshots/${filename}`, notes);
 }
 
+async function hasText(page, text) {
+  return page.getByText(text, { exact: false }).first().isVisible({ timeout: 2500 }).catch(() => false);
+}
+
+async function captureWithAssertion(page, filename, id, title, role, assertion) {
+  await page.waitForTimeout(1500);
+  const fullPath = path.join(SCREENSHOT_DIR, filename);
+  await page.screenshot({ path: fullPath, fullPage: true });
+  screenshots.push({ id, title, role, path: `screenshots/${filename}` });
+
+  const result = await assertion(page);
+  record(
+    id,
+    title,
+    role,
+    result.passed ? 'passed' : 'failed',
+    `screenshots/${filename}`,
+    result.notes || ''
+  );
+}
+
 async function clickByText(page, text) {
   const locator = page.getByText(text, { exact: true }).first();
   await locator.waitFor({ timeout: 8000 });
@@ -284,9 +305,38 @@ async function visualRun() {
 
       if (persona === 'employee') {
         await page.goto(`${BASE_URL}/performance`, { waitUntil: 'domcontentloaded' });
-        await capture(page, '11-employee-performance-self-service.png', 'VIS_PERF_EMP_01', 'Employee performance self-service view', persona);
+        await captureWithAssertion(page, '11-employee-performance-self-service.png', 'VIS_PERF_EMP_01', 'Employee performance self-service view', persona, async (currentPage) => {
+          const hasEmployeeSignal = await hasText(currentPage, 'My Reviews')
+            || await hasText(currentPage, 'My Goals')
+            || await hasText(currentPage, 'My Performance')
+            || await hasText(currentPage, 'No performance reviews assigned yet');
+          const hasHrOnlySignal = await hasText(currentPage, 'Create Review')
+            || await hasText(currentPage, 'View Employees');
+
+          if (!hasEmployeeSignal || hasHrOnlySignal) {
+            return {
+              passed: false,
+              notes: 'Expected employee-only performance self-service signals and no HR-oriented controls.',
+            };
+          }
+
+          return { passed: true };
+        });
         await page.goto(`${BASE_URL}/exit`, { waitUntil: 'domcontentloaded' });
-        await capture(page, '12-employee-exit-self-service.png', 'VIS_EXIT_EMP_01', 'Employee exit self-service view', persona);
+        await captureWithAssertion(page, '12-employee-exit-self-service.png', 'VIS_EXIT_EMP_01', 'Employee exit self-service view', persona, async (currentPage) => {
+          const canSubmit = await hasText(currentPage, 'Submit Resignation');
+          const canTrack = await hasText(currentPage, 'My Resignation Status')
+            || await hasText(currentPage, 'Track status');
+
+          if (!canSubmit && !canTrack) {
+            return {
+              passed: false,
+              notes: 'Expected Submit Resignation or My Resignation Status to be visible for employee self-service.',
+            };
+          }
+
+          return { passed: true };
+        });
       }
 
       if (persona === 'admin') {
@@ -334,6 +384,7 @@ async function writeReport() {
     '',
     '## Product gaps detected and addressed in this PR branch',
     '',
+    '- Visual checks now assert critical employee self-service controls. A screenshot alone is not counted as a passed workflow.',
     '- Employee Performance page required manager/HR review-list access; this branch adds `/performance/my-reviews` and uses it for employees.',
     '- Manager Performance review list was tenant-wide; this branch scopes manager review lists to `reviewerId`.',
     '- Performance export was a placeholder; this branch implements CSV export.',

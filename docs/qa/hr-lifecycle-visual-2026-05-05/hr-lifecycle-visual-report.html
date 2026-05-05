@@ -50,8 +50,8 @@
       <p class="subtitle">Comprehensive role-based proof for key HR lifecycle modules, including HR operations, manager views, employee self-service, approvals, detail pages, and management reporting surfaces.</p>
       <div class="metrics">
         <div class="metric"><span>Total Checks</span><strong>30</strong><small>HRL-2026-05-05-1777964454580</small></div>
-        <div class="metric"><span>Passed</span><strong>28</strong><small>live demo tenant</small></div>
-        <div class="metric"><span>Needs Fix</span><strong>2</strong><small>fixed in branch</small></div>
+        <div class="metric"><span>Passed</span><strong>26</strong><small>live demo tenant</small></div>
+        <div class="metric"><span>Needs Fix</span><strong>4</strong><small>fixed in branch</small></div>
       </div>
       <div class="metrics">
     <div class="metric">
@@ -62,13 +62,13 @@
   
     <div class="metric">
       <span>Performance</span>
-      <strong>8/9</strong>
+      <strong>7/9</strong>
       <small>fixes applied in branch</small>
     </div>
   
     <div class="metric">
       <span>Exit</span>
-      <strong>8/9</strong>
+      <strong>7/9</strong>
       <small>fixes applied in branch</small>
     </div>
   </div>
@@ -78,7 +78,7 @@
       <div class="metrics" style="grid-template-columns: repeat(2, 1fr);">
     <div class="role-card">
       <span>employee</span>
-      <strong>3/5</strong>
+      <strong>1/5</strong>
     </div>
   
     <div class="role-card">
@@ -350,18 +350,18 @@
       <td><code>VIS_PERF_EMP_01</code></td>
       <td>Employee performance self-service view</td>
       <td>employee</td>
-      <td><span class="badge passed">Passed</span></td>
+      <td><span class="badge failed">Needs Fix</span></td>
       <td>screenshots/11-employee-performance-self-service.png</td>
-      <td></td>
+      <td>Audit correction: screenshot capture alone did not prove employee self-service; strict re-run must assert employee-only controls.</td>
     </tr>
   
     <tr>
       <td><code>VIS_EXIT_EMP_01</code></td>
       <td>Employee exit self-service view</td>
       <td>employee</td>
-      <td><span class="badge passed">Passed</span></td>
+      <td><span class="badge failed">Needs Fix</span></td>
       <td>screenshots/12-employee-exit-self-service.png</td>
-      <td></td>
+      <td>Audit correction: Submit Resignation or My Resignation Status was not proven visible; production API also lacked /exit/my-case.</td>
     </tr>
   
     <tr>

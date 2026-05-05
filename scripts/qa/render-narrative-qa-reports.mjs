@@ -26,6 +26,7 @@ function escapeHtml(value) {
 }
 
 function statusLabel(status) {
+  if (status === 'not-run') return 'Not Run';
   return status === 'passed' ? 'Passed' : 'Needs Fix';
 }
 
@@ -191,6 +192,7 @@ async function buildNarrativeHtml(config) {
         <li>Navigation steps show how a user reaches the feature in AuroraHR.</li>
         <li>Expected and actual outcomes make the product behavior auditable.</li>
         <li>Screenshots are embedded as proof for investor, customer, and internal QA review.</li>
+        ${config.verificationBoundary ? `<li>${escapeHtml(config.verificationBoundary)}</li>` : ''}
       </ul>
     </aside>
   </main>
@@ -287,7 +289,7 @@ const attendanceLeaveScenarios = [
     data: 'The run verified HR company attendance and backend bulk update. Later hardening wired mass update and CSV sync to real persistence and removed mock device data.',
     navigation: ['Log in as HR.', 'Open Attendance > Company.', 'Review daily company attendance cards and table.', 'Open Mass Update for bulk corrections.', 'Open Sync for device/file import.'],
     expected: 'HR should see company-wide controls and any correction/import should persist through backend APIs with audit fields.',
-    actual: 'The visual controls rendered. Initial QA identified UI-only mass/sync behavior; this branch hardened both workflows.',
+    actual: 'The visual controls rendered on the live baseline. Initial QA identified UI-only mass/sync behavior; this branch hardened both workflows. A post-deploy strict re-run is required to visually prove the persisted mass/sync behavior.',
     resultIds: ['ATT_BULK_01', 'VIS_ATT_HR_01', 'VIS_ATT_HR_02', 'VIS_ATT_HR_03'],
     screenshotId: 'VIS_ATT_HR_02',
   },
@@ -299,7 +301,7 @@ const attendanceLeaveScenarios = [
     data: 'The test queried attendance statistics, department attendance, and leave statistics for the demo tenant.',
     navigation: ['HR opens Attendance.', 'HR selects Reports after the production hardening update.', 'HR chooses date range and reviews summary cards, department breakdown, leave summary, and CSV export.'],
     expected: 'Reporting APIs and UI should return accurate department and leave metrics without query failures.',
-    actual: 'Initial production test exposed a bad department column. This branch fixes the query and adds the Reports tab.',
+    actual: 'Initial production test exposed a bad department column. This branch fixes the query and adds the Reports tab. The existing leadership screenshots are live-baseline evidence, not post-fix proof of the new Reports tab.',
     resultIds: ['REPORT_DATA_01', 'VIS_ATT_ADMIN_01', 'VIS_LEAVE_ADMIN_01'],
     screenshotId: 'VIS_ATT_ADMIN_01',
   },
@@ -350,7 +352,7 @@ const lifecycleScenarios = [
     data: 'Persona: Neha Shah, demo employee. Initial production API lacked the employee-safe route.',
     navigation: ['Log in as employee.', 'Open Performance.', 'Review personal performance dashboard, cycles, and goal/review status.'],
     expected: 'Employee should access only their own review data through a safe self-service endpoint.',
-    actual: 'Initial live API returned route not found. This branch adds `/performance/my-reviews` and routes employees to it.',
+    actual: 'Initial live API returned route not found, and the captured employee screenshot should be treated as baseline defect evidence rather than proof of the fix. This branch adds `/performance/my-reviews` and routes employees to it. Post-deploy visual QA must re-run and assert employee-only performance controls.',
     resultIds: ['PERF_API_03', 'VIS_PERF_EMP_01'],
     screenshotId: 'VIS_PERF_EMP_01',
   },
@@ -362,7 +364,7 @@ const lifecycleScenarios = [
     data: 'Persona: Neha Shah. Initial production API lacked an employee-safe exit case route.',
     navigation: ['Log in as employee.', 'Open Exit Management.', 'If no case exists, click Submit Resignation.', 'Enter reason, details, last working date, and notice period.', 'Track status after submission.'],
     expected: 'Employee should not need manager/HR permissions to submit or view their own resignation case.',
-    actual: 'Initial live API returned route not found. This branch adds `/exit/my-case` and employee resignation self-service UI.',
+    actual: 'Initial live API returned route not found, and the captured employee screenshot does not show Submit Resignation. That screenshot confirms the production gap; it is not proof of the branch fix. This branch adds `/exit/my-case` and employee resignation self-service UI. Post-deploy visual QA must re-run and assert Submit Resignation or My Resignation Status is visible.',
     resultIds: ['EXIT_API_02', 'VIS_EXIT_EMP_01'],
     screenshotId: 'VIS_EXIT_EMP_01',
   },
@@ -383,6 +385,7 @@ const lifecycleScenarios = [
 await renderReport({
   title: 'Attendance and Leave Management Narrative QA Report',
   subtitle: 'A storytelling walkthrough of the Attendance and Leave QA exercise, linking HR use cases, demo data, product navigation, expected behavior, actual evidence, and production hardening.',
+  verificationBoundary: 'Important boundary: live baseline screenshots and branch remediation are separated. Branch fixes require a post-deploy strict visual re-run before they are claimed as production-proven.',
   executiveNarrative: 'This document follows the daily employee and HR operating rhythm: employees record attendance and apply for leave, managers approve exceptions, HR intervenes where required, and leadership reviews company-level health. The first QA pass proved the core workflows and surfaced reporting and operational control gaps. Subsequent hardening connected mass updates and sync to backend persistence, added reporting UI, and fixed the department reporting query.',
   reportDir: attendanceLeaveDir,
   resultsPath: path.join(attendanceLeaveDir, 'results.json'),
@@ -394,7 +397,8 @@ await renderReport({
 await renderReport({
   title: 'HR Lifecycle Narrative QA Report',
   subtitle: 'A storytelling walkthrough of Onboarding, Probation, Performance Management, and Exit testing across HR, manager, employee, and admin personas.',
-  executiveNarrative: 'This document follows the broader employee lifecycle: hiring and onboarding, probation tracking, performance review cycles, and eventual exit/offboarding. The QA pass validated HR and manager workflows and revealed missing employee self-service surfaces for Performance and Exit. Those gaps have been repaired in this PR branch with employee-safe APIs and UI paths.',
+  verificationBoundary: 'Important boundary: the employee Performance and Exit screenshots were captured from live production before the branch fixes. They prove the production gap; they do not prove the fix until the branch is deployed and strict visual QA is re-run.',
+  executiveNarrative: 'This document follows the broader employee lifecycle: hiring and onboarding, probation tracking, performance review cycles, and eventual exit/offboarding. The QA pass validated several HR and manager workflows, but it also revealed missing employee self-service surfaces for Performance and Exit. Those gaps have been repaired in this PR branch with employee-safe APIs and UI paths; production proof requires deployment followed by strict visual re-verification.',
   reportDir: lifecycleDir,
   resultsPath: path.join(lifecycleDir, 'results.json'),
   htmlPath: path.join(lifecycleDir, 'hr-lifecycle-narrative-report.html'),
