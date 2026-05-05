@@ -233,6 +233,23 @@ export const getExitCase = async (req: Request, res: Response) => {
   }
 };
 
+export const getMyExitCase = async (req: Request, res: Response) => {
+  try {
+    const employeeId = req.user!.employeeId;
+    const tenantId = req.user!.tenantId;
+
+    if (!employeeId) {
+      return sendSuccess(res, null);
+    }
+
+    const exitCase = await exitService.getExitCaseByEmployee(employeeId, tenantId);
+    return sendSuccess(res, exitCase);
+  } catch (error: any) {
+    logger.error('Get my exit case error:', error);
+    return sendError(res, { code: 'FETCH_FAILED', message: error.message }, 400);
+  }
+};
+
 export const getAllExitCases = async (req: Request, res: Response) => {
   try {
     const tenantId = req.user!.tenantId;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import exitService from '../services/exitService';
 import ExitStatusChip from '../components/exit/ExitStatusChip';
@@ -34,17 +35,28 @@ interface ExitCase {
 
 const ModernExitDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [exitCases, setExitCases] = useState<ExitCase[]>([]);
   const [allExitCases, setAllExitCases] = useState<ExitCase[]>([]);
+  const [myExitCase, setMyExitCase] = useState<ExitCase | null>(null);
   const [pipeline, setPipeline] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [activeView, setActiveView] = useState<'all-cases' | 'pending' | 'active'>('all-cases');
   const [searchTerm, setSearchTerm] = useState('');
+  const [showResignationModal, setShowResignationModal] = useState(false);
+  const [resignationForm, setResignationForm] = useState({
+    resignationReason: '',
+    detailedReason: '',
+    lastWorkingDate: '',
+    noticePeriodDays: 30,
+  });
+
+  const isManagerOrHr = ['MANAGER', 'HR_ADMIN', 'SYSTEM_ADMIN'].includes(user?.role?.toString().toUpperCase() || '');
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (user) fetchData();
+  }, [user]);
 
   useEffect(() => {
     filterCases();
@@ -53,6 +65,14 @@ const ModernExitDashboard: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+
+      if (!isManagerOrHr) {
+        const myCaseRes = await exitService.getMyExitCase();
+        setMyExitCase(myCaseRes.data || null);
+        setAllExitCases([]);
+        setExitCases([]);
+        return;
+      }
 
       const [casesRes, statsRes] = await Promise.all([
         exitService.getAllExitCases({}),
@@ -76,6 +96,27 @@ const ModernExitDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmitResignation = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!resignationForm.resignationReason || !resignationForm.lastWorkingDate) {
+      alert('Reason and last working date are required');
+      return;
+    }
+
+    await exitService.submitResignation({
+      resignationType: 'voluntary',
+      resignationReason: resignationForm.resignationReason,
+      detailedReason: resignationForm.detailedReason,
+      lastWorkingDate: resignationForm.lastWorkingDate,
+      noticePeriodDays: Number(resignationForm.noticePeriodDays) || 30,
+    });
+
+    setShowResignationModal(false);
+    setResignationForm({ resignationReason: '', detailedReason: '', lastWorkingDate: '', noticePeriodDays: 30 });
+    await fetchData();
   };
 
   const filterCases = () => {
@@ -130,8 +171,8 @@ const ModernExitDashboard: React.FC = () => {
     const rows = exitCases.map(exitCase => [
       exitCase.employee?.email?.split('@')[0] || '-',
       `${exitCase.employee?.firstName} ${exitCase.employee?.lastName}`,
-      exitCase.employee?.department?.departmentName || '-',
-      exitCase.employee?.designation?.designationName || '-',
+      exitCase.employee?.department?.departmentName || (exitCase.employee?.department as any)?.name || '-',
+      exitCase.employee?.designation?.designationName || (exitCase.employee?.designation as any)?.name || '-',
       exitCase.currentState.replace(/_/g, ' ').toUpperCase(),
       exitCase.resignationSubmittedDate || '-',
       exitCase.lastWorkingDate || '-',
@@ -172,6 +213,7 @@ const ModernExitDashboard: React.FC = () => {
             </div>
 
             {/* Center: Tab Navigation */}
+            {isManagerOrHr && (
             <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg flex-shrink-0">
               <button
                 onClick={() => setActiveView('all-cases')}
@@ -209,19 +251,85 @@ const ModernExitDashboard: React.FC = () => {
                 <span>In Progress</span>
               </button>
             </div>
+            )}
 
             {/* Right: Action Buttons */}
             <div className="flex items-center space-x-1.5 flex-shrink-0">
-              <button
-                onClick={handleExportCSV}
-                className="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all flex items-center space-x-1.5 text-xs font-medium"
-              >
-                <DocumentTextIcon className="h-3.5 w-3.5" />
-                <span>Export</span>
-              </button>
+              {isManagerOrHr ? (
+                <button
+                  onClick={handleExportCSV}
+                  className="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all flex items-center space-x-1.5 text-xs font-medium"
+                >
+                  <DocumentTextIcon className="h-3.5 w-3.5" />
+                  <span>Export</span>
+                </button>
+              ) : !myExitCase ? (
+                <button
+                  onClick={() => setShowResignationModal(true)}
+                  className="px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all flex items-center space-x-1.5 text-xs font-medium"
+                >
+                  <PlusIcon className="h-3.5 w-3.5" />
+                  <span>Submit Resignation</span>
+                </button>
+              ) : null}
             </div>
           </div>
         </div>
+
+      {!isManagerOrHr && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          {loading ? (
+            <div className="py-10 text-center text-gray-500">Loading exit status...</div>
+          ) : myExitCase ? (
+            <div className="space-y-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">My Resignation Status</h2>
+                  <p className="text-sm text-gray-500">Track your exit request and pending offboarding steps.</p>
+                </div>
+                <ExitStatusChip state={myExitCase.currentState} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="rounded-lg bg-gray-50 p-4">
+                  <p className="text-xs font-medium text-gray-500">Reason</p>
+                  <p className="text-sm font-semibold text-gray-900 mt-1">{myExitCase.resignationType?.replace(/_/g, ' ').toUpperCase()}</p>
+                </div>
+                <div className="rounded-lg bg-gray-50 p-4">
+                  <p className="text-xs font-medium text-gray-500">Submitted</p>
+                  <p className="text-sm font-semibold text-gray-900 mt-1">
+                    {myExitCase.resignationSubmittedDate ? new Date(myExitCase.resignationSubmittedDate).toLocaleDateString('en-GB') : '-'}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-gray-50 p-4">
+                  <p className="text-xs font-medium text-gray-500">Last Working Day</p>
+                  <p className="text-sm font-semibold text-gray-900 mt-1">
+                    {myExitCase.lastWorkingDate ? new Date(myExitCase.lastWorkingDate).toLocaleDateString('en-GB') : '-'}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-gray-50 p-4">
+                  <p className="text-xs font-medium text-gray-500">Notice Period</p>
+                  <p className="text-sm font-semibold text-gray-900 mt-1">{myExitCase.noticePeriodDays || 30} days</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="py-10 text-center">
+              <ArrowRightOnRectangleIcon className="mx-auto h-12 w-12 text-gray-400" />
+              <h2 className="mt-3 text-lg font-semibold text-gray-900">No resignation submitted</h2>
+              <p className="mt-1 text-sm text-gray-500">Submit a resignation request to start the offboarding workflow.</p>
+              <button
+                onClick={() => setShowResignationModal(true)}
+                className="mt-5 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium"
+              >
+                Submit Resignation
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {isManagerOrHr && (
+      <>
 
       {/* Stats Cards - Matching Leave Management Design */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -395,8 +503,8 @@ const ModernExitDashboard: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900">{exitCase.employee.department?.departmentName || '-'}</div>
-                        <div className="text-xs text-gray-500">{exitCase.employee.designation?.designationName || '-'}</div>
+                        <div className="text-sm text-gray-900">{exitCase.employee.department?.departmentName || (exitCase.employee.department as any)?.name || '-'}</div>
+                        <div className="text-xs text-gray-500">{exitCase.employee.designation?.designationName || (exitCase.employee.designation as any)?.name || '-'}</div>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
                         {exitCase.resignationSubmittedDate ? new Date(exitCase.resignationSubmittedDate).toLocaleDateString('en-GB') : '-'}
@@ -414,6 +522,78 @@ const ModernExitDashboard: React.FC = () => {
           </div>
         )}
       </div>
+      </>
+      )}
+
+      {showResignationModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-xl rounded-xl bg-white shadow-xl">
+            <div className="border-b border-gray-200 px-6 py-4">
+              <h2 className="text-lg font-semibold text-gray-900">Submit Resignation</h2>
+              <p className="text-sm text-gray-500">This will create an exit case for manager/HR approval.</p>
+            </div>
+            <form onSubmit={handleSubmitResignation} className="space-y-4 p-6">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Reason *</label>
+                <input
+                  value={resignationForm.resignationReason}
+                  onChange={(e) => setResignationForm({ ...resignationForm, resignationReason: e.target.value })}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:ring-2 focus:ring-red-500"
+                  placeholder="Personal reasons, career move, relocation..."
+                  required
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Details</label>
+                <textarea
+                  value={resignationForm.detailedReason}
+                  onChange={(e) => setResignationForm({ ...resignationForm, detailedReason: e.target.value })}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:ring-2 focus:ring-red-500"
+                  rows={3}
+                  placeholder="Add any handover context or additional details"
+                />
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Last Working Date *</label>
+                  <input
+                    type="date"
+                    value={resignationForm.lastWorkingDate}
+                    onChange={(e) => setResignationForm({ ...resignationForm, lastWorkingDate: e.target.value })}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:ring-2 focus:ring-red-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Notice Period Days</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={resignationForm.noticePeriodDays}
+                    onChange={(e) => setResignationForm({ ...resignationForm, noticePeriodDays: Number(e.target.value) })}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-500 focus:ring-2 focus:ring-red-500"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowResignationModal(false)}
+                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       </div>
     </ModernLayout>
   );

@@ -15,6 +15,13 @@ router.get(
   performanceController.getAllReviews
 );
 
+// Get reviews for the logged-in employee
+router.get(
+  '/my-reviews',
+  authenticate,
+  performanceController.getMyReviews
+);
+
 // Get review by ID
 router.get(
   '/reviews/:reviewId',

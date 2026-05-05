@@ -7,7 +7,7 @@ export interface Attendance {
   date: Date;
   checkIn?: Date;
   checkOut?: Date;
-  status: 'present' | 'absent' | 'half-day' | 'on-leave';
+  status: 'present' | 'absent' | 'half_day' | 'on_leave' | 'holiday' | 'weekend';
   workMinutes?: number;
   isLate?: boolean;
   lateMinutes?: number;
@@ -130,7 +130,9 @@ class AttendanceService {
    */
   async bulkUpdate(
     updates: Array<{
-      attendanceId: string;
+      attendanceId?: string;
+      employeeId?: string;
+      date?: string;
       status?: string;
       checkIn?: string;
       checkOut?: string;

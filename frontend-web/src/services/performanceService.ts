@@ -104,6 +104,10 @@ const performanceService = {
     return api.get<{ reviews: PerformanceReview[]; stats: any }>('/performance/reviews', { params: filters });
   },
 
+  async getMyReviews(filters?: { cycle?: string; status?: string }) {
+    return api.get<{ reviews: PerformanceReview[]; stats: any }>('/performance/my-reviews', { params: filters });
+  },
+
   // Get review by ID
   async getReviewById(reviewId: string) {
     return api.get<PerformanceReview>(`/performance/reviews/${reviewId}`);

@@ -13,6 +13,10 @@ export const exitService = {
     return api.get(`/exit/cases/${exitId}`);
   },
 
+  async getMyExitCase() {
+    return api.get('/exit/my-case');
+  },
+
   async approveResignation(exitId: string, notes?: string) {
     return api.post(`/exit/cases/${exitId}/approve`, { notes });
   },

@@ -522,6 +522,14 @@ export class ExitService {
     });
   }
 
+  async getExitCaseByEmployee(employeeId: string, tenantId: string): Promise<ExitCase | null> {
+    return this.exitCaseRepo.findOne({
+      where: { employeeId, tenantId },
+      relations: ['employee', 'employee.department', 'employee.designation'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async getAllExitCases(tenantId: string, filters?: { state?: string }): Promise<ExitCase[]> {
     const query: any = { tenantId };
 
