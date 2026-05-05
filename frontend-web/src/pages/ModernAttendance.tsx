@@ -4,7 +4,7 @@ import { UserRole } from '../types';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import { ApplyLeaveModal } from '../components/leave/ApplyLeaveModal';
 import { EmptyState } from '../components/common/EmptyState';
-import attendanceService, { Attendance, TimeEntryEdit, TimeEntryEditStatus } from '../services/attendanceService';
+import attendanceService, { Attendance, AttendanceStatistics, DepartmentAttendance, TimeEntryEdit, TimeEntryEditStatus } from '../services/attendanceService';
 import leaveService, { LeaveRequest as APILeaveRequest } from '../services/leaveService';
 import employeeService from '../services/employeeService';
 import {
@@ -27,7 +27,7 @@ import {
 
 export default function ModernAttendance() {
   const { user } = useAuth();
-  const [activeView, setActiveView] = useState<'my-attendance' | 'team' | 'company' | 'requests'>('my-attendance');
+  const [activeView, setActiveView] = useState<'my-attendance' | 'team' | 'company' | 'requests' | 'reports'>('my-attendance');
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
@@ -102,8 +102,16 @@ export default function ModernAttendance() {
   }>>([]);
   const [showSyncResults, setShowSyncResults] = useState(false);
   const [syncResults, setSyncResults] = useState({ total: 0, successful: 0, failed: 0 });
+  const [syncSaving, setSyncSaving] = useState(false);
 
-  // Mock biometric devices
+  const [reportStartDate, setReportStartDate] = useState(`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-01`);
+  const [reportEndDate, setReportEndDate] = useState(new Date().toISOString().split('T')[0]);
+  const [attendanceStats, setAttendanceStats] = useState<AttendanceStatistics | null>(null);
+  const [departmentAttendance, setDepartmentAttendance] = useState<DepartmentAttendance[]>([]);
+  const [leaveStats, setLeaveStats] = useState<any | null>(null);
+  const [reportsLoading, setReportsLoading] = useState(false);
+
+  // Device connectors are listed as configured integration slots. They do not fabricate data.
   const biometricDevices = [
     { id: 'device-1', name: 'Main Entrance - ZKTeco K40', location: 'Building A' },
     { id: 'device-2', name: 'Office Floor - Suprema BioStation', location: 'Building B' },
@@ -113,7 +121,7 @@ export default function ModernAttendance() {
   useEffect(() => {
     fetchData();
     fetchEmployees();
-  }, [user, selectedDate, selectedMonth, activeView]);
+  }, [user, selectedDate, selectedMonth, activeView, reportStartDate, reportEndDate]);
 
   // Set initial view only on mount
   useEffect(() => {
@@ -138,6 +146,22 @@ export default function ModernAttendance() {
       console.error('Error fetching employees:', error);
       // Don't show error notification - employees list is optional for mass update feature
     }
+  };
+
+  const isHROrAdmin = ['HR_ADMIN', 'SYSTEM_ADMIN'].includes(user?.role?.toString().toUpperCase() || '');
+
+  const getNormalizedStatus = (status: string) => status.replace('-', '_');
+
+  const getStatusLabel = (status: string) => getNormalizedStatus(status).replace('_', ' ').toUpperCase();
+
+  const buildDateTime = (date: string, time?: string) => {
+    if (!time) return undefined;
+    const normalizedTime = time.length === 5 ? `${time}:00` : time;
+    return new Date(`${date}T${normalizedTime}`).toISOString();
+  };
+
+  const getSelectedMassUpdateEmployees = () => {
+    return massUpdateFormData.applyToAll ? employees : employees.filter((employee) => selectedEmployees.includes(employee.id));
   };
 
   const fetchData = async () => {
@@ -211,7 +235,7 @@ export default function ModernAttendance() {
             present: filteredCompanyData.filter(a => a.status === 'present').length,
             absent: filteredCompanyData.filter(a => a.status === 'absent').length,
             late: filteredCompanyData.filter(a => a.isLate).length,
-            onLeave: filteredCompanyData.filter(a => a.status === 'on-leave').length,
+            onLeave: filteredCompanyData.filter(a => a.status === 'on_leave').length,
           });
 
           // For managers viewing company tab, use same data for team stats
@@ -221,7 +245,7 @@ export default function ModernAttendance() {
             present: filteredCompanyData.filter(a => a.status === 'present').length,
             absent: filteredCompanyData.filter(a => a.status === 'absent').length,
             late: filteredCompanyData.filter(a => a.isLate).length,
-            onLeave: filteredCompanyData.filter(a => a.status === 'on-leave').length,
+            onLeave: filteredCompanyData.filter(a => a.status === 'on_leave').length,
           });
         } else if (user.role?.toString().toUpperCase() === 'MANAGER') {
           // Manager: Get team attendance (backend filters by reporting hierarchy)
@@ -236,8 +260,24 @@ export default function ModernAttendance() {
             present: teamData.filter(a => a.status === 'present').length,
             absent: teamData.filter(a => a.status === 'absent').length,
             late: teamData.filter(a => a.isLate).length,
-            onLeave: teamData.filter(a => a.status === 'on-leave').length,
+            onLeave: teamData.filter(a => a.status === 'on_leave').length,
           });
+        }
+      }
+
+      if (activeView === 'reports' && isHROrAdmin) {
+        setReportsLoading(true);
+        try {
+          const [attendanceSummary, departmentSummary, leaveSummary] = await Promise.all([
+            attendanceService.getStatistics(reportStartDate, reportEndDate),
+            attendanceService.getByDepartment(reportStartDate, reportEndDate),
+            leaveService.getStatistics(reportStartDate, reportEndDate),
+          ]);
+          setAttendanceStats(attendanceSummary);
+          setDepartmentAttendance(departmentSummary);
+          setLeaveStats(leaveSummary);
+        } finally {
+          setReportsLoading(false);
         }
       }
 
@@ -368,21 +408,49 @@ export default function ModernAttendance() {
     }
   };
 
-  const handleMassUpdate = (e: React.FormEvent) => {
+  const handleMassUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const count = massUpdateFormData.applyToAll ? employees.length : selectedEmployees.length;
+    const targetEmployees = getSelectedMassUpdateEmployees();
+    const count = targetEmployees.length;
 
-    if (!massUpdateFormData.applyToAll && selectedEmployees.length === 0) {
+    if (!massUpdateFormData.date) {
+      showNotification('Please select an attendance date', 'error');
+      return;
+    }
+
+    if (!massUpdateFormData.applyToAll && count === 0) {
       showNotification('Please select at least one employee', 'error');
       return;
     }
 
-    // Simulate API call
-    showNotification(`Mass attendance update completed for ${count} employee(s)`, 'success');
-    setShowMassUpdateModal(false);
-    setMassUpdateFormData({ date: '', status: 'present', reason: '', applyToAll: false });
-    setSelectedEmployees([]);
+    try {
+      const existingRecords = await attendanceService.getCompanyWide(massUpdateFormData.date, massUpdateFormData.date);
+      const recordsByEmployeeId = new Map(existingRecords.map((record) => [record.employeeId, record]));
+      const status = getNormalizedStatus(massUpdateFormData.status);
+
+      await attendanceService.bulkUpdate(
+        targetEmployees.map((employee) => {
+          const existing = recordsByEmployeeId.get(employee.id);
+          return {
+            attendanceId: existing?.attendanceId,
+            employeeId: employee.id,
+            date: massUpdateFormData.date,
+            status,
+            notes: massUpdateFormData.reason || `Mass update by ${user?.fullName || user?.email || 'HR'}`,
+          };
+        }),
+        massUpdateFormData.reason || `Mass attendance update for ${massUpdateFormData.date}`
+      );
+
+      showNotification(`Mass attendance update completed for ${count} employee(s)`, 'success');
+      setShowMassUpdateModal(false);
+      setMassUpdateFormData({ date: '', status: 'present', reason: '', applyToAll: false });
+      setSelectedEmployees([]);
+      await fetchData();
+    } catch (error: any) {
+      showNotification(error.message || 'Failed to update attendance records', 'error');
+    }
   };
 
   const toggleEmployeeSelection = (employeeId: string) => {
@@ -403,21 +471,9 @@ export default function ModernAttendance() {
 
   const handleDeviceSelection = (deviceId: string) => {
     setSyncFormData({ ...syncFormData, device: deviceId });
-
-    // Simulate fetching data from device
     if (deviceId) {
-      setTimeout(() => {
-        const mockData = employees.slice(0, 20).map(emp => ({
-          employeeCode: emp.code,
-          employeeName: emp.name,
-          checkIn: `09:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
-          checkOut: `18:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
-          status: Math.random() > 0.1 ? 'present' : 'absent',
-        }));
-        setSyncPreviewData(mockData);
-      }, 1000);
-    } else {
       setSyncPreviewData([]);
+      showNotification('Device connector is not configured yet. Use file upload for production sync.', 'error');
     }
   };
 
@@ -430,7 +486,7 @@ export default function ModernAttendance() {
       const text = event.target?.result as string;
       const lines = text.split('\n');
 
-      // Parse CSV (assuming format: EmployeeCode,Name,CheckIn,CheckOut,Status)
+      // Parse CSV format: EmployeeCode,Name,CheckIn,CheckOut,Status
       const data = lines.slice(1).filter(line => line.trim()).map(line => {
         const [employeeCode, employeeName, checkIn, checkOut, status] = line.split(',');
         return {
@@ -438,7 +494,7 @@ export default function ModernAttendance() {
           employeeName: employeeName?.trim() || '',
           checkIn: checkIn?.trim() || '',
           checkOut: checkOut?.trim() || '',
-          status: status?.trim() || 'present',
+          status: getNormalizedStatus(status?.trim() || 'present'),
         };
       });
 
@@ -447,30 +503,46 @@ export default function ModernAttendance() {
     reader.readAsText(file);
   };
 
-  const handleSyncSave = () => {
+  const handleSyncSave = async () => {
     if (syncPreviewData.length === 0) {
       showNotification('No attendance data to sync', 'error');
       return;
     }
 
-    // Simulate API call to save attendance
-    setTimeout(() => {
-      const total = employees.length;
-      const successful = syncPreviewData.length;
-      const failed = Math.max(0, total - successful);
+    const employeesByCode = new Map(employees.map((employee) => [employee.code.toLowerCase(), employee]));
+    const validRows = syncPreviewData
+      .map((record) => ({ record, employee: employeesByCode.get(record.employeeCode.toLowerCase()) }))
+      .filter((row) => row.employee);
+    const failed = syncPreviewData.length - validRows.length;
 
-      setSyncResults({ total, successful, failed });
+    if (validRows.length === 0) {
+      showNotification('No rows match active employees. Check employee codes in the file.', 'error');
+      return;
+    }
+
+    setSyncSaving(true);
+    try {
+      await attendanceService.bulkUpdate(
+        validRows.map(({ record, employee }) => ({
+          employeeId: employee!.id,
+          date: syncFormData.date,
+          status: getNormalizedStatus(record.status),
+          checkIn: buildDateTime(syncFormData.date, record.checkIn),
+          checkOut: buildDateTime(syncFormData.date, record.checkOut),
+          notes: `Synced from ${syncFormData.uploadMethod === 'file' ? 'uploaded file' : 'configured device connector'}`,
+        })),
+        `Attendance sync ${syncFormData.uploadMethod} import for ${syncFormData.date}`
+      );
+
+      setSyncResults({ total: syncPreviewData.length, successful: validRows.length, failed });
       setShowSyncResults(true);
-
-      // Reset after showing results
-      setTimeout(() => {
-        setShowSyncModal(false);
-        setShowSyncResults(false);
-        setSyncPreviewData([]);
-        setSyncFormData({ date: new Date().toISOString().split('T')[0], device: '', uploadMethod: 'device' });
-        showNotification(`Attendance synced: ${successful} successful, ${failed} failed`, successful > 0 ? 'success' : 'error');
-      }, 3000);
-    }, 1000);
+      showNotification(`Attendance synced: ${validRows.length} successful, ${failed} failed`, failed === 0 ? 'success' : 'error');
+      await fetchData();
+    } catch (error: any) {
+      showNotification(error.message || 'Failed to sync attendance records', 'error');
+    } finally {
+      setSyncSaving(false);
+    }
   };
 
   const handleExportCSV = () => {
@@ -506,6 +578,46 @@ export default function ModernAttendance() {
     showNotification('Attendance data exported successfully', 'success');
   };
 
+  const handleExportReportCSV = () => {
+    const attendanceRows = [
+      ['Attendance Summary', 'Value'],
+      ['Total Records', attendanceStats?.totalRecords || 0],
+      ['Present', attendanceStats?.present || 0],
+      ['Absent', attendanceStats?.absent || 0],
+      ['Half Day', attendanceStats?.halfDay || 0],
+      ['On Leave', attendanceStats?.onLeave || 0],
+      ['Late', attendanceStats?.late || 0],
+      ['Average Work Hours', attendanceStats?.averageWorkMinutes ? (attendanceStats.averageWorkMinutes / 60).toFixed(2) : '0'],
+      [],
+      ['Department', 'Total Records', 'Present', 'Absent', 'Total Work Hours'],
+      ...departmentAttendance.map((department) => [
+        department.departmentName || 'Unassigned',
+        department.totalRecords,
+        department.presentCount,
+        department.absentCount,
+        department.totalWorkMinutes ? (Number(department.totalWorkMinutes) / 60).toFixed(2) : '0',
+      ]),
+      [],
+      ['Leave Summary', 'Value'],
+      ['Total Requests', leaveStats?.total || 0],
+      ['Approved', leaveStats?.approved || 0],
+      ['Pending', leaveStats?.pending || 0],
+      ['Rejected', leaveStats?.rejected || 0],
+      ['Cancelled', leaveStats?.cancelled || 0],
+      ['Total Days', leaveStats?.totalDays || 0],
+    ];
+
+    const csvContent = attendanceRows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `attendance_leave_report_${reportStartDate}_to_${reportEndDate}.csv`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+    showNotification('Report exported successfully', 'success');
+  };
+
   const showNotification = (message: string, type: 'success' | 'error') => {
     setNotification({ show: true, message, type });
     setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 3000);
@@ -515,11 +627,12 @@ export default function ModernAttendance() {
     const badges = {
       present: 'badge-success',
       absent: 'badge-danger',
-      'half-day': 'badge-warning',
-      'on-leave': 'badge-primary',
+      half_day: 'badge-warning',
+      on_leave: 'badge-primary',
+      holiday: 'badge-gray',
       weekend: 'badge-gray',
     };
-    return badges[status as keyof typeof badges] || 'badge-gray';
+    return badges[getNormalizedStatus(status) as keyof typeof badges] || 'badge-gray';
   };
 
   const formatDuration = (minutes: number) => {
@@ -552,7 +665,8 @@ export default function ModernAttendance() {
                 <h1 className="text-lg font-bold text-gray-900">Attendance</h1>
                 <p className="text-xs text-gray-500">
                   {activeView === 'my-attendance' ? 'My records' :
-                   activeView === 'team' ? 'Team overview' : 'Pending requests'}
+                   activeView === 'team' ? 'Team overview' :
+                   activeView === 'reports' ? 'Monthly reports' : 'Pending requests'}
                 </p>
               </div>
             </div>
@@ -601,6 +715,18 @@ export default function ModernAttendance() {
                       </span>
                     )}
                   </button>
+
+                  {isHROrAdmin && (
+                    <button
+                      onClick={() => setActiveView('reports')}
+                      className={`shrink-0 px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 ${
+                        activeView === 'reports' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      <ChartBarIcon className="h-4 w-4" />
+                      <span>Reports</span>
+                    </button>
+                  )}
                 </>
               )}
             </div>
@@ -624,6 +750,24 @@ export default function ModernAttendance() {
                   onChange={(e) => setSelectedDate(e.target.value)}
                   className="min-w-0 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
+              )}
+
+              {activeView === 'reports' && (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="date"
+                    value={reportStartDate}
+                    onChange={(e) => setReportStartDate(e.target.value)}
+                    className="min-w-0 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
+                  <span className="text-xs text-gray-500">to</span>
+                  <input
+                    type="date"
+                    value={reportEndDate}
+                    onChange={(e) => setReportEndDate(e.target.value)}
+                    className="min-w-0 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
+                </div>
               )}
 
               {/* Compact Actions */}
@@ -657,6 +801,17 @@ export default function ModernAttendance() {
                 >
                   <ArrowDownTrayIcon className="h-4 w-4" />
                   <span>Export</span>
+                </button>
+              )}
+
+              {activeView === 'reports' && (
+                <button
+                  onClick={handleExportReportCSV}
+                  className="px-2.5 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center space-x-1 text-xs font-medium"
+                  title="Export report to CSV"
+                >
+                  <ArrowDownTrayIcon className="h-4 w-4" />
+                  <span>Export Report</span>
                 </button>
               )}
             </div>
@@ -840,7 +995,7 @@ export default function ModernAttendance() {
                                 </td>
                                 <td className="px-3 py-2">
                                   <span className={`badge ${getStatusBadge(record.status)} text-xs`}>
-                                    {record.status.toUpperCase().replace('-', ' ')}
+                                    {getStatusLabel(record.status)}
                                   </span>
                                 </td>
                                 <td className="px-3 py-2 text-sm">
@@ -948,16 +1103,16 @@ export default function ModernAttendance() {
               </div>
 
               <div
-                onClick={() => setStatusFilter('on-leave')}
+                onClick={() => setStatusFilter('on_leave')}
                 className={`bg-white rounded-xl shadow-sm border-2 p-3 cursor-pointer transition-all hover:shadow-md ${
-                  statusFilter === 'on-leave' ? 'border-purple-400 ring-2 ring-purple-200' : 'border-gray-200'
+                  statusFilter === 'on_leave' ? 'border-purple-400 ring-2 ring-purple-200' : 'border-gray-200'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <p className="text-xs font-medium text-gray-600 mb-1">On Leave</p>
                     <p className="text-2xl font-bold text-purple-600">{teamStats.onLeave}</p>
-                    {statusFilter === 'on-leave' && (
+                    {statusFilter === 'on_leave' && (
                       <p className="text-xs text-purple-600 mt-1">● Filtering</p>
                     )}
                   </div>
@@ -1012,7 +1167,7 @@ export default function ModernAttendance() {
                               </td>
                               <td className="px-3 py-2">
                                 <span className={`badge ${getStatusBadge(record.status)} text-xs`}>
-                                  {record.status.toUpperCase().replace('-', ' ')}
+                                  {getStatusLabel(record.status)}
                                 </span>
                                 {record.isLate && <span className="ml-2 text-xs text-danger-600">Late</span>}
                               </td>
@@ -1113,16 +1268,16 @@ export default function ModernAttendance() {
               </div>
 
               <div
-                onClick={() => setStatusFilter('on-leave')}
+                onClick={() => setStatusFilter('on_leave')}
                 className={`bg-white rounded-xl shadow-sm border-2 p-3 cursor-pointer transition-all hover:shadow-md ${
-                  statusFilter === 'on-leave' ? 'border-purple-400 ring-2 ring-purple-200' : 'border-gray-200'
+                  statusFilter === 'on_leave' ? 'border-purple-400 ring-2 ring-purple-200' : 'border-gray-200'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <p className="text-xs font-medium text-gray-600 mb-1">On Leave</p>
                     <p className="text-2xl font-bold text-purple-600">{companyStats.onLeave}</p>
-                    {statusFilter === 'on-leave' && (
+                    {statusFilter === 'on_leave' && (
                       <p className="text-xs text-purple-600 mt-1">● Filtering</p>
                     )}
                   </div>
@@ -1179,7 +1334,7 @@ export default function ModernAttendance() {
                               </td>
                               <td className="px-3 py-2">
                                 <span className={`badge ${getStatusBadge(record.status)} text-xs`}>
-                                  {record.status.toUpperCase().replace('-', ' ')}
+                                  {getStatusLabel(record.status)}
                                 </span>
                                 {record.isLate && <span className="ml-2 text-xs text-danger-600">Late</span>}
                               </td>
@@ -1191,6 +1346,122 @@ export default function ModernAttendance() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* REPORTS VIEW (HR/Admin) */}
+        {activeView === 'reports' && isHROrAdmin && (
+          <div className="space-y-4">
+            {reportsLoading ? (
+              <div className="card">
+                <div className="card-body p-8 text-center text-sm text-gray-500">Loading reports...</div>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3">
+                    <p className="text-xs font-medium text-gray-600 mb-1">Records</p>
+                    <p className="text-2xl font-bold text-gray-900">{attendanceStats?.totalRecords || 0}</p>
+                  </div>
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3">
+                    <p className="text-xs font-medium text-gray-600 mb-1">Present</p>
+                    <p className="text-2xl font-bold text-success-600">{attendanceStats?.present || 0}</p>
+                  </div>
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3">
+                    <p className="text-xs font-medium text-gray-600 mb-1">Absent</p>
+                    <p className="text-2xl font-bold text-danger-600">{attendanceStats?.absent || 0}</p>
+                  </div>
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3">
+                    <p className="text-xs font-medium text-gray-600 mb-1">Late</p>
+                    <p className="text-2xl font-bold text-warning-600">{attendanceStats?.late || 0}</p>
+                  </div>
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3">
+                    <p className="text-xs font-medium text-gray-600 mb-1">On Leave</p>
+                    <p className="text-2xl font-bold text-purple-600">{attendanceStats?.onLeave || 0}</p>
+                  </div>
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3">
+                    <p className="text-xs font-medium text-gray-600 mb-1">Avg Hours</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {attendanceStats?.averageWorkMinutes ? (attendanceStats.averageWorkMinutes / 60).toFixed(1) : '0.0'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  <div className="card lg:col-span-2">
+                    <div className="card-body p-0">
+                      <div className="p-4 border-b border-gray-200">
+                        <h3 className="text-sm font-bold text-gray-900">Department Attendance</h3>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Department</th>
+                              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Records</th>
+                              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Present</th>
+                              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Absent</th>
+                              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Hours</th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {departmentAttendance.length === 0 ? (
+                              <tr>
+                                <td colSpan={5} className="px-3 py-8 text-center text-sm text-gray-500">No department attendance found for this period</td>
+                              </tr>
+                            ) : (
+                              departmentAttendance.map((department) => (
+                                <tr key={department.departmentId || department.departmentName || 'unassigned'}>
+                                  <td className="px-3 py-2 text-sm font-medium text-gray-900">{department.departmentName || 'Unassigned'}</td>
+                                  <td className="px-3 py-2 text-sm text-gray-700">{department.totalRecords}</td>
+                                  <td className="px-3 py-2 text-sm text-success-700">{department.presentCount}</td>
+                                  <td className="px-3 py-2 text-sm text-danger-700">{department.absentCount}</td>
+                                  <td className="px-3 py-2 text-sm text-gray-700">
+                                    {department.totalWorkMinutes ? (Number(department.totalWorkMinutes) / 60).toFixed(1) : '0.0'}
+                                  </td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="card">
+                    <div className="card-body p-4">
+                      <h3 className="text-sm font-bold text-gray-900 mb-3">Leave Summary</h3>
+                      <div className="grid grid-cols-2 gap-2 mb-4">
+                        <div className="rounded-lg bg-gray-50 p-3">
+                          <p className="text-xs text-gray-600">Total</p>
+                          <p className="text-xl font-bold text-gray-900">{leaveStats?.total || 0}</p>
+                        </div>
+                        <div className="rounded-lg bg-green-50 p-3">
+                          <p className="text-xs text-green-700">Approved</p>
+                          <p className="text-xl font-bold text-green-700">{leaveStats?.approved || 0}</p>
+                        </div>
+                        <div className="rounded-lg bg-orange-50 p-3">
+                          <p className="text-xs text-orange-700">Pending</p>
+                          <p className="text-xl font-bold text-orange-700">{leaveStats?.pending || 0}</p>
+                        </div>
+                        <div className="rounded-lg bg-red-50 p-3">
+                          <p className="text-xs text-red-700">Rejected</p>
+                          <p className="text-xl font-bold text-red-700">{leaveStats?.rejected || 0}</p>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        {Object.entries(leaveStats?.byType || {}).map(([type, days]) => (
+                          <div key={type} className="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2">
+                            <span className="text-sm capitalize text-gray-700">{type}</span>
+                            <span className="text-sm font-bold text-gray-900">{Number(days).toFixed(1)} days</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
 
@@ -1511,8 +1782,8 @@ export default function ModernAttendance() {
                   >
                     <option value="present">Present</option>
                     <option value="absent">Absent</option>
-                    <option value="half-day">Half Day</option>
-                    <option value="on-leave">On Leave</option>
+                    <option value="half_day">Half Day</option>
+                    <option value="on_leave">On Leave</option>
                     <option value="weekend">Weekend</option>
                   </select>
                 </div>
@@ -1659,6 +1930,7 @@ export default function ModernAttendance() {
                   onClick={() => {
                     setShowSyncModal(false);
                     setSyncPreviewData([]);
+                    setShowSyncResults(false);
                     setSyncFormData({ date: new Date().toISOString().split('T')[0], device: '', uploadMethod: 'device' });
                   }}
                   className="text-gray-400 hover:text-gray-600"
@@ -1701,7 +1973,7 @@ export default function ModernAttendance() {
                         </div>
                         <div className="text-left flex-1">
                           <p className="text-xs font-medium text-gray-900">Biometric Device</p>
-                          <p className="text-[10px] text-gray-500">Connect to device</p>
+                          <p className="text-[10px] text-gray-500">Connector required</p>
                         </div>
                       </div>
                     </button>
@@ -1749,7 +2021,7 @@ export default function ModernAttendance() {
                     {syncFormData.device && (
                       <p className="text-[10px] text-blue-600 mt-1 flex items-center">
                         <CheckIcon className="h-3 w-3 mr-1" />
-                        Connected. Fetching data...
+                        Device connector is not configured. Upload a CSV file to sync production attendance.
                       </p>
                     )}
                   </div>
@@ -1824,7 +2096,7 @@ export default function ModernAttendance() {
                           <p>Success: <span className="font-bold text-green-600">{syncResults.successful}</span></p>
                           <p>Failed: <span className="font-bold text-red-600">{syncResults.failed}</span></p>
                         </div>
-                        <p className="text-[10px] text-green-700 mt-1.5">Closing automatically...</p>
+                        <p className="text-[10px] text-green-700 mt-1.5">Review the result and close when ready.</p>
                       </div>
                     </div>
                   </div>
@@ -1837,6 +2109,7 @@ export default function ModernAttendance() {
                     onClick={() => {
                       setShowSyncModal(false);
                       setSyncPreviewData([]);
+                      setShowSyncResults(false);
                       setSyncFormData({ date: new Date().toISOString().split('T')[0], device: '', uploadMethod: 'device' });
                     }}
                     className="btn btn-sm btn-secondary text-xs px-3 py-1.5"
@@ -1846,11 +2119,11 @@ export default function ModernAttendance() {
                   <button
                     type="button"
                     onClick={handleSyncSave}
-                    disabled={syncPreviewData.length === 0 || showSyncResults}
+                    disabled={syncPreviewData.length === 0 || syncSaving}
                     className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed text-xs px-3 py-1.5"
                   >
                     <CheckIcon className="h-3.5 w-3.5 mr-1" />
-                    Save ({syncPreviewData.length})
+                    {syncSaving ? 'Saving...' : `Save (${syncPreviewData.length})`}
                   </button>
                 </div>
               </div>

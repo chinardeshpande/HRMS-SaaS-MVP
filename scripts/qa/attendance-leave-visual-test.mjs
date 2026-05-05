@@ -314,6 +314,9 @@ async function visualRun() {
         await page.goto(`${BASE_URL}/leave`, { waitUntil: 'domcontentloaded' });
         await clickByText(page, 'Team Approvals');
         await capture(page, '12-hr-leave-all-requests.png', 'VIS_LEAVE_HR_01', 'HR all leave requests and intervention view', persona);
+        await page.goto(`${BASE_URL}/attendance`, { waitUntil: 'domcontentloaded' });
+        await clickByText(page, 'Reports');
+        await capture(page, '15-hr-attendance-leave-reports.png', 'VIS_REPORT_HR_01', 'HR attendance and leave reports view', persona);
       }
 
       if (persona === 'admin') {

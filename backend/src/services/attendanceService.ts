@@ -184,7 +184,9 @@ export class AttendanceService {
   async bulkUpdateAttendance(
     tenantId: string,
     attendanceUpdates: Array<{
-      attendanceId: string;
+      attendanceId?: string;
+      employeeId?: string;
+      date?: Date | string;
       status?: AttendanceStatus;
       checkIn?: Date;
       checkOut?: Date;
@@ -200,9 +202,35 @@ export class AttendanceService {
     const results = [];
 
     for (const update of attendanceUpdates) {
-      const attendance = await this.attendanceRepository.findOne({
-        where: { attendanceId: update.attendanceId, tenantId },
-      });
+      let attendance: Attendance | null = null;
+
+      if (update.attendanceId) {
+        attendance = await this.attendanceRepository.findOne({
+          where: { attendanceId: update.attendanceId, tenantId },
+        });
+      } else if (update.employeeId && update.date) {
+        const date = this.parseDateOnly(update.date, 'date');
+        const employee = await this.employeeRepository.findOne({
+          where: { employeeId: update.employeeId, tenantId },
+        });
+
+        if (!employee) {
+          throw new Error(`Employee not found for attendance update: ${update.employeeId}`);
+        }
+
+        attendance = await this.attendanceRepository.findOne({
+          where: { employeeId: update.employeeId, tenantId, date },
+        });
+
+        if (!attendance) {
+          attendance = this.attendanceRepository.create({
+            employeeId: update.employeeId,
+            tenantId,
+            date,
+            status: AttendanceStatus.ABSENT,
+          });
+        }
+      }
 
       if (attendance) {
         const checkIn = update.checkIn
@@ -212,7 +240,7 @@ export class AttendanceService {
           ? this.parseDate(update.checkOut, 'checkOut')
           : undefined;
 
-        if (update.status) attendance.status = update.status;
+        if (update.status) attendance.status = this.normalizeStatus(update.status);
         if (checkIn) attendance.checkIn = checkIn;
         if (checkOut) attendance.checkOut = checkOut;
         if (update.notes) attendance.notes = update.notes;
@@ -226,6 +254,8 @@ export class AttendanceService {
 
         const saved = await this.attendanceRepository.save(attendance);
         results.push(saved);
+      } else {
+        throw new Error('Attendance update must include either attendanceId or employeeId with date');
       }
     }
 
@@ -257,7 +287,7 @@ export class AttendanceService {
       ? this.parseDate(updates.checkOut, 'checkOut')
       : undefined;
 
-    if (updates.status) attendance.status = updates.status;
+    if (updates.status) attendance.status = this.normalizeStatus(updates.status);
     if (checkIn) attendance.checkIn = checkIn;
     if (checkOut) attendance.checkOut = checkOut;
     if (updates.notes) attendance.notes = updates.notes;
@@ -617,6 +647,22 @@ export class AttendanceService {
     }
 
     return date;
+  }
+
+  private parseDateOnly(value: Date | string, fieldName: string): Date {
+    const date = this.parseDate(value, fieldName);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+
+  private normalizeStatus(status: AttendanceStatus | string): AttendanceStatus {
+    const normalized = String(status).replace('-', '_') as AttendanceStatus;
+
+    if (!Object.values(AttendanceStatus).includes(normalized)) {
+      throw new Error(`Invalid attendance status: ${status}`);
+    }
+
+    return normalized;
   }
 
   private recalculateWorkMinutes(attendance: Attendance) {
