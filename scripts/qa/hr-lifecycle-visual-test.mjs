@@ -199,7 +199,7 @@ async function setupData() {
 
   await tryStep('EXIT_API_02', 'Employee exit self-service endpoint availability', 'employee', async () => {
     const result = await api('GET', '/exit/my-case', undefined, 'employee', true);
-    if (result.failed) {
+    if (result?.failed) {
       record('EXIT_API_02', 'Employee exit self-service endpoint availability', 'employee', 'failed', 'GET /exit/my-case', result.message);
       return null;
     }

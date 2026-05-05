@@ -26,6 +26,7 @@ export default function ModernPerformanceDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState({ total: 0, goalSetting: 0, midYear: 0, annualReview: 0, rating: 0 });
+  const isEmployeeOnly = user?.role?.toString().toUpperCase() === 'EMPLOYEE';
 
   useEffect(() => {
     if (user) fetchReviews();
@@ -40,7 +41,6 @@ export default function ModernPerformanceDashboard() {
       setLoading(true);
       setError(null);
 
-      const isEmployeeOnly = user?.role?.toString().toUpperCase() === 'EMPLOYEE';
       const response = isEmployeeOnly
         ? await performanceService.getMyReviews()
         : await performanceService.getAllReviews();
@@ -156,8 +156,14 @@ export default function ModernPerformanceDashboard() {
                 <ChartBarIcon className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Performance Management</h1>
-                <p className="text-sm text-gray-500">Manage employee performance reviews and ratings</p>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {isEmployeeOnly ? 'My Performance' : 'Performance Management'}
+                </h1>
+                <p className="text-sm text-gray-500">
+                  {isEmployeeOnly
+                    ? 'Review your performance cycles, goals, and ratings'
+                    : 'Manage employee performance reviews and ratings'}
+                </p>
               </div>
             </div>
 
@@ -172,7 +178,7 @@ export default function ModernPerformanceDashboard() {
                 }`}
               >
                 <ClipboardDocumentListIcon className="h-4 w-4" />
-                <span>All Reviews</span>
+                <span>{isEmployeeOnly ? 'My Reviews' : 'All Reviews'}</span>
               </button>
 
               <button
@@ -184,7 +190,7 @@ export default function ModernPerformanceDashboard() {
                 }`}
               >
                 <UserGroupIcon className="h-4 w-4" />
-                <span>Pending</span>
+                <span>{isEmployeeOnly ? 'My Pending Items' : 'Pending'}</span>
               </button>
 
               <button
@@ -196,7 +202,7 @@ export default function ModernPerformanceDashboard() {
                 }`}
               >
                 <TrophyIcon className="h-4 w-4" />
-                <span>Due Reviews</span>
+                <span>{isEmployeeOnly ? 'My Due Reviews' : 'Due Reviews'}</span>
               </button>
             </div>
 
@@ -223,7 +229,9 @@ export default function ModernPerformanceDashboard() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-gray-600 mb-1">Total Reviews</p>
+                <p className="text-xs font-medium text-gray-600 mb-1">
+                  {isEmployeeOnly ? 'My Reviews' : 'Total Reviews'}
+                </p>
                 <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
               </div>
               <div className="p-2 bg-blue-100 rounded-lg">
@@ -305,7 +313,7 @@ export default function ModernPerformanceDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <input
             type="text"
-            placeholder="Search by employee name or code..."
+            placeholder={isEmployeeOnly ? 'Search my review cycles...' : 'Search by employee name or code...'}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -319,7 +327,7 @@ export default function ModernPerformanceDashboard() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Employee
+                    {isEmployeeOnly ? 'Review' : 'Employee'}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Department
@@ -356,14 +364,16 @@ export default function ModernPerformanceDashboard() {
                     <td colSpan={7} className="px-4">
                       <EmptyState
                         icon={<ChartBarIcon className="h-16 w-16 text-gray-400" />}
-                        title={reviews.length === 0 ? "No Performance Reviews Yet" : "No Matching Reviews"}
+                        title={reviews.length === 0 ? (isEmployeeOnly ? "No performance reviews assigned yet" : "No Performance Reviews Yet") : "No Matching Reviews"}
                         description={
                           reviews.length === 0
-                            ? "Get started by creating performance reviews for your employees. Set goals, track progress, and conduct annual reviews all in one place."
+                            ? isEmployeeOnly
+                              ? "Your assigned performance cycles and goals will appear here once HR or your manager starts a review."
+                              : "Get started by creating performance reviews for your employees. Set goals, track progress, and conduct annual reviews all in one place."
                             : "Try adjusting your filters or search terms to find what you're looking for."
                         }
                         primaryAction={
-                          reviews.length === 0
+                          !isEmployeeOnly && reviews.length === 0
                             ? {
                                 label: "Create Review",
                                 onClick: () => navigate('/employees'),
@@ -372,7 +382,7 @@ export default function ModernPerformanceDashboard() {
                             : undefined
                         }
                         secondaryAction={
-                          reviews.length === 0
+                          !isEmployeeOnly && reviews.length === 0
                             ? {
                                 label: "View Employees",
                                 onClick: () => navigate('/employees'),
