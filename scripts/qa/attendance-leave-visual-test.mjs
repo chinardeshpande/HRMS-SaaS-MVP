@@ -125,7 +125,7 @@ async function applyLeaveWithRetry(persona, leaveType, label, baseOffset) {
       }, persona);
       return request;
     } catch (error) {
-      if (!/overlap|balance|pending|approved/i.test(error.message)) throw error;
+      if (!/already|overlap|balance|pending|approved/i.test(error.message)) throw error;
     }
   }
   throw new Error(`Unable to create non-overlapping ${leaveType} leave request`);
@@ -263,6 +263,27 @@ async function capture(page, filename, id, title, role, notes = '') {
   record(id, title, role, 'passed', screenshotRef(filename), notes);
 }
 
+async function hasText(page, text) {
+  return page.getByText(text, { exact: false }).first().isVisible({ timeout: 2500 }).catch(() => false);
+}
+
+async function captureWithRequiredText(page, filename, id, title, role, requiredText, notes = '') {
+  await page.waitForTimeout(1500);
+  const fullPath = path.join(SCREENSHOT_DIR, filename);
+  await page.screenshot({ path: fullPath, fullPage: true });
+  screenshots.push({ id, title, role, path: screenshotRef(filename) });
+
+  const matched = await hasText(page, requiredText);
+  record(
+    id,
+    title,
+    role,
+    matched ? 'passed' : 'failed',
+    screenshotRef(filename),
+    matched ? notes : `Expected "${requiredText}" to be visible.`
+  );
+}
+
 async function clickByText(page, text) {
   const locator = page.getByText(text, { exact: true }).first();
   await locator.waitFor({ timeout: 8000 });
@@ -304,10 +325,11 @@ async function visualRun() {
         await clickByText(page, 'Company').catch(() => clickByText(page, 'Team'));
         await capture(page, '08-hr-attendance-company-daily.png', 'VIS_ATT_HR_01', 'HR company attendance daily control view', persona);
         await page.getByText('Mass Update').first().click().catch(() => null);
-        await capture(page, '09-hr-attendance-mass-update-modal.png', 'VIS_ATT_HR_02', 'HR attendance mass update modal', persona, 'UI modal captured; backend bulk update was verified separately.');
-        await page.keyboard.press('Escape').catch(() => null);
+        await captureWithRequiredText(page, '09-hr-attendance-mass-update-modal.png', 'VIS_ATT_HR_02', 'HR attendance mass update modal', persona, 'Mass Attendance Update', 'UI modal captured; backend bulk update was verified separately.');
+        await page.goto(`${BASE_URL}/attendance`, { waitUntil: 'domcontentloaded' });
+        await clickByText(page, 'Company').catch(() => clickByText(page, 'Team'));
         await page.getByText('Sync').first().click().catch(() => null);
-        await capture(page, '10-hr-attendance-sync-modal.png', 'VIS_ATT_HR_03', 'HR attendance device/file sync modal', persona, 'Current UI uses mock preview/save behavior.');
+        await captureWithRequiredText(page, '10-hr-attendance-sync-modal.png', 'VIS_ATT_HR_03', 'HR attendance device/file sync modal', persona, 'Sync Attendance', 'File sync modal captured; CSV-backed save path uses backend bulk update.');
         await page.goto(`${BASE_URL}/attendance`, { waitUntil: 'domcontentloaded' });
         await clickByText(page, 'Requests');
         await capture(page, '11-hr-attendance-requests.png', 'VIS_ATT_HR_04', 'HR attendance and leave intervention queue', persona);
@@ -375,9 +397,9 @@ async function writeReport() {
     '',
     '## Product gaps observed',
     '',
-    '- Attendance Mass Update UI opens a modal, but the current frontend handler is not wired to the real `/attendance/bulk-update` endpoint. The backend endpoint was verified separately.',
-    '- Attendance Sync UI currently uses mock preview/save behavior. Production-grade device/file import needs backend persistence and audit results.',
-    '- Reporting APIs are available for HR, but Attendance/Leave pages do not yet expose a polished monthly report export/dashboard experience beyond CSV/table summaries.',
+    '- Attendance Mass Update now uses the backend bulk-update path; this run verifies the backend endpoint and asserts the modal renders.',
+    '- Attendance Sync now uses uploaded CSV preview data and saves valid rows through the backend bulk-update path; this run asserts the Sync modal renders.',
+    '- Reporting APIs and the HR Reports tab are available; this run verifies attendance statistics, department statistics, leave statistics, and visual report access.',
     '- Demo data is useful for visual QA, but repeated QA runs add extra demo leave and regularization records unless the demo seed reset is run.',
     '',
     '## Re-run command',
