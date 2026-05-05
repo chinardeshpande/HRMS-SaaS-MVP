@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import PerformanceStatusChip from '../components/performance/PerformanceStatusChip';
 import { EmptyState } from '../components/common/EmptyState';
@@ -16,6 +17,7 @@ import {
 
 export default function ModernPerformanceDashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [reviews, setReviews] = useState<APIPerformanceReview[]>([]);
   const [filteredReviews, setFilteredReviews] = useState<APIPerformanceReview[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>('all');
@@ -26,8 +28,8 @@ export default function ModernPerformanceDashboard() {
   const [stats, setStats] = useState({ total: 0, goalSetting: 0, midYear: 0, annualReview: 0, rating: 0 });
 
   useEffect(() => {
-    fetchReviews();
-  }, []);
+    if (user) fetchReviews();
+  }, [user]);
 
   useEffect(() => {
     applyFilters();
@@ -38,7 +40,10 @@ export default function ModernPerformanceDashboard() {
       setLoading(true);
       setError(null);
 
-      const response = await performanceService.getAllReviews();
+      const isEmployeeOnly = user?.role?.toString().toUpperCase() === 'EMPLOYEE';
+      const response = isEmployeeOnly
+        ? await performanceService.getMyReviews()
+        : await performanceService.getAllReviews();
       setReviews(response.data.reviews || []);
       setStats(response.data.stats || { total: 0, goalSetting: 0, midYear: 0, annualReview: 0, rating: 0 });
     } catch (error: any) {
@@ -105,8 +110,38 @@ export default function ModernPerformanceDashboard() {
   };
 
   const handleExportCSV = () => {
-    // TODO: Implement CSV export functionality
-    console.log('Exporting performance reviews to CSV');
+    if (filteredReviews.length === 0) {
+      alert('No performance reviews to export');
+      return;
+    }
+
+    const headers = ['Employee Code', 'Employee Name', 'Department', 'Designation', 'Review Cycle', 'Status', 'Rating', 'Reviewer', 'Last Updated'];
+    const rows = filteredReviews.map(review => [
+      review.employee.employeeCode || '-',
+      `${review.employee.firstName} ${review.employee.lastName}`,
+      review.employee.department?.name || '-',
+      review.employee.designation?.name || '-',
+      review.reviewCycle,
+      review.currentState.replace(/_/g, ' ').toUpperCase(),
+      review.overallRating ? review.overallRating.toFixed(1) : '-',
+      review.reviewer ? `${review.reviewer.firstName} ${review.reviewer.lastName}` : '-',
+      review.updatedAt ? new Date(review.updatedAt).toLocaleDateString('en-GB') : '-',
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `performance-reviews-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (

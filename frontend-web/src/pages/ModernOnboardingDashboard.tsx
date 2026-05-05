@@ -183,8 +183,8 @@ const ModernOnboardingDashboard: React.FC = () => {
     const rows = candidates.map(candidate => [
       `${candidate.firstName} ${candidate.lastName}`,
       candidate.email,
-      candidate.department?.departmentName || '-',
-      candidate.designation?.designationName || '-',
+      candidate.department?.departmentName || candidate.department?.name || '-',
+      candidate.designation?.designationName || candidate.designation?.name || '-',
       candidate.currentState.replace(/_/g, ' ').toUpperCase(),
       candidate.expectedJoinDate ? new Date(candidate.expectedJoinDate).toLocaleDateString('en-GB') : '-',
       candidate.offeredSalary || '-',
@@ -521,8 +521,8 @@ const ModernOnboardingDashboard: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{candidate.department?.departmentName || '-'}</div>
-                      <div className="text-xs text-gray-500">{candidate.designation?.designationName || '-'}</div>
+                      <div className="text-sm text-gray-900">{candidate.department?.departmentName || candidate.department?.name || '-'}</div>
+                      <div className="text-xs text-gray-500">{candidate.designation?.designationName || candidate.designation?.name || '-'}</div>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
                       {candidate.expectedJoinDate ? new Date(candidate.expectedJoinDate).toLocaleDateString('en-GB') : '-'}

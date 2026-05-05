@@ -11,6 +11,8 @@ import { In } from 'typeorm';
 export const getAllReviews = async (req: Request, res: Response) => {
   try {
     const tenantId = req.user!.tenantId;
+    const employeeId = req.user!.employeeId;
+    const userRole = String(req.user!.role || '').toUpperCase();
     const { cycle, status } = req.query;
 
     const reviewRepo = AppDataSource.getRepository(PerformanceReview);
@@ -18,6 +20,7 @@ export const getAllReviews = async (req: Request, res: Response) => {
 
     if (cycle) where.reviewCycle = cycle;
     if (status) where.currentState = status;
+    if (userRole === 'MANAGER' && employeeId) where.reviewerId = employeeId;
 
     const reviews = await reviewRepo.find({
       where,
@@ -45,6 +48,45 @@ export const getAllReviews = async (req: Request, res: Response) => {
     return sendSuccess(res, { reviews, stats });
   } catch (error: any) {
     console.error('Get all reviews error:', error);
+    return sendError(res, { code: 'FETCH_ERROR', message: error.message }, 500);
+  }
+};
+
+export const getMyReviews = async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.user!.tenantId;
+    const employeeId = req.user!.employeeId;
+
+    if (!employeeId) {
+      return sendSuccess(res, { reviews: [], stats: { total: 0, goalSetting: 0, midYear: 0, annualReview: 0, rating: 0 } });
+    }
+
+    const reviewRepo = AppDataSource.getRepository(PerformanceReview);
+    const reviews = await reviewRepo.find({
+      where: { tenantId, employeeId },
+      relations: ['employee', 'employee.department', 'employee.designation', 'reviewer'],
+      order: { createdAt: 'DESC' },
+    });
+
+    const stats = {
+      total: reviews.length,
+      goalSetting: reviews.filter(r =>
+        [PerformanceState.GOAL_SETTING, PerformanceState.GOALS_SUBMITTED, PerformanceState.GOALS_APPROVED].includes(r.currentState)
+      ).length,
+      midYear: reviews.filter(r =>
+        [PerformanceState.MID_YEAR_PENDING, PerformanceState.MID_YEAR_SUBMITTED, PerformanceState.MID_YEAR_COMPLETED].includes(r.currentState)
+      ).length,
+      annualReview: reviews.filter(r =>
+        [PerformanceState.ANNUAL_REVIEW_PENDING, PerformanceState.ANNUAL_REVIEW_SUBMITTED, PerformanceState.ANNUAL_REVIEW_COMPLETED].includes(r.currentState)
+      ).length,
+      rating: reviews.filter(r =>
+        [PerformanceState.RATING_PENDING, PerformanceState.RATING_SUBMITTED, PerformanceState.RATING_APPROVED].includes(r.currentState)
+      ).length,
+    };
+
+    return sendSuccess(res, { reviews, stats });
+  } catch (error: any) {
+    console.error('Get my reviews error:', error);
     return sendError(res, { code: 'FETCH_ERROR', message: error.message }, 500);
   }
 };
@@ -823,6 +865,7 @@ export const deleteActionItem = async (req: Request, res: Response) => {
 
 export default {
   getAllReviews,
+  getMyReviews,
   getReviewById,
   createReview,
   updateReview,

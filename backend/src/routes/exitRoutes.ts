@@ -16,6 +16,7 @@ import {
   approveSettlement,
   markSettlementPaid,
   getExitCase,
+  getMyExitCase,
   getAllExitCases,
   getPendingClearances,
   getPendingAssetReturns,
@@ -52,6 +53,7 @@ router.get('/assets/pending', managerOrHr, getPendingAssetReturns);
 
 // Employee resignation submission
 router.post('/resign', submitResignation);
+router.get('/my-case', getMyExitCase);
 
 // Exit case operations (CRUD)
 router.get('/cases/:exitId', managerOrHr, getExitCase);
