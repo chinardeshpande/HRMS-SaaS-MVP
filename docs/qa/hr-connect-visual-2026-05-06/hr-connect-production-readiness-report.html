@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>HR Connect Production Readiness QA</title>
+  <style>
+    body { font-family: Inter, Arial, sans-serif; margin: 0; color: #172033; background: #f5f7fb; }
+    .page { max-width: 1120px; margin: 0 auto; padding: 42px; background: white; }
+    h1 { font-size: 32px; margin-bottom: 8px; }
+    h2 { margin-top: 34px; border-bottom: 1px solid #d9e1ec; padding-bottom: 8px; }
+    .meta, .note { color: #536176; }
+    .summary { display: flex; gap: 16px; margin: 24px 0; }
+    .metric { border: 1px solid #d9e1ec; border-radius: 8px; padding: 16px; min-width: 130px; }
+    .metric strong { display: block; font-size: 24px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { border: 1px solid #d9e1ec; padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #eef3f8; }
+    .pass { color: #087f5b; font-weight: 700; }
+    .fail { color: #c92a2a; font-weight: 700; }
+    .shot { margin: 28px 0; break-inside: avoid; }
+    .shot img { width: 100%; border: 1px solid #d9e1ec; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <h1>HR Connect Production Readiness QA</h1>
+    <p class="meta">Run date: 2026-05-06 · Run id: HRC-2026-05-06-1778069119271 · Target: https://aurorahr.in</p>
+    <div class="summary">
+      <div class="metric"><span>Status</span><strong>PASS</strong></div>
+      <div class="metric"><span>Passed</span><strong>26</strong></div>
+      <div class="metric"><span>Failed</span><strong>0</strong></div>
+    </div>
+    <h2>Storyline</h2>
+    <p>The HR manager publishes a company update. An employee reacts, a manager comments, and HR creates a project group. The group is used to create direct and group chat threads, schedule an appointment, and validate real-time chat plus audio/video call signaling.</p>
+    <h2>Test Cases</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Use Case</th><th>Role</th><th>Result</th><th>Evidence</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>AUTH_EMPLOYEE</td><td>Demo login for employee</td><td>employee</td><td class="pass">PASS</td><td>API /demo/login</td><td>demo.employee@aurorahr.in</td></tr>
+<tr><td>AUTH_MANAGER</td><td>Demo login for manager</td><td>manager</td><td class="pass">PASS</td><td>API /demo/login</td><td>demo.manager@aurorahr.in</td></tr>
+<tr><td>AUTH_HR</td><td>Demo login for hr</td><td>hr</td><td class="pass">PASS</td><td>API /demo/login</td><td>demo.hr@aurorahr.in</td></tr>
+<tr><td>AUTH_ADMIN</td><td>Demo login for admin</td><td>admin</td><td class="pass">PASS</td><td>API /demo/login</td><td>demo.admin@aurorahr.in</td></tr>
+<tr><td>HRC_FEED_01</td><td>HR creates a company HR Connect announcement</td><td>hr</td><td class="pass">PASS</td><td>postId=c63d046e-b035-43a6-bbe6-95d91f34bfde</td><td></td></tr>
+<tr><td>HRC_FEED_02</td><td>Employee reacts and manager comments on the announcement</td><td>employee/manager</td><td class="pass">PASS</td><td>commentId=0a60767e-f68f-4dcb-85dd-c7012c2c3b9d</td><td></td></tr>
+<tr><td>HRC_GROUP_01</td><td>HR creates a cross-functional project group</td><td>hr</td><td class="pass">PASS</td><td>groupId=6b132ba1-084a-4600-a0d3-0d1c54c5af7e</td><td></td></tr>
+<tr><td>HRC_GROUP_02</td><td>HR adds manager and employee to the group through persistent group-member API</td><td>hr</td><td class="pass">PASS</td><td>members=3</td><td></td></tr>
+<tr><td>HRC_CHAT_01</td><td>Employee opens or creates direct chat with manager</td><td>employee</td><td class="pass">PASS</td><td>conversationId=8fac722c-9008-498a-835a-c9c1eef54e8b</td><td></td></tr>
+<tr><td>HRC_CHAT_02</td><td>Employee sends a direct chat message and manager can retrieve it</td><td>employee/manager</td><td class="pass">PASS</td><td>messageId=09fbe94b-c3a2-4a8b-b616-26d309d27708</td><td></td></tr>
+<tr><td>HRC_CHAT_03</td><td>HR creates group chat from group members and posts a group update</td><td>hr</td><td class="pass">PASS</td><td>conversationId=e67da6de-2bb1-4bc0-ac14-eaaceddc485a, messageId=4c8df120-519c-4369-bc1f-a04fb88ef3e5</td><td></td></tr>
+<tr><td>HRC_CAL_01</td><td>HR schedules an appointment linked to HR Connect chat</td><td>hr</td><td class="pass">PASS</td><td>eventId=9d1efbbc-e177-405b-8c3f-6b721a6a7d18</td><td></td></tr>
+<tr><td>HRC_CAL_02</td><td>Scheduled appointment is returned by calendar list and upcoming views</td><td>employee</td><td class="pass">PASS</td><td>eventId=9d1efbbc-e177-405b-8c3f-6b721a6a7d18</td><td></td></tr>
+<tr><td>HRC_WS_01</td><td>Manager receives real-time chat message over Socket.IO</td><td>employee/manager</td><td class="pass">PASS</td><td>messageId=b018cd18-e604-4052-ab8d-f0154cc416bf</td><td></td></tr>
+<tr><td>HRC_CALL_01</td><td>Audio call signaling delivers incoming call event</td><td>employee/manager</td><td class="pass">PASS</td><td>callerId=03b6d7bb-48d1-462f-9749-830340234960</td><td></td></tr>
+<tr><td>HRC_CALL_02</td><td>Call answer signaling returns to caller</td><td>employee/manager</td><td class="pass">PASS</td><td>call_answered event</td><td></td></tr>
+<tr><td>HRC_CALL_03</td><td>Video call signaling delivers incoming call event</td><td>employee/manager</td><td class="pass">PASS</td><td>callerId=03b6d7bb-48d1-462f-9749-830340234960</td><td></td></tr>
+<tr><td>HRC_WS_00</td><td>Socket.IO chat and call signaling scenario</td><td>employee/manager</td><td class="pass">PASS</td><td>completed</td><td></td></tr>
+<tr><td>VIS_01</td><td>HR Connect feed shows announcement, reactions, and social workflow</td><td>hr</td><td class="pass">PASS</td><td>screenshots/01-hr-connect-feed.png</td><td></td></tr>
+<tr><td>VIS_02</td><td>HR Connect chat list presents direct and group conversations</td><td>hr</td><td class="pass">PASS</td><td>screenshots/02-hr-connect-chat-list.png</td><td></td></tr>
+<tr><td>VIS_03</td><td>HR Connect group management shows persistent project group membership</td><td>hr</td><td class="pass">PASS</td><td>screenshots/03-hr-connect-groups.png</td><td></td></tr>
+<tr><td>VIS_04</td><td>Employee direct chat shows message history and action hooks</td><td>employee</td><td class="pass">PASS</td><td>screenshots/04-employee-direct-chat.png</td><td></td></tr>
+<tr><td>VIS_05</td><td>Manager direct chat confirms counterpart view of the same conversation</td><td>manager</td><td class="pass">PASS</td><td>screenshots/05-manager-direct-chat.png</td><td></td></tr>
+<tr><td>VIS_06</td><td>HR group chat supports multi-participant coordination</td><td>hr</td><td class="pass">PASS</td><td>screenshots/06-hr-group-chat.png</td><td></td></tr>
+<tr><td>VIS_07</td><td>Calendar shows HR Connect appointment created through persistent calendar API</td><td>hr</td><td class="pass">PASS</td><td>screenshots/07-calendar-appointment.png</td><td></td></tr>
+<tr><td>HRC_VIS_00</td><td>Browser visual journey with HR, manager, and employee roles</td><td>hr/manager/employee</td><td class="pass">PASS</td><td>completed</td><td></td></tr>
+      </tbody>
+    </table>
+    <h2>Screenshots</h2>
+    <section class="shot"><h3>HR Connect feed shows announcement, reactions, and social workflow</h3><p class="meta">Role: hr</p><img src="/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/hr-connect-visual-2026-05-06/screenshots/01-hr-connect-feed.png" /></section>
+<section class="shot"><h3>HR Connect chat list presents direct and group conversations</h3><p class="meta">Role: hr</p><img src="/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/hr-connect-visual-2026-05-06/screenshots/02-hr-connect-chat-list.png" /></section>
+<section class="shot"><h3>HR Connect group management shows persistent project group membership</h3><p class="meta">Role: hr</p><img src="/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/hr-connect-visual-2026-05-06/screenshots/03-hr-connect-groups.png" /></section>
+<section class="shot"><h3>Employee direct chat shows message history and action hooks</h3><p class="meta">Role: employee</p><img src="/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/hr-connect-visual-2026-05-06/screenshots/04-employee-direct-chat.png" /></section>
+<section class="shot"><h3>Manager direct chat confirms counterpart view of the same conversation</h3><p class="meta">Role: manager</p><img src="/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/hr-connect-visual-2026-05-06/screenshots/05-manager-direct-chat.png" /></section>
+<section class="shot"><h3>HR group chat supports multi-participant coordination</h3><p class="meta">Role: hr</p><img src="/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/hr-connect-visual-2026-05-06/screenshots/06-hr-group-chat.png" /></section>
+<section class="shot"><h3>Calendar shows HR Connect appointment created through persistent calendar API</h3><p class="meta">Role: hr</p><img src="/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/hr-connect-visual-2026-05-06/screenshots/07-calendar-appointment.png" /></section>
+    <h2>Residual Production Note</h2>
+    <p class="note">Audio/video media negotiation uses browser WebRTC with STUN. This test validates authenticated signaling and browser media hooks. A TURN server is still recommended before promising reliable calls across restrictive corporate networks.</p>
+  </main>
+</body>
+</html>
