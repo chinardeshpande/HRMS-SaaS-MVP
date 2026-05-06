@@ -99,9 +99,12 @@ export default function ModernHRConnect() {
           console.log('💬 New comment:', data);
           setPosts(prev => prev.map(post => {
             if (post.postId === data.postId) {
+              const authorName = data.comment.authorName
+                || (data.comment.author ? `${data.comment.author.firstName} ${data.comment.author.lastName}` : undefined)
+                || 'Unknown';
               return {
                 ...post,
-                comments: [...(post.comments || []), data.comment],
+                comments: [...(post.comments || []), { ...data.comment, authorName }],
               };
             }
             return post;
@@ -583,18 +586,21 @@ export default function ModernHRConnect() {
                               {/* Existing Comments */}
                               {post.comments && post.comments.length > 0 && (
                                 <div className="space-y-3 mb-4">
-                                  {post.comments.map(comment => (
+                                  {post.comments.map(comment => {
+                                    const authorName = comment.authorName || 'Unknown';
+                                    return (
                                     <div key={comment.commentId} className="flex items-start space-x-2">
                                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-xs flex-shrink-0">
-                                        {comment.authorName.charAt(0)}
+                                        {authorName.charAt(0)}
                                       </div>
                                       <div className="flex-1 bg-gray-50 rounded-lg p-3">
-                                        <p className="text-xs font-semibold text-gray-900">{comment.authorName}</p>
+                                        <p className="text-xs font-semibold text-gray-900">{authorName}</p>
                                         <p className="text-sm text-gray-700 mt-1">{comment.content}</p>
                                         <p className="text-xs text-gray-400 mt-1">{getRelativeTime(comment.createdAt)}</p>
                                       </div>
                                     </div>
-                                  ))}
+                                    );
+                                  })}
                                 </div>
                               )}
 

@@ -71,6 +71,18 @@ export interface GroupMember {
 }
 
 class HRConnectService {
+  private transformComment(comment: any): Comment {
+    const authorName = comment.authorName
+      || (comment.author ? `${comment.author.firstName} ${comment.author.lastName}` : undefined)
+      || 'Unknown';
+
+    return {
+      ...comment,
+      authorName,
+      authorAvatar: comment.authorAvatar || comment.author?.profilePicture,
+    };
+  }
+
   private transformGroup(group: any): Group {
     return {
       ...group,
@@ -107,6 +119,7 @@ class HRConnectService {
       authorDepartment: post.author?.department?.name,
       authorDesignation: post.author?.designation?.name,
       title: post.title || '', // Add title field if missing
+      comments: (post.comments || []).map((comment: any) => this.transformComment(comment)),
     }));
 
     console.log('✨ Transformed posts:', transformedPosts);
@@ -146,14 +159,14 @@ class HRConnectService {
   // Comments
   async getComments(postId: string): Promise<Comment[]> {
     const response = await api.get(`/hr-connect/posts/${postId}/comments`);
-    return response.data?.comments || [];
+    return (response.data?.comments || []).map((comment: any) => this.transformComment(comment));
   }
 
   async addComment(postId: string, content: string): Promise<Comment> {
     console.log('🔵 Adding comment:', postId, content);
     const response = await api.post(`/hr-connect/posts/${postId}/comments`, { content });
     console.log('✅ Comment added:', response.data);
-    return response.data;
+    return this.transformComment(response.data);
   }
 
   async deleteComment(commentId: string): Promise<void> {

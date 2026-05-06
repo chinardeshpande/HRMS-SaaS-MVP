@@ -324,6 +324,37 @@ async function capture(page, filename, title, role, urlPath) {
   record(`VIS_${String(screenshots.length).padStart(2, '0')}`, title, role, 'passed', `screenshots/${filename}`);
 }
 
+async function captureExpandedFeedComment(page) {
+  await page.goto(`${BASE_URL}/hr-connect`, { waitUntil: 'networkidle', timeout: 45000 });
+  await page.waitForSelector(`text=${RUN_ID}`, { timeout: 30000 });
+
+  const clicked = await page.evaluate((runId) => {
+    const cards = Array.from(document.querySelectorAll('.card'));
+    const card = cards.find((element) => element.textContent && element.textContent.includes(runId));
+    if (!card) return false;
+
+    const buttons = Array.from(card.querySelectorAll('button'));
+    const commentButton = buttons.find((button) => button.textContent.trim() === '1');
+    if (!commentButton) return false;
+
+    commentButton.click();
+    return true;
+  }, RUN_ID);
+
+  if (!clicked) throw new Error('Could not click feed comment icon for QA post');
+
+  await page.waitForSelector('input[placeholder="Write a comment..."]', { timeout: 10000 });
+  await page.waitForSelector(`text=${RUN_ID}`, { timeout: 10000 });
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '02-feed-comment-expanded.png'), fullPage: true });
+  screenshots.push({
+    filename: '02-feed-comment-expanded.png',
+    title: 'Feed comment icon expands existing comments without blank screen',
+    role: 'hr',
+    path: 'screenshots/02-feed-comment-expanded.png',
+  });
+  record('HRC_FEED_03', 'Feed comment icon expands existing comments without blank screen', 'hr', 'passed', 'screenshots/02-feed-comment-expanded.png');
+}
+
 async function visualScenario() {
   const { chromium } = await loadPlaywright();
   const browser = await chromium.launch({
@@ -341,12 +372,13 @@ async function visualScenario() {
     const managerPage = await managerContext.newPage();
 
     await capture(hrPage, '01-hr-connect-feed.png', 'HR Connect feed shows announcement, reactions, and social workflow', 'hr', '/hr-connect');
-    await capture(hrPage, '02-hr-connect-chat-list.png', 'HR Connect chat list presents direct and group conversations', 'hr', '/hr-connect?tab=chat');
-    await capture(hrPage, '03-hr-connect-groups.png', 'HR Connect group management shows persistent project group membership', 'hr', '/hr-connect?tab=groups');
-    await capture(employeePage, '04-employee-direct-chat.png', 'Employee direct chat shows message history and action hooks', 'employee', `/chat/${created.directConversation.conversationId}`);
-    await capture(managerPage, '05-manager-direct-chat.png', 'Manager direct chat confirms counterpart view of the same conversation', 'manager', `/chat/${created.directConversation.conversationId}`);
-    await capture(hrPage, '06-hr-group-chat.png', 'HR group chat supports multi-participant coordination', 'hr', `/chat/${created.groupConversation.conversationId}`);
-    await capture(hrPage, '07-calendar-appointment.png', 'Calendar shows HR Connect appointment created through persistent calendar API', 'hr', '/calendar');
+    await captureExpandedFeedComment(hrPage);
+    await capture(hrPage, '03-hr-connect-chat-list.png', 'HR Connect chat list presents direct and group conversations', 'hr', '/hr-connect?tab=chat');
+    await capture(hrPage, '04-hr-connect-groups.png', 'HR Connect group management shows persistent project group membership', 'hr', '/hr-connect?tab=groups');
+    await capture(employeePage, '05-employee-direct-chat.png', 'Employee direct chat shows message history and action hooks', 'employee', `/chat/${created.directConversation.conversationId}`);
+    await capture(managerPage, '06-manager-direct-chat.png', 'Manager direct chat confirms counterpart view of the same conversation', 'manager', `/chat/${created.directConversation.conversationId}`);
+    await capture(hrPage, '07-hr-group-chat.png', 'HR group chat supports multi-participant coordination', 'hr', `/chat/${created.groupConversation.conversationId}`);
+    await capture(hrPage, '08-calendar-appointment.png', 'Calendar shows HR Connect appointment created through persistent calendar API', 'hr', '/calendar');
   } finally {
     await browser.close();
   }
