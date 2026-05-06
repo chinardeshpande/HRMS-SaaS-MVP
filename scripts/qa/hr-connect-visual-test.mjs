@@ -334,7 +334,8 @@ async function captureExpandedFeedComment(page) {
     if (!card) return false;
 
     const buttons = Array.from(card.querySelectorAll('button'));
-    const commentButton = buttons.find((button) => button.textContent.trim() === '1');
+    const actionButtons = buttons.filter((button) => /^\d+$/.test(button.textContent.trim()));
+    const commentButton = actionButtons[1];
     if (!commentButton) return false;
 
     commentButton.click();
