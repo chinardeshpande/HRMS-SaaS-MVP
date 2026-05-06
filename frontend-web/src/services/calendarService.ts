@@ -31,23 +31,13 @@ export interface CalendarEventFilters {
 
 class CalendarService {
   async getAllEvents(filters?: CalendarEventFilters): Promise<CalendarEvent[]> {
-    try {
-      const response = await api.get('/calendar/events', { params: filters });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching calendar events:', error);
-      return this.getMockEvents();
-    }
+    const response = await api.get('/calendar/events', { params: filters });
+    return response.data;
   }
 
   async getUpcomingEvents(limit: number = 10): Promise<CalendarEvent[]> {
-    try {
-      const response = await api.get('/calendar/events/upcoming', { params: { limit } });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching upcoming events:', error);
-      return this.getMockEvents().slice(0, limit);
-    }
+    const response = await api.get('/calendar/events/upcoming', { params: { limit } });
+    return response.data;
   }
 
   async getEventById(eventId: string): Promise<CalendarEvent> {

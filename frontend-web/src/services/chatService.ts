@@ -200,6 +200,17 @@ class ChatService {
     return response.data?.employees || [];
   }
 
+  async searchUsers(query?: string): Promise<any[]> {
+    const employees = await this.getEmployees(query);
+    return employees.map((employee: any) => ({
+      userId: employee.employeeId,
+      userName: `${employee.firstName} ${employee.lastName}`,
+      email: employee.email,
+      designation: employee.designation?.name,
+      department: employee.department?.name,
+    }));
+  }
+
 }
 
 export default new ChatService();

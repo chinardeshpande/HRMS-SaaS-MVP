@@ -5,6 +5,7 @@ import VideoCall from '../components/VideoCall';
 import SaveChoicesModal from '../components/chat/SaveChoicesModal';
 import chatService, { ChatMessage } from '../services/chatService';
 import socketService from '../services/socketService';
+import calendarService from '../services/calendarService';
 import { digitalLibraryService } from '../services/digitalLibraryService';
 import {
   PaperAirplaneIcon,
@@ -16,7 +17,16 @@ import {
   PhoneIcon,
   VideoCameraIcon,
   ArrowDownTrayIcon,
+  CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
+
+const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1').replace(/\/api\/v1\/?$/, '');
+
+const buildAssetUrl = (fileUrl?: string) => {
+  if (!fileUrl) return '';
+  if (/^https?:\/\//i.test(fileUrl)) return fileUrl;
+  return `${API_ORIGIN}${fileUrl.startsWith('/') ? '' : '/'}${encodeURI(fileUrl)}`;
+};
 
 export default function ChatConversation() {
   const { conversationId } = useParams();
@@ -36,6 +46,12 @@ export default function ChatConversation() {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [filePermissions, setFilePermissions] = useState<any>(null);
   const [selectedFileForSave, setSelectedFileForSave] = useState<any>(null);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleTitle, setScheduleTitle] = useState('');
+  const [scheduleDate, setScheduleDate] = useState(new Date().toISOString().split('T')[0]);
+  const [scheduleStartTime, setScheduleStartTime] = useState('10:00');
+  const [scheduleEndTime, setScheduleEndTime] = useState('10:30');
+  const [scheduleLocation, setScheduleLocation] = useState('Video call');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -652,7 +668,7 @@ export default function ChatConversation() {
       }
 
       const targetParticipant = conversation.participants?.find(
-        (p: any) => p.employeeId !== currentUserId
+        (p: any) => p.userId !== currentUserId
       );
 
       if (!targetParticipant) {
@@ -690,10 +706,10 @@ export default function ChatConversation() {
         localStreamRef.current = stream;
 
         // Initiate call via signaling server
-        console.log('📞 Sending call_initiate to:', targetParticipant.employeeId);
+        console.log('📞 Sending call_initiate to:', targetParticipant.userId);
         socketService.getSocket()?.emit('call_initiate', {
           conversationId,
-          targetEmployeeId: targetParticipant.employeeId,
+          targetEmployeeId: targetParticipant.userId,
           callType: type,
         });
 
@@ -720,7 +736,7 @@ export default function ChatConversation() {
 
             socketService.getSocket()?.emit('call_initiate', {
               conversationId,
-              targetEmployeeId: targetParticipant.employeeId,
+              targetEmployeeId: targetParticipant.userId,
               callType: type,
             });
 
@@ -869,41 +885,43 @@ export default function ChatConversation() {
   const currentUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null;
   const currentUserId = currentUser?.employeeId;
 
-  // Diagnostic test function
-  const runWebSocketDiagnostic = () => {
-    console.log('=== WEBSOCKET DIAGNOSTIC TEST ===');
-    console.log('1. WebSocket connected:', socketService.isConnected());
+  const scheduleAppointment = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!conversationId || !conversation) return;
 
-    const socket = socketService.getSocket();
-    console.log('2. Socket ID:', socket?.id);
-    console.log('3. Socket connected:', socket?.connected);
-    console.log('4. Conversation ID:', conversationId);
+    const attendeeIds = (conversation.participants || [])
+      .map((participant: any) => participant.userId)
+      .filter(Boolean);
 
-    if (!conversationId || !socket) {
-      console.error('❌ Cannot run test - missing conversation or socket');
-      alert('WebSocket Error: Socket not connected or no conversation ID');
-      return;
+    try {
+      const calendarEvent = await calendarService.createEvent({
+        title: scheduleTitle || `${conversation.name} appointment`,
+        description: `Scheduled from HR Connect conversation: ${conversation.name}`,
+        eventType: 'meeting',
+        startDate: scheduleDate,
+        startTime: scheduleStartTime,
+        endTime: scheduleEndTime,
+        isAllDay: false,
+        location: scheduleLocation,
+        attendees: attendeeIds,
+        relatedEntityId: conversationId,
+        relatedEntityType: 'employee',
+        metadata: { source: 'hr_connect_chat', conversationId },
+      });
+
+      await chatService.sendMessage(
+        conversationId,
+        `Appointment scheduled: ${calendarEvent.title} on ${scheduleDate} from ${scheduleStartTime} to ${scheduleEndTime}`,
+        'system'
+      );
+
+      await fetchMessages();
+      setShowScheduleModal(false);
+      setScheduleTitle('');
+    } catch (error: any) {
+      console.error('Error scheduling appointment:', error);
+      alert(error.response?.data?.error?.message || error.message || 'Failed to schedule appointment');
     }
-
-    console.log('5. Manually joining conversation...');
-    socketService.joinConversation(conversationId);
-
-    console.log('6. Setting up one-time test listener...');
-    socket.once('new_message', (msg: any) => {
-      console.log('✅ ✅ ✅ WEBSOCKET WORKING! Received:', msg);
-      alert('✅ WebSocket IS WORKING! Check console for details.');
-    });
-
-    console.log('7. Sending diagnostic test message...');
-    socketService.sendMessage({
-      conversationId,
-      content: 'DIAGNOSTIC_TEST_' + Date.now()
-    });
-
-    setTimeout(() => {
-      console.log('=== DIAGNOSTIC TEST TIMEOUT (3s) ===');
-      alert('⚠️ If you didn\'t see success message, WebSocket is NOT working. Check console.');
-    }, 3000);
   };
 
   // Show loading while conversation data is being fetched
@@ -945,13 +963,12 @@ export default function ChatConversation() {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            {/* Diagnostic Test Button */}
             <button
-              onClick={runWebSocketDiagnostic}
-              className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-semibold rounded transition-colors"
-              title="Test WebSocket Real-Time"
+              onClick={() => setShowScheduleModal(true)}
+              className="p-2 hover:bg-white rounded-lg transition-colors group"
+              title="Schedule appointment"
             >
-              🔧 Test WS
+              <CalendarDaysIcon className="h-5 w-5 text-gray-600 group-hover:text-indigo-600" />
             </button>
             <button
               onClick={startAudioCall}
@@ -1038,7 +1055,7 @@ export default function ChatConversation() {
                             }}
                           >
                             <img
-                              src={`http://localhost:5000${encodeURI(message.attachments[0].fileUrl)}`}
+                              src={buildAssetUrl(message.attachments[0].fileUrl)}
                               alt={message.attachments[0].fileName}
                               className="max-w-xs max-h-64 rounded-lg object-cover hover:opacity-90 transition-opacity"
                             />
@@ -1047,7 +1064,7 @@ export default function ChatConversation() {
                         {/* File attachment */}
                         {message.messageType === 'file' && message.attachments && message.attachments.length > 0 && (
                           <a
-                            href={`http://localhost:5000${encodeURI(message.attachments[0].fileUrl)}`}
+                            href={buildAssetUrl(message.attachments[0].fileUrl)}
                             target="_blank"
                             rel="noopener noreferrer"
                             download={message.attachments[0].fileName}
@@ -1168,6 +1185,85 @@ export default function ChatConversation() {
         </form>
       </div>
 
+      {showScheduleModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-center justify-center p-4">
+            <div className="fixed inset-0 bg-gray-900 bg-opacity-75" onClick={() => setShowScheduleModal(false)} />
+            <div className="relative w-full max-w-lg rounded-xl bg-white shadow-2xl">
+              <div className="border-b border-gray-200 px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-gray-900">Schedule Appointment</h2>
+                  <button onClick={() => setShowScheduleModal(false)} className="p-1 rounded-lg hover:bg-gray-100">
+                    <XMarkIcon className="h-5 w-5 text-gray-600" />
+                  </button>
+                </div>
+              </div>
+              <form onSubmit={scheduleAppointment} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                  <input
+                    type="text"
+                    value={scheduleTitle}
+                    onChange={(e) => setScheduleTitle(e.target.value)}
+                    className="input w-full"
+                    placeholder={`${conversation?.name || 'HR Connect'} appointment`}
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                    <input
+                      type="date"
+                      value={scheduleDate}
+                      onChange={(e) => setScheduleDate(e.target.value)}
+                      required
+                      className="input w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Start</label>
+                    <input
+                      type="time"
+                      value={scheduleStartTime}
+                      onChange={(e) => setScheduleStartTime(e.target.value)}
+                      required
+                      className="input w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">End</label>
+                    <input
+                      type="time"
+                      value={scheduleEndTime}
+                      onChange={(e) => setScheduleEndTime(e.target.value)}
+                      required
+                      className="input w-full"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                  <input
+                    type="text"
+                    value={scheduleLocation}
+                    onChange={(e) => setScheduleLocation(e.target.value)}
+                    className="input w-full"
+                  />
+                </div>
+                <div className="flex justify-end gap-3 pt-2">
+                  <button type="button" onClick={() => setShowScheduleModal(false)} className="btn btn-secondary">
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn-primary">
+                    Schedule
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Incoming Call Modal */}
       {incomingCall && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
@@ -1223,18 +1319,14 @@ export default function ChatConversation() {
         >
           <div className="relative max-w-7xl max-h-screen" onClick={(e) => e.stopPropagation()}>
             {(() => {
-              const baseUrl = 'http://localhost:5000';
-              const encodedUrl = encodeURI(selectedImage.url);
-              const fullUrl = `${baseUrl}${encodedUrl}`;
+              const fullUrl = buildAssetUrl(selectedImage.url);
               console.log('🖼️ [MODAL] Constructing image URL:');
-              console.log('  Base URL:', baseUrl);
               console.log('  Image URL (raw):', selectedImage.url);
-              console.log('  Image URL (encoded):', encodedUrl);
               console.log('  Full URL:', fullUrl);
               return null;
             })()}
             <img
-              src={`http://localhost:5000${encodeURI(selectedImage.url)}`}
+              src={buildAssetUrl(selectedImage.url)}
               alt={selectedImage.fileName}
               className="max-w-full max-h-[90vh] object-contain rounded-lg bg-gray-900"
               onError={(e) => {
@@ -1321,10 +1413,6 @@ export default function ChatConversation() {
               {selectedImage.fileName}
             </div>
 
-            {/* Debug info - remove in production */}
-            <div className="absolute top-4 left-4 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs">
-              {`${import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:5000'}${selectedImage.url}`.substring(0, 50)}...
-            </div>
           </div>
         </div>
       )}
@@ -1346,7 +1434,7 @@ export default function ChatConversation() {
           onDownloadLocal={async () => {
             // Download to local machine
             try {
-              const response = await fetch(`http://localhost:5000${encodeURI(selectedFileForSave.fileUrl)}`);
+              const response = await fetch(buildAssetUrl(selectedFileForSave.fileUrl));
               const blob = await response.blob();
               const url = window.URL.createObjectURL(blob);
               const link = document.createElement('a');
@@ -1369,7 +1457,7 @@ export default function ChatConversation() {
               // Fetch file size if not available
               let fileSize = selectedFileForSave.fileSize;
               if (!fileSize) {
-                const response = await fetch(`http://localhost:5000${encodeURI(selectedFileForSave.fileUrl)}`, { method: 'HEAD' });
+                const response = await fetch(buildAssetUrl(selectedFileForSave.fileUrl), { method: 'HEAD' });
                 fileSize = parseInt(response.headers.get('Content-Length') || '0');
               }
 

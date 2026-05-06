@@ -21,6 +21,42 @@ export class ChatService {
     return ChatService.instance;
   }
 
+  async isParticipant(conversationId: string, tenantId: string, employeeId: string): Promise<boolean> {
+    const participant = await this.participantRepo.findOne({
+      where: { conversationId, tenantId, employeeId, isActive: true },
+    });
+
+    return !!participant;
+  }
+
+  private async assertActiveEmployee(tenantId: string, employeeId: string): Promise<Employee> {
+    const employee = await this.employeeRepo.findOne({
+      where: { employeeId, tenantId, status: 'active' as any },
+    });
+
+    if (!employee) {
+      throw new Error('Employee not found for this tenant');
+    }
+
+    return employee;
+  }
+
+  private async assertParticipant(
+    conversationId: string,
+    tenantId: string,
+    employeeId: string
+  ): Promise<ChatParticipant> {
+    const participant = await this.participantRepo.findOne({
+      where: { conversationId, tenantId, employeeId, isActive: true },
+    });
+
+    if (!participant) {
+      throw new Error('Conversation not found or access denied');
+    }
+
+    return participant;
+  }
+
   // ==================== CONVERSATION OPERATIONS ====================
 
   async createConversation(data: {
@@ -36,6 +72,10 @@ export class ChatService {
       participantCount: data.participantIds.length,
       participantIds: data.participantIds,
     });
+
+    for (const employeeId of data.participantIds) {
+      await this.assertActiveEmployee(data.tenantId, employeeId);
+    }
 
     // Check if direct conversation already exists between these participants
     if (data.conversationType === ConversationType.DIRECT && data.participantIds.length === 2) {
@@ -79,7 +119,11 @@ export class ChatService {
       }
     }
 
-    const savedConversationWithRelations = await this.getConversationById(savedConversation.conversationId, data.tenantId);
+    const savedConversationWithRelations = await this.getConversationById(
+      savedConversation.conversationId,
+      data.tenantId,
+      data.createdBy
+    );
     if (!savedConversationWithRelations) {
       throw new Error('Failed to retrieve created conversation');
     }
@@ -112,8 +156,13 @@ export class ChatService {
 
   async getConversationById(
     conversationId: string,
-    tenantId: string
+    tenantId: string,
+    employeeId?: string
   ): Promise<ChatConversation | null> {
+    if (employeeId) {
+      await this.assertParticipant(conversationId, tenantId, employeeId);
+    }
+
     return await this.conversationRepo.findOne({
       where: { conversationId, tenantId, isActive: true },
       relations: ['creator', 'participants', 'participants.employee', 'lastMessageSender'],
@@ -166,12 +215,15 @@ export class ChatService {
   async updateConversation(
     conversationId: string,
     tenantId: string,
+    requesterId: string,
     updates: {
       name?: string;
       description?: string;
       avatarUrl?: string;
     }
   ): Promise<ChatConversation | null> {
+    await this.assertParticipant(conversationId, tenantId, requesterId);
+
     const conversation = await this.conversationRepo.findOne({
       where: { conversationId, tenantId },
     });
@@ -195,6 +247,8 @@ export class ChatService {
     attachments?: any[];
     replyToMessageId?: string;
   }): Promise<ChatMessage> {
+    await this.assertParticipant(data.conversationId, data.tenantId, data.senderId);
+
     const message = this.messageRepo.create({
       tenantId: data.tenantId,
       conversationId: data.conversationId,
@@ -238,12 +292,15 @@ export class ChatService {
   async getMessages(
     conversationId: string,
     tenantId: string,
+    employeeId: string,
     options: {
       limit?: number;
       offset?: number;
       beforeMessageId?: string;
     } = {}
   ): Promise<{ messages: ChatMessage[]; total: number }> {
+    await this.assertParticipant(conversationId, tenantId, employeeId);
+
     const query = this.messageRepo
       .createQueryBuilder('msg')
       .leftJoinAndSelect('msg.sender', 'sender')
@@ -282,6 +339,8 @@ export class ChatService {
     employeeId: string,
     tenantId: string
   ): Promise<void> {
+    await this.assertParticipant(conversationId, tenantId, employeeId);
+
     // Update participant last read timestamp
     await this.participantRepo.update(
       { conversationId, employeeId, tenantId },
@@ -352,6 +411,30 @@ export class ChatService {
     employeeId: string;
     role?: ParticipantRole;
   }): Promise<ChatParticipant> {
+    const conversation = await this.conversationRepo.findOne({
+      where: { conversationId: data.conversationId, tenantId: data.tenantId, isActive: true },
+    });
+
+    if (!conversation) {
+      throw new Error('Conversation not found');
+    }
+
+    await this.assertActiveEmployee(data.tenantId, data.employeeId);
+
+    const existingParticipant = await this.participantRepo.findOne({
+      where: {
+        tenantId: data.tenantId,
+        conversationId: data.conversationId,
+        employeeId: data.employeeId,
+      },
+    });
+
+    if (existingParticipant) {
+      existingParticipant.isActive = true;
+      existingParticipant.role = data.role || existingParticipant.role;
+      return await this.participantRepo.save(existingParticipant);
+    }
+
     const participant = this.participantRepo.create({
       ...data,
       role: data.role || ParticipantRole.MEMBER,
@@ -381,8 +464,13 @@ export class ChatService {
 
   async getParticipants(
     conversationId: string,
-    tenantId: string
+    tenantId: string,
+    requesterId?: string
   ): Promise<ChatParticipant[]> {
+    if (requesterId) {
+      await this.assertParticipant(conversationId, tenantId, requesterId);
+    }
+
     return await this.participantRepo.find({
       where: { conversationId, tenantId, isActive: true },
       relations: ['employee'],

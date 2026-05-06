@@ -28,9 +28,16 @@ export class SocketService {
   }
 
   public initialize(httpServer: HTTPServer): void {
+    const configuredOrigins = config.corsOrigin
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean);
+
     this.io = new SocketIOServer(httpServer, {
       cors: {
         origin: [
+          ...configuredOrigins,
+          'https://aurorahr.in',
           'http://localhost:5173',
           'http://localhost:3000',
           'http://localhost:5174',
@@ -111,6 +118,22 @@ export class SocketService {
             socketId: socket.id,
           });
 
+          if (!socket.employeeId || !socket.tenantId) {
+            socket.emit('error', { message: 'Not authenticated' });
+            return;
+          }
+
+          const isParticipant = await chatService.isParticipant(
+            conversationId,
+            socket.tenantId,
+            socket.employeeId
+          );
+
+          if (!isParticipant) {
+            socket.emit('error', { message: 'Conversation access denied' });
+            return;
+          }
+
           socket.join(`conversation:${conversationId}`);
           logger.info(`📥 ${socket.email} joined conversation: ${conversationId}`);
 
@@ -119,16 +142,14 @@ export class SocketService {
           console.log('✅ Room joined. Members:', room ? Array.from(room) : 'none');
 
           // Mark messages as read
-          if (socket.employeeId && socket.tenantId) {
-            await chatService.markMessagesAsRead(conversationId, socket.employeeId, socket.tenantId);
+          await chatService.markMessagesAsRead(conversationId, socket.employeeId, socket.tenantId);
 
-            // Notify read status to conversation
-            this.io!.to(`conversation:${conversationId}`).emit('messages_read', {
-              conversationId,
-              employeeId: socket.employeeId,
-              timestamp: new Date(),
-            });
-          }
+          // Notify read status to conversation
+          this.io!.to(`conversation:${conversationId}`).emit('messages_read', {
+            conversationId,
+            employeeId: socket.employeeId,
+            timestamp: new Date(),
+          });
         } catch (error) {
           console.error('❌ Error joining conversation:', error);
           logger.error('Error joining conversation:', error);
@@ -216,6 +237,7 @@ export class SocketService {
 
       // Typing indicator
       socket.on('typing_start', (conversationId: string) => {
+        if (!socket.employeeId || !socket.tenantId) return;
         socket.to(`conversation:${conversationId}`).emit('user_typing', {
           conversationId,
           employeeId: socket.employeeId,
@@ -224,6 +246,7 @@ export class SocketService {
       });
 
       socket.on('typing_stop', (conversationId: string) => {
+        if (!socket.employeeId || !socket.tenantId) return;
         socket.to(`conversation:${conversationId}`).emit('user_stopped_typing', {
           conversationId,
           employeeId: socket.employeeId,
@@ -294,6 +317,21 @@ export class SocketService {
       }) => {
         try {
           logger.info(`📞 Call initiated by ${socket.email} to ${data.targetEmployeeId}`);
+
+          if (!socket.employeeId || !socket.tenantId) {
+            socket.emit('error', { message: 'Not authenticated' });
+            return;
+          }
+
+          const [callerAllowed, targetAllowed] = await Promise.all([
+            chatService.isParticipant(data.conversationId, socket.tenantId, socket.employeeId),
+            chatService.isParticipant(data.conversationId, socket.tenantId, data.targetEmployeeId),
+          ]);
+
+          if (!callerAllowed || !targetAllowed) {
+            socket.emit('error', { message: 'Call participant is not part of this conversation' });
+            return;
+          }
 
           // Send call offer to target user
           const targetSocketIds = this.userSockets.get(data.targetEmployeeId);

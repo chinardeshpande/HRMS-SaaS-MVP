@@ -26,6 +26,11 @@ router.delete('/comments/:commentId', hrConnectController.deleteComment);
 // Group routes
 router.get('/groups', hrConnectController.getGroups);
 router.post('/groups', hrConnectController.createGroup);
+router.post('/groups/:groupId/join', hrConnectController.joinGroup);
+router.post('/groups/:groupId/leave', hrConnectController.leaveGroup);
+router.post('/groups/:groupId/members', hrConnectController.addGroupMembers);
+router.delete('/groups/:groupId/members/:employeeId', hrConnectController.removeGroupMember);
+router.put('/groups/:groupId/members/:employeeId', hrConnectController.updateGroupMemberRole);
 router.put('/groups/:groupId', hrConnectController.updateGroup);
 router.delete('/groups/:groupId', hrConnectController.deleteGroup);
 
