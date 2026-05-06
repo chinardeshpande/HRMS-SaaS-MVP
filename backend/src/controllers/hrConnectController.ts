@@ -3,6 +3,7 @@ import { hrConnectService } from '../services/hrConnectService';
 import { PostType, PostVisibility } from '../models/HRConnectPost';
 import { ReactionType } from '../models/HRConnectReaction';
 import { GroupType, GroupPrivacy } from '../models/HRConnectGroup';
+import { MemberRole } from '../models/HRConnectGroupMember';
 
 // ==================== POST CONTROLLERS ====================
 
@@ -443,15 +444,20 @@ export const getGroups = async (req: Request, res: Response) => {
 
 export const updateGroup = async (req: Request, res: Response) => {
   try {
-    const { tenantId } = req as any;
+    const { tenantId, user } = req as any;
     const { groupId } = req.params;
     const { name, description, privacy } = req.body;
 
-    const group = await hrConnectService.updateGroup(groupId, tenantId, {
-      name,
-      description,
-      privacy: privacy as GroupPrivacy,
-    });
+    const group = await hrConnectService.updateGroup(
+      groupId,
+      tenantId,
+      user.employeeId,
+      {
+        name,
+        description,
+        privacy: privacy as GroupPrivacy,
+      }
+    );
 
     if (!group) {
       return res.status(404).json({
@@ -481,10 +487,10 @@ export const updateGroup = async (req: Request, res: Response) => {
 
 export const deleteGroup = async (req: Request, res: Response) => {
   try {
-    const { tenantId } = req as any;
+    const { tenantId, user } = req as any;
     const { groupId } = req.params;
 
-    const deleted = await hrConnectService.deleteGroup(groupId, tenantId);
+    const deleted = await hrConnectService.deleteGroup(groupId, tenantId, user.employeeId);
 
     if (!deleted) {
       return res.status(404).json({
@@ -508,6 +514,127 @@ export const deleteGroup = async (req: Request, res: Response) => {
         code: 'INTERNAL_ERROR',
         message: error.message,
       },
+    });
+  }
+};
+
+export const addGroupMembers = async (req: Request, res: Response) => {
+  try {
+    const { tenantId, user } = req as any;
+    const { groupId } = req.params;
+    const { employeeIds } = req.body;
+
+    if (!Array.isArray(employeeIds) || employeeIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Employee IDs are required',
+        },
+      });
+    }
+
+    const group = await hrConnectService.addGroupMembers({
+      tenantId,
+      groupId,
+      requesterId: user.employeeId,
+      employeeIds,
+    });
+
+    res.status(200).json({ success: true, data: group });
+  } catch (error: any) {
+    console.error('Error adding group members:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: error.message },
+    });
+  }
+};
+
+export const removeGroupMember = async (req: Request, res: Response) => {
+  try {
+    const { tenantId, user } = req as any;
+    const { groupId, employeeId } = req.params;
+
+    const group = await hrConnectService.removeGroupMemberWithAuthorization(
+      groupId,
+      employeeId,
+      tenantId,
+      user.employeeId
+    );
+
+    res.status(200).json({ success: true, data: group });
+  } catch (error: any) {
+    console.error('Error removing group member:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: error.message },
+    });
+  }
+};
+
+export const updateGroupMemberRole = async (req: Request, res: Response) => {
+  try {
+    const { tenantId, user } = req as any;
+    const { groupId, employeeId } = req.params;
+    const { role } = req.body;
+
+    if (!role || !Object.values(MemberRole).includes(role as MemberRole)) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Valid role is required',
+        },
+      });
+    }
+
+    const group = await hrConnectService.updateGroupMemberRole(
+      groupId,
+      employeeId,
+      tenantId,
+      user.employeeId,
+      role as MemberRole
+    );
+
+    res.status(200).json({ success: true, data: group });
+  } catch (error: any) {
+    console.error('Error updating group member role:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: error.message },
+    });
+  }
+};
+
+export const joinGroup = async (req: Request, res: Response) => {
+  try {
+    const { tenantId, user } = req as any;
+    const { groupId } = req.params;
+
+    const group = await hrConnectService.joinGroup(groupId, tenantId, user.employeeId);
+    res.status(200).json({ success: true, data: group });
+  } catch (error: any) {
+    console.error('Error joining group:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: error.message },
+    });
+  }
+};
+
+export const leaveGroup = async (req: Request, res: Response) => {
+  try {
+    const { tenantId, user } = req as any;
+    const { groupId } = req.params;
+
+    const group = await hrConnectService.leaveGroup(groupId, tenantId, user.employeeId);
+    res.status(200).json({ success: true, data: group });
+  } catch (error: any) {
+    console.error('Error leaving group:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: error.message },
     });
   }
 };

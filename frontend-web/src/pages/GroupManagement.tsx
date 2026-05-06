@@ -25,6 +25,8 @@ interface GroupMemberWithActions extends GroupMember {
 
 export default function GroupManagement() {
   const navigate = useNavigate();
+  const currentUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null;
+  const currentEmployeeId = currentUser?.employeeId;
 
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
@@ -112,24 +114,7 @@ export default function GroupManagement() {
     if (!selectedGroup || selectedUsers.length === 0) return;
 
     try {
-      // In a real app, this would call the API
-      const newMembers: GroupMember[] = selectedUsers.map(userId => {
-        const user = availableUsers.find(u => u.userId === userId);
-        return {
-          userId: user.userId,
-          userName: user.userName,
-          userEmail: user.email,
-          role: 'member',
-          joinedAt: new Date().toISOString(),
-        };
-      });
-
-      const updatedGroup = {
-        ...selectedGroup,
-        members: [...selectedGroup.members, ...newMembers],
-        memberCount: selectedGroup.memberCount + newMembers.length,
-      };
-
+      const updatedGroup = await hrConnectService.addGroupMembers(selectedGroup.groupId, selectedUsers);
       setSelectedGroup(updatedGroup);
       setGroups(groups.map(g => g.groupId === updatedGroup.groupId ? updatedGroup : g));
       setShowAddMemberModal(false);
@@ -148,12 +133,7 @@ export default function GroupManagement() {
     }
 
     try {
-      const updatedGroup = {
-        ...selectedGroup,
-        members: selectedGroup.members.filter(m => m.userId !== userId),
-        memberCount: selectedGroup.memberCount - 1,
-      };
-
+      const updatedGroup = await hrConnectService.removeGroupMember(selectedGroup.groupId, userId);
       setSelectedGroup(updatedGroup);
       setGroups(groups.map(g => g.groupId === updatedGroup.groupId ? updatedGroup : g));
     } catch (error) {
@@ -165,13 +145,7 @@ export default function GroupManagement() {
     if (!selectedGroup) return;
 
     try {
-      const updatedGroup = {
-        ...selectedGroup,
-        members: selectedGroup.members.map(m =>
-          m.userId === userId ? { ...m, role: 'admin' as const } : m
-        ),
-      };
-
+      const updatedGroup = await hrConnectService.updateGroupMemberRole(selectedGroup.groupId, userId, 'admin');
       setSelectedGroup(updatedGroup);
       setGroups(groups.map(g => g.groupId === updatedGroup.groupId ? updatedGroup : g));
     } catch (error) {
@@ -435,8 +409,8 @@ export default function GroupManagement() {
                 <div className="space-y-3">
                   {selectedGroup.members.map((member) => {
                     const isAdmin = member.role === 'admin';
-                    const isCurrentUser = member.userId === 'current';
-                    const canModify = !isCurrentUser && selectedGroup.createdBy === 'current';
+                    const isCurrentUser = member.userId === currentEmployeeId;
+                    const canModify = !isCurrentUser && selectedGroup.createdBy === currentEmployeeId;
 
                     return (
                       <div

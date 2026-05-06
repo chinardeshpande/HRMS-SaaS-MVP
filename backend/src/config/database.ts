@@ -52,6 +52,8 @@ import { HRConnectGroupMember } from '../models/HRConnectGroupMember';
 import { ChatConversation } from '../models/ChatConversation';
 import { ChatMessage } from '../models/ChatMessage';
 import { ChatParticipant } from '../models/ChatParticipant';
+// Calendar entities
+import { CalendarEvent } from '../models/CalendarEvent';
 // Settings entities
 import { Subscription } from '../models/Subscription';
 import { OrganizationSettings } from '../models/OrganizationSettings';
@@ -132,6 +134,8 @@ export const AppDataSource = new DataSource({
     ChatConversation,
     ChatMessage,
     ChatParticipant,
+    // Calendar
+    CalendarEvent,
     // Settings
     Subscription,
     OrganizationSettings,

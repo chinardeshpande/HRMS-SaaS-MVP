@@ -46,6 +46,7 @@ const dateOnly = (days: number): Date => {
 
 const clearTenantData = async (tenantId: string): Promise<void> => {
   const tables = [
+    'calendar_events',
     'chat_messages',
     'chat_participants',
     'chat_conversations',

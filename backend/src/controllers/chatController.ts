@@ -78,10 +78,10 @@ export const getAllConversations = async (req: Request, res: Response) => {
 
 export const getConversationById = async (req: Request, res: Response) => {
   try {
-    const { tenantId } = req as any;
+    const { tenantId, user } = req as any;
     const { conversationId } = req.params;
 
-    const conversation = await chatService.getConversationById(conversationId, tenantId);
+    const conversation = await chatService.getConversationById(conversationId, tenantId, user.employeeId);
 
     if (!conversation) {
       return res.status(404).json({
@@ -111,15 +111,20 @@ export const getConversationById = async (req: Request, res: Response) => {
 
 export const updateConversation = async (req: Request, res: Response) => {
   try {
-    const { tenantId } = req as any;
+    const { tenantId, user } = req as any;
     const { conversationId } = req.params;
     const { name, description, avatarUrl } = req.body;
 
-    const conversation = await chatService.updateConversation(conversationId, tenantId, {
-      name,
-      description,
-      avatarUrl,
-    });
+    const conversation = await chatService.updateConversation(
+      conversationId,
+      tenantId,
+      user.employeeId,
+      {
+        name,
+        description,
+        avatarUrl,
+      }
+    );
 
     if (!conversation) {
       return res.status(404).json({
@@ -151,15 +156,20 @@ export const updateConversation = async (req: Request, res: Response) => {
 
 export const getMessages = async (req: Request, res: Response) => {
   try {
-    const { tenantId } = req as any;
+    const { tenantId, user } = req as any;
     const { conversationId } = req.params;
     const { limit = 50, offset = 0, beforeMessageId } = req.query;
 
-    const result = await chatService.getMessages(conversationId, tenantId, {
-      limit: parseInt(limit as string),
-      offset: parseInt(offset as string),
-      beforeMessageId: beforeMessageId as string,
-    });
+    const result = await chatService.getMessages(
+      conversationId,
+      tenantId,
+      user.employeeId,
+      {
+        limit: parseInt(limit as string),
+        offset: parseInt(offset as string),
+        beforeMessageId: beforeMessageId as string,
+      }
+    );
 
     res.status(200).json({
       success: true,
@@ -332,10 +342,10 @@ export const deleteMessage = async (req: Request, res: Response) => {
 
 export const getParticipants = async (req: Request, res: Response) => {
   try {
-    const { tenantId } = req as any;
+    const { tenantId, user } = req as any;
     const { conversationId } = req.params;
 
-    const participants = await chatService.getParticipants(conversationId, tenantId);
+    const participants = await chatService.getParticipants(conversationId, tenantId, user.employeeId);
 
     res.status(200).json({
       success: true,

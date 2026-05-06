@@ -370,6 +370,34 @@ export class HRConnectService {
 
   // ==================== GROUP OPERATIONS ====================
 
+  private async assertActiveEmployee(tenantId: string, employeeId: string): Promise<Employee> {
+    const employee = await this.employeeRepo.findOne({
+      where: { tenantId, employeeId, status: 'active' as any },
+    });
+
+    if (!employee) {
+      throw new Error('Employee not found for this tenant');
+    }
+
+    return employee;
+  }
+
+  private async assertGroupAdmin(
+    tenantId: string,
+    groupId: string,
+    employeeId: string
+  ): Promise<HRConnectGroupMember> {
+    const membership = await this.groupMemberRepo.findOne({
+      where: { tenantId, groupId, employeeId },
+    });
+
+    if (!membership || ![MemberRole.ADMIN, MemberRole.MODERATOR].includes(membership.role)) {
+      throw new Error('Group admin access required');
+    }
+
+    return membership;
+  }
+
   async createGroup(data: {
     tenantId: string;
     createdBy: string;
@@ -436,12 +464,15 @@ export class HRConnectService {
   async updateGroup(
     groupId: string,
     tenantId: string,
+    requesterId: string,
     updates: {
       name?: string;
       description?: string;
       privacy?: GroupPrivacy;
     }
   ): Promise<HRConnectGroup | null> {
+    await this.assertGroupAdmin(tenantId, groupId, requesterId);
+
     const group = await this.groupRepo.findOne({
       where: { groupId, tenantId },
     });
@@ -454,7 +485,9 @@ export class HRConnectService {
     return await this.groupRepo.save(group);
   }
 
-  async deleteGroup(groupId: string, tenantId: string): Promise<boolean> {
+  async deleteGroup(groupId: string, tenantId: string, requesterId: string): Promise<boolean> {
+    await this.assertGroupAdmin(tenantId, groupId, requesterId);
+
     const group = await this.groupRepo.findOne({
       where: { groupId, tenantId },
     });
@@ -475,6 +508,25 @@ export class HRConnectService {
     employeeId: string;
     role?: MemberRole;
   }): Promise<HRConnectGroupMember> {
+    const group = await this.groupRepo.findOne({
+      where: { groupId: data.groupId, tenantId: data.tenantId, isActive: true },
+    });
+
+    if (!group) {
+      throw new Error('Group not found');
+    }
+
+    await this.assertActiveEmployee(data.tenantId, data.employeeId);
+
+    const existingMember = await this.groupMemberRepo.findOne({
+      where: { tenantId: data.tenantId, groupId: data.groupId, employeeId: data.employeeId },
+    });
+
+    if (existingMember) {
+      existingMember.role = data.role || existingMember.role;
+      return await this.groupMemberRepo.save(existingMember);
+    }
+
     const member = this.groupMemberRepo.create({
       ...data,
       role: data.role || MemberRole.MEMBER,
@@ -503,6 +555,86 @@ export class HRConnectService {
     await this.groupRepo.decrement({ groupId }, 'memberCount', 1);
 
     return true;
+  }
+
+  async addGroupMembers(data: {
+    tenantId: string;
+    groupId: string;
+    requesterId: string;
+    employeeIds: string[];
+  }): Promise<HRConnectGroup> {
+    await this.assertGroupAdmin(data.tenantId, data.groupId, data.requesterId);
+
+    for (const employeeId of data.employeeIds) {
+      await this.addGroupMember({
+        tenantId: data.tenantId,
+        groupId: data.groupId,
+        employeeId,
+        role: MemberRole.MEMBER,
+      });
+    }
+
+    return await this.getGroupById(data.groupId, data.tenantId);
+  }
+
+  async updateGroupMemberRole(
+    groupId: string,
+    employeeId: string,
+    tenantId: string,
+    requesterId: string,
+    role: MemberRole
+  ): Promise<HRConnectGroup> {
+    await this.assertGroupAdmin(tenantId, groupId, requesterId);
+
+    const member = await this.groupMemberRepo.findOne({
+      where: { groupId, employeeId, tenantId },
+    });
+
+    if (!member) {
+      throw new Error('Group member not found');
+    }
+
+    member.role = role;
+    await this.groupMemberRepo.save(member);
+
+    return await this.getGroupById(groupId, tenantId);
+  }
+
+  async removeGroupMemberWithAuthorization(
+    groupId: string,
+    employeeId: string,
+    tenantId: string,
+    requesterId: string
+  ): Promise<HRConnectGroup> {
+    if (employeeId !== requesterId) {
+      await this.assertGroupAdmin(tenantId, groupId, requesterId);
+    }
+
+    await this.removeGroupMember(groupId, employeeId, tenantId);
+    return await this.getGroupById(groupId, tenantId);
+  }
+
+  async joinGroup(groupId: string, tenantId: string, employeeId: string): Promise<HRConnectGroup> {
+    await this.addGroupMember({ tenantId, groupId, employeeId, role: MemberRole.MEMBER });
+    return await this.getGroupById(groupId, tenantId);
+  }
+
+  async leaveGroup(groupId: string, tenantId: string, employeeId: string): Promise<HRConnectGroup> {
+    await this.removeGroupMember(groupId, employeeId, tenantId);
+    return await this.getGroupById(groupId, tenantId);
+  }
+
+  async getGroupById(groupId: string, tenantId: string): Promise<HRConnectGroup> {
+    const group = await this.groupRepo.findOne({
+      where: { groupId, tenantId, isActive: true },
+      relations: ['creator', 'department', 'members', 'members.employee'],
+    });
+
+    if (!group) {
+      throw new Error('Group not found');
+    }
+
+    return group;
   }
 
   async getGroupMembers(

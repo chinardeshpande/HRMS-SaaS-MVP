@@ -71,6 +71,21 @@ export interface GroupMember {
 }
 
 class HRConnectService {
+  private transformGroup(group: any): Group {
+    return {
+      ...group,
+      groupType: group.groupType || group.type || 'topic',
+      type: group.type || group.groupType,
+      members: (group.members || []).map((member: any) => ({
+        userId: member.employeeId,
+        userName: member.employee ? `${member.employee.firstName} ${member.employee.lastName}` : 'Unknown',
+        userEmail: member.employee?.email,
+        role: member.role,
+        joinedAt: member.joinedAt,
+      })),
+    };
+  }
+
   // Posts
   async getAllPosts(filters?: { visibility?: string; groupId?: string }): Promise<Post[]> {
     console.log('🔵 Fetching posts from API...');
@@ -155,18 +170,7 @@ class HRConnectService {
     const groups = response.data?.groups || [];
 
     // Ensure backward compatibility and proper structure
-    return groups.map((group: any) => ({
-      ...group,
-      groupType: group.groupType || group.type || 'topic',
-      type: group.type || group.groupType,
-      members: (group.members || []).map((member: any) => ({
-        userId: member.employeeId,
-        userName: member.employee ? `${member.employee.firstName} ${member.employee.lastName}` : 'Unknown',
-        userEmail: member.employee?.email,
-        role: member.role,
-        joinedAt: member.joinedAt,
-      })),
-    }));
+    return groups.map((group: any) => this.transformGroup(group));
   }
 
   async getGroups(): Promise<Group[]> {
@@ -175,7 +179,7 @@ class HRConnectService {
 
   async updateGroup(groupId: string, data: Partial<Group>): Promise<Group> {
     const response = await api.put(`/hr-connect/groups/${groupId}`, data);
-    return response.data;
+    return this.transformGroup(response.data);
   }
 
   async deleteGroup(groupId: string): Promise<void> {
@@ -184,15 +188,32 @@ class HRConnectService {
 
   async createGroup(groupData: Partial<Group>): Promise<Group> {
     const response = await api.post('/hr-connect/groups', groupData);
-    return response.data;
+    return this.transformGroup(response.data);
   }
 
-  async joinGroup(groupId: string): Promise<void> {
-    await api.post(`/hr-connect/groups/${groupId}/join`);
+  async joinGroup(groupId: string): Promise<Group> {
+    const response = await api.post(`/hr-connect/groups/${groupId}/join`);
+    return this.transformGroup(response.data);
   }
 
-  async leaveGroup(groupId: string): Promise<void> {
-    await api.post(`/hr-connect/groups/${groupId}/leave`);
+  async leaveGroup(groupId: string): Promise<Group> {
+    const response = await api.post(`/hr-connect/groups/${groupId}/leave`);
+    return this.transformGroup(response.data);
+  }
+
+  async addGroupMembers(groupId: string, employeeIds: string[]): Promise<Group> {
+    const response = await api.post(`/hr-connect/groups/${groupId}/members`, { employeeIds });
+    return this.transformGroup(response.data);
+  }
+
+  async removeGroupMember(groupId: string, employeeId: string): Promise<Group> {
+    const response = await api.delete(`/hr-connect/groups/${groupId}/members/${employeeId}`);
+    return this.transformGroup(response.data);
+  }
+
+  async updateGroupMemberRole(groupId: string, employeeId: string, role: 'admin' | 'moderator' | 'member'): Promise<Group> {
+    const response = await api.put(`/hr-connect/groups/${groupId}/members/${employeeId}`, { role });
+    return this.transformGroup(response.data);
   }
 }
 
