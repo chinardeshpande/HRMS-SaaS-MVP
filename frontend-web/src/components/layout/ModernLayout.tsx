@@ -117,7 +117,12 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
       icon: FolderIcon,
       // Available to all employees - their personal document library
     },
-    { name: 'Settings', href: '/settings', icon: Cog6ToothIcon }, // All roles
+    {
+      name: 'Settings',
+      href: '/settings',
+      icon: Cog6ToothIcon,
+      roles: [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN],
+    },
   ];
 
   // Filter navigation items based on user role
