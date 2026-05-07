@@ -264,7 +264,7 @@ export class ChatService {
 
     // Update conversation last message
     await this.conversationRepo.update(
-      { conversationId: data.conversationId },
+      { conversationId: data.conversationId, tenantId: data.tenantId },
       {
         lastMessageAt: new Date(),
         lastMessageText: data.content,
@@ -279,12 +279,13 @@ export class ChatService {
       .update()
       .set({ unreadCount: () => 'unreadCount + 1' })
       .where('conversationId = :conversationId', { conversationId: data.conversationId })
+      .andWhere('tenantId = :tenantId', { tenantId: data.tenantId })
       .andWhere('employeeId != :senderId', { senderId: data.senderId })
       .execute();
 
     // Return message with sender details
     return await this.messageRepo.findOne({
-      where: { messageId: savedMessage.messageId },
+      where: { messageId: savedMessage.messageId, tenantId: data.tenantId },
       relations: ['sender', 'replyToMessage', 'replyToMessage.sender'],
     }) as ChatMessage;
   }
@@ -313,7 +314,7 @@ export class ChatService {
 
     if (options.beforeMessageId) {
       const beforeMessage = await this.messageRepo.findOne({
-        where: { messageId: options.beforeMessageId },
+        where: { messageId: options.beforeMessageId, tenantId, conversationId },
       });
       if (beforeMessage) {
         query.andWhere('msg.createdAt < :beforeDate', { beforeDate: beforeMessage.createdAt });
@@ -356,6 +357,7 @@ export class ChatService {
       .update()
       .set({ status: MessageStatus.READ })
       .where('conversationId = :conversationId', { conversationId })
+      .andWhere('tenantId = :tenantId', { tenantId })
       .andWhere('senderId != :employeeId', { employeeId })
       .andWhere('status != :status', { status: MessageStatus.READ })
       .execute();

@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { authenticate } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth';
+import { UserRole } from '../../../shared/types';
 import {
   getDesignations,
   getDesignationById,
@@ -20,12 +21,12 @@ router.get('/', getDesignations);
 router.get('/:id', getDesignationById);
 
 // POST /api/v1/designations - Create new designation
-router.post('/', createDesignation);
+router.post('/', authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), createDesignation);
 
 // PUT /api/v1/designations/:id - Update designation
-router.put('/:id', updateDesignation);
+router.put('/:id', authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), updateDesignation);
 
 // DELETE /api/v1/designations/:id - Delete designation
-router.delete('/:id', deleteDesignation);
+router.delete('/:id', authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), deleteDesignation);
 
 export default router;

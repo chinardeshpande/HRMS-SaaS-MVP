@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { authenticate } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth';
+import { UserRole } from '../../../shared/types';
 import {
   getCategories,
   getCategoryById,
@@ -20,12 +21,12 @@ router.get('/', getCategories);
 router.get('/:id', getCategoryById);
 
 // POST /api/v1/document-categories - Create new category
-router.post('/', createCategory);
+router.post('/', authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), createCategory);
 
 // PUT /api/v1/document-categories/:id - Update category
-router.put('/:id', updateCategory);
+router.put('/:id', authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), updateCategory);
 
 // DELETE /api/v1/document-categories/:id - Delete category
-router.delete('/:id', deleteCategory);
+router.delete('/:id', authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), deleteCategory);
 
 export default router;
