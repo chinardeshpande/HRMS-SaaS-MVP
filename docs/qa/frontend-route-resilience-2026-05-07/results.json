@@ -1,9 +1,9 @@
 {
-  "runId": "ROUTE-2026-05-07-1778144821808",
+  "runId": "ROUTE-2026-05-07-1778150319637",
   "target": "https://aurorahr.in",
-  "generatedAt": "2026-05-07T09:07:20.570Z",
+  "generatedAt": "2026-05-07T10:38:59.890Z",
   "summary": {
-    "passed": 8,
+    "passed": 9,
     "failed": 0
   },
   "results": [
@@ -28,7 +28,7 @@
       "title": "HR dashboard route renders after session restore",
       "role": "hr",
       "status": "passed",
-      "evidence": "200, chars=2429, docs/qa/frontend-route-resilience-2026-05-07/screenshots/hr_dashboard-hr.png",
+      "evidence": "200, chars=2430, docs/qa/frontend-route-resilience-2026-05-07/screenshots/hr_dashboard-hr.png",
       "notes": ""
     },
     {
@@ -60,7 +60,15 @@
       "title": "Employee navigation excludes restricted Settings workflow",
       "role": "employee",
       "status": "passed",
-      "evidence": "200, chars=2268, docs/qa/frontend-route-resilience-2026-05-07/screenshots/employee_nav-employee.png",
+      "evidence": "200, chars=2269, docs/qa/frontend-route-resilience-2026-05-07/screenshots/employee_nav-employee.png",
+      "notes": ""
+    },
+    {
+      "id": "EMPLOYEE_SETTINGS_DIRECT",
+      "title": "Employee direct Settings access shows controlled permission state",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "200, chars=613, docs/qa/frontend-route-resilience-2026-05-07/screenshots/employee_settings_direct-employee.png",
       "notes": ""
     },
     {
