@@ -1,0 +1,116 @@
+{
+  "runId": "SEC-2026-05-07-1778143632282",
+  "target": "https://aurorahr.in",
+  "generatedAt": "2026-05-07T08:47:14.341Z",
+  "summary": {
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0
+  },
+  "results": [
+    {
+      "id": "AUTH_EMPLOYEE",
+      "title": "Demo login as employee",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "/demo/login",
+      "notes": "demo.employee@aurorahr.in"
+    },
+    {
+      "id": "AUTH_MANAGER",
+      "title": "Demo login as manager",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "/demo/login",
+      "notes": "demo.manager@aurorahr.in"
+    },
+    {
+      "id": "AUTH_HR",
+      "title": "Demo login as hr",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "/demo/login",
+      "notes": "demo.hr@aurorahr.in"
+    },
+    {
+      "id": "AUTH_ADMIN",
+      "title": "Demo login as admin",
+      "role": "admin",
+      "status": "passed",
+      "evidence": "/demo/login",
+      "notes": "demo.admin@aurorahr.in"
+    },
+    {
+      "id": "RBAC_01",
+      "title": "Employees can read department master data but cannot mutate it",
+      "role": "employee/hr",
+      "status": "passed",
+      "evidence": "employee denied with 403; HR created 56a3ba82-979e-4616-9d9a-f93e3716356b",
+      "notes": ""
+    },
+    {
+      "id": "RBAC_02",
+      "title": "Employees can read designations but cannot mutate them",
+      "role": "employee/hr",
+      "status": "passed",
+      "evidence": "employee denied with 403; HR created 0c37cdab-4741-462a-8ee5-6a98ad64b09c",
+      "notes": ""
+    },
+    {
+      "id": "RBAC_03",
+      "title": "Employees can read document categories but cannot manage category taxonomy",
+      "role": "employee/hr",
+      "status": "passed",
+      "evidence": "employee denied with 403; HR created 5bdd6143-21d2-462f-9292-1263cfff1a7b",
+      "notes": ""
+    },
+    {
+      "id": "RBAC_04",
+      "title": "Employees cannot access tenant billing payment methods",
+      "role": "employee/hr",
+      "status": "passed",
+      "evidence": "employee denied with 403; HR method count=0",
+      "notes": ""
+    },
+    {
+      "id": "HIST_01",
+      "title": "Employees cannot read another employee position history",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "otherEmployee=ca2766f2-e6ef-495f-ae96-55f8a2cd557e; denied=403",
+      "notes": ""
+    },
+    {
+      "id": "HIST_02",
+      "title": "Employees can read their own compensation history only",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "self allowed; otherEmployee=ca2766f2-e6ef-495f-ae96-55f8a2cd557e; denied=403",
+      "notes": ""
+    },
+    {
+      "id": "HIST_03",
+      "title": "Managers can read team position history but not team compensation history",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "directReport=cc6fa95d-c517-41d3-9893-1990a9b5fd5e; position allowed; compensation denied=403",
+      "notes": ""
+    },
+    {
+      "id": "HRC_01",
+      "title": "HR Connect comment edge case returns a controlled 404 instead of a blank-screen-causing server error",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "missing post produced 404",
+      "notes": ""
+    },
+    {
+      "id": "HRC_02",
+      "title": "HR Connect reaction edge case is tenant-scoped and controlled",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "missing post produced 404",
+      "notes": ""
+    }
+  ]
+}
