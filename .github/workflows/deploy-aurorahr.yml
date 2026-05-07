@@ -223,18 +223,28 @@ jobs:
 
       - name: Health Check
         run: |
-          sleep 10
+          backend_response=000
+          frontend_response=000
 
-          # Check backend
-          backend_response=$(curl -s -o /dev/null -w "%{http_code}" https://aurorahr.in/health)
-          if [ $backend_response -ne 200 ]; then
+          for attempt in {1..18}; do
+            backend_response=$(curl -s -o /dev/null -w "%{http_code}" https://aurorahr.in/health || echo "000")
+            frontend_response=$(curl -s -o /dev/null -w "%{http_code}" https://aurorahr.in/ || echo "000")
+
+            if [ "$backend_response" = "200" ] && [ "$frontend_response" = "200" ]; then
+              echo "Backend and frontend are healthy on attempt $attempt"
+              break
+            fi
+
+            echo "Health check attempt $attempt failed: backend=$backend_response frontend=$frontend_response"
+            sleep 5
+          done
+
+          if [ "$backend_response" != "200" ]; then
             echo "Backend health check failed with status $backend_response"
             exit 1
           fi
 
-          # Check frontend
-          frontend_response=$(curl -s -o /dev/null -w "%{http_code}" https://aurorahr.in/)
-          if [ $frontend_response -ne 200 ]; then
+          if [ "$frontend_response" != "200" ]; then
             echo "Frontend health check failed with status $frontend_response"
             exit 1
           fi
