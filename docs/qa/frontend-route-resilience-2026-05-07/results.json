@@ -1,0 +1,75 @@
+{
+  "runId": "ROUTE-2026-05-07-1778144821808",
+  "target": "https://aurorahr.in",
+  "generatedAt": "2026-05-07T09:07:20.570Z",
+  "summary": {
+    "passed": 8,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "PUBLIC_404",
+      "title": "Unknown routes show a controlled not-found page",
+      "role": "public",
+      "status": "passed",
+      "evidence": "200, chars=88, docs/qa/frontend-route-resilience-2026-05-07/screenshots/public_404-public.png",
+      "notes": ""
+    },
+    {
+      "id": "PUBLIC_LOGIN",
+      "title": "Login route renders without a blank screen",
+      "role": "public",
+      "status": "passed",
+      "evidence": "200, chars=715, docs/qa/frontend-route-resilience-2026-05-07/screenshots/public_login-public.png",
+      "notes": ""
+    },
+    {
+      "id": "HR_DASHBOARD",
+      "title": "HR dashboard route renders after session restore",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "200, chars=2429, docs/qa/frontend-route-resilience-2026-05-07/screenshots/hr_dashboard-hr.png",
+      "notes": ""
+    },
+    {
+      "id": "HR_ATTENDANCE",
+      "title": "Attendance route renders after lazy chunk load",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "200, chars=778, docs/qa/frontend-route-resilience-2026-05-07/screenshots/hr_attendance-hr.png",
+      "notes": ""
+    },
+    {
+      "id": "HR_LEAVE",
+      "title": "Leave route renders after lazy chunk load",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "200, chars=965, docs/qa/frontend-route-resilience-2026-05-07/screenshots/hr_leave-hr.png",
+      "notes": ""
+    },
+    {
+      "id": "HR_CONNECT",
+      "title": "HR Connect route renders after lazy chunk load",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "200, chars=1603, docs/qa/frontend-route-resilience-2026-05-07/screenshots/hr_connect-employee.png",
+      "notes": ""
+    },
+    {
+      "id": "EMPLOYEE_NAV",
+      "title": "Employee navigation excludes restricted Settings workflow",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "200, chars=2268, docs/qa/frontend-route-resilience-2026-05-07/screenshots/employee_nav-employee.png",
+      "notes": ""
+    },
+    {
+      "id": "HR_SETTINGS",
+      "title": "HR can still access Settings after role-scoped navigation change",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "200, chars=1262, docs/qa/frontend-route-resilience-2026-05-07/screenshots/hr_settings-hr.png",
+      "notes": ""
+    }
+  ]
+}
