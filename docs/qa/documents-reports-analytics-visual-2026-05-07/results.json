@@ -1,0 +1,272 @@
+{
+  "runId": "DRA-2026-05-07-1778131807827",
+  "runDate": "2026-05-07",
+  "baseUrl": "https://aurorahr.in",
+  "apiBaseUrl": "https://aurorahr.in/api/v1",
+  "results": [
+    {
+      "id": "AUTH_EMPLOYEE",
+      "title": "Demo login as employee",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "API /demo/login",
+      "notes": "demo.employee@aurorahr.in"
+    },
+    {
+      "id": "AUTH_MANAGER",
+      "title": "Demo login as manager",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "API /demo/login",
+      "notes": "demo.manager@aurorahr.in"
+    },
+    {
+      "id": "AUTH_HR",
+      "title": "Demo login as hr",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "API /demo/login",
+      "notes": "demo.hr@aurorahr.in"
+    },
+    {
+      "id": "AUTH_ADMIN",
+      "title": "Demo login as admin",
+      "role": "admin",
+      "status": "passed",
+      "evidence": "API /demo/login",
+      "notes": "demo.admin@aurorahr.in"
+    },
+    {
+      "id": "DOC_01",
+      "title": "HR can list active document templates",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "templates=3, selected=Confirmation Letter",
+      "notes": ""
+    },
+    {
+      "id": "DOC_02",
+      "title": "HR can preview a template with sample employee data",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "previewLength=262",
+      "notes": ""
+    },
+    {
+      "id": "DOC_03",
+      "title": "HR can generate a PDF document and the platform records it in history",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "pdfBytes=1710, documentId=2da479a9-cd08-447e-bed4-7f8365c2d980",
+      "notes": ""
+    },
+    {
+      "id": "DOC_04",
+      "title": "HR can download a previously generated document from persistent history",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "downloadBytes=1710",
+      "notes": ""
+    },
+    {
+      "id": "DOC_05",
+      "title": "Employee cannot generate HR-controlled documents",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "403 forbidden confirmed",
+      "notes": ""
+    },
+    {
+      "id": "REP_01",
+      "title": "HR can run Headcount report",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Headcount Report: records=5",
+      "notes": ""
+    },
+    {
+      "id": "REP_02",
+      "title": "HR can run Attendance summary report",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Attendance Summary: records=12",
+      "notes": ""
+    },
+    {
+      "id": "REP_03",
+      "title": "HR can run Leave balance report",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Leave Balance & Usage: records=36",
+      "notes": ""
+    },
+    {
+      "id": "REP_04",
+      "title": "HR can run Joiners and leavers report",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Joiners & Leavers Report: records=4",
+      "notes": ""
+    },
+    {
+      "id": "REP_05",
+      "title": "HR can run Confirmation due report",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Confirmation Due Report: records=3",
+      "notes": ""
+    },
+    {
+      "id": "REP_06",
+      "title": "HR can run Attrition report",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Attrition Report: records=0",
+      "notes": ""
+    },
+    {
+      "id": "REP_07",
+      "title": "HR can run PMS completion report",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "PMS Completion Report: records=4",
+      "notes": ""
+    },
+    {
+      "id": "REP_08",
+      "title": "HR can run Missing documents report",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Missing Documents Report: records=12",
+      "notes": ""
+    },
+    {
+      "id": "REP_09",
+      "title": "Manager can run permitted team/organization reports",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "records=5",
+      "notes": ""
+    },
+    {
+      "id": "REP_10",
+      "title": "Employee is blocked from HR reporting endpoints",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "403 forbidden confirmed",
+      "notes": ""
+    },
+    {
+      "id": "REP_11",
+      "title": "HR can save and execute a reusable report configuration",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "reportId=0ab99150-38f9-4d51-9f45-0506e91c2745, records=5",
+      "notes": ""
+    },
+    {
+      "id": "ANA_01",
+      "title": "HR can run semantic analytics over workforce data",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "metrics=headcount,attendance_rate,leave_utilization,review_completion_rate",
+      "notes": ""
+    },
+    {
+      "id": "ANA_02",
+      "title": "Manager can access governed analytics query capability",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "answer=attendance rate: 83.0601092896174863",
+      "notes": ""
+    },
+    {
+      "id": "ANA_03",
+      "title": "Employee is blocked from management analytics",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "403 forbidden confirmed",
+      "notes": ""
+    },
+    {
+      "id": "ANA_04",
+      "title": "Manager dashboard stats are role-aware and load without tenant-wide leakage errors",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "teamEmployees=4, presentToday=0",
+      "notes": ""
+    },
+    {
+      "id": "VIS_DOC_TEMPLATES",
+      "title": "Document templates catalog with HR generation entry points",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/doc_templates.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_DOC_HISTORY",
+      "title": "Generated document history and download actions",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/doc_history.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_REPORTS_HOME",
+      "title": "Reports and analytics command center",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/reports_home.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_ANALYTICS_QUERY",
+      "title": "Semantic analytics query with calculated HR metrics",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/analytics_query.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_HEADCOUNT_REPORT",
+      "title": "Headcount report result table and export action",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/headcount_report.png",
+      "notes": ""
+    }
+  ],
+  "screenshots": [
+    {
+      "id": "DOC_TEMPLATES",
+      "title": "Document templates catalog with HR generation entry points",
+      "role": "hr",
+      "path": "screenshots/doc_templates.png"
+    },
+    {
+      "id": "DOC_HISTORY",
+      "title": "Generated document history and download actions",
+      "role": "hr",
+      "path": "screenshots/doc_history.png"
+    },
+    {
+      "id": "REPORTS_HOME",
+      "title": "Reports and analytics command center",
+      "role": "hr",
+      "path": "screenshots/reports_home.png"
+    },
+    {
+      "id": "ANALYTICS_QUERY",
+      "title": "Semantic analytics query with calculated HR metrics",
+      "role": "hr",
+      "path": "screenshots/analytics_query.png"
+    },
+    {
+      "id": "HEADCOUNT_REPORT",
+      "title": "Headcount report result table and export action",
+      "role": "hr",
+      "path": "screenshots/headcount_report.png"
+    }
+  ]
+}

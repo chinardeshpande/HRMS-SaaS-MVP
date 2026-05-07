@@ -42,7 +42,7 @@ async function loadPlaywright() {
 
 async function api(method, urlPath, body, persona = null, options = {}) {
   const headers = {};
-  if (!options.blob) headers['Content-Type'] = 'application/json';
+  if (body !== undefined) headers['Content-Type'] = 'application/json';
   if (persona) {
     const session = await login(persona);
     headers.Authorization = `Bearer ${session.tokens.token}`;
