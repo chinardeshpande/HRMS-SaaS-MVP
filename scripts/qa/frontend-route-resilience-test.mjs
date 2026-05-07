@@ -147,7 +147,7 @@ async function writeReport() {
     '',
     '## Scope',
     '',
-    'This run verifies that high-use routes render meaningful content after route-level code splitting, that the controlled 404 page works, and that employee navigation no longer exposes restricted Settings workflows.',
+    'This run verifies that high-use routes render meaningful content after route-level code splitting, that the controlled 404 page works, that employee navigation no longer exposes restricted Settings workflows, and that direct employee access to Settings shows a controlled permission state.',
     '',
     '## Results',
     '',
@@ -227,6 +227,14 @@ async function main() {
       path: '/dashboard',
       expectText: ['Dashboard'],
       checkNavExcludes: ['Settings'],
+    },
+    {
+      id: 'EMPLOYEE_SETTINGS_DIRECT',
+      title: 'Employee direct Settings access shows controlled permission state',
+      role: 'employee',
+      path: '/settings',
+      expectText: ['Settings are available to HR administrators'],
+      forbidText: ['Manage your plan and billing', 'Users, invitations, and permissions'],
     },
     {
       id: 'HR_SETTINGS',

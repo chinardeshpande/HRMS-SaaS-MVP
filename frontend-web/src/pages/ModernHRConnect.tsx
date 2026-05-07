@@ -34,6 +34,22 @@ export default function ModernHRConnect() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [tickets, setTickets] = useState<HRTicket[]>([]);
   const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState<{
+    show: boolean;
+    message: string;
+    type: 'success' | 'error';
+  }>({ show: false, message: '', type: 'success' });
+
+  const getErrorMessage = (error: any, fallback: string) =>
+    error?.response?.data?.error?.message
+      || error?.response?.data?.message
+      || error?.message
+      || fallback;
+
+  const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => setNotification(prev => ({ ...prev, show: false })), 5000);
+  };
 
   // Update tab when URL parameter changes
   useEffect(() => {
@@ -176,7 +192,7 @@ export default function ModernHRConnect() {
       setPosts(data);
     } catch (error) {
       console.error('❌ ModernHRConnect: Error fetching posts:', error);
-      alert(`Error loading posts: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      showNotification(getErrorMessage(error, 'Unable to load posts right now.'), 'error');
     } finally {
       setLoading(false);
     }
@@ -189,6 +205,7 @@ export default function ModernHRConnect() {
       setConversations(data);
     } catch (error) {
       console.error('Error fetching conversations:', error);
+      showNotification(getErrorMessage(error, 'Unable to load conversations right now.'), 'error');
     } finally {
       setLoading(false);
     }
@@ -201,6 +218,7 @@ export default function ModernHRConnect() {
       setTickets(data);
     } catch (error) {
       console.error('Error fetching tickets:', error);
+      showNotification(getErrorMessage(error, 'Unable to load tickets right now.'), 'error');
     } finally {
       setLoading(false);
     }
@@ -213,6 +231,7 @@ export default function ModernHRConnect() {
       setGroups(data);
     } catch (error) {
       console.error('Error fetching groups:', error);
+      showNotification(getErrorMessage(error, 'Unable to load groups right now.'), 'error');
     } finally {
       setLoading(false);
     }
@@ -226,6 +245,7 @@ export default function ModernHRConnect() {
       setAvailableEmployees(filtered);
     } catch (error) {
       console.error('Error fetching employees:', error);
+      showNotification(getErrorMessage(error, 'Unable to load colleagues for chat right now.'), 'error');
     }
   };
 
@@ -233,7 +253,7 @@ export default function ModernHRConnect() {
     e.preventDefault();
 
     if (!postTitle.trim() || !postContent.trim()) {
-      alert('Please provide both title and content for your post');
+      showNotification('Please provide both title and content for your post.', 'error');
       return;
     }
 
@@ -259,9 +279,10 @@ export default function ModernHRConnect() {
       await fetchPosts();
 
       console.log('✅ Post created successfully and list refreshed');
+      showNotification('Post published successfully.');
     } catch (error) {
       console.error('❌ Error creating post:', error);
-      alert(`Failed to create post: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      showNotification(getErrorMessage(error, 'Failed to create post.'), 'error');
     }
   };
 
@@ -278,7 +299,7 @@ export default function ModernHRConnect() {
       await fetchPosts();
     } catch (error) {
       console.error('❌ Error handling reaction:', error);
-      alert(`Error adding reaction: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      showNotification(getErrorMessage(error, 'Unable to update reaction.'), 'error');
     }
   };
 
@@ -307,9 +328,10 @@ export default function ModernHRConnect() {
       console.log('✅ Comment added, result:', result);
       setCommentInputs(prev => ({ ...prev, [postId]: '' }));
       await fetchPosts();
+      showNotification('Comment added.');
     } catch (error) {
       console.error('❌ Error adding comment:', error);
-      alert(`Error adding comment: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      showNotification(getErrorMessage(error, 'Unable to add comment.'), 'error');
     }
   };
 
@@ -325,8 +347,10 @@ export default function ModernHRConnect() {
       });
       setShowTicketModal(false);
       fetchTickets();
+      showNotification('Ticket created successfully.');
     } catch (error) {
       console.error('Error creating ticket:', error);
+      showNotification(getErrorMessage(error, 'Unable to create ticket.'), 'error');
     }
   };
 
@@ -370,6 +394,19 @@ export default function ModernHRConnect() {
   return (
     <ModernLayout>
       <div className="space-y-6">
+        {notification.show && (
+          <div
+            className={`rounded-lg border px-4 py-3 text-sm font-medium ${
+              notification.type === 'success'
+                ? 'border-green-200 bg-green-50 text-green-800'
+                : 'border-red-200 bg-red-50 text-red-800'
+            }`}
+            role="status"
+          >
+            {notification.message}
+          </div>
+        )}
+
         {/* Header */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -1173,7 +1210,7 @@ export default function ModernHRConnect() {
                               } catch (error: any) {
                                 console.error('Error creating conversation:', error);
                                 console.error('Error details:', error.response?.data);
-                                alert(`Failed to create conversation: ${error.response?.data?.error?.message || error.message || 'Unknown error'}`);
+                                showNotification(getErrorMessage(error, 'Failed to create conversation.'), 'error');
                               }
                             }}
                             className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors text-left"

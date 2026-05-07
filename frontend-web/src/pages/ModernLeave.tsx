@@ -674,7 +674,7 @@ export default function ModernLeave() {
                               myLeaveRequests.length === 0
                                 ? {
                                     label: "Apply Leave",
-                                    onClick: () => setShowApplyModal(true),
+                                    onClick: () => setShowApplyLeaveModal(true),
                                     icon: <PlusIcon className="h-5 w-5 mr-2" />,
                                   }
                                 : undefined

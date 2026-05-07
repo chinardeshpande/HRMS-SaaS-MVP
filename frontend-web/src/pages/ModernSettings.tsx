@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useAuth } from '../context/AuthContext';
@@ -29,13 +30,10 @@ type SettingsTab =
 function ModernSettingsContent() {
   const { user } = useAuth();
   const userRole = user?.role?.toUpperCase();
-  const isEmployee = userRole === 'EMPLOYEE';
-  const isManager = userRole === 'MANAGER';
   const isAdmin = userRole === 'HR_ADMIN' || userRole === 'SYSTEM_ADMIN';
 
   // Default tab based on role
   const getDefaultTab = (): SettingsTab => {
-    if (isEmployee || isManager) return 'employee-preferences';
     return 'subscription';
   };
 
@@ -45,6 +43,40 @@ function ModernSettingsContent() {
   useEffect(() => {
     setActiveTab(getDefaultTab());
   }, [userRole]);
+
+  if (!isAdmin) {
+    return (
+      <ModernLayout>
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                <CogIcon className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+                <p className="text-sm text-gray-500">Administrative workspace controls</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+            <CogIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <h2 className="text-lg font-semibold text-gray-900">Settings are available to HR administrators</h2>
+            <p className="mt-2 text-sm text-gray-500 max-w-xl mx-auto">
+              Organization, billing, user management, and policy settings require HR administrator access.
+              Your personal HR actions remain available from the main workspace modules.
+            </p>
+            <div className="mt-6">
+              <Link to="/dashboard" className="btn btn-primary">
+                Back to Dashboard
+              </Link>
+            </div>
+          </div>
+        </div>
+      </ModernLayout>
+    );
+  }
 
   // Define all possible tabs with roles
   const allTabs = [
