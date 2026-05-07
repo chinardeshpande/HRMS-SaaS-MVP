@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Pages
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -57,84 +58,113 @@ const ModernEmployeeAttendance = lazy(() => import('./pages/ModernEmployeeAttend
 function RouteFallback() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-primary-600" />
+      <div className="flex flex-col items-center gap-4">
+        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-primary-600" />
+        <p className="text-sm text-gray-600">Loading workspace...</p>
+      </div>
+    </div>
+  );
+}
+
+function NotFoundPage() {
+  const hasSession = Boolean(localStorage.getItem('tokens'));
+  const safePath = hasSession ? '/dashboard' : '/login';
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 max-w-lg w-full text-center">
+        <div className="mx-auto h-12 w-12 rounded-full bg-primary-50 flex items-center justify-center text-primary-700 font-semibold">
+          404
+        </div>
+        <h1 className="mt-5 text-xl font-semibold text-gray-900">Page not found</h1>
+        <p className="mt-2 text-sm text-gray-600">
+          The page you opened is not available in this workspace.
+        </p>
+        <Link to={safePath} className="btn-primary mt-6 inline-flex">
+          Go to {hasSession ? 'dashboard' : 'login'}
+        </Link>
+      </div>
     </div>
   );
 }
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
-              {/* Public routes */}
-              <Route path="/login" element={<ModernLogin />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password/:token" element={<ResetPassword />} />
+    <ErrorBoundary>
+      <AuthProvider>
+        <BrowserRouter>
+          <ErrorBoundary>
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
+                {/* Public routes */}
+                <Route path="/login" element={<ModernLogin />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-              {/* New Registration Flow */}
-              <Route path="/register" element={<Signup />} />
-              <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="/setup-password" element={<SetupPassword />} />
-              <Route path="/welcome" element={<Welcome />} />
+                {/* New Registration Flow */}
+                <Route path="/register" element={<Signup />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/setup-password" element={<SetupPassword />} />
+                <Route path="/welcome" element={<Welcome />} />
 
-              {/* Legacy routes (kept for backward compatibility) */}
-              <Route path="/signup" element={<CompanySignup />} />
-              <Route path="/email-verification-pending" element={<EmailVerificationPending />} />
-              <Route path="/verify-email/:token" element={<EmailVerification />} />
-              <Route path="/create-password" element={<CreatePassword />} />
-              <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
-              <Route path="/features/:featureId" element={<FeatureDetail />} />
+                {/* Legacy routes (kept for backward compatibility) */}
+                <Route path="/signup" element={<CompanySignup />} />
+                <Route path="/email-verification-pending" element={<EmailVerificationPending />} />
+                <Route path="/verify-email/:token" element={<EmailVerification />} />
+                <Route path="/create-password" element={<CreatePassword />} />
+                <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
+                <Route path="/features/:featureId" element={<FeatureDetail />} />
 
-              {/* Onboarding route (semi-protected - requires verified registration) */}
-              <Route path="/onboarding-wizard" element={<OnboardingWizard />} />
+                {/* Onboarding route (semi-protected - requires verified registration) */}
+                <Route path="/onboarding-wizard" element={<OnboardingWizard />} />
 
-              {/* Protected routes */}
-              <Route path="/dashboard" element={<ModernDashboard />} />
-              <Route path="/employees" element={<ModernEmployees />} />
-              <Route path="/employees/:id" element={<ModernEmployeeDetail />} />
-              <Route path="/departments" element={<ModernDepartments />} />
-              <Route path="/designations" element={<ModernDesignations />} />
-              <Route path="/attendance" element={<ModernAttendance />} />
-              <Route path="/leave" element={<ModernLeave />} />
-              <Route path="/performance" element={<ModernPerformanceDashboard />} />
-              <Route path="/performance/:reviewId" element={<PerformanceReviewDetails />} />
-              <Route path="/onboarding" element={<ModernOnboardingDashboard />} />
-              <Route path="/onboarding/candidate/:candidateId" element={<CandidateDetails />} />
-              <Route path="/probation/case/:probationId" element={<ProbationCaseDetails />} />
-              <Route path="/onboarding-dashboard" element={<ModernOnboardingDashboard />} />
-              <Route path="/probation" element={<ModernProbationTracker />} />
-              <Route path="/exit" element={<ModernExitDashboard />} />
-              <Route path="/exit/:exitId" element={<ExitCaseDetails />} />
-              <Route path="/calendar" element={<ModernCalendar />} />
-              <Route path="/hr-connect" element={<ModernHRConnect />} />
-              <Route path="/chat/:conversationId" element={<ChatConversation />} />
-              <Route path="/ticket/:ticketId" element={<TicketDetails />} />
-              <Route path="/groups" element={<GroupManagement />} />
-              <Route path="/reports" element={<ModernReports />} />
-              <Route path="/documents" element={<ModernDocuments />} />
-              <Route path="/my-hr-documents" element={<MyHRDocuments />} />
-              <Route path="/org-chart" element={<ModernOrgChart />} />
-              <Route path="/settings" element={<ModernSettings />} />
+                {/* Protected routes */}
+                <Route path="/dashboard" element={<ModernDashboard />} />
+                <Route path="/employees" element={<ModernEmployees />} />
+                <Route path="/employees/:id" element={<ModernEmployeeDetail />} />
+                <Route path="/departments" element={<ModernDepartments />} />
+                <Route path="/designations" element={<ModernDesignations />} />
+                <Route path="/attendance" element={<ModernAttendance />} />
+                <Route path="/leave" element={<ModernLeave />} />
+                <Route path="/performance" element={<ModernPerformanceDashboard />} />
+                <Route path="/performance/:reviewId" element={<PerformanceReviewDetails />} />
+                <Route path="/onboarding" element={<ModernOnboardingDashboard />} />
+                <Route path="/onboarding/candidate/:candidateId" element={<CandidateDetails />} />
+                <Route path="/probation/case/:probationId" element={<ProbationCaseDetails />} />
+                <Route path="/onboarding-dashboard" element={<ModernOnboardingDashboard />} />
+                <Route path="/probation" element={<ModernProbationTracker />} />
+                <Route path="/exit" element={<ModernExitDashboard />} />
+                <Route path="/exit/:exitId" element={<ExitCaseDetails />} />
+                <Route path="/calendar" element={<ModernCalendar />} />
+                <Route path="/hr-connect" element={<ModernHRConnect />} />
+                <Route path="/chat/:conversationId" element={<ChatConversation />} />
+                <Route path="/ticket/:ticketId" element={<TicketDetails />} />
+                <Route path="/groups" element={<GroupManagement />} />
+                <Route path="/reports" element={<ModernReports />} />
+                <Route path="/documents" element={<ModernDocuments />} />
+                <Route path="/my-hr-documents" element={<MyHRDocuments />} />
+                <Route path="/org-chart" element={<ModernOrgChart />} />
+                <Route path="/settings" element={<ModernSettings />} />
 
-              {/* Employee Action routes */}
-              <Route path="/edit-profile" element={<ModernEditProfile />} />
-              <Route path="/transfer" element={<ModernTransfer />} />
-              <Route path="/promote" element={<ModernPromote />} />
-              <Route path="/compensation" element={<ModernCompensation />} />
-              <Route path="/performance-review" element={<ModernPerformanceReview />} />
-              <Route path="/employee-attendance" element={<ModernEmployeeAttendance />} />
+                {/* Employee Action routes */}
+                <Route path="/edit-profile" element={<ModernEditProfile />} />
+                <Route path="/transfer" element={<ModernTransfer />} />
+                <Route path="/promote" element={<ModernPromote />} />
+                <Route path="/compensation" element={<ModernCompensation />} />
+                <Route path="/performance-review" element={<ModernPerformanceReview />} />
+                <Route path="/employee-attendance" element={<ModernEmployeeAttendance />} />
 
-              {/* Default route */}
-              <Route path="/" element={<LandingPage />} />
+                {/* Default route */}
+                <Route path="/" element={<LandingPage />} />
 
-              {/* 404 route */}
-              <Route path="*" element={<div>404 - Page Not Found</div>} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </AuthProvider>
+                {/* 404 route */}
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
+        </BrowserRouter>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
