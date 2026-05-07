@@ -1,63 +1,73 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
 // Pages
-import LandingPage from './pages/LandingPage';
-import FeatureDetail from './pages/FeatureDetail';
-import ModernLogin from './pages/ModernLogin';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import CompanySignup from './pages/CompanySignup';
-import EmailVerification from './pages/EmailVerification';
-import EmailVerificationPending from './pages/EmailVerificationPending';
-import CreatePassword from './pages/CreatePassword';
-import AcceptInvitation from './pages/AcceptInvitation';
-import OnboardingWizard from './components/onboarding/OnboardingWizard';
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const FeatureDetail = lazy(() => import('./pages/FeatureDetail'));
+const ModernLogin = lazy(() => import('./pages/ModernLogin'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const CompanySignup = lazy(() => import('./pages/CompanySignup'));
+const EmailVerification = lazy(() => import('./pages/EmailVerification'));
+const EmailVerificationPending = lazy(() => import('./pages/EmailVerificationPending'));
+const CreatePassword = lazy(() => import('./pages/CreatePassword'));
+const AcceptInvitation = lazy(() => import('./pages/AcceptInvitation'));
+const OnboardingWizard = lazy(() => import('./components/onboarding/OnboardingWizard'));
 
 // New Registration Flow Pages
-import Signup from './pages/Signup';
-import VerifyEmail from './pages/VerifyEmail';
-import SetupPassword from './pages/SetupPassword';
-import Welcome from './pages/Welcome';
-import ModernDashboard from './pages/ModernDashboard';
-import ModernEmployees from './pages/ModernEmployees';
-import ModernEmployeeDetail from './pages/ModernEmployeeDetail';
-import ModernAttendance from './pages/ModernAttendance';
-import ModernLeave from './pages/ModernLeave';
-import ModernDepartments from './pages/ModernDepartments';
-import ModernDesignations from './pages/ModernDesignations';
-import ModernPerformanceDashboard from './pages/ModernPerformanceDashboard';
-import PerformanceReviewDetails from './pages/PerformanceReviewDetails';
-import CandidateDetails from './pages/CandidateDetails';
-import ProbationCaseDetails from './pages/ProbationCaseDetails';
-import ModernOnboardingDashboard from './pages/ModernOnboardingDashboard';
-import ModernProbationTracker from './pages/ModernProbationTracker';
-import ModernExitDashboard from './pages/ModernExitDashboard';
-import ExitCaseDetails from './pages/ExitCaseDetails';
-import ModernCalendar from './pages/ModernCalendar';
-import ModernHRConnect from './pages/ModernHRConnect';
-import ChatConversation from './pages/ChatConversation';
-import TicketDetails from './pages/TicketDetails';
-import GroupManagement from './pages/GroupManagement';
-import ModernSettings from './pages/ModernSettings';
-import ModernReports from './pages/ModernReports';
-import ModernDocuments from './pages/ModernDocuments';
-import ModernOrgChart from './pages/ModernOrgChart';
-import MyHRDocuments from './pages/MyHRDocuments';
+const Signup = lazy(() => import('./pages/Signup'));
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
+const SetupPassword = lazy(() => import('./pages/SetupPassword'));
+const Welcome = lazy(() => import('./pages/Welcome'));
+const ModernDashboard = lazy(() => import('./pages/ModernDashboard'));
+const ModernEmployees = lazy(() => import('./pages/ModernEmployees'));
+const ModernEmployeeDetail = lazy(() => import('./pages/ModernEmployeeDetail'));
+const ModernAttendance = lazy(() => import('./pages/ModernAttendance'));
+const ModernLeave = lazy(() => import('./pages/ModernLeave'));
+const ModernDepartments = lazy(() => import('./pages/ModernDepartments'));
+const ModernDesignations = lazy(() => import('./pages/ModernDesignations'));
+const ModernPerformanceDashboard = lazy(() => import('./pages/ModernPerformanceDashboard'));
+const PerformanceReviewDetails = lazy(() => import('./pages/PerformanceReviewDetails'));
+const CandidateDetails = lazy(() => import('./pages/CandidateDetails'));
+const ProbationCaseDetails = lazy(() => import('./pages/ProbationCaseDetails'));
+const ModernOnboardingDashboard = lazy(() => import('./pages/ModernOnboardingDashboard'));
+const ModernProbationTracker = lazy(() => import('./pages/ModernProbationTracker'));
+const ModernExitDashboard = lazy(() => import('./pages/ModernExitDashboard'));
+const ExitCaseDetails = lazy(() => import('./pages/ExitCaseDetails'));
+const ModernCalendar = lazy(() => import('./pages/ModernCalendar'));
+const ModernHRConnect = lazy(() => import('./pages/ModernHRConnect'));
+const ChatConversation = lazy(() => import('./pages/ChatConversation'));
+const TicketDetails = lazy(() => import('./pages/TicketDetails'));
+const GroupManagement = lazy(() => import('./pages/GroupManagement'));
+const ModernSettings = lazy(() => import('./pages/ModernSettings'));
+const ModernReports = lazy(() => import('./pages/ModernReports'));
+const ModernDocuments = lazy(() => import('./pages/ModernDocuments'));
+const ModernOrgChart = lazy(() => import('./pages/ModernOrgChart'));
+const MyHRDocuments = lazy(() => import('./pages/MyHRDocuments'));
 
 // Employee Action Pages
-import ModernEditProfile from './pages/ModernEditProfile';
-import ModernTransfer from './pages/ModernTransfer';
-import ModernPromote from './pages/ModernPromote';
-import ModernCompensation from './pages/ModernCompensation';
-import ModernPerformanceReview from './pages/ModernPerformanceReview';
-import ModernEmployeeAttendance from './pages/ModernEmployeeAttendance';
+const ModernEditProfile = lazy(() => import('./pages/ModernEditProfile'));
+const ModernTransfer = lazy(() => import('./pages/ModernTransfer'));
+const ModernPromote = lazy(() => import('./pages/ModernPromote'));
+const ModernCompensation = lazy(() => import('./pages/ModernCompensation'));
+const ModernPerformanceReview = lazy(() => import('./pages/ModernPerformanceReview'));
+const ModernEmployeeAttendance = lazy(() => import('./pages/ModernEmployeeAttendance'));
+
+function RouteFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-primary-600" />
+    </div>
+  );
+}
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Routes>
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
               {/* Public routes */}
               <Route path="/login" element={<ModernLogin />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -121,7 +131,8 @@ function App() {
 
               {/* 404 route */}
               <Route path="*" element={<div>404 - Page Not Found</div>} />
-            </Routes>
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </AuthProvider>
   );
