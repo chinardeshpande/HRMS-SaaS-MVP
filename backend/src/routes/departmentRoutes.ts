@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { authenticate } from '../middleware/auth';
+import { authenticate, authorize } from '../middleware/auth';
+import { UserRole } from '../../../shared/types';
 import {
   getDepartments,
   getDepartmentById,
@@ -20,12 +21,12 @@ router.get('/', getDepartments);
 router.get('/:id', getDepartmentById);
 
 // POST /api/v1/departments - Create new department
-router.post('/', createDepartment);
+router.post('/', authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), createDepartment);
 
 // PUT /api/v1/departments/:id - Update department
-router.put('/:id', updateDepartment);
+router.put('/:id', authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), updateDepartment);
 
 // DELETE /api/v1/departments/:id - Delete department
-router.delete('/:id', deleteDepartment);
+router.delete('/:id', authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), deleteDepartment);
 
 export default router;

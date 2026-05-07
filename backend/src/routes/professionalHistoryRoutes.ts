@@ -1,11 +1,53 @@
 import { Router, Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
 import professionalHistoryService from '../services/professionalHistoryService';
+import managerTeamService from '../services/managerTeamService';
+import { UserRole } from '../../../shared/types';
 
 const router = Router();
 
 // All routes require authentication
 router.use(authenticate);
+
+const canReadPositionHistory = async (req: Request, targetEmployeeId: string): Promise<boolean> => {
+  const user = req.user!;
+
+  if (user.role === UserRole.HR_ADMIN || user.role === UserRole.SYSTEM_ADMIN) {
+    return true;
+  }
+
+  if (!user.employeeId) {
+    return false;
+  }
+
+  if (user.employeeId === targetEmployeeId) {
+    return true;
+  }
+
+  if (user.role === UserRole.MANAGER) {
+    return managerTeamService.canAccessEmployee(user.employeeId, targetEmployeeId, user.tenantId);
+  }
+
+  return false;
+};
+
+const canReadCompensationHistory = (req: Request, targetEmployeeId: string): boolean => {
+  const user = req.user!;
+
+  if (user.role === UserRole.HR_ADMIN || user.role === UserRole.SYSTEM_ADMIN) {
+    return true;
+  }
+
+  return !!user.employeeId && user.employeeId === targetEmployeeId;
+};
+
+const denyHistoryAccess = (res: Response) => res.status(403).json({
+  success: false,
+  error: {
+    code: 'FORBIDDEN',
+    message: 'You do not have permission to view this professional history',
+  },
+});
 
 /**
  * GET /api/v1/professional-history/employee/:employeeId
@@ -15,6 +57,10 @@ router.get('/employee/:employeeId', async (req: Request, res: Response) => {
   try {
     const tenantId = req.user!.tenantId;
     const { employeeId } = req.params;
+
+    if (!(await canReadPositionHistory(req, employeeId)) || !canReadCompensationHistory(req, employeeId)) {
+      return denyHistoryAccess(res);
+    }
 
     const history = await professionalHistoryService.getCombinedHistory(tenantId, employeeId);
 
@@ -42,6 +88,10 @@ router.get('/position/:employeeId', async (req: Request, res: Response) => {
     const tenantId = req.user!.tenantId;
     const { employeeId } = req.params;
 
+    if (!(await canReadPositionHistory(req, employeeId))) {
+      return denyHistoryAccess(res);
+    }
+
     const history = await professionalHistoryService.getPositionHistory(tenantId, employeeId);
 
     res.json({
@@ -67,6 +117,10 @@ router.get('/compensation/:employeeId', async (req: Request, res: Response) => {
   try {
     const tenantId = req.user!.tenantId;
     const { employeeId } = req.params;
+
+    if (!canReadCompensationHistory(req, employeeId)) {
+      return denyHistoryAccess(res);
+    }
 
     const history = await professionalHistoryService.getCompensationHistory(tenantId, employeeId);
 

@@ -5,6 +5,34 @@ import { ReactionType } from '../models/HRConnectReaction';
 import { GroupType, GroupPrivacy } from '../models/HRConnectGroup';
 import { MemberRole } from '../models/HRConnectGroupMember';
 
+const hrConnectErrorResponse = (res: Response, error: any) => {
+  const message = error?.message || 'HR Connect request failed';
+  const notFoundMessages = ['Post not found', 'Comment not found', 'Parent comment not found', 'Group not found'];
+  const forbiddenMessages = ['Post is locked for comments', 'Group admin access required'];
+
+  if (notFoundMessages.includes(message)) {
+    return res.status(404).json({
+      success: false,
+      error: { code: 'NOT_FOUND', message },
+    });
+  }
+
+  if (forbiddenMessages.includes(message)) {
+    return res.status(403).json({
+      success: false,
+      error: { code: 'FORBIDDEN', message },
+    });
+  }
+
+  return res.status(500).json({
+    success: false,
+    error: {
+      code: 'INTERNAL_ERROR',
+      message,
+    },
+  });
+};
+
 // ==================== POST CONTROLLERS ====================
 
 export const createPost = async (req: Request, res: Response) => {
@@ -247,13 +275,7 @@ export const addComment = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error('Error adding comment:', error);
-    res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: error.message,
-      },
-    });
+    return hrConnectErrorResponse(res, error);
   }
 };
 
@@ -322,13 +344,7 @@ export const addReaction = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error('Error adding reaction:', error);
-    res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: error.message,
-      },
-    });
+    return hrConnectErrorResponse(res, error);
   }
 };
 

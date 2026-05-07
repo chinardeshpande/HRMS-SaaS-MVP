@@ -128,7 +128,7 @@ export class HRConnectService {
 
     if (post) {
       // Increment view count
-      await this.postRepo.increment({ postId }, 'viewCount', 1);
+      await this.postRepo.increment({ postId, tenantId }, 'viewCount', 1);
     }
 
     return post;
@@ -199,15 +199,42 @@ export class HRConnectService {
     content: string;
     parentCommentId?: string;
   }): Promise<HRConnectComment> {
+    const post = await this.postRepo.findOne({
+      where: { postId: data.postId, tenantId: data.tenantId, isDeleted: false },
+    });
+
+    if (!post) {
+      throw new Error('Post not found');
+    }
+
+    if (post.isLocked) {
+      throw new Error('Post is locked for comments');
+    }
+
+    if (data.parentCommentId) {
+      const parentComment = await this.commentRepo.findOne({
+        where: {
+          commentId: data.parentCommentId,
+          postId: data.postId,
+          tenantId: data.tenantId,
+          isDeleted: false,
+        },
+      });
+
+      if (!parentComment) {
+        throw new Error('Parent comment not found');
+      }
+    }
+
     const comment = this.commentRepo.create(data);
     const savedComment = await this.commentRepo.save(comment);
 
     // Increment comment count on post
-    await this.postRepo.increment({ postId: data.postId }, 'commentCount', 1);
+    await this.postRepo.increment({ postId: data.postId, tenantId: data.tenantId }, 'commentCount', 1);
 
     // Load comment with author details
     const fullComment = await this.commentRepo.findOne({
-      where: { commentId: savedComment.commentId },
+      where: { commentId: savedComment.commentId, tenantId: data.tenantId },
       relations: ['author'],
     });
 
@@ -269,7 +296,7 @@ export class HRConnectService {
     await this.commentRepo.save(comment);
 
     // Decrement comment count on post
-    await this.postRepo.decrement({ postId: comment.postId }, 'commentCount', 1);
+    await this.postRepo.decrement({ postId: comment.postId, tenantId }, 'commentCount', 1);
 
     return true;
   }
@@ -283,6 +310,26 @@ export class HRConnectService {
     commentId?: string;
     reactionType: ReactionType;
   }): Promise<HRConnectReaction> {
+    if (data.postId) {
+      const post = await this.postRepo.findOne({
+        where: { postId: data.postId, tenantId: data.tenantId, isDeleted: false },
+      });
+
+      if (!post) {
+        throw new Error('Post not found');
+      }
+    }
+
+    if (data.commentId) {
+      const comment = await this.commentRepo.findOne({
+        where: { commentId: data.commentId, tenantId: data.tenantId, isDeleted: false },
+      });
+
+      if (!comment) {
+        throw new Error('Comment not found');
+      }
+    }
+
     // Check if reaction already exists
     const existingReaction = await this.reactionRepo.findOne({
       where: {
@@ -303,15 +350,15 @@ export class HRConnectService {
 
     // Increment reaction count
     if (data.postId) {
-      await this.postRepo.increment({ postId: data.postId }, 'reactionCount', 1);
+      await this.postRepo.increment({ postId: data.postId, tenantId: data.tenantId }, 'reactionCount', 1);
     }
     if (data.commentId) {
-      await this.commentRepo.increment({ commentId: data.commentId }, 'reactionCount', 1);
+      await this.commentRepo.increment({ commentId: data.commentId, tenantId: data.tenantId }, 'reactionCount', 1);
     }
 
     // Load reaction with user details
     const fullReaction = await this.reactionRepo.findOne({
-      where: { reactionId: savedReaction.reactionId },
+      where: { reactionId: savedReaction.reactionId, tenantId: data.tenantId },
       relations: ['user'],
     });
 
@@ -350,10 +397,10 @@ export class HRConnectService {
 
     // Decrement reaction count
     if (data.postId) {
-      await this.postRepo.decrement({ postId: data.postId }, 'reactionCount', 1);
+      await this.postRepo.decrement({ postId: data.postId, tenantId: data.tenantId }, 'reactionCount', 1);
     }
     if (data.commentId) {
-      await this.commentRepo.decrement({ commentId: data.commentId }, 'reactionCount', 1);
+      await this.commentRepo.decrement({ commentId: data.commentId, tenantId: data.tenantId }, 'reactionCount', 1);
     }
 
     // Emit real-time event
@@ -535,7 +582,7 @@ export class HRConnectService {
     const savedMember = await this.groupMemberRepo.save(member);
 
     // Increment member count
-    await this.groupRepo.increment({ groupId: data.groupId }, 'memberCount', 1);
+    await this.groupRepo.increment({ groupId: data.groupId, tenantId: data.tenantId }, 'memberCount', 1);
 
     return savedMember;
   }
@@ -552,7 +599,7 @@ export class HRConnectService {
     await this.groupMemberRepo.remove(member);
 
     // Decrement member count
-    await this.groupRepo.decrement({ groupId }, 'memberCount', 1);
+    await this.groupRepo.decrement({ groupId, tenantId }, 'memberCount', 1);
 
     return true;
   }
