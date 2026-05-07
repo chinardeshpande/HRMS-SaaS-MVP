@@ -100,6 +100,9 @@ export default function ModernReports() {
   const [reportData, setReportData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [analyticsQuestion, setAnalyticsQuestion] = useState('Show headcount, attendance, leave, attrition, and performance');
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [analyticsResult, setAnalyticsResult] = useState<any>(null);
   const [dateRange, setDateRange] = useState({
     startDate: new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0],
     endDate: new Date().toISOString().split('T')[0],
@@ -134,9 +137,27 @@ export default function ModernReports() {
       setReportData(response.data);
     } catch (err: any) {
       console.error('Error fetching report:', err);
-      setError(err.response?.data?.message || 'Failed to fetch report');
+      setError(err.response?.data?.error?.message || err.response?.data?.message || 'Failed to fetch report');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const runAnalyticsQuery = async () => {
+    if (!analyticsQuestion.trim()) return;
+
+    setAnalyticsLoading(true);
+    setError(null);
+    try {
+      const response = await api.post('/analytics/query', {
+        question: analyticsQuestion.trim(),
+      });
+      setAnalyticsResult(response.data);
+    } catch (err: any) {
+      console.error('Error running analytics query:', err);
+      setError(err.response?.data?.error?.message || err.response?.data?.message || 'Failed to run analytics query');
+    } finally {
+      setAnalyticsLoading(false);
     }
   };
 
@@ -364,6 +385,68 @@ export default function ModernReports() {
                 Back to Reports
               </button>
             </div>
+          </div>
+        )}
+
+        {!selectedReport && (
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <div className="flex flex-col lg:flex-row lg:items-end gap-4">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Analytics Question
+                </label>
+                <input
+                  type="text"
+                  value={analyticsQuestion}
+                  onChange={(e) => setAnalyticsQuestion(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
+              </div>
+              <button
+                onClick={runAnalyticsQuery}
+                disabled={analyticsLoading || !analyticsQuestion.trim()}
+                className="btn-primary flex items-center gap-2 whitespace-nowrap disabled:opacity-50"
+              >
+                <ChartBarIcon className="h-4 w-4" />
+                {analyticsLoading ? 'Analyzing...' : 'Run Analytics'}
+              </button>
+            </div>
+
+            {analyticsResult && (
+              <div className="mt-6 space-y-4">
+                <div className="text-sm text-gray-700">{analyticsResult.answer}</div>
+                {analyticsResult.metrics?.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {analyticsResult.metrics.map((metric: any) => (
+                      <div key={metric.metricName} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                        <p className="text-xs font-medium text-gray-500 uppercase">
+                          {metric.metricName.replace(/_/g, ' ')}
+                        </p>
+                        <p className="mt-2 text-2xl font-bold text-gray-900">
+                          {typeof metric.value === 'number' ? metric.value.toFixed(1) : metric.value}
+                        </p>
+                        {metric.trend && (
+                          <p className="mt-1 text-xs text-gray-500 capitalize">{metric.trend}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {analyticsResult.followUpQuestions?.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {analyticsResult.followUpQuestions.map((question: string) => (
+                      <button
+                        key={question}
+                        onClick={() => setAnalyticsQuestion(question)}
+                        className="px-3 py-1.5 rounded-full bg-gray-100 text-sm text-gray-700 hover:bg-gray-200"
+                      >
+                        {question}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

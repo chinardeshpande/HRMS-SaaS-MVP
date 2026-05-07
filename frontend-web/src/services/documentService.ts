@@ -20,6 +20,8 @@ export interface DocumentHistory {
   templateName: string;
   fileName: string;
   format: string;
+  status?: string;
+  fileSizeBytes?: number;
   generatedAt: string;
   generatedBy: string;
 }
@@ -80,24 +82,24 @@ class DocumentService {
     const response = await api.get('/document-templates/history', {
       params: { limit },
     });
-    return response.data;
+    return response.data?.history || [];
   }
 
   /**
    * Download a previously generated document
    */
   async downloadDocument(documentId: string): Promise<Blob> {
-    const response = await api.get(`/document-templates/${documentId}/download`, {
+    const blob = await api.get(`/document-templates/generated/${documentId}/download`, {
       responseType: 'blob',
     });
-    return response.data;
+    return blob as unknown as Blob;
   }
 
   /**
    * Delete a document from history
    */
   async deleteDocument(documentId: string): Promise<void> {
-    await api.delete(`/document-templates/${documentId}`);
+    await api.delete(`/document-templates/generated/${documentId}`);
   }
 
   /**

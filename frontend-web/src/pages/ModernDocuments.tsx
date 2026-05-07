@@ -5,6 +5,7 @@ import { TemplateManager } from '../components/documents/TemplateManager';
 import { TemplateEditor } from '../components/documents/TemplateEditor';
 import { TemplatePreview } from '../components/documents/TemplatePreview';
 import documentService from '../services/documentService';
+import type { DocumentHistory } from '../services/documentService';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -23,6 +24,8 @@ import {
   CogIcon,
   Squares2X2Icon,
   ShieldCheckIcon,
+  ArrowDownTrayIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline';
 
 // Icon mapping for template categories
@@ -69,7 +72,7 @@ interface DocumentTemplate {
   variables: string[];
 }
 
-type ViewMode = 'templates' | 'manager';
+type ViewMode = 'templates' | 'manager' | 'history';
 
 interface TemplateData {
   templateId: string;
@@ -94,6 +97,8 @@ export default function ModernDocuments() {
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [templates, setTemplates] = useState<DocumentTemplate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [history, setHistory] = useState<DocumentHistory[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   // Template Manager States
   const [editingTemplate, setEditingTemplate] = useState<TemplateData | null>(null);
@@ -141,6 +146,28 @@ export default function ModernDocuments() {
 
     fetchTemplates();
   }, [user]);
+
+  useEffect(() => {
+    if (user && viewMode === 'history') {
+      fetchHistory();
+    }
+  }, [user, viewMode]);
+
+  const fetchHistory = async () => {
+    try {
+      setHistoryLoading(true);
+      const rows = await documentService.getDocumentHistory();
+      setHistory(rows);
+    } catch (error) {
+      console.error('Error fetching document history:', error);
+      setNotification({
+        type: 'error',
+        message: 'Failed to load generated document history.',
+      });
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
 
   // Calculate category counts dynamically
   const categories = [
@@ -193,6 +220,9 @@ export default function ModernDocuments() {
       console.log('Generated filename:', fileName);
 
       await documentService.generateAndDownload(data, fileName);
+      if (viewMode === 'history') {
+        await fetchHistory();
+      }
 
       setNotification({
         type: 'success',
@@ -233,6 +263,36 @@ export default function ModernDocuments() {
       message: 'Template updated successfully!',
     });
     setTimeout(() => setNotification(null), 5000);
+  };
+
+  const handleDownloadHistory = async (doc: DocumentHistory) => {
+    try {
+      const blob = await documentService.downloadDocument(doc.documentId);
+      documentService.downloadBlob(blob, doc.fileName);
+    } catch (error) {
+      console.error('Error downloading generated document:', error);
+      setNotification({
+        type: 'error',
+        message: 'Generated document file is not available for download.',
+      });
+    }
+  };
+
+  const handleDeleteHistory = async (doc: DocumentHistory) => {
+    try {
+      await documentService.deleteDocument(doc.documentId);
+      await fetchHistory();
+      setNotification({
+        type: 'success',
+        message: 'Document removed from active history.',
+      });
+    } catch (error) {
+      console.error('Error deleting generated document:', error);
+      setNotification({
+        type: 'error',
+        message: 'Failed to remove document history entry.',
+      });
+    }
   };
 
   return (
@@ -280,12 +340,18 @@ export default function ModernDocuments() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {viewMode === 'templates' ? 'Document Templates' : 'Template Manager'}
+              {viewMode === 'templates'
+                ? 'Document Templates'
+                : viewMode === 'manager'
+                ? 'Template Manager'
+                : 'Generated Documents'}
             </h1>
             <p className="mt-2 text-sm text-gray-600">
               {viewMode === 'templates'
                 ? 'Generate professional HR documents with automated data filling'
-                : 'View, edit, and customize document templates'}
+                : viewMode === 'manager'
+                ? 'View, edit, and customize document templates'
+                : 'Review document generation history and download prior output'}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -312,6 +378,17 @@ export default function ModernDocuments() {
               >
                 <CogIcon className="h-4 w-4" />
                 Manage
+              </button>
+              <button
+                onClick={() => setViewMode('history')}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  viewMode === 'history'
+                    ? 'bg-primary-600 text-white shadow-sm'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <ClockIcon className="h-4 w-4" />
+                History
               </button>
             </div>
           </div>
@@ -404,6 +481,74 @@ export default function ModernDocuments() {
             onEdit={handleEditTemplate}
             onPreview={handlePreviewTemplate}
           />
+        )}
+
+        {viewMode === 'history' && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            {historyLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600"></div>
+              </div>
+            ) : history.length === 0 ? (
+              <div className="text-center py-12">
+                <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-2 text-sm font-medium text-gray-900">No generated documents yet</h3>
+                <p className="mt-1 text-sm text-gray-500">Generated HR documents will appear here.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      {['Document', 'Format', 'Status', 'Generated By', 'Generated At', 'Actions'].map((heading) => (
+                        <th key={heading} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          {heading}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {history.map((doc) => (
+                      <tr key={doc.documentId} className="hover:bg-gray-50">
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-medium text-gray-900">{doc.templateName}</div>
+                          <div className="text-xs text-gray-500">{doc.fileName}</div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{doc.format}</td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 capitalize">
+                            {doc.status || 'generated'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{doc.generatedBy}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700">
+                          {new Date(doc.generatedAt).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleDownloadHistory(doc)}
+                              className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
+                              title="Download"
+                            >
+                              <ArrowDownTrayIcon className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteHistory(doc)}
+                              className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                              title="Remove from history"
+                            >
+                              <TrashIcon className="h-5 w-5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Document Wizard Modal */}

@@ -89,6 +89,7 @@ export class AnalyticsMetric {
       on: string;
       type?: 'INNER' | 'LEFT' | 'RIGHT';
     }>;
+    dateField?: string;
     orderBy?: Record<string, 'ASC' | 'DESC'>;
   };
 
