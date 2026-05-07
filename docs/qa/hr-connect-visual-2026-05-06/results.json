@@ -1,0 +1,273 @@
+{
+  "runDate": "2026-05-06",
+  "runId": "HRC-2026-05-06-1778070340162",
+  "target": "https://aurorahr.in",
+  "results": [
+    {
+      "id": "AUTH_EMPLOYEE",
+      "title": "Demo login for employee",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "API /demo/login",
+      "notes": "demo.employee@aurorahr.in"
+    },
+    {
+      "id": "AUTH_MANAGER",
+      "title": "Demo login for manager",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "API /demo/login",
+      "notes": "demo.manager@aurorahr.in"
+    },
+    {
+      "id": "AUTH_HR",
+      "title": "Demo login for hr",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "API /demo/login",
+      "notes": "demo.hr@aurorahr.in"
+    },
+    {
+      "id": "AUTH_ADMIN",
+      "title": "Demo login for admin",
+      "role": "admin",
+      "status": "passed",
+      "evidence": "API /demo/login",
+      "notes": "demo.admin@aurorahr.in"
+    },
+    {
+      "id": "HRC_FEED_01",
+      "title": "HR creates a company HR Connect announcement",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "postId=8d34a85e-cf75-4f08-a11a-31ff711b5fbb",
+      "notes": ""
+    },
+    {
+      "id": "HRC_FEED_02",
+      "title": "Employee reacts and manager comments on the announcement",
+      "role": "employee/manager",
+      "status": "passed",
+      "evidence": "commentId=7b7eb179-b705-4c48-885e-271e47397efe",
+      "notes": ""
+    },
+    {
+      "id": "HRC_GROUP_01",
+      "title": "HR creates a cross-functional project group",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "groupId=1c7710a6-6079-4c65-9f69-5aa116ce0964",
+      "notes": ""
+    },
+    {
+      "id": "HRC_GROUP_02",
+      "title": "HR adds manager and employee to the group through persistent group-member API",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "members=3",
+      "notes": ""
+    },
+    {
+      "id": "HRC_CHAT_01",
+      "title": "Employee opens or creates direct chat with manager",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "conversationId=8fac722c-9008-498a-835a-c9c1eef54e8b",
+      "notes": ""
+    },
+    {
+      "id": "HRC_CHAT_02",
+      "title": "Employee sends a direct chat message and manager can retrieve it",
+      "role": "employee/manager",
+      "status": "passed",
+      "evidence": "messageId=6d5425dc-776a-4f03-8e6c-eccf56c527c9",
+      "notes": ""
+    },
+    {
+      "id": "HRC_CHAT_03",
+      "title": "HR creates group chat from group members and posts a group update",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "conversationId=8ee07b6d-90e7-4582-b114-c0cefed99894, messageId=2175b09b-754c-4cd8-b322-4754e23ee3d1",
+      "notes": ""
+    },
+    {
+      "id": "HRC_CAL_01",
+      "title": "HR schedules an appointment linked to HR Connect chat",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "eventId=dd707244-443b-4e4d-b852-47ea2429719a",
+      "notes": ""
+    },
+    {
+      "id": "HRC_CAL_02",
+      "title": "Scheduled appointment is returned by calendar list and upcoming views",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "eventId=dd707244-443b-4e4d-b852-47ea2429719a",
+      "notes": ""
+    },
+    {
+      "id": "HRC_WS_01",
+      "title": "Manager receives real-time chat message over Socket.IO",
+      "role": "employee/manager",
+      "status": "passed",
+      "evidence": "messageId=83c14134-8b53-4892-89ed-db17d44171cb",
+      "notes": ""
+    },
+    {
+      "id": "HRC_CALL_01",
+      "title": "Audio call signaling delivers incoming call event",
+      "role": "employee/manager",
+      "status": "passed",
+      "evidence": "callerId=03b6d7bb-48d1-462f-9749-830340234960",
+      "notes": ""
+    },
+    {
+      "id": "HRC_CALL_02",
+      "title": "Call answer signaling returns to caller",
+      "role": "employee/manager",
+      "status": "passed",
+      "evidence": "call_answered event",
+      "notes": ""
+    },
+    {
+      "id": "HRC_CALL_03",
+      "title": "Video call signaling delivers incoming call event",
+      "role": "employee/manager",
+      "status": "passed",
+      "evidence": "callerId=03b6d7bb-48d1-462f-9749-830340234960",
+      "notes": ""
+    },
+    {
+      "id": "HRC_WS_00",
+      "title": "Socket.IO chat and call signaling scenario",
+      "role": "employee/manager",
+      "status": "passed",
+      "evidence": "completed",
+      "notes": ""
+    },
+    {
+      "id": "VIS_01",
+      "title": "HR Connect feed shows announcement, reactions, and social workflow",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/01-hr-connect-feed.png",
+      "notes": ""
+    },
+    {
+      "id": "HRC_FEED_03",
+      "title": "Feed comment icon expands existing comments without blank screen",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/02-feed-comment-expanded.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_03",
+      "title": "HR Connect chat list presents direct and group conversations",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/03-hr-connect-chat-list.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_04",
+      "title": "HR Connect group management shows persistent project group membership",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/04-hr-connect-groups.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_05",
+      "title": "Employee direct chat shows message history and action hooks",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "screenshots/05-employee-direct-chat.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_06",
+      "title": "Manager direct chat confirms counterpart view of the same conversation",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "screenshots/06-manager-direct-chat.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_07",
+      "title": "HR group chat supports multi-participant coordination",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/07-hr-group-chat.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_08",
+      "title": "Calendar shows HR Connect appointment created through persistent calendar API",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/08-calendar-appointment.png",
+      "notes": ""
+    },
+    {
+      "id": "HRC_VIS_00",
+      "title": "Browser visual journey with HR, manager, and employee roles",
+      "role": "hr/manager/employee",
+      "status": "passed",
+      "evidence": "completed",
+      "notes": ""
+    }
+  ],
+  "screenshots": [
+    {
+      "filename": "01-hr-connect-feed.png",
+      "title": "HR Connect feed shows announcement, reactions, and social workflow",
+      "role": "hr",
+      "path": "screenshots/01-hr-connect-feed.png"
+    },
+    {
+      "filename": "02-feed-comment-expanded.png",
+      "title": "Feed comment icon expands existing comments without blank screen",
+      "role": "hr",
+      "path": "screenshots/02-feed-comment-expanded.png"
+    },
+    {
+      "filename": "03-hr-connect-chat-list.png",
+      "title": "HR Connect chat list presents direct and group conversations",
+      "role": "hr",
+      "path": "screenshots/03-hr-connect-chat-list.png"
+    },
+    {
+      "filename": "04-hr-connect-groups.png",
+      "title": "HR Connect group management shows persistent project group membership",
+      "role": "hr",
+      "path": "screenshots/04-hr-connect-groups.png"
+    },
+    {
+      "filename": "05-employee-direct-chat.png",
+      "title": "Employee direct chat shows message history and action hooks",
+      "role": "employee",
+      "path": "screenshots/05-employee-direct-chat.png"
+    },
+    {
+      "filename": "06-manager-direct-chat.png",
+      "title": "Manager direct chat confirms counterpart view of the same conversation",
+      "role": "manager",
+      "path": "screenshots/06-manager-direct-chat.png"
+    },
+    {
+      "filename": "07-hr-group-chat.png",
+      "title": "HR group chat supports multi-participant coordination",
+      "role": "hr",
+      "path": "screenshots/07-hr-group-chat.png"
+    },
+    {
+      "filename": "08-calendar-appointment.png",
+      "title": "Calendar shows HR Connect appointment created through persistent calendar API",
+      "role": "hr",
+      "path": "screenshots/08-calendar-appointment.png"
+    }
+  ]
+}
