@@ -498,6 +498,7 @@ export class ReportingService {
         'employee.firstName',
         'employee.lastName',
         'employee.employeeCode',
+        'employee.email',
         'department.name as departmentName',
       ])
       .getRawMany();
@@ -509,8 +510,9 @@ export class ReportingService {
       const uploadedDocs = await this.documentRepo
         .createQueryBuilder('doc')
         .where('doc.tenantId = :tenantId', { tenantId })
-        .andWhere('doc.candidateId IN (SELECT candidateId FROM candidates WHERE email = :email)', {
+        .andWhere('doc."candidateId" IN (SELECT "candidateId" FROM candidates WHERE email = :email AND "tenantId" = :tenantId)', {
           email: emp.employee_email,
+          tenantId,
         })
         .andWhere('doc.verificationStatus != :status', { status: 'missing' })
         .select('doc.documentType')

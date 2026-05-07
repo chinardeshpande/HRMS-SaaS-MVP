@@ -4,11 +4,62 @@ import { AppDataSource } from '../config/database';
 import { DocumentTemplate } from '../models/DocumentTemplate';
 import { Employee } from '../models/Employee';
 import { GeneratedDocument, GeneratedDocumentFormat, GeneratedDocumentStatus } from '../models/GeneratedDocument';
+import { DocumentType } from '../models/enums/DocumentEnums';
 import documentGenerationService from '../services/documentGenerationService';
 import { sendSuccess, sendError } from '../utils/responses';
 import logger from '../utils/logger';
 import path from 'path';
 import fs from 'fs';
+
+const defaultDocumentTemplates: Array<Partial<DocumentTemplate>> = [
+  {
+    templateName: DocumentType.OFFER_LETTER,
+    displayName: 'Offer Letter',
+    category: 'offer',
+    description: 'Standard offer letter template for new candidates',
+    availableFields: ['companyName', 'offerDate', 'firstName', 'lastName', 'positionOffered', 'departmentName', 'employmentType', 'workLocation', 'currency', 'offeredSalary', 'expectedJoinDate', 'offerExpiryDate'],
+    htmlTemplate: '<h1>{{companyName}}</h1><p>Date: {{offerDate}}</p><p>Dear {{firstName}} {{lastName}},</p><p>We are pleased to offer you the position of {{positionOffered}} in {{departmentName}}.</p><p>Compensation: {{currency}} {{offeredSalary}}</p><p>Expected joining date: {{expectedJoinDate}}</p>',
+    isActive: true,
+    version: 1,
+  },
+  {
+    templateName: DocumentType.CONFIRMATION_LETTER,
+    displayName: 'Confirmation Letter',
+    category: 'confirmation',
+    description: 'Confirmation letter after successful probation completion',
+    availableFields: ['companyName', 'confirmationDate', 'firstName', 'lastName', 'employeeCode', 'designation', 'department', 'joinDate'],
+    htmlTemplate: '<h1>{{companyName}}</h1><p>Date: {{confirmationDate}}</p><p>Dear {{firstName}} {{lastName}},</p><p>Your employment is confirmed effective {{confirmationDate}}.</p><p>Employee Code: {{employeeCode}}</p><p>Designation: {{designation}}</p><p>Department: {{department}}</p>',
+    isActive: true,
+    version: 1,
+  },
+  {
+    templateName: DocumentType.RELIEVING_LETTER,
+    displayName: 'Relieving Letter',
+    category: 'exit',
+    description: 'Relieving letter for exiting employees',
+    availableFields: ['companyName', 'relievingDate', 'firstName', 'lastName', 'employeeCode', 'designation', 'department', 'joiningDate', 'lastWorkingDay'],
+    htmlTemplate: '<h1>{{companyName}}</h1><p>Date: {{relievingDate}}</p><p>This confirms that {{firstName}} {{lastName}} ({{employeeCode}}) has been relieved from duties on {{lastWorkingDay}}.</p><p>Designation: {{designation}}</p><p>Department: {{department}}</p>',
+    isActive: true,
+    version: 1,
+  },
+];
+
+async function ensureDefaultTemplates(tenantId: string): Promise<void> {
+  const templateRepo = AppDataSource.getRepository(DocumentTemplate);
+  const existingCount = await templateRepo.count({ where: { tenantId, isActive: true } });
+
+  if (existingCount > 0) return;
+
+  const templates = defaultDocumentTemplates.map((template) =>
+    templateRepo.create({
+      ...template,
+      tenantId,
+    })
+  );
+
+  await templateRepo.save(templates);
+  logger.info(`Seeded ${templates.length} default document templates for tenant ${tenantId}`);
+}
 
 /**
  * Get all available document templates
@@ -18,6 +69,8 @@ export const getTemplates = async (req: Request, res: Response) => {
     const tenantId = req.user!.tenantId;
 
     const templateRepo = AppDataSource.getRepository(DocumentTemplate);
+    await ensureDefaultTemplates(tenantId);
+
     const templates = await templateRepo.find({
       where: { tenantId, isActive: true },
       order: { templateName: 'ASC' },
