@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { AppDataSource } from '../config/database';
 import { Employee } from '../models/Employee';
 import { Attendance, AttendanceStatus } from '../models/Attendance';
@@ -167,7 +167,7 @@ export class DashboardService {
           tenantId,
           date: today,
           status: AttendanceStatus.PRESENT,
-          employeeId: teamEmployeeIds.length > 0 ? undefined : 'none', // Avoid IN query with empty array
+          employeeId: In(teamEmployeeIds),
         },
       }),
       this.attendanceRepo.count({
@@ -175,7 +175,7 @@ export class DashboardService {
           tenantId,
           date: today,
           status: AttendanceStatus.ON_LEAVE,
-          employeeId: teamEmployeeIds.length > 0 ? undefined : 'none',
+          employeeId: In(teamEmployeeIds),
         },
       }),
     ]);

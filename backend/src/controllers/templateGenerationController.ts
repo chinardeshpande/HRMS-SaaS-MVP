@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
+import { Not } from 'typeorm';
 import { AppDataSource } from '../config/database';
 import { DocumentTemplate } from '../models/DocumentTemplate';
 import { Employee } from '../models/Employee';
+import { GeneratedDocument, GeneratedDocumentFormat, GeneratedDocumentStatus } from '../models/GeneratedDocument';
 import documentGenerationService from '../services/documentGenerationService';
 import { sendSuccess, sendError } from '../utils/responses';
 import logger from '../utils/logger';
@@ -44,6 +46,7 @@ export const getTemplates = async (req: Request, res: Response) => {
 export const generateDocument = async (req: Request, res: Response) => {
   try {
     const tenantId = req.user!.tenantId;
+    const userId = req.user!.userId;
     const { templateId, employeeId, variables, format } = req.body;
 
     if (!templateId || !variables) {
@@ -109,6 +112,32 @@ export const generateDocument = async (req: Request, res: Response) => {
     const fileName = path.basename(pdfPath);
     const fileBuffer = fs.readFileSync(absolutePath);
 
+    const generatedDocRepo = AppDataSource.getRepository(GeneratedDocument);
+    await generatedDocRepo.save(
+      generatedDocRepo.create({
+        tenantId,
+        templateId: template.templateId,
+        documentType: template.templateName,
+        documentName: template.displayName,
+        employeeId: employeeId || undefined,
+        generatedBy: userId,
+        status: GeneratedDocumentStatus.GENERATED,
+        format: GeneratedDocumentFormat.PDF,
+        filePath: pdfPath,
+        fileUrl: pdfPath,
+        fileSizeBytes: fileBuffer.length,
+        metadata: {
+          variables: mergedData,
+          issuedTo: employeeData.email
+            ? {
+                name: `${employeeData.firstName || ''} ${employeeData.lastName || ''}`.trim(),
+                email: employeeData.email,
+              }
+            : undefined,
+        },
+      })
+    );
+
     // Set response headers for download
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
@@ -130,15 +159,87 @@ export const getHistory = async (req: Request, res: Response) => {
     const tenantId = req.user!.tenantId;
     const limit = parseInt(req.query.limit as string) || 50;
 
-    // TODO: Implement GeneratedDocument model and repository
-    // For now, return empty array
+    const generatedDocRepo = AppDataSource.getRepository(GeneratedDocument);
+    const history = await generatedDocRepo.find({
+      where: { tenantId, status: Not(GeneratedDocumentStatus.REVOKED) },
+      relations: ['template', 'generator'],
+      order: { createdAt: 'DESC' },
+      take: Math.min(Math.max(limit, 1), 100),
+    });
+
     return sendSuccess(res, {
-      history: [],
-      message: 'Document history feature coming soon',
+      history: history.map((doc) => ({
+        documentId: doc.documentId,
+        templateName: doc.template?.displayName || doc.documentName,
+        fileName: path.basename(doc.filePath || doc.fileUrl || `${doc.documentName}.${doc.format}`),
+        format: doc.format.toUpperCase(),
+        status: doc.status,
+        fileSizeBytes: doc.fileSizeBytes,
+        generatedAt: doc.createdAt,
+        generatedBy: doc.generator?.fullName || 'Unknown user',
+      })),
     });
   } catch (error: any) {
     logger.error('Error fetching history:', error);
     return sendError(res, { code: 'FETCH_ERROR', message: error.message }, 500);
+  }
+};
+
+/**
+ * Download a generated document by ID
+ */
+export const downloadGeneratedDocument = async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.user!.tenantId;
+    const { documentId } = req.params;
+
+    const generatedDocRepo = AppDataSource.getRepository(GeneratedDocument);
+    const document = await generatedDocRepo.findOne({
+      where: { documentId, tenantId },
+    });
+
+    if (!document || !document.filePath) {
+      return sendError(res, { code: 'NOT_FOUND', message: 'Generated document not found' }, 404);
+    }
+
+    const absolutePath = path.join(__dirname, '../..', document.filePath);
+    if (!fs.existsSync(absolutePath)) {
+      return sendError(res, { code: 'FILE_NOT_FOUND', message: 'Generated document file is no longer available' }, 404);
+    }
+
+    res.download(absolutePath, path.basename(document.filePath));
+  } catch (error: any) {
+    logger.error('Error downloading generated document:', error);
+    return sendError(res, { code: 'DOWNLOAD_ERROR', message: error.message }, 500);
+  }
+};
+
+/**
+ * Soft-delete generated document history entry
+ */
+export const deleteGeneratedDocument = async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.user!.tenantId;
+    const { documentId } = req.params;
+
+    const generatedDocRepo = AppDataSource.getRepository(GeneratedDocument);
+    const document = await generatedDocRepo.findOne({
+      where: { documentId, tenantId },
+    });
+
+    if (!document) {
+      return sendError(res, { code: 'NOT_FOUND', message: 'Generated document not found' }, 404);
+    }
+
+    document.status = GeneratedDocumentStatus.REVOKED;
+    document.revokedAt = new Date();
+    document.revocationReason = 'Deleted from document history';
+    await generatedDocRepo.save(document);
+
+    return sendSuccess(res, { message: 'Document removed from active history' });
+  } catch (error: any) {
+    logger.error('Error deleting generated document:', error);
+    return sendError(res, { code: 'DELETE_ERROR', message: error.message }, 500);
   }
 };
 
@@ -259,6 +360,8 @@ export default {
   getTemplates,
   generateDocument,
   getHistory,
+  downloadGeneratedDocument,
+  deleteGeneratedDocument,
   getTemplateById,
   updateTemplate,
   previewTemplate,

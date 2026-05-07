@@ -77,14 +77,8 @@ export class AnalyticsService {
       aggregation: AggregationMethod.AVG,
       queryConfig: {
         sourceTable: 'exit_cases',
-        selectFields: ['(COUNT(*) * 100.0 / total.count) as value'],
-        joins: [
-          {
-            table: '(SELECT COUNT(*) as count FROM employees WHERE status = \'active\') total',
-            on: '1=1',
-            type: 'INNER',
-          },
-        ],
+        selectFields: ['(COUNT(*) * 100.0 / NULLIF((SELECT COUNT(*) FROM employees e WHERE e."tenantId" = exit_cases."tenantId" AND e.status = \'active\'), 0)) as value'],
+        dateField: 'lastWorkingDate',
       },
       dimensions: {
         available: ['department', 'month', 'quarter'],
@@ -109,6 +103,7 @@ export class AnalyticsService {
       queryConfig: {
         sourceTable: 'attendance',
         selectFields: ['(SUM(CASE WHEN status = \'present\' THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) as value'],
+        dateField: 'date',
       },
       dimensions: {
         available: ['department', 'date', 'shift'],
@@ -132,7 +127,7 @@ export class AnalyticsService {
       aggregation: AggregationMethod.AVG,
       queryConfig: {
         sourceTable: 'leave_balances',
-        selectFields: ['(SUM(used) * 100.0 / SUM("totalEntitlement")) as value'],
+        selectFields: ['(SUM(used) * 100.0 / NULLIF(SUM("totalAllocated"), 0)) as value'],
       },
       dimensions: {
         available: ['leaveType', 'department', 'month'],
@@ -171,7 +166,8 @@ export class AnalyticsService {
       aggregation: AggregationMethod.AVG,
       queryConfig: {
         sourceTable: 'performance_reviews',
-        selectFields: ['(SUM(CASE WHEN status = \'completed\' THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) as value'],
+        selectFields: ['(SUM(CASE WHEN "currentState" = \'cycle_complete\' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0)) as value'],
+        dateField: 'reviewEndDate',
       },
       dimensions: {
         available: ['department', 'reviewCycle', 'quarter'],
@@ -244,11 +240,8 @@ export class AnalyticsService {
       throw new Error(`Metric not found: ${metricName}`);
     }
 
-    // Build query based on metric configuration
-    const query = this.buildMetricQuery(metric, filters);
-
-    // Execute query
-    const result = await AppDataSource.query(query);
+    const { query, params } = this.buildMetricQuery(metric, filters);
+    const result = await AppDataSource.query(query, params);
 
     const value = result[0]?.value || 0;
 
@@ -277,10 +270,11 @@ export class AnalyticsService {
   /**
    * Build SQL query for metric calculation
    */
-  private buildMetricQuery(metric: AnalyticsMetric, filters?: any): string {
-    const { sourceTable, selectFields, groupBy, filters: metricFilters, joins, orderBy } = metric.queryConfig;
+  private buildMetricQuery(metric: AnalyticsMetric, filters?: any): { query: string; params: any[] } {
+    const { sourceTable, selectFields, groupBy, filters: metricFilters, joins, dateField, orderBy } = metric.queryConfig;
 
     let query = `SELECT ${selectFields.join(', ')} FROM ${sourceTable}`;
+    const params: any[] = [metric.tenantId];
 
     // Add joins
     if (joins && joins.length > 0) {
@@ -293,13 +287,14 @@ export class AnalyticsService {
     const whereConditions: string[] = [];
 
     // Tenant isolation
-    whereConditions.push(`"tenantId" = '${metric.tenantId}'`);
+    whereConditions.push(`"${sourceTable}"."tenantId" = $1`);
 
     // Metric-specific filters
     if (metricFilters) {
       Object.entries(metricFilters).forEach(([key, value]) => {
         if (value !== 'IS NOT NULL') {
-          whereConditions.push(`"${key}" = '${value}'`);
+          params.push(value);
+          whereConditions.push(`"${key}" = $${params.length}`);
         } else {
           whereConditions.push(`"${key}" ${value}`);
         }
@@ -307,12 +302,15 @@ export class AnalyticsService {
     }
 
     // User-provided filters
-    if (filters?.startDate && filters?.endDate) {
-      whereConditions.push(`date BETWEEN '${filters.startDate.toISOString()}' AND '${filters.endDate.toISOString()}'`);
+    if (filters?.startDate && filters?.endDate && dateField) {
+      params.push(filters.startDate);
+      params.push(filters.endDate);
+      whereConditions.push(`"${dateField}" BETWEEN $${params.length - 1} AND $${params.length}`);
     }
 
     if (filters?.department) {
-      whereConditions.push(`"departmentId" = '${filters.department}'`);
+      params.push(filters.department);
+      whereConditions.push(`"departmentId" = $${params.length}`);
     }
 
     if (whereConditions.length > 0) {
@@ -330,7 +328,7 @@ export class AnalyticsService {
       query += ` ORDER BY ${orderClauses.join(', ')}`;
     }
 
-    return query;
+    return { query, params };
   }
 
   /**

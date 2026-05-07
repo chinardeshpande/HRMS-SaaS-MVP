@@ -41,6 +41,30 @@ router.get(
 );
 
 /**
+ * @route   GET /api/v1/document-templates/generated/:documentId/download
+ * @desc    Download a previously generated document
+ * @access  Private (HR and above)
+ */
+router.get(
+  '/generated/:documentId/download',
+  authenticate,
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
+  templateGenerationController.downloadGeneratedDocument
+);
+
+/**
+ * @route   DELETE /api/v1/document-templates/generated/:documentId
+ * @desc    Remove a generated document from active history
+ * @access  Private (HR Admin and System Admin only)
+ */
+router.delete(
+  '/generated/:documentId',
+  authenticate,
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
+  templateGenerationController.deleteGeneratedDocument
+);
+
+/**
  * @route   GET /api/v1/document-templates/:templateId
  * @desc    Get a single template by ID
  * @access  Private (HR and above)
