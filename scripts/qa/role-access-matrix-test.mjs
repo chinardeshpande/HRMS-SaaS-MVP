@@ -93,8 +93,18 @@ async function assertAllowedRoute(browser, persona, session, route) {
       throw new Error(`Unexpected HTTP status ${response?.status() || 'missing'}`);
     }
 
-    if (!text.toLowerCase().includes(route.expectedText.toLowerCase())) {
-      throw new Error(`Expected text not found: ${route.expectedText}`);
+    const expectedTexts = route.expectedTexts || [route.expectedText];
+    for (const expectedText of expectedTexts) {
+      if (!text.toLowerCase().includes(expectedText.toLowerCase())) {
+        throw new Error(`Expected text not found: ${expectedText}`);
+      }
+    }
+
+    const forbiddenTexts = route.forbiddenTexts || [];
+    for (const forbiddenText of forbiddenTexts) {
+      if (text.toLowerCase().includes(forbiddenText.toLowerCase())) {
+        throw new Error(`Forbidden text found: ${forbiddenText}`);
+      }
     }
 
     if (text.toLowerCase().includes('not available for your role')) {
@@ -242,6 +252,7 @@ async function main() {
   await fs.mkdir(SCREENSHOT_DIR, { recursive: true });
 
   const sessions = {
+    admin: await demoSession('admin'),
     employee: await demoSession('employee'),
     manager: await demoSession('manager'),
     hr: await demoSession('hr'),
@@ -250,7 +261,15 @@ async function main() {
   const playwright = await loadPlaywright();
   const browser = await playwright.chromium.launch({ headless: true });
 
-  await assertAllowedRoute(browser, 'employee', sessions.employee, { id: 'dashboard', path: '/dashboard', expectedText: 'Dashboard' });
+  await assertAllowedRoute(browser, 'admin', sessions.admin, { id: 'dashboard', path: '/dashboard', expectedText: 'Dashboard', expectedTexts: ['Owner Implementation Console', 'Implementation Checklist'] });
+
+  await assertAllowedRoute(browser, 'employee', sessions.employee, {
+    id: 'dashboard',
+    path: '/dashboard',
+    expectedText: 'Dashboard',
+    expectedTexts: ['Employee My HR', 'My Self-Service'],
+    forbiddenTexts: ['Add Employees', 'Configure Settings', 'Owner Controls', 'Implementation Checklist'],
+  });
   await assertAllowedRoute(browser, 'employee', sessions.employee, { id: 'attendance', path: '/attendance', expectedText: 'Attendance' });
   await assertAllowedRoute(browser, 'employee', sessions.employee, { id: 'leave', path: '/leave', expectedText: 'Leave' });
   await assertAllowedRoute(browser, 'employee', sessions.employee, { id: 'my_documents', path: '/my-hr-documents', expectedText: 'My HR Documents' });
@@ -258,12 +277,20 @@ async function main() {
   await assertDeniedRoute(browser, 'employee', sessions.employee, { id: 'employees', path: '/employees', deniedText: 'not available for your role' });
   await assertNavExcludes(browser, 'employee', sessions.employee, ['Settings', 'Employees', 'Reports', 'Onboarding', 'Master Data']);
 
+  await assertAllowedRoute(browser, 'manager', sessions.manager, {
+    id: 'dashboard',
+    path: '/dashboard',
+    expectedText: 'Dashboard',
+    expectedTexts: ['Manager Team Work Queue', 'Team Action Queue'],
+    forbiddenTexts: ['Owner Controls', 'Implementation Checklist'],
+  });
   await assertAllowedRoute(browser, 'manager', sessions.manager, { id: 'employees', path: '/employees', expectedText: 'Employees' });
   await assertAllowedRoute(browser, 'manager', sessions.manager, { id: 'performance', path: '/performance', expectedText: 'Performance' });
   await assertAllowedRoute(browser, 'manager', sessions.manager, { id: 'exit', path: '/exit', expectedText: 'Exit' });
   await assertDeniedRoute(browser, 'manager', sessions.manager, { id: 'settings', path: '/settings', deniedText: 'Settings are available to HR administrators' });
   await assertNavExcludes(browser, 'manager', sessions.manager, ['Settings', 'Reports', 'Onboarding', 'Master Data']);
 
+  await assertAllowedRoute(browser, 'hr', sessions.hr, { id: 'dashboard', path: '/dashboard', expectedText: 'Dashboard', expectedTexts: ['HR Operations', 'HR Action Queue'] });
   await assertAllowedRoute(browser, 'hr', sessions.hr, { id: 'settings', path: '/settings', expectedText: 'Settings' });
   await assertAllowedRoute(browser, 'hr', sessions.hr, { id: 'reports', path: '/reports', expectedText: 'Reports' });
   await assertAllowedRoute(browser, 'hr', sessions.hr, { id: 'onboarding', path: '/onboarding', expectedText: 'Onboarding' });

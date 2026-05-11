@@ -26,12 +26,17 @@ import {
   Cog6ToothIcon,
   DocumentTextIcon,
   UserGroupIcon,
+  CreditCardIcon,
   ChevronDownIcon,
   BellAlertIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext';
 import activityService, { Activity } from '../services/activityService';
 import calendarService, { CalendarEvent } from '../services/calendarService';
+import attendanceService, { Attendance, TimeEntryEdit } from '../services/attendanceService';
+import leaveService, { LeaveBalance, LeaveRequest } from '../services/leaveService';
+import hrConnectService, { Post } from '../services/hrConnectService';
+import chatService from '../services/chatService';
 import api from '../services/api';
 
 interface DashboardStats {
@@ -53,6 +58,45 @@ interface DashboardStats {
   designationCount: number;
 }
 
+type PersonaKind = 'owner' | 'hr' | 'manager' | 'employee';
+
+interface PersonaDashboardData {
+  leaveBalances: LeaveBalance[];
+  myAttendance: Attendance[];
+  pendingLeaveApprovals: LeaveRequest[];
+  pendingRegularizations: TimeEntryEdit[];
+  hrConnectPosts: Post[];
+  unreadMessages: number;
+}
+
+const emptyPersonaData: PersonaDashboardData = {
+  leaveBalances: [],
+  myAttendance: [],
+  pendingLeaveApprovals: [],
+  pendingRegularizations: [],
+  hrConnectPosts: [],
+  unreadMessages: 0,
+};
+
+const emptyDashboardStats: DashboardStats = {
+  totalEmployees: 0,
+  activeEmployees: 0,
+  employeeTrend: 0,
+  presentToday: 0,
+  absentToday: 0,
+  onLeaveToday: 0,
+  attendanceTrend: 0,
+  upcomingOnboarding: 0,
+  activeProbation: 0,
+  probationEndingSoon: 0,
+  upcomingExits: 0,
+  exitThisMonth: 0,
+  pendingLeaveApprovals: 0,
+  pendingApprovals: 0,
+  departmentCount: 0,
+  designationCount: 0,
+};
+
 export default function ModernDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -61,14 +105,31 @@ export default function ModernDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [recentActivities, setRecentActivities] = useState<Activity[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<CalendarEvent[]>([]);
+  const [personaData, setPersonaData] = useState<PersonaDashboardData>(emptyPersonaData);
   const [showApprovalsDropdown, setShowApprovalsDropdown] = useState(false);
   const approvalsDropdownRef = useRef<HTMLDivElement>(null);
+
+  const normalizedRole = String(user?.role || '').toLowerCase();
+  const persona: PersonaKind =
+    normalizedRole === 'system_admin'
+      ? 'owner'
+      : normalizedRole === 'hr_admin'
+        ? 'hr'
+        : normalizedRole === 'manager'
+          ? 'manager'
+          : 'employee';
+  const isOwner = persona === 'owner';
+  const isHr = persona === 'hr';
+  const isManager = persona === 'manager';
+  const isEmployee = persona === 'employee';
+  const canApprove = isOwner || isHr || isManager;
 
   useEffect(() => {
     fetchDashboardStats();
     fetchRecentActivities();
     fetchUpcomingEvents();
-  }, []);
+    fetchPersonaDashboardData();
+  }, [persona]);
 
   const fetchDashboardStats = async () => {
     try {
@@ -78,7 +139,8 @@ export default function ModernDashboard() {
       setStats(response.data);
     } catch (err: any) {
       console.error('Error fetching dashboard stats:', err);
-      setError(err.response?.data?.message || 'Failed to load dashboard statistics');
+      setStats(emptyDashboardStats);
+      setError(null);
     } finally {
       setLoading(false);
     }
@@ -116,6 +178,37 @@ export default function ModernDashboard() {
     } catch (error) {
       console.error('Error fetching events:', error);
     }
+  };
+
+  const fetchPersonaDashboardData = async () => {
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const isoDate = (date: Date) => date.toISOString().split('T')[0];
+
+    const [
+      leaveBalances,
+      myAttendance,
+      pendingLeaveApprovals,
+      pendingRegularizations,
+      hrConnectPosts,
+      unreadMessages,
+    ] = await Promise.allSettled([
+      leaveService.getMyBalance(),
+      attendanceService.getMyAttendance(isoDate(startOfMonth), isoDate(today)),
+      canApprove ? leaveService.getPendingApprovals() : Promise.resolve([]),
+      canApprove ? attendanceService.getPendingRegularizations() : Promise.resolve([]),
+      hrConnectService.getAllPosts(),
+      chatService.getUnreadCount(),
+    ]);
+
+    setPersonaData({
+      leaveBalances: leaveBalances.status === 'fulfilled' ? leaveBalances.value : [],
+      myAttendance: myAttendance.status === 'fulfilled' ? myAttendance.value : [],
+      pendingLeaveApprovals: pendingLeaveApprovals.status === 'fulfilled' ? pendingLeaveApprovals.value : [],
+      pendingRegularizations: pendingRegularizations.status === 'fulfilled' ? pendingRegularizations.value : [],
+      hrConnectPosts: hrConnectPosts.status === 'fulfilled' ? hrConnectPosts.value.slice(0, 4) : [],
+      unreadMessages: unreadMessages.status === 'fulfilled' ? unreadMessages.value : 0,
+    });
   };
 
   const getActivityIcon = (type: string) => {
@@ -172,6 +265,47 @@ export default function ModernDashboard() {
     }
   };
 
+  const totalAvailableLeave = personaData.leaveBalances.reduce(
+    (total, balance) =>
+      total + (balance.available ?? Math.max(0, balance.totalAllocated + balance.carriedForward - balance.used - balance.pending)),
+    0
+  );
+
+  const totalPendingLeaveDays = personaData.leaveBalances.reduce((total, balance) => total + (balance.pending || 0), 0);
+
+  const getAttendanceMinutes = (scope: 'week' | 'month') => {
+    const today = new Date();
+    const start = scope === 'week'
+      ? new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1)
+      : new Date(today.getFullYear(), today.getMonth(), 1);
+
+    return personaData.myAttendance.reduce((total, record) => {
+      const recordDate = new Date(record.date);
+      if (recordDate < start || recordDate > today) return total;
+      return total + (record.workMinutes || 0);
+    }, 0);
+  };
+
+  const formatHours = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins ? `${hours}h ${mins}m` : `${hours}h`;
+  };
+
+  const dashboardTitle = {
+    owner: 'Owner Implementation Console',
+    hr: 'HR Operations',
+    manager: 'Manager Team Work Queue',
+    employee: 'Employee My HR',
+  }[persona];
+
+  const dashboardSubtitle = {
+    owner: 'Company setup, subscription, master data, and commercial readiness.',
+    hr: 'People operations, approvals, lifecycle workflows, and HR service delivery.',
+    manager: 'Team availability, approvals, reviews, and exceptions that need action.',
+    employee: 'Your attendance, leave, HR updates, documents, and self-service actions.',
+  }[persona];
+
   const getRelativeTime = (timestamp: string) => {
     const now = new Date();
     const activityTime = new Date(timestamp);
@@ -192,7 +326,7 @@ export default function ModernDashboard() {
     {
       label: 'Leave Approvals',
       icon: CalendarDaysIcon,
-      count: 5,
+      count: personaData.pendingLeaveApprovals.length || stats?.pendingLeaveApprovals || 0,
       path: '/leave?filter=pending',
       color: 'text-blue-600',
       bg: 'bg-blue-100'
@@ -200,7 +334,7 @@ export default function ModernDashboard() {
     {
       label: 'Attendance Approvals',
       icon: ClockIcon,
-      count: 3,
+      count: personaData.pendingRegularizations.length,
       path: '/attendance?filter=pending',
       color: 'text-green-600',
       bg: 'bg-green-100'
@@ -208,7 +342,7 @@ export default function ModernDashboard() {
     {
       label: 'Appraisal Reviews',
       icon: TrophyIcon,
-      count: 2,
+      count: 0,
       path: '/performance?filter=pending',
       color: 'text-purple-600',
       bg: 'bg-purple-100'
@@ -216,7 +350,7 @@ export default function ModernDashboard() {
     {
       label: 'Promotion Requests',
       icon: ArrowTrendingUpIcon,
-      count: 1,
+      count: 0,
       path: '/employees?filter=promotions',
       color: 'text-indigo-600',
       bg: 'bg-indigo-100'
@@ -224,7 +358,7 @@ export default function ModernDashboard() {
     {
       label: 'Increment Approvals',
       icon: CurrencyDollarIcon,
-      count: 1,
+      count: 0,
       path: '/employees?filter=increments',
       color: 'text-emerald-600',
       bg: 'bg-emerald-100'
@@ -236,65 +370,218 @@ export default function ModernDashboard() {
     navigate(path);
   };
 
-  const statCards = stats ? [
-    {
-      title: 'Total Employees',
-      value: stats.totalEmployees,
-      change: stats.employeeTrend,
-      changeLabel: 'vs last month',
-      icon: UsersIcon,
-      iconColor: 'text-primary-600',
-      iconBg: 'bg-primary-100',
-      trend: stats.employeeTrend > 0 ? 'up' : stats.employeeTrend < 0 ? 'down' : 'neutral',
-      onClick: () => navigate('/employees'),
-    },
-    {
-      title: 'Present Today',
-      value: stats.presentToday,
-      change: stats.totalEmployees > 0 ? Math.round((stats.presentToday / stats.totalEmployees) * 100) : 0,
-      changeLabel: 'attendance',
-      icon: CheckCircleIcon,
-      iconColor: 'text-teal-600',
-      iconBg: 'bg-teal-100',
-      trend: stats.attendanceTrend > 0 ? 'up' : stats.attendanceTrend < 0 ? 'down' : 'neutral',
-      isPercentage: false,
-      onClick: () => navigate('/attendance'),
-    },
-    {
-      title: 'Upcoming Onboarding',
-      value: stats.upcomingOnboarding,
-      change: stats.upcomingOnboarding,
-      changeLabel: 'candidates ready',
-      icon: UserPlusIcon,
-      iconColor: 'text-blue-600',
-      iconBg: 'bg-blue-100',
-      trend: 'neutral',
-      onClick: () => navigate('/onboarding'),
-    },
-    {
-      title: 'Upcoming Exits',
-      value: stats.upcomingExits,
-      change: stats.exitThisMonth,
-      changeLabel: 'this month',
-      icon: ArrowRightOnRectangleIcon,
-      iconColor: 'text-red-600',
-      iconBg: 'bg-red-100',
-      trend: 'neutral',
-      onClick: () => navigate('/exit'),
-    },
-    {
-      title: 'Pending Approvals',
-      value: stats.pendingApprovals,
-      change: stats.pendingLeaveApprovals,
-      changeLabel: 'need action',
-      icon: BellAlertIcon,
-      iconColor: 'text-orange-600',
-      iconBg: 'bg-orange-100',
-      trend: 'neutral',
-      onClick: () => setShowApprovalsDropdown(!showApprovalsDropdown),
-      hasDropdown: true,
-    },
-  ] : [];
+  const statCards = stats ? {
+    owner: [
+      {
+        title: 'Employees',
+        value: stats.totalEmployees,
+        changeLabel: 'active workforce',
+        icon: UsersIcon,
+        iconColor: 'text-primary-600',
+        iconBg: 'bg-primary-100',
+        trend: stats.employeeTrend > 0 ? 'up' : stats.employeeTrend < 0 ? 'down' : 'neutral',
+        onClick: () => navigate('/employees'),
+      },
+      {
+        title: 'Setup Masters',
+        value: stats.departmentCount + stats.designationCount,
+        changeLabel: `${stats.departmentCount} departments, ${stats.designationCount} designations`,
+        icon: Cog6ToothIcon,
+        iconColor: 'text-indigo-600',
+        iconBg: 'bg-indigo-100',
+        trend: 'neutral',
+        onClick: () => navigate('/settings'),
+      },
+      {
+        title: 'Onboarding Pipeline',
+        value: stats.upcomingOnboarding,
+        changeLabel: 'candidates in motion',
+        icon: UserPlusIcon,
+        iconColor: 'text-blue-600',
+        iconBg: 'bg-blue-100',
+        trend: 'neutral',
+        onClick: () => navigate('/onboarding'),
+      },
+      {
+        title: 'Exits In Progress',
+        value: stats.upcomingExits,
+        changeLabel: `${stats.exitThisMonth} this month`,
+        icon: ArrowRightOnRectangleIcon,
+        iconColor: 'text-red-600',
+        iconBg: 'bg-red-100',
+        trend: 'neutral',
+        onClick: () => navigate('/exit'),
+      },
+      {
+        title: 'Owner Settings',
+        value: 'Ready',
+        changeLabel: 'subscription and billing',
+        icon: CreditCardIcon,
+        iconColor: 'text-emerald-600',
+        iconBg: 'bg-emerald-100',
+        trend: 'neutral',
+        onClick: () => navigate('/settings'),
+      },
+    ],
+    hr: [
+      {
+        title: 'Active Employees',
+        value: stats.activeEmployees,
+        changeLabel: 'organization-wide',
+        icon: UsersIcon,
+        iconColor: 'text-primary-600',
+        iconBg: 'bg-primary-100',
+        trend: stats.employeeTrend > 0 ? 'up' : stats.employeeTrend < 0 ? 'down' : 'neutral',
+        onClick: () => navigate('/employees'),
+      },
+      {
+        title: 'Present Today',
+        value: stats.presentToday,
+        changeLabel: `${stats.absentToday} absent, ${stats.onLeaveToday} on leave`,
+        icon: CheckCircleIcon,
+        iconColor: 'text-teal-600',
+        iconBg: 'bg-teal-100',
+        trend: stats.attendanceTrend > 0 ? 'up' : stats.attendanceTrend < 0 ? 'down' : 'neutral',
+        onClick: () => navigate('/attendance'),
+      },
+      {
+        title: 'Pending Approvals',
+        value: stats.pendingApprovals + personaData.pendingRegularizations.length,
+        changeLabel: 'leave and attendance',
+        icon: BellAlertIcon,
+        iconColor: 'text-orange-600',
+        iconBg: 'bg-orange-100',
+        trend: 'neutral',
+        onClick: () => setShowApprovalsDropdown(!showApprovalsDropdown),
+        hasDropdown: true,
+      },
+      {
+        title: 'Probation Active',
+        value: stats.activeProbation,
+        changeLabel: `${stats.probationEndingSoon} ending soon`,
+        icon: AcademicCapIcon,
+        iconColor: 'text-purple-600',
+        iconBg: 'bg-purple-100',
+        trend: 'neutral',
+        onClick: () => navigate('/probation'),
+      },
+      {
+        title: 'HR Connect',
+        value: personaData.hrConnectPosts.length,
+        changeLabel: 'latest wall posts',
+        icon: ChatBubbleLeftRightIcon,
+        iconColor: 'text-pink-600',
+        iconBg: 'bg-pink-100',
+        trend: 'neutral',
+        onClick: () => navigate('/hr-connect'),
+      },
+    ],
+    manager: [
+      {
+        title: 'Team Members',
+        value: stats.totalEmployees,
+        changeLabel: 'direct report scope',
+        icon: UserGroupIcon,
+        iconColor: 'text-primary-600',
+        iconBg: 'bg-primary-100',
+        trend: 'neutral',
+        onClick: () => navigate('/employees'),
+      },
+      {
+        title: 'Team Present',
+        value: stats.presentToday,
+        changeLabel: `${stats.absentToday} absent, ${stats.onLeaveToday} on leave`,
+        icon: CheckCircleIcon,
+        iconColor: 'text-teal-600',
+        iconBg: 'bg-teal-100',
+        trend: 'neutral',
+        onClick: () => navigate('/attendance'),
+      },
+      {
+        title: 'Pending Approvals',
+        value: stats.pendingApprovals + personaData.pendingRegularizations.length,
+        changeLabel: 'team actions due',
+        icon: BellAlertIcon,
+        iconColor: 'text-orange-600',
+        iconBg: 'bg-orange-100',
+        trend: 'neutral',
+        onClick: () => setShowApprovalsDropdown(!showApprovalsDropdown),
+        hasDropdown: true,
+      },
+      {
+        title: 'Performance',
+        value: stats.activeProbation,
+        changeLabel: 'probation/review focus',
+        icon: TrophyIcon,
+        iconColor: 'text-purple-600',
+        iconBg: 'bg-purple-100',
+        trend: 'neutral',
+        onClick: () => navigate('/performance'),
+      },
+      {
+        title: 'Unread Messages',
+        value: personaData.unreadMessages,
+        changeLabel: 'chat updates',
+        icon: ChatBubbleLeftRightIcon,
+        iconColor: 'text-blue-600',
+        iconBg: 'bg-blue-100',
+        trend: 'neutral',
+        onClick: () => navigate('/hr-connect'),
+      },
+    ],
+    employee: [
+      {
+        title: 'Leave Balance',
+        value: totalAvailableLeave,
+        changeLabel: `${totalPendingLeaveDays} days pending`,
+        icon: ClipboardDocumentCheckIcon,
+        iconColor: 'text-primary-600',
+        iconBg: 'bg-primary-100',
+        trend: 'neutral',
+        onClick: () => navigate('/leave'),
+      },
+      {
+        title: 'Week Hours',
+        value: formatHours(getAttendanceMinutes('week')),
+        changeLabel: 'worked this week',
+        icon: ClockIcon,
+        iconColor: 'text-teal-600',
+        iconBg: 'bg-teal-100',
+        trend: 'neutral',
+        onClick: () => navigate('/attendance'),
+      },
+      {
+        title: 'Month Hours',
+        value: formatHours(getAttendanceMinutes('month')),
+        changeLabel: 'worked this month',
+        icon: CalendarDaysIcon,
+        iconColor: 'text-indigo-600',
+        iconBg: 'bg-indigo-100',
+        trend: 'neutral',
+        onClick: () => navigate('/attendance'),
+      },
+      {
+        title: 'My Requests',
+        value: stats.pendingApprovals,
+        changeLabel: 'pending HR actions',
+        icon: BellAlertIcon,
+        iconColor: 'text-orange-600',
+        iconBg: 'bg-orange-100',
+        trend: 'neutral',
+        onClick: () => navigate('/leave'),
+      },
+      {
+        title: 'Unread Messages',
+        value: personaData.unreadMessages,
+        changeLabel: 'chat updates',
+        icon: ChatBubbleLeftRightIcon,
+        iconColor: 'text-blue-600',
+        iconBg: 'bg-blue-100',
+        trend: 'neutral',
+        onClick: () => navigate('/hr-connect'),
+      },
+    ],
+  }[persona] : [];
 
   // Loading state
   if (loading) {
@@ -310,43 +597,28 @@ export default function ModernDashboard() {
     );
   }
 
-  // Error state
-  if (error) {
-    return (
-      <ModernLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <ExclamationTriangleIcon className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <p className="text-gray-900 font-semibold mb-2">Failed to load dashboard</p>
-            <p className="text-gray-500 mb-4">{error}</p>
-            <button onClick={fetchDashboardStats} className="btn btn-primary">
-              Retry
-            </button>
-          </div>
-        </div>
-      </ModernLayout>
-    );
-  }
-
-  // Empty state for new organizations
-  const isNewOrganization = stats && stats.totalEmployees === 0 && stats.departmentCount === 0;
+  // Organization setup prompts are privileged admin/HR work, not employee self-service content.
+  const showOrganizationSetupPrompt = (isOwner || isHr) && stats && stats.totalEmployees === 0 && stats.departmentCount === 0;
 
   return (
     <ModernLayout>
       {/* Page header */}
       <div className="mb-8">
+        <div className="mb-3 inline-flex items-center rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700">
+          {dashboardTitle}
+        </div>
         <h1 className="text-3xl font-bold text-gray-900">
           Welcome back, {user?.fullName || 'User'}!
         </h1>
         <p className="mt-2 text-gray-600">
-          {isNewOrganization
+          {showOrganizationSetupPrompt
             ? "Let's get started by setting up your organization."
-            : "Here's what's happening with your organization today."}
+            : dashboardSubtitle}
         </p>
       </div>
 
       {/* Empty State for New Organization */}
-      {isNewOrganization && (
+      {showOrganizationSetupPrompt && (
         <div className="bg-gradient-to-br from-primary-50 to-blue-50 rounded-xl p-8 mb-6 border border-primary-100">
           <div className="max-w-3xl">
             <h2 className="text-2xl font-bold text-gray-900 mb-3">
@@ -399,7 +671,7 @@ export default function ModernDashboard() {
                     <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
                   </div>
                   {stat.hasDropdown ? (
-                    <ChevronDownIcon className={`h-4 w-4 text-gray-600 transition-transform ${showApprovalsDropdown && index === 4 ? 'rotate-180' : ''}`} />
+                    <ChevronDownIcon className={`h-4 w-4 text-gray-600 transition-transform ${showApprovalsDropdown ? 'rotate-180' : ''}`} />
                   ) : (
                     <>
                       {stat.trend === 'up' && (
@@ -423,7 +695,7 @@ export default function ModernDashboard() {
             </div>
 
             {/* Approvals Dropdown */}
-            {stat.hasDropdown && showApprovalsDropdown && index === 4 && (
+            {stat.hasDropdown && showApprovalsDropdown && (
               <div
                 ref={approvalsDropdownRef}
                 className="absolute top-full mt-2 left-0 right-0 bg-white rounded-lg shadow-xl border border-gray-200 z-50 overflow-hidden"
@@ -452,6 +724,131 @@ export default function ModernDashboard() {
             )}
           </div>
         ))}
+      </div>
+
+      {/* Persona workbench */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        {isOwner && (
+          <>
+            <div className="card">
+              <div className="card-header">
+                <h2 className="text-lg font-semibold text-gray-900">Implementation Checklist</h2>
+              </div>
+              <div className="card-body space-y-3">
+                {[
+                  { label: 'Company profile and owner settings', done: true, path: '/settings' },
+                  { label: 'Departments and designations', done: (stats?.departmentCount || 0) > 0 && (stats?.designationCount || 0) > 0, path: '/departments' },
+                  { label: 'Employee data and user invites', done: (stats?.totalEmployees || 0) > 0, path: '/employees' },
+                  { label: 'Leave and attendance policies', done: true, path: '/settings' },
+                ].map((item) => (
+                  <button key={item.label} onClick={() => navigate(item.path)} className="flex w-full items-center justify-between rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
+                    <span className="text-sm font-medium text-gray-700">{item.label}</span>
+                    {item.done ? <CheckCircleIcon className="h-5 w-5 text-green-600" /> : <ClockIcon className="h-5 w-5 text-orange-500" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-header">
+                <h2 className="text-lg font-semibold text-gray-900">Owner Controls</h2>
+              </div>
+              <div className="card-body grid grid-cols-1 gap-3">
+                <button onClick={() => navigate('/settings')} className="btn btn-outline-primary justify-start">Subscription and billing</button>
+                <button onClick={() => navigate('/settings')} className="btn btn-outline-primary justify-start">Organization and security settings</button>
+                <button onClick={() => navigate('/reports')} className="btn btn-outline-primary justify-start">Executive reports</button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {(isHr || isManager) && (
+          <>
+            <div className="card">
+              <div className="card-header">
+                <h2 className="text-lg font-semibold text-gray-900">{isHr ? 'HR Action Queue' : 'Team Action Queue'}</h2>
+              </div>
+              <div className="card-body space-y-3">
+                <button onClick={() => navigate('/leave?filter=pending')} className="flex w-full items-center justify-between rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
+                  <span className="text-sm font-medium text-gray-700">Leave approvals</span>
+                  <span className="badge badge-warning">{personaData.pendingLeaveApprovals.length || stats?.pendingLeaveApprovals || 0}</span>
+                </button>
+                <button onClick={() => navigate('/attendance?filter=pending')} className="flex w-full items-center justify-between rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
+                  <span className="text-sm font-medium text-gray-700">Attendance regularizations</span>
+                  <span className="badge badge-info">{personaData.pendingRegularizations.length}</span>
+                </button>
+                <button onClick={() => navigate('/performance')} className="flex w-full items-center justify-between rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
+                  <span className="text-sm font-medium text-gray-700">Performance reviews</span>
+                  <span className="badge badge-gray">Open</span>
+                </button>
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-header">
+                <h2 className="text-lg font-semibold text-gray-900">{isHr ? 'Operations Focus' : 'Team Health'}</h2>
+              </div>
+              <div className="card-body space-y-3 text-sm text-gray-600">
+                <div className="flex justify-between"><span>Present today</span><strong className="text-gray-900">{stats?.presentToday || 0}</strong></div>
+                <div className="flex justify-between"><span>On leave</span><strong className="text-gray-900">{stats?.onLeaveToday || 0}</strong></div>
+                <div className="flex justify-between"><span>Absent</span><strong className="text-gray-900">{stats?.absentToday || 0}</strong></div>
+                <div className="flex justify-between"><span>Probation active</span><strong className="text-gray-900">{stats?.activeProbation || 0}</strong></div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {isEmployee && (
+          <>
+            <div className="card">
+              <div className="card-header">
+                <h2 className="text-lg font-semibold text-gray-900">My Self-Service</h2>
+              </div>
+              <div className="card-body grid grid-cols-1 gap-3">
+                <button onClick={() => navigate('/attendance')} className="btn btn-outline-primary justify-start">Clock in/out and timesheet</button>
+                <button onClick={() => navigate('/leave')} className="btn btn-outline-primary justify-start">Apply for leave</button>
+                <button onClick={() => navigate('/my-hr-documents')} className="btn btn-outline-primary justify-start">My HR documents</button>
+                <button onClick={() => navigate('/hr-connect')} className="btn btn-outline-primary justify-start">HR Connect</button>
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-header">
+                <h2 className="text-lg font-semibold text-gray-900">My Leave Balances</h2>
+              </div>
+              <div className="card-body space-y-3">
+                {personaData.leaveBalances.length === 0 ? (
+                  <p className="text-sm text-gray-500">No leave balance data available.</p>
+                ) : (
+                  personaData.leaveBalances.slice(0, 4).map((balance) => (
+                    <div key={balance.balanceId} className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
+                      <span className="text-sm font-medium capitalize text-gray-700">{balance.leaveType.replace('_', ' ')}</span>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {balance.available ?? Math.max(0, balance.totalAllocated + balance.carriedForward - balance.used - balance.pending)} days
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="card">
+          <div className="card-header flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">HR Connect Wall</h2>
+            <button onClick={() => navigate('/hr-connect')} className="text-xs font-medium text-primary-600">Open</button>
+          </div>
+          <div className="card-body space-y-4">
+            {personaData.hrConnectPosts.length === 0 ? (
+              <p className="text-sm text-gray-500">No recent wall posts.</p>
+            ) : (
+              personaData.hrConnectPosts.slice(0, 3).map((post) => (
+                <button key={post.postId} onClick={() => navigate('/hr-connect')} className="block w-full rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
+                  <p className="line-clamp-2 text-sm font-medium text-gray-900">{post.title || post.content}</p>
+                  <p className="mt-1 text-xs text-gray-500">{post.authorName}</p>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Main content grid */}
