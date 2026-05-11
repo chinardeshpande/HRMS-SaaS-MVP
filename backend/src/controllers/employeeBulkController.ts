@@ -9,6 +9,7 @@ import { sendSuccess, sendError } from '../utils/responses';
 import bcrypt from 'bcrypt';
 import { UserRole, EmploymentStatus } from '../../../shared/types';
 import logger from '../utils/logger';
+import subscriptionEnforcementService from '../services/subscriptionEnforcementService';
 
 interface CSVEmployee {
   employeeCode: string;
@@ -266,8 +267,10 @@ export const bulkUploadEmployees = async (req: Request, res: Response) => {
           tenantId,
           email: record.email,
           passwordHash: hashedPassword,
+          fullName: `${record.firstName} ${record.lastName}`,
           role: UserRole.EMPLOYEE,
           employeeId: employee.employeeId,
+          isActive: true,
         });
 
         await userRepo.save(user);
@@ -292,6 +295,8 @@ export const bulkUploadEmployees = async (req: Request, res: Response) => {
         result.failed++;
       }
     }
+
+    await subscriptionEnforcementService.syncCurrentUsers(tenantId);
 
     return sendSuccess(res, result);
   } catch (error: any) {
