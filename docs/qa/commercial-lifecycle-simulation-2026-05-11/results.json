@@ -1,11 +1,11 @@
 {
-  "runId": "AHR-COMMERCIAL-SIM-2026-05-11-1778489157172",
+  "runId": "AHR-COMMERCIAL-SIM-2026-05-11-1778489916215",
   "target": "https://aurorahr.in",
   "api": "https://aurorahr.in/api/v1",
-  "generatedAt": "2026-05-11T08:50:36.499Z",
+  "generatedAt": "2026-05-11T09:03:13.804Z",
   "summary": {
-    "passed": 48,
-    "failed": 1,
+    "passed": 49,
+    "failed": 0,
     "blocked": 2,
     "total": 51
   },
@@ -26,7 +26,7 @@
       "title": "New company can initiate signup",
       "role": "public",
       "status": "passed",
-      "evidence": "registrationId=899a30f1-f6ad-448c-8d51-d7254b259b03, email=commercial.sim.1778489157173@aurorahr.test",
+      "evidence": "registrationId=7dcecce9-7b9e-4295-baf4-d8d8fe1b001b, email=commercial.sim.1778489916216@aurorahr.test",
       "notes": "",
       "severity": ""
     },
@@ -86,7 +86,7 @@
       "title": "HR can retrieve current tenant subscription",
       "role": "hr",
       "status": "passed",
-      "evidence": "plan=enterprise, status=active, users=7/250",
+      "evidence": "plan=enterprise, status=active, users=9/250",
       "notes": "",
       "severity": ""
     },
@@ -116,7 +116,7 @@
       "title": "HR creates departments for simulation company structure",
       "role": "hr",
       "status": "passed",
-      "evidence": "departments=People Ops 89157172, Engineering 89157172, Sales 89157172",
+      "evidence": "departments=People Ops 89916215, Engineering 89916215, Sales 89916215",
       "notes": "",
       "severity": ""
     },
@@ -126,7 +126,7 @@
       "title": "HR creates designations for reporting hierarchy",
       "role": "hr",
       "status": "passed",
-      "evidence": "designations=HR Business Partner 89157172, Engineering Manager 89157172, Software Engineer 89157172",
+      "evidence": "designations=HR Business Partner 89916215, Engineering Manager 89916215, Software Engineer 89916215",
       "notes": "",
       "severity": ""
     },
@@ -136,7 +136,7 @@
       "title": "HR creates a custom HR operations role",
       "role": "hr",
       "status": "passed",
-      "evidence": "roleId=12672c64-7c6f-4863-a429-3d2f08518c1d",
+      "evidence": "roleId=a3ed4960-1b1b-49fb-9cb6-3600a9c8abbe",
       "notes": "",
       "severity": ""
     },
@@ -146,7 +146,7 @@
       "title": "HR creates manager and employee users through employee creation",
       "role": "hr",
       "status": "passed",
-      "evidence": "manager=47b9bf26-9c82-4345-9ee0-debb81ec91d1, employee=d4f45d93-e9ea-4452-a729-dff1c5cc0873",
+      "evidence": "manager=dbed201c-d99c-44fe-844b-cc3cfe4447d2, employee=37607095-2680-4b73-afd6-1a90a6383f3f",
       "notes": "",
       "severity": ""
     },
@@ -155,10 +155,10 @@
       "phase": "Importing Employee Data",
       "title": "HR bulk imports employee records by CSV",
       "role": "hr",
-      "status": "failed",
-      "evidence": "runtime/API error",
-      "notes": "Bulk import did not create expected employees: successful=0, failed=2, errors=[{\"row\":2,\"employeeCode\":\"SIM-BULK-1-89157172\",\"email\":\"kavya.menon.89157172@aurorahr.test\",\"error\":\"null value in column \\\"fullName\\\" of relation \\\"users\\\" violates not-null constraint\"},{\"row\":3,\"employeeCode\":\"SIM-BULK-2-89157172\",\"email\":\"rohan.sen.89157172@aurorahr.test\",\"error\":\"null value in column \\\"fullName\\\" of relation \\\"users\\\" violates not-null constraint\"}]",
-      "severity": "high"
+      "status": "passed",
+      "evidence": "successful=2, failed=0",
+      "notes": "",
+      "severity": ""
     },
     {
       "id": "ORG_01",
@@ -166,7 +166,7 @@
       "title": "Reporting relationships are visible through employee hierarchy",
       "role": "hr",
       "status": "passed",
-      "evidence": "employees=20, reportingRelationships=13",
+      "evidence": "employees=24, reportingRelationships=14",
       "notes": "",
       "severity": ""
     },
@@ -186,7 +186,7 @@
       "title": "Month 1: employee regularization and approval path",
       "role": "employee/manager",
       "status": "passed",
-      "evidence": "editId=71f28d0c-fba5-4e8d-b9e6-3552b4c190ef, action=approve",
+      "evidence": "editId=bd7c91d7-720b-4dd4-a1b3-31db3d7199d1, action=approve",
       "notes": "",
       "severity": ""
     },
@@ -196,7 +196,7 @@
       "title": "Month 2: employee regularization and approval path",
       "role": "employee/manager",
       "status": "passed",
-      "evidence": "editId=1202bb3e-5a0e-43d1-9956-7383d958e322, action=reject",
+      "evidence": "editId=2bcd2331-ce21-4315-b484-8ea103d6e0b7, action=reject",
       "notes": "",
       "severity": ""
     },
@@ -206,7 +206,7 @@
       "title": "Month 3: employee regularization and approval path",
       "role": "employee/manager",
       "status": "passed",
-      "evidence": "editId=72b33021-5d9a-4fb7-b3c1-d37d82a426a7, action=approve",
+      "evidence": "editId=ecf5d102-0b76-4c96-a51b-2be253035a3f, action=approve",
       "notes": "",
       "severity": ""
     },
@@ -246,7 +246,7 @@
       "title": "HR creates candidate and records offer acceptance",
       "role": "hr",
       "status": "passed",
-      "evidence": "candidateId=2afd6a81-9ea4-43ff-8d38-f77778700cfd",
+      "evidence": "candidateId=db49b56e-743e-4526-84de-f4f1a6ee76d6",
       "notes": "",
       "severity": ""
     },
@@ -276,7 +276,7 @@
       "title": "HR runs /reports/headcount",
       "role": "hr",
       "status": "passed",
-      "evidence": "Headcount Report: records=9",
+      "evidence": "Headcount Report: records=11",
       "notes": "",
       "severity": ""
     },
@@ -336,7 +336,7 @@
       "title": "HR runs /reports/pms-completion",
       "role": "hr",
       "status": "passed",
-      "evidence": "PMS Completion Report: records=10",
+      "evidence": "PMS Completion Report: records=13",
       "notes": "",
       "severity": ""
     },
@@ -346,7 +346,7 @@
       "title": "HR runs /reports/missing-documents",
       "role": "hr",
       "status": "passed",
-      "evidence": "Missing Documents Report: records=20",
+      "evidence": "Missing Documents Report: records=24",
       "notes": "",
       "severity": ""
     },
@@ -632,168 +632,168 @@
     "departments": [
       {
         "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-        "name": "People Ops 89157172",
+        "name": "People Ops 89916215",
         "parentDeptId": null,
         "headEmployeeId": null,
-        "departmentId": "8ccf39a6-f829-4f5c-989e-cc47a15908a5",
-        "createdAt": "2026-05-11T08:45:58.216Z",
-        "updatedAt": "2026-05-11T08:45:58.216Z"
+        "departmentId": "adb33f8e-869a-4798-a1d5-a2b98564e94c",
+        "createdAt": "2026-05-11T08:58:37.244Z",
+        "updatedAt": "2026-05-11T08:58:37.244Z"
       },
       {
         "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-        "name": "Engineering 89157172",
+        "name": "Engineering 89916215",
         "parentDeptId": null,
         "headEmployeeId": null,
-        "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
-        "createdAt": "2026-05-11T08:45:58.287Z",
-        "updatedAt": "2026-05-11T08:45:58.287Z"
+        "departmentId": "b8db93e9-68dc-483c-81e7-cc7f1dd162a7",
+        "createdAt": "2026-05-11T08:58:37.308Z",
+        "updatedAt": "2026-05-11T08:58:37.308Z"
       },
       {
         "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-        "name": "Sales 89157172",
+        "name": "Sales 89916215",
         "parentDeptId": null,
         "headEmployeeId": null,
-        "departmentId": "f0f45df2-d9b2-4968-92a1-71810d8850dd",
-        "createdAt": "2026-05-11T08:45:58.339Z",
-        "updatedAt": "2026-05-11T08:45:58.339Z"
+        "departmentId": "28fc63d8-1054-46b2-99e6-8f973f92c25b",
+        "createdAt": "2026-05-11T08:58:37.366Z",
+        "updatedAt": "2026-05-11T08:58:37.366Z"
       }
     ],
     "designations": [
       {
         "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-        "name": "HR Business Partner 89157172",
+        "name": "HR Business Partner 89916215",
         "level": 3,
-        "designationId": "f83fdbe5-97b1-4fc7-b15d-c1c040803ce1",
-        "createdAt": "2026-05-11T08:45:58.401Z",
-        "updatedAt": "2026-05-11T08:45:58.401Z"
+        "designationId": "1decaa17-61ca-41d5-bfe3-1f081e8263f0",
+        "createdAt": "2026-05-11T08:58:37.419Z",
+        "updatedAt": "2026-05-11T08:58:37.419Z"
       },
       {
         "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-        "name": "Engineering Manager 89157172",
+        "name": "Engineering Manager 89916215",
         "level": 4,
-        "designationId": "416891ff-1a4a-4233-b1c0-bfcdd775d9a8",
-        "createdAt": "2026-05-11T08:45:58.492Z",
-        "updatedAt": "2026-05-11T08:45:58.492Z"
+        "designationId": "df3d25a5-7753-484a-93ea-8c539b2db463",
+        "createdAt": "2026-05-11T08:58:37.474Z",
+        "updatedAt": "2026-05-11T08:58:37.474Z"
       },
       {
         "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-        "name": "Software Engineer 89157172",
+        "name": "Software Engineer 89916215",
         "level": 5,
-        "designationId": "7ac638fc-987b-465a-9a61-0c7ca48b6bdc",
-        "createdAt": "2026-05-11T08:45:58.557Z",
-        "updatedAt": "2026-05-11T08:45:58.557Z"
+        "designationId": "7b0e5f58-6c07-489b-b62b-de9188bdae4b",
+        "createdAt": "2026-05-11T08:58:37.526Z",
+        "updatedAt": "2026-05-11T08:58:37.526Z"
       }
     ],
     "employees": [
       {
-        "employeeId": "47b9bf26-9c82-4345-9ee0-debb81ec91d1",
+        "employeeId": "dbed201c-d99c-44fe-844b-cc3cfe4447d2",
         "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-        "employeeCode": "SIM-MGR-89157172",
+        "employeeCode": "SIM-MGR-89916215",
         "firstName": "Nisha",
         "lastName": "Rao",
-        "email": "nisha.rao.89157172@aurorahr.test",
+        "email": "nisha.rao.89916215@aurorahr.test",
         "phone": "+919800000001",
         "dateOfBirth": null,
         "gender": null,
         "address": null,
-        "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
-        "designationId": "416891ff-1a4a-4233-b1c0-bfcdd775d9a8",
+        "departmentId": "b8db93e9-68dc-483c-81e7-cc7f1dd162a7",
+        "designationId": "df3d25a5-7753-484a-93ea-8c539b2db463",
         "managerId": null,
         "roleId": null,
         "dateOfJoining": "2026-03-03",
         "probationEndDate": null,
         "employmentType": "Full-Time",
         "status": "active",
-        "createdAt": "2026-05-11T08:45:58.679Z",
-        "updatedAt": "2026-05-11T08:45:58.679Z",
+        "createdAt": "2026-05-11T08:58:37.673Z",
+        "updatedAt": "2026-05-11T08:58:37.673Z",
         "department": {
-          "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
+          "departmentId": "b8db93e9-68dc-483c-81e7-cc7f1dd162a7",
           "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-          "name": "Engineering 89157172",
+          "name": "Engineering 89916215",
           "parentDeptId": null,
           "headEmployeeId": null,
-          "createdAt": "2026-05-11T08:45:58.287Z",
-          "updatedAt": "2026-05-11T08:45:58.287Z"
+          "createdAt": "2026-05-11T08:58:37.308Z",
+          "updatedAt": "2026-05-11T08:58:37.308Z"
         },
         "designation": {
-          "designationId": "416891ff-1a4a-4233-b1c0-bfcdd775d9a8",
+          "designationId": "df3d25a5-7753-484a-93ea-8c539b2db463",
           "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-          "name": "Engineering Manager 89157172",
+          "name": "Engineering Manager 89916215",
           "level": 4,
-          "createdAt": "2026-05-11T08:45:58.492Z",
-          "updatedAt": "2026-05-11T08:45:58.492Z"
+          "createdAt": "2026-05-11T08:58:37.474Z",
+          "updatedAt": "2026-05-11T08:58:37.474Z"
         },
         "manager": null
       },
       {
-        "employeeId": "d4f45d93-e9ea-4452-a729-dff1c5cc0873",
+        "employeeId": "37607095-2680-4b73-afd6-1a90a6383f3f",
         "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-        "employeeCode": "SIM-EMP-89157172",
+        "employeeCode": "SIM-EMP-89916215",
         "firstName": "Ishan",
         "lastName": "Kapoor",
-        "email": "ishan.kapoor.89157172@aurorahr.test",
+        "email": "ishan.kapoor.89916215@aurorahr.test",
         "phone": "+919800000002",
         "dateOfBirth": null,
         "gender": null,
         "address": null,
-        "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
-        "designationId": "7ac638fc-987b-465a-9a61-0c7ca48b6bdc",
-        "managerId": "47b9bf26-9c82-4345-9ee0-debb81ec91d1",
+        "departmentId": "b8db93e9-68dc-483c-81e7-cc7f1dd162a7",
+        "designationId": "7b0e5f58-6c07-489b-b62b-de9188bdae4b",
+        "managerId": "dbed201c-d99c-44fe-844b-cc3cfe4447d2",
         "roleId": null,
         "dateOfJoining": "2026-03-09",
         "probationEndDate": null,
         "employmentType": "Full-Time",
         "status": "active",
-        "createdAt": "2026-05-11T08:45:58.863Z",
-        "updatedAt": "2026-05-11T08:45:58.863Z",
+        "createdAt": "2026-05-11T08:58:37.871Z",
+        "updatedAt": "2026-05-11T08:58:37.871Z",
         "department": {
-          "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
+          "departmentId": "b8db93e9-68dc-483c-81e7-cc7f1dd162a7",
           "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-          "name": "Engineering 89157172",
+          "name": "Engineering 89916215",
           "parentDeptId": null,
           "headEmployeeId": null,
-          "createdAt": "2026-05-11T08:45:58.287Z",
-          "updatedAt": "2026-05-11T08:45:58.287Z"
+          "createdAt": "2026-05-11T08:58:37.308Z",
+          "updatedAt": "2026-05-11T08:58:37.308Z"
         },
         "designation": {
-          "designationId": "7ac638fc-987b-465a-9a61-0c7ca48b6bdc",
+          "designationId": "7b0e5f58-6c07-489b-b62b-de9188bdae4b",
           "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-          "name": "Software Engineer 89157172",
+          "name": "Software Engineer 89916215",
           "level": 5,
-          "createdAt": "2026-05-11T08:45:58.557Z",
-          "updatedAt": "2026-05-11T08:45:58.557Z"
+          "createdAt": "2026-05-11T08:58:37.526Z",
+          "updatedAt": "2026-05-11T08:58:37.526Z"
         },
         "manager": {
-          "employeeId": "47b9bf26-9c82-4345-9ee0-debb81ec91d1",
+          "employeeId": "dbed201c-d99c-44fe-844b-cc3cfe4447d2",
           "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-          "employeeCode": "SIM-MGR-89157172",
+          "employeeCode": "SIM-MGR-89916215",
           "firstName": "Nisha",
           "lastName": "Rao",
-          "email": "nisha.rao.89157172@aurorahr.test",
+          "email": "nisha.rao.89916215@aurorahr.test",
           "phone": "+919800000001",
           "dateOfBirth": null,
           "gender": null,
           "address": null,
-          "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
-          "designationId": "416891ff-1a4a-4233-b1c0-bfcdd775d9a8",
+          "departmentId": "b8db93e9-68dc-483c-81e7-cc7f1dd162a7",
+          "designationId": "df3d25a5-7753-484a-93ea-8c539b2db463",
           "managerId": null,
           "roleId": null,
           "dateOfJoining": "2026-03-03",
           "probationEndDate": null,
           "employmentType": "Full-Time",
           "status": "active",
-          "createdAt": "2026-05-11T08:45:58.679Z",
-          "updatedAt": "2026-05-11T08:45:58.679Z"
+          "createdAt": "2026-05-11T08:58:37.673Z",
+          "updatedAt": "2026-05-11T08:58:37.673Z"
         }
       }
     ],
     "reviews": [
       {
-        "reviewId": "af26577f-b29b-4c5d-bf7d-22b14db63629",
+        "reviewId": "c2601cc0-57c0-4956-a51a-8f17c46c8125",
         "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-        "employeeId": "abb57bbd-56d3-46d3-a86e-38e6d2b33328",
+        "employeeId": "065a65b4-afc8-4119-b971-71f586bc3b4a",
         "reviewerId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
-        "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489157172-Q1",
+        "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489916215-Q1",
         "reviewStartDate": "2026-03-02",
         "reviewEndDate": "2026-05-28",
         "currentState": "goal_setting",
@@ -820,29 +820,29 @@
         "skillGaps": null,
         "trainingRecommendations": null,
         "careerAspirations": null,
-        "createdAt": "2026-05-11T08:50:00.743Z",
-        "updatedAt": "2026-05-11T08:50:00.743Z",
+        "createdAt": "2026-05-11T09:02:39.800Z",
+        "updatedAt": "2026-05-11T09:02:39.800Z",
         "employee": {
-          "employeeId": "abb57bbd-56d3-46d3-a86e-38e6d2b33328",
+          "employeeId": "065a65b4-afc8-4119-b971-71f586bc3b4a",
           "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-          "employeeCode": "SIM-BULK-2-89157172",
+          "employeeCode": "SIM-BULK-2-89916215",
           "firstName": "Rohan",
           "lastName": "Sen",
-          "email": "rohan.sen.89157172@aurorahr.test",
+          "email": "rohan.sen.89916215@aurorahr.test",
           "phone": "+919800000004",
           "dateOfBirth": "1991-02-20",
           "gender": "Male",
           "address": null,
-          "departmentId": "f0f45df2-d9b2-4968-92a1-71810d8850dd",
-          "designationId": "7ac638fc-987b-465a-9a61-0c7ca48b6bdc",
+          "departmentId": "28fc63d8-1054-46b2-99e6-8f973f92c25b",
+          "designationId": "7b0e5f58-6c07-489b-b62b-de9188bdae4b",
           "managerId": null,
           "roleId": null,
           "dateOfJoining": "2026-04-01",
           "probationEndDate": null,
           "employmentType": "Full-Time",
           "status": "active",
-          "createdAt": "2026-05-11T08:45:59.168Z",
-          "updatedAt": "2026-05-11T08:45:59.168Z"
+          "createdAt": "2026-05-11T08:58:38.217Z",
+          "updatedAt": "2026-05-11T08:58:38.217Z"
         },
         "reviewer": {
           "employeeId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
@@ -868,11 +868,11 @@
         }
       },
       {
-        "reviewId": "f4779278-f1c7-46e2-add5-4789592ae464",
+        "reviewId": "d45c6432-f8a6-40e8-a2cd-a6a307f43a9d",
         "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-        "employeeId": "37fd4965-c9cc-4344-bf50-1e79a41f1ac4",
+        "employeeId": "99cd47b9-32e1-42a2-9f3c-3673e22a8eb0",
         "reviewerId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
-        "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489157172-Q2",
+        "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489916215-Q2",
         "reviewStartDate": "2026-03-02",
         "reviewEndDate": "2026-05-28",
         "currentState": "goal_setting",
@@ -899,29 +899,29 @@
         "skillGaps": null,
         "trainingRecommendations": null,
         "careerAspirations": null,
-        "createdAt": "2026-05-11T08:50:01.394Z",
-        "updatedAt": "2026-05-11T08:50:01.394Z",
+        "createdAt": "2026-05-11T09:02:40.343Z",
+        "updatedAt": "2026-05-11T09:02:40.343Z",
         "employee": {
-          "employeeId": "37fd4965-c9cc-4344-bf50-1e79a41f1ac4",
+          "employeeId": "99cd47b9-32e1-42a2-9f3c-3673e22a8eb0",
           "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-          "employeeCode": "SIM-BULK-1-89157172",
+          "employeeCode": "SIM-BULK-1-89916215",
           "firstName": "Kavya",
           "lastName": "Menon",
-          "email": "kavya.menon.89157172@aurorahr.test",
+          "email": "kavya.menon.89916215@aurorahr.test",
           "phone": "+919800000003",
           "dateOfBirth": "1992-06-12",
           "gender": "Female",
           "address": null,
-          "departmentId": "f0f45df2-d9b2-4968-92a1-71810d8850dd",
-          "designationId": "7ac638fc-987b-465a-9a61-0c7ca48b6bdc",
+          "departmentId": "28fc63d8-1054-46b2-99e6-8f973f92c25b",
+          "designationId": "7b0e5f58-6c07-489b-b62b-de9188bdae4b",
           "managerId": null,
           "roleId": null,
           "dateOfJoining": "2026-03-16",
           "probationEndDate": null,
           "employmentType": "Full-Time",
           "status": "active",
-          "createdAt": "2026-05-11T08:45:59.059Z",
-          "updatedAt": "2026-05-11T08:45:59.059Z"
+          "createdAt": "2026-05-11T08:58:38.117Z",
+          "updatedAt": "2026-05-11T08:58:38.117Z"
         },
         "reviewer": {
           "employeeId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
@@ -947,11 +947,11 @@
         }
       },
       {
-        "reviewId": "62a63148-e971-4017-b1e3-d892e2d2b96a",
+        "reviewId": "455aceeb-6b40-48a5-a29b-85a317c1a4e7",
         "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-        "employeeId": "d4f45d93-e9ea-4452-a729-dff1c5cc0873",
+        "employeeId": "37607095-2680-4b73-afd6-1a90a6383f3f",
         "reviewerId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
-        "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489157172-Q3",
+        "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489916215-Q3",
         "reviewStartDate": "2026-03-02",
         "reviewEndDate": "2026-05-28",
         "currentState": "goal_setting",
@@ -978,29 +978,29 @@
         "skillGaps": null,
         "trainingRecommendations": null,
         "careerAspirations": null,
-        "createdAt": "2026-05-11T08:50:02.009Z",
-        "updatedAt": "2026-05-11T08:50:02.009Z",
+        "createdAt": "2026-05-11T09:02:40.803Z",
+        "updatedAt": "2026-05-11T09:02:40.803Z",
         "employee": {
-          "employeeId": "d4f45d93-e9ea-4452-a729-dff1c5cc0873",
+          "employeeId": "37607095-2680-4b73-afd6-1a90a6383f3f",
           "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-          "employeeCode": "SIM-EMP-89157172",
+          "employeeCode": "SIM-EMP-89916215",
           "firstName": "Ishan",
           "lastName": "Kapoor",
-          "email": "ishan.kapoor.89157172@aurorahr.test",
+          "email": "ishan.kapoor.89916215@aurorahr.test",
           "phone": "+919800000002",
           "dateOfBirth": null,
           "gender": null,
           "address": null,
-          "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
-          "designationId": "7ac638fc-987b-465a-9a61-0c7ca48b6bdc",
-          "managerId": "47b9bf26-9c82-4345-9ee0-debb81ec91d1",
+          "departmentId": "b8db93e9-68dc-483c-81e7-cc7f1dd162a7",
+          "designationId": "7b0e5f58-6c07-489b-b62b-de9188bdae4b",
+          "managerId": "dbed201c-d99c-44fe-844b-cc3cfe4447d2",
           "roleId": null,
           "dateOfJoining": "2026-03-09",
           "probationEndDate": null,
           "employmentType": "Full-Time",
           "status": "active",
-          "createdAt": "2026-05-11T08:45:58.863Z",
-          "updatedAt": "2026-05-11T08:45:58.863Z"
+          "createdAt": "2026-05-11T08:58:37.871Z",
+          "updatedAt": "2026-05-11T08:58:37.871Z"
         },
         "reviewer": {
           "employeeId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
@@ -1036,14 +1036,14 @@
         "originalCheckOut": "2026-03-11T18:20:00.000Z",
         "requestedCheckIn": "2026-03-11T09:15:00.000Z",
         "requestedCheckOut": "2026-03-11T18:20:00.000Z",
-        "reason": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489157172] Month 1 client visit punch correction",
+        "reason": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489916215] Month 1 client visit punch correction",
         "status": "pending",
         "approverId": null,
         "approvedAt": null,
         "approverComments": null,
-        "editId": "71f28d0c-fba5-4e8d-b9e6-3552b4c190ef",
-        "createdAt": "2026-05-11T08:45:59.503Z",
-        "updatedAt": "2026-05-11T08:45:59.503Z"
+        "editId": "bd7c91d7-720b-4dd4-a1b3-31db3d7199d1",
+        "createdAt": "2026-05-11T08:58:38.556Z",
+        "updatedAt": "2026-05-11T08:58:38.556Z"
       },
       {
         "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
@@ -1053,14 +1053,14 @@
         "originalCheckOut": "2026-04-13T18:38:00.000Z",
         "requestedCheckIn": "2026-04-13T09:15:00.000Z",
         "requestedCheckOut": "2026-04-13T18:20:00.000Z",
-        "reason": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489157172] Month 2 client visit punch correction",
+        "reason": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489916215] Month 2 client visit punch correction",
         "status": "pending",
         "approverId": null,
         "approvedAt": null,
         "approverComments": null,
-        "editId": "1202bb3e-5a0e-43d1-9956-7383d958e322",
-        "createdAt": "2026-05-11T08:45:59.637Z",
-        "updatedAt": "2026-05-11T08:45:59.637Z"
+        "editId": "2bcd2331-ce21-4315-b484-8ea103d6e0b7",
+        "createdAt": "2026-05-11T08:58:38.715Z",
+        "updatedAt": "2026-05-11T08:58:38.715Z"
       },
       {
         "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
@@ -1070,14 +1070,14 @@
         "originalCheckOut": "2026-05-13T18:20:00.000Z",
         "requestedCheckIn": "2026-05-13T09:15:00.000Z",
         "requestedCheckOut": "2026-05-13T18:20:00.000Z",
-        "reason": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489157172] Month 3 client visit punch correction",
+        "reason": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489916215] Month 3 client visit punch correction",
         "status": "pending",
         "approverId": null,
         "approvedAt": null,
         "approverComments": null,
-        "editId": "72b33021-5d9a-4fb7-b3c1-d37d82a426a7",
-        "createdAt": "2026-05-11T08:45:59.770Z",
-        "updatedAt": "2026-05-11T08:45:59.770Z"
+        "editId": "ecf5d102-0b76-4c96-a51b-2be253035a3f",
+        "createdAt": "2026-05-11T08:58:38.887Z",
+        "updatedAt": "2026-05-11T08:58:38.887Z"
       }
     ],
     "reports": [
@@ -1085,24 +1085,26 @@
         "report": "Headcount Report",
         "filters": {},
         "summary": {
-          "totalHeadcount": 20,
+          "totalHeadcount": 24,
           "byDepartment": {
             "Finance & Operations": 2,
             "Engineering 89157172": 2,
             "Engineering 88824874": 2,
+            "Engineering 89916215": 2,
             "Sales 89157172": 2,
             "Engineering": 5,
             "People Operations": 2,
             "Executive Office": 1,
             "Sales 88824874": 2,
-            "Sales": 2
+            "Sales": 2,
+            "Sales 89916215": 2
           },
           "byEmploymentType": {
             "full_time": 12,
-            "Full-Time": 8
+            "Full-Time": 12
           },
           "byStatus": {
-            "active": 20
+            "active": 24
           }
         },
         "results": [
@@ -1111,66 +1113,80 @@
             "employmentType": "full_time",
             "status": "active",
             "count": 2,
-            "percentage": 10
+            "percentage": 8.3
           },
           {
             "department": "Engineering 89157172",
             "employmentType": "Full-Time",
             "status": "active",
             "count": 2,
-            "percentage": 10
+            "percentage": 8.3
           },
           {
             "department": "Engineering 88824874",
             "employmentType": "Full-Time",
             "status": "active",
             "count": 2,
-            "percentage": 10
+            "percentage": 8.3
+          },
+          {
+            "department": "Engineering 89916215",
+            "employmentType": "Full-Time",
+            "status": "active",
+            "count": 2,
+            "percentage": 8.3
           },
           {
             "department": "Sales 89157172",
             "employmentType": "Full-Time",
             "status": "active",
             "count": 2,
-            "percentage": 10
+            "percentage": 8.3
           },
           {
             "department": "Engineering",
             "employmentType": "full_time",
             "status": "active",
             "count": 5,
-            "percentage": 25
+            "percentage": 20.8
           },
           {
             "department": "People Operations",
             "employmentType": "full_time",
             "status": "active",
             "count": 2,
-            "percentage": 10
+            "percentage": 8.3
           },
           {
             "department": "Executive Office",
             "employmentType": "full_time",
             "status": "active",
             "count": 1,
-            "percentage": 5
+            "percentage": 4.2
           },
           {
             "department": "Sales 88824874",
             "employmentType": "Full-Time",
             "status": "active",
             "count": 2,
-            "percentage": 10
+            "percentage": 8.3
           },
           {
             "department": "Sales",
             "employmentType": "full_time",
             "status": "active",
             "count": 2,
-            "percentage": 10
+            "percentage": 8.3
+          },
+          {
+            "department": "Sales 89916215",
+            "employmentType": "Full-Time",
+            "status": "active",
+            "count": 2,
+            "percentage": 8.3
           }
         ],
-        "totalRecords": 9
+        "totalRecords": 11
       },
       {
         "report": "Attendance Summary",
@@ -1784,28 +1800,28 @@
           "endDate": "2026-05-11T00:00:00.000Z"
         },
         "summary": {
-          "totalJoiners": 11,
+          "totalJoiners": 15,
           "totalLeavers": 0,
-          "netChange": 11,
-          "averageMonthlyJoiners": 5.5,
+          "netChange": 15,
+          "averageMonthlyJoiners": 7.5,
           "averageMonthlyLeavers": 0
         },
         "results": [
           {
             "month": "2026-03",
-            "joiners": 7,
+            "joiners": 10,
             "leavers": 0,
-            "netChange": 7,
+            "netChange": 10,
             "openingHeadcount": 9,
-            "closingHeadcount": 16
+            "closingHeadcount": 19
           },
           {
             "month": "2026-04",
-            "joiners": 4,
+            "joiners": 5,
             "leavers": 0,
-            "netChange": 4,
-            "openingHeadcount": 16,
-            "closingHeadcount": 20
+            "netChange": 5,
+            "openingHeadcount": 19,
+            "closingHeadcount": 24
           }
         ],
         "totalRecords": 2
@@ -1876,7 +1892,7 @@
         "report": "PMS Completion Report",
         "filters": {},
         "summary": {
-          "totalReviews": 10,
+          "totalReviews": 13,
           "completed": 0,
           "pending": 0,
           "overdue": 0,
@@ -1884,24 +1900,24 @@
         },
         "results": [
           {
-            "employeeId": "d4f45d93-e9ea-4452-a729-dff1c5cc0873",
-            "employeeName": "Ishan Kapoor",
-            "employeeCode": "SIM-EMP-89157172",
-            "department": "Engineering 89157172",
-            "manager": "Nisha Rao",
-            "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489157172-Q3",
+            "employeeId": "065a65b4-afc8-4119-b971-71f586bc3b4a",
+            "employeeName": "Rohan Sen",
+            "employeeCode": "SIM-BULK-2-89916215",
+            "department": "Sales 89916215",
+            "manager": null,
+            "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489916215-Q1",
             "status": "goals_approved",
             "dueDate": "2026-05-28T00:00:00.000Z",
             "completedDate": null,
             "overdueDays": null
           },
           {
-            "employeeId": "1dbc337c-8500-44f7-b9df-517123487711",
+            "employeeId": "99cd47b9-32e1-42a2-9f3c-3673e22a8eb0",
             "employeeName": "Kavya Menon",
-            "employeeCode": "SIM-BULK-1-88824874",
-            "department": "Sales 88824874",
+            "employeeCode": "SIM-BULK-1-89916215",
+            "department": "Sales 89916215",
             "manager": null,
-            "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778488824874-Q2",
+            "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489916215-Q2",
             "status": "goals_approved",
             "dueDate": "2026-05-28T00:00:00.000Z",
             "completedDate": null,
@@ -1944,12 +1960,48 @@
             "overdueDays": null
           },
           {
+            "employeeId": "d4f45d93-e9ea-4452-a729-dff1c5cc0873",
+            "employeeName": "Ishan Kapoor",
+            "employeeCode": "SIM-EMP-89157172",
+            "department": "Engineering 89157172",
+            "manager": "Nisha Rao",
+            "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489157172-Q3",
+            "status": "goals_approved",
+            "dueDate": "2026-05-28T00:00:00.000Z",
+            "completedDate": null,
+            "overdueDays": null
+          },
+          {
+            "employeeId": "37607095-2680-4b73-afd6-1a90a6383f3f",
+            "employeeName": "Ishan Kapoor",
+            "employeeCode": "SIM-EMP-89916215",
+            "department": "Engineering 89916215",
+            "manager": "Nisha Rao",
+            "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489916215-Q3",
+            "status": "goals_approved",
+            "dueDate": "2026-05-28T00:00:00.000Z",
+            "completedDate": null,
+            "overdueDays": null
+          },
+          {
             "employeeId": "c92c1a7a-6a45-425a-9f73-a2570dba85e2",
             "employeeName": "Rohan Sen",
             "employeeCode": "SIM-BULK-2-88824874",
             "department": "Sales 88824874",
             "manager": null,
             "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778488824874-Q1",
+            "status": "goals_approved",
+            "dueDate": "2026-05-28T00:00:00.000Z",
+            "completedDate": null,
+            "overdueDays": null
+          },
+          {
+            "employeeId": "1dbc337c-8500-44f7-b9df-517123487711",
+            "employeeName": "Kavya Menon",
+            "employeeCode": "SIM-BULK-1-88824874",
+            "department": "Sales 88824874",
+            "manager": null,
+            "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778488824874-Q2",
             "status": "goals_approved",
             "dueDate": "2026-05-28T00:00:00.000Z",
             "completedDate": null,
@@ -2004,14 +2056,14 @@
             "overdueDays": null
           }
         ],
-        "totalRecords": 10
+        "totalRecords": 13
       },
       {
         "report": "Missing Documents Report",
         "filters": {},
         "summary": {
-          "totalEmployees": 20,
-          "highCriticality": 20,
+          "totalEmployees": 24,
+          "highCriticality": 24,
           "mediumCriticality": 0,
           "lowCriticality": 0,
           "mostMissingDocument": "photo"
@@ -2316,16 +2368,76 @@
             ],
             "documentCount": 5,
             "criticality": "high"
+          },
+          {
+            "employeeId": "dbed201c-d99c-44fe-844b-cc3cfe4447d2",
+            "employeeName": "Nisha Rao",
+            "employeeCode": "SIM-MGR-89916215",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "37607095-2680-4b73-afd6-1a90a6383f3f",
+            "employeeName": "Ishan Kapoor",
+            "employeeCode": "SIM-EMP-89916215",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "99cd47b9-32e1-42a2-9f3c-3673e22a8eb0",
+            "employeeName": "Kavya Menon",
+            "employeeCode": "SIM-BULK-1-89916215",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "065a65b4-afc8-4119-b971-71f586bc3b4a",
+            "employeeName": "Rohan Sen",
+            "employeeCode": "SIM-BULK-2-89916215",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
           }
         ],
-        "totalRecords": 20
+        "totalRecords": 24
       }
     ],
     "registration": {
-      "registrationId": "899a30f1-f6ad-448c-8d51-d7254b259b03",
+      "registrationId": "7dcecce9-7b9e-4295-baf4-d8d8fe1b001b",
       "message": "Verification email sent. Please check your inbox.",
-      "companyName": "AuroraHR Commercial Simulation 1778489157173",
-      "adminEmail": "commercial.sim.1778489157173@aurorahr.test"
+      "companyName": "AuroraHR Commercial Simulation 1778489916216",
+      "adminEmail": "commercial.sim.1778489916216@aurorahr.test"
     },
     "subscription": {
       "subscriptionId": "8780869f-daa8-4095-bde0-493e18413284",
@@ -2335,7 +2447,7 @@
       "billingCycle": "yearly",
       "price": "720000.00",
       "maxUsers": 250,
-      "currentUsers": 7,
+      "currentUsers": 9,
       "maxStorageGB": 500,
       "currentStorageGB": "38.50",
       "startDate": "2025-11-25",
@@ -2355,7 +2467,7 @@
       },
       "notes": "Demo enterprise subscription",
       "createdAt": "2026-05-04T08:13:49.778Z",
-      "updatedAt": "2026-05-11T08:40:26.970Z",
+      "updatedAt": "2026-05-11T08:45:58.969Z",
       "tenant": {
         "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
         "companyName": "AuroraHR Demo Pvt Ltd",
@@ -2377,8 +2489,8 @@
     },
     "role": {
       "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-      "roleName": "QA HR Operations 89157172",
-      "description": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489157172] Custom role created during commercial lifecycle simulation",
+      "roleName": "QA HR Operations 89916215",
+      "description": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489916215] Custom role created during commercial lifecycle simulation",
       "level": 7,
       "dataAccessRules": {
         "allData": true
@@ -2389,25 +2501,25 @@
         "documentsGenerate": true
       },
       "notes": "Commercial lifecycle simulation role",
-      "roleId": "12672c64-7c6f-4863-a429-3d2f08518c1d",
+      "roleId": "a3ed4960-1b1b-49fb-9cb6-3600a9c8abbe",
       "isSystemRole": false,
       "isActive": true,
       "employeeCount": 0,
-      "createdAt": "2026-05-11T08:45:58.608Z",
-      "updatedAt": "2026-05-11T08:45:58.608Z"
+      "createdAt": "2026-05-11T08:58:37.588Z",
+      "updatedAt": "2026-05-11T08:58:37.588Z"
     },
     "candidate": {
       "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
       "firstName": "Aarav",
       "lastName": "Mehta",
-      "email": "aarav.mehta.89157172@aurorahr.test",
+      "email": "aarav.mehta.89916215@aurorahr.test",
       "phone": "+919812345678",
       "currentState": "offer_approved",
       "offeredSalary": 1850000,
       "expectedJoinDate": "2026-06-08",
       "employmentType": "full_time",
       "workLocation": "Mumbai",
-      "remarks": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489157172] Commercial simulation candidate",
+      "remarks": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489916215] Commercial simulation candidate",
       "isActive": true,
       "dateOfBirth": null,
       "gender": null,
@@ -2426,17 +2538,17 @@
       "emergencyContactName": null,
       "emergencyContactPhone": null,
       "emergencyContactRelation": null,
-      "candidateId": "2afd6a81-9ea4-43ff-8d38-f77778700cfd",
+      "candidateId": "db49b56e-743e-4526-84de-f4f1a6ee76d6",
       "currency": "INR",
-      "createdAt": "2026-05-11T08:46:00.108Z",
-      "updatedAt": "2026-05-11T08:46:00.108Z"
+      "createdAt": "2026-05-11T08:58:39.277Z",
+      "updatedAt": "2026-05-11T08:58:39.277Z"
     },
     "goal": {
-      "goalId": "833a74e0-eb74-47cd-b8d4-76bc3c6baac1",
+      "goalId": "cb23e233-526c-4200-96cf-c39de18aa714",
       "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-      "reviewId": "62a63148-e971-4017-b1e3-d892e2d2b96a",
+      "reviewId": "455aceeb-6b40-48a5-a29b-85a317c1a4e7",
       "title": "Commercial readiness goal 3",
-      "description": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489157172] Goal for simulated appraisal lifecycle",
+      "description": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489916215] Goal for simulated appraisal lifecycle",
       "category": "business",
       "targetDate": "2026-05-20",
       "weightage": 30,
@@ -2444,21 +2556,21 @@
       "progress": 0,
       "notes": null,
       "managerFeedback": null,
-      "createdAt": "2026-05-11T08:50:02.153Z",
-      "updatedAt": "2026-05-11T08:50:02.153Z",
+      "createdAt": "2026-05-11T09:02:40.901Z",
+      "updatedAt": "2026-05-11T09:02:40.901Z",
       "kpis": [
         {
-          "kpiId": "7938c3c0-d7df-4dfc-8ee0-3263c2da5adf",
+          "kpiId": "fa696985-8d9b-4b5d-b147-7116485ab6c9",
           "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
-          "goalId": "833a74e0-eb74-47cd-b8d4-76bc3c6baac1",
+          "goalId": "cb23e233-526c-4200-96cf-c39de18aa714",
           "metric": "Completion",
           "target": "90",
           "actual": null,
           "unit": "%",
           "status": "on_track",
           "notes": null,
-          "createdAt": "2026-05-11T08:50:02.169Z",
-          "updatedAt": "2026-05-11T08:50:02.169Z"
+          "createdAt": "2026-05-11T09:02:40.906Z",
+          "updatedAt": "2026-05-11T09:02:40.906Z"
         }
       ]
     }

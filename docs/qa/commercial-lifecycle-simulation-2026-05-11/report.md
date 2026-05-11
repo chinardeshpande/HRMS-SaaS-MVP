@@ -1,13 +1,13 @@
 # AuroraHR Commercial Lifecycle Simulation - 2026-05-11
 
-Run ID: AHR-COMMERCIAL-SIM-2026-05-11-1778489157172
+Run ID: AHR-COMMERCIAL-SIM-2026-05-11-1778489916215
 Target: https://aurorahr.in
 API: https://aurorahr.in/api/v1
 
 ## Executive Summary
 
-- Passed: 48
-- Failed: 1
+- Passed: 49
+- Failed: 0
 - Blocked: 2
 - Phases covered: 24
 
@@ -24,39 +24,39 @@ Where public production signup cannot complete because email verification is not
 | ID | Phase | Use Case | Role | Status | Evidence | Notes | Severity |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | REG_01 | New Company Registration | Subscription plans are publicly available | public | passed | plans=free,starter,professional,enterprise |  |  |
-| REG_02 | New Company Registration | New company can initiate signup | public | passed | registrationId=899a30f1-f6ad-448c-8d51-d7254b259b03, email=commercial.sim.1778489157173@aurorahr.test |  |  |
+| REG_02 | New Company Registration | New company can initiate signup | public | passed | registrationId=7dcecce9-7b9e-4295-baf4-d8d8fe1b001b, email=commercial.sim.1778489916216@aurorahr.test |  |  |
 | REG_03 | New Company Registration | Production signup can proceed to verification/completion | public | blocked | email verification required | Signup initiation works, but production email delivery/token retrieval is not enabled in the public flow: Email verification required | blocker |
 | AUTH_EMPLOYEE | Authentication | Demo login as employee | employee | passed | /demo/login | demo.employee@aurorahr.in |  |
 | AUTH_MANAGER | Authentication | Demo login as manager | manager | passed | /demo/login | demo.manager@aurorahr.in |  |
 | AUTH_HR | Authentication | Demo login as hr | hr | passed | /demo/login | demo.hr@aurorahr.in |  |
 | AUTH_ADMIN | Authentication | Demo login as admin | admin | passed | /demo/login | demo.admin@aurorahr.in |  |
-| SUB_01 | Subscription Management | HR can retrieve current tenant subscription | hr | passed | plan=enterprise, status=active, users=7/250 |  |  |
+| SUB_01 | Subscription Management | HR can retrieve current tenant subscription | hr | passed | plan=enterprise, status=active, users=9/250 |  |  |
 | SUB_02 | Subscription Management | HR can change billing cycle structurally | hr | passed | changed=monthly, restored=yearly |  |  |
 | SUB_03 | Subscription Management | Real payment gateway charge and webhook lifecycle is available | hr | blocked | paymentMethods=0 | Payment method storage exists, but real gateway charge, webhook reconciliation, retry/dunning, invoice tax, and subscription activation from payment are not implemented. | blocker |
-| SETUP_01 | Company Setup | HR creates departments for simulation company structure | hr | passed | departments=People Ops 89157172, Engineering 89157172, Sales 89157172 |  |  |
-| SETUP_02 | Company Setup | HR creates designations for reporting hierarchy | hr | passed | designations=HR Business Partner 89157172, Engineering Manager 89157172, Software Engineer 89157172 |  |  |
-| SETUP_03 | HR Roles | HR creates a custom HR operations role | hr | passed | roleId=12672c64-7c6f-4863-a429-3d2f08518c1d |  |  |
-| USER_01 | Adding New Users | HR creates manager and employee users through employee creation | hr | passed | manager=47b9bf26-9c82-4345-9ee0-debb81ec91d1, employee=d4f45d93-e9ea-4452-a729-dff1c5cc0873 |  |  |
-| USER_02 | Importing Employee Data | HR bulk imports employee records by CSV | hr | failed | runtime/API error | Bulk import did not create expected employees: successful=0, failed=2, errors=[{"row":2,"employeeCode":"SIM-BULK-1-89157172","email":"kavya.menon.89157172@aurorahr.test","error":"null value in column \"fullName\" of relation \"users\" violates not-null constraint"},{"row":3,"employeeCode":"SIM-BULK-2-89157172","email":"rohan.sen.89157172@aurorahr.test","error":"null value in column \"fullName\" of relation \"users\" violates not-null constraint"}] | high |
-| ORG_01 | Org Structure And Approval Rules | Reporting relationships are visible through employee hierarchy | hr | passed | employees=20, reportingRelationships=13 |  |  |
+| SETUP_01 | Company Setup | HR creates departments for simulation company structure | hr | passed | departments=People Ops 89916215, Engineering 89916215, Sales 89916215 |  |  |
+| SETUP_02 | Company Setup | HR creates designations for reporting hierarchy | hr | passed | designations=HR Business Partner 89916215, Engineering Manager 89916215, Software Engineer 89916215 |  |  |
+| SETUP_03 | HR Roles | HR creates a custom HR operations role | hr | passed | roleId=a3ed4960-1b1b-49fb-9cb6-3600a9c8abbe |  |  |
+| USER_01 | Adding New Users | HR creates manager and employee users through employee creation | hr | passed | manager=dbed201c-d99c-44fe-844b-cc3cfe4447d2, employee=37607095-2680-4b73-afd6-1a90a6383f3f |  |  |
+| USER_02 | Importing Employee Data | HR bulk imports employee records by CSV | hr | passed | successful=2, failed=0 |  |  |
+| ORG_01 | Org Structure And Approval Rules | Reporting relationships are visible through employee hierarchy | hr | passed | employees=24, reportingRelationships=14 |  |  |
 | ATT_01 | Three Month Operations | Employee clock-in/out endpoints are guarded and usable | employee | passed | clockIn=400, clockOut=400 |  |  |
-| ATT_REG_1 | Attendance Tracking And Approvals | Month 1: employee regularization and approval path | employee/manager | passed | editId=71f28d0c-fba5-4e8d-b9e6-3552b4c190ef, action=approve |  |  |
-| ATT_REG_2 | Attendance Tracking And Approvals | Month 2: employee regularization and approval path | employee/manager | passed | editId=1202bb3e-5a0e-43d1-9956-7383d958e322, action=reject |  |  |
-| ATT_REG_3 | Attendance Tracking And Approvals | Month 3: employee regularization and approval path | employee/manager | passed | editId=72b33021-5d9a-4fb7-b3c1-d37d82a426a7, action=approve |  |  |
+| ATT_REG_1 | Attendance Tracking And Approvals | Month 1: employee regularization and approval path | employee/manager | passed | editId=bd7c91d7-720b-4dd4-a1b3-31db3d7199d1, action=approve |  |  |
+| ATT_REG_2 | Attendance Tracking And Approvals | Month 2: employee regularization and approval path | employee/manager | passed | editId=2bcd2331-ce21-4315-b484-8ea103d6e0b7, action=reject |  |  |
+| ATT_REG_3 | Attendance Tracking And Approvals | Month 3: employee regularization and approval path | employee/manager | passed | editId=ecf5d102-0b76-4c96-a51b-2be253035a3f, action=approve |  |  |
 | LEAVE_1 | Leave Management And Approvals | Month 1: leave request with role-played decision | employee/manager/hr | passed | leave guarded=400 Bad Request |  |  |
 | LEAVE_2 | Leave Management And Approvals | Month 2: leave request with role-played decision | employee/manager/hr | passed | leave guarded=400 Bad Request |  |  |
 | LEAVE_3 | Leave Management And Approvals | Month 3: leave request with role-played decision | employee/manager/hr | passed | leave guarded=400 Bad Request |  |  |
-| HIRING_01 | Hiring And Onboarding | HR creates candidate and records offer acceptance | hr | passed | candidateId=2afd6a81-9ea4-43ff-8d38-f77778700cfd |  |  |
+| HIRING_01 | Hiring And Onboarding | HR creates candidate and records offer acceptance | hr | passed | candidateId=db49b56e-743e-4526-84de-f4f1a6ee76d6 |  |  |
 | PERF_01 | Performance Appraisal | HR creates complete performance lifecycle for three employees | hr/manager/employee | passed | reviews=3 |  |  |
 | EXIT_01 | Resignation And Exit | Employee resignation flows into manager/HR exit workflow | employee/manager/hr | passed | resignation guarded=400 Exit case already exists for this employee |  |  |
-| REP_HEADCOUNT | Reports And Analytics | HR runs /reports/headcount | hr | passed | Headcount Report: records=9 |  |  |
+| REP_HEADCOUNT | Reports And Analytics | HR runs /reports/headcount | hr | passed | Headcount Report: records=11 |  |  |
 | REP_ATTENDANCE | Reports And Analytics | HR runs /reports/attendance-summary?startDate=2026-03-02&endDate=2026-05-11 | hr | passed | Attendance Summary: records=12 |  |  |
 | REP_LEAVE | Reports And Analytics | HR runs /reports/leave-balance | hr | passed | Leave Balance & Usage: records=36 |  |  |
 | REP_JOINERS | Reports And Analytics | HR runs /reports/joiners-leavers?startDate=2026-03-02&endDate=2026-05-11 | hr | passed | Joiners & Leavers Report: records=2 |  |  |
 | REP_CONFIRMATION | Reports And Analytics | HR runs /reports/confirmation-due | hr | passed | Confirmation Due Report: records=3 |  |  |
 | REP_ATTRITION | Reports And Analytics | HR runs /reports/attrition?startDate=2026-03-02&endDate=2026-05-11 | hr | passed | Attrition Report: records=0 |  |  |
-| REP_PMS | Reports And Analytics | HR runs /reports/pms-completion | hr | passed | PMS Completion Report: records=10 |  |  |
-| REP_MISSING_DOCS | Reports And Analytics | HR runs /reports/missing-documents | hr | passed | Missing Documents Report: records=20 |  |  |
+| REP_PMS | Reports And Analytics | HR runs /reports/pms-completion | hr | passed | PMS Completion Report: records=13 |  |  |
+| REP_MISSING_DOCS | Reports And Analytics | HR runs /reports/missing-documents | hr | passed | Missing Documents Report: records=24 |  |  |
 | ANA_01 | Reports And Analytics | HR runs semantic analytics after data buildup | hr | passed | metrics=headcount,attendance_rate,leave_utilization |  |  |
 | DOC_01 | Standard HR Documents | HR previews, generates, and downloads standard HR document | hr | passed | template=Offer Letter, pdfBytes=1703 |  |  |
 | VIS_01 | Go To Market Entry | Landing page renders commercial entry point | public | passed | screenshots/01-landing-page.png |  |  |
@@ -186,7 +186,6 @@ Role: admin
 
 - **blocker REG_03:** Production signup can proceed to verification/completion. Signup initiation works, but production email delivery/token retrieval is not enabled in the public flow: Email verification required
 - **blocker SUB_03:** Real payment gateway charge and webhook lifecycle is available. Payment method storage exists, but real gateway charge, webhook reconciliation, retry/dunning, invoice tax, and subscription activation from payment are not implemented.
-- **high USER_02:** HR bulk imports employee records by CSV. Bulk import did not create expected employees: successful=0, failed=2, errors=[{"row":2,"employeeCode":"SIM-BULK-1-89157172","email":"kavya.menon.89157172@aurorahr.test","error":"null value in column \"fullName\" of relation \"users\" violates not-null constraint"},{"row":3,"employeeCode":"SIM-BULK-2-89157172","email":"rohan.sen.89157172@aurorahr.test","error":"null value in column \"fullName\" of relation \"users\" violates not-null constraint"}]
 
 ## Residual Commercial Risks
 

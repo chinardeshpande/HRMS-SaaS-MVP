@@ -18,10 +18,10 @@
 </head>
 <body>
   <h1>AuroraHR Commercial Lifecycle Simulation</h1>
-  <p><strong>Run:</strong> AHR-COMMERCIAL-SIM-2026-05-11-1778489157172<br/><strong>Target:</strong> https://aurorahr.in</p>
+  <p><strong>Run:</strong> AHR-COMMERCIAL-SIM-2026-05-11-1778489916215<br/><strong>Target:</strong> https://aurorahr.in</p>
   <div class="summary">
-    <div class="metric"><strong>Passed</strong><br/>48</div>
-    <div class="metric"><strong>Failed</strong><br/>1</div>
+    <div class="metric"><strong>Passed</strong><br/>49</div>
+    <div class="metric"><strong>Failed</strong><br/>0</div>
     <div class="metric"><strong>Blocked</strong><br/>2</div>
   </div>
   <h2>Business Story</h2>
@@ -31,39 +31,39 @@
     <thead><tr><th>ID</th><th>Phase</th><th>Use Case</th><th>Role</th><th>Status</th><th>Evidence</th><th>Notes</th><th>Severity</th></tr></thead>
     <tbody>
       <tr><td>REG_01</td><td>New Company Registration</td><td>Subscription plans are publicly available</td><td>public</td><td class="passed">passed</td><td>plans=free,starter,professional,enterprise</td><td></td><td></td></tr>
-<tr><td>REG_02</td><td>New Company Registration</td><td>New company can initiate signup</td><td>public</td><td class="passed">passed</td><td>registrationId=899a30f1-f6ad-448c-8d51-d7254b259b03, email=commercial.sim.1778489157173@aurorahr.test</td><td></td><td></td></tr>
+<tr><td>REG_02</td><td>New Company Registration</td><td>New company can initiate signup</td><td>public</td><td class="passed">passed</td><td>registrationId=7dcecce9-7b9e-4295-baf4-d8d8fe1b001b, email=commercial.sim.1778489916216@aurorahr.test</td><td></td><td></td></tr>
 <tr><td>REG_03</td><td>New Company Registration</td><td>Production signup can proceed to verification/completion</td><td>public</td><td class="blocked">blocked</td><td>email verification required</td><td>Signup initiation works, but production email delivery/token retrieval is not enabled in the public flow: Email verification required</td><td>blocker</td></tr>
 <tr><td>AUTH_EMPLOYEE</td><td>Authentication</td><td>Demo login as employee</td><td>employee</td><td class="passed">passed</td><td>/demo/login</td><td>demo.employee@aurorahr.in</td><td></td></tr>
 <tr><td>AUTH_MANAGER</td><td>Authentication</td><td>Demo login as manager</td><td>manager</td><td class="passed">passed</td><td>/demo/login</td><td>demo.manager@aurorahr.in</td><td></td></tr>
 <tr><td>AUTH_HR</td><td>Authentication</td><td>Demo login as hr</td><td>hr</td><td class="passed">passed</td><td>/demo/login</td><td>demo.hr@aurorahr.in</td><td></td></tr>
 <tr><td>AUTH_ADMIN</td><td>Authentication</td><td>Demo login as admin</td><td>admin</td><td class="passed">passed</td><td>/demo/login</td><td>demo.admin@aurorahr.in</td><td></td></tr>
-<tr><td>SUB_01</td><td>Subscription Management</td><td>HR can retrieve current tenant subscription</td><td>hr</td><td class="passed">passed</td><td>plan=enterprise, status=active, users=7/250</td><td></td><td></td></tr>
+<tr><td>SUB_01</td><td>Subscription Management</td><td>HR can retrieve current tenant subscription</td><td>hr</td><td class="passed">passed</td><td>plan=enterprise, status=active, users=9/250</td><td></td><td></td></tr>
 <tr><td>SUB_02</td><td>Subscription Management</td><td>HR can change billing cycle structurally</td><td>hr</td><td class="passed">passed</td><td>changed=monthly, restored=yearly</td><td></td><td></td></tr>
 <tr><td>SUB_03</td><td>Subscription Management</td><td>Real payment gateway charge and webhook lifecycle is available</td><td>hr</td><td class="blocked">blocked</td><td>paymentMethods=0</td><td>Payment method storage exists, but real gateway charge, webhook reconciliation, retry/dunning, invoice tax, and subscription activation from payment are not implemented.</td><td>blocker</td></tr>
-<tr><td>SETUP_01</td><td>Company Setup</td><td>HR creates departments for simulation company structure</td><td>hr</td><td class="passed">passed</td><td>departments=People Ops 89157172, Engineering 89157172, Sales 89157172</td><td></td><td></td></tr>
-<tr><td>SETUP_02</td><td>Company Setup</td><td>HR creates designations for reporting hierarchy</td><td>hr</td><td class="passed">passed</td><td>designations=HR Business Partner 89157172, Engineering Manager 89157172, Software Engineer 89157172</td><td></td><td></td></tr>
-<tr><td>SETUP_03</td><td>HR Roles</td><td>HR creates a custom HR operations role</td><td>hr</td><td class="passed">passed</td><td>roleId=12672c64-7c6f-4863-a429-3d2f08518c1d</td><td></td><td></td></tr>
-<tr><td>USER_01</td><td>Adding New Users</td><td>HR creates manager and employee users through employee creation</td><td>hr</td><td class="passed">passed</td><td>manager=47b9bf26-9c82-4345-9ee0-debb81ec91d1, employee=d4f45d93-e9ea-4452-a729-dff1c5cc0873</td><td></td><td></td></tr>
-<tr><td>USER_02</td><td>Importing Employee Data</td><td>HR bulk imports employee records by CSV</td><td>hr</td><td class="failed">failed</td><td>runtime/API error</td><td>Bulk import did not create expected employees: successful=0, failed=2, errors=[{"row":2,"employeeCode":"SIM-BULK-1-89157172","email":"kavya.menon.89157172@aurorahr.test","error":"null value in column \"fullName\" of relation \"users\" violates not-null constraint"},{"row":3,"employeeCode":"SIM-BULK-2-89157172","email":"rohan.sen.89157172@aurorahr.test","error":"null value in column \"fullName\" of relation \"users\" violates not-null constraint"}]</td><td>high</td></tr>
-<tr><td>ORG_01</td><td>Org Structure And Approval Rules</td><td>Reporting relationships are visible through employee hierarchy</td><td>hr</td><td class="passed">passed</td><td>employees=20, reportingRelationships=13</td><td></td><td></td></tr>
+<tr><td>SETUP_01</td><td>Company Setup</td><td>HR creates departments for simulation company structure</td><td>hr</td><td class="passed">passed</td><td>departments=People Ops 89916215, Engineering 89916215, Sales 89916215</td><td></td><td></td></tr>
+<tr><td>SETUP_02</td><td>Company Setup</td><td>HR creates designations for reporting hierarchy</td><td>hr</td><td class="passed">passed</td><td>designations=HR Business Partner 89916215, Engineering Manager 89916215, Software Engineer 89916215</td><td></td><td></td></tr>
+<tr><td>SETUP_03</td><td>HR Roles</td><td>HR creates a custom HR operations role</td><td>hr</td><td class="passed">passed</td><td>roleId=a3ed4960-1b1b-49fb-9cb6-3600a9c8abbe</td><td></td><td></td></tr>
+<tr><td>USER_01</td><td>Adding New Users</td><td>HR creates manager and employee users through employee creation</td><td>hr</td><td class="passed">passed</td><td>manager=dbed201c-d99c-44fe-844b-cc3cfe4447d2, employee=37607095-2680-4b73-afd6-1a90a6383f3f</td><td></td><td></td></tr>
+<tr><td>USER_02</td><td>Importing Employee Data</td><td>HR bulk imports employee records by CSV</td><td>hr</td><td class="passed">passed</td><td>successful=2, failed=0</td><td></td><td></td></tr>
+<tr><td>ORG_01</td><td>Org Structure And Approval Rules</td><td>Reporting relationships are visible through employee hierarchy</td><td>hr</td><td class="passed">passed</td><td>employees=24, reportingRelationships=14</td><td></td><td></td></tr>
 <tr><td>ATT_01</td><td>Three Month Operations</td><td>Employee clock-in/out endpoints are guarded and usable</td><td>employee</td><td class="passed">passed</td><td>clockIn=400, clockOut=400</td><td></td><td></td></tr>
-<tr><td>ATT_REG_1</td><td>Attendance Tracking And Approvals</td><td>Month 1: employee regularization and approval path</td><td>employee/manager</td><td class="passed">passed</td><td>editId=71f28d0c-fba5-4e8d-b9e6-3552b4c190ef, action=approve</td><td></td><td></td></tr>
-<tr><td>ATT_REG_2</td><td>Attendance Tracking And Approvals</td><td>Month 2: employee regularization and approval path</td><td>employee/manager</td><td class="passed">passed</td><td>editId=1202bb3e-5a0e-43d1-9956-7383d958e322, action=reject</td><td></td><td></td></tr>
-<tr><td>ATT_REG_3</td><td>Attendance Tracking And Approvals</td><td>Month 3: employee regularization and approval path</td><td>employee/manager</td><td class="passed">passed</td><td>editId=72b33021-5d9a-4fb7-b3c1-d37d82a426a7, action=approve</td><td></td><td></td></tr>
+<tr><td>ATT_REG_1</td><td>Attendance Tracking And Approvals</td><td>Month 1: employee regularization and approval path</td><td>employee/manager</td><td class="passed">passed</td><td>editId=bd7c91d7-720b-4dd4-a1b3-31db3d7199d1, action=approve</td><td></td><td></td></tr>
+<tr><td>ATT_REG_2</td><td>Attendance Tracking And Approvals</td><td>Month 2: employee regularization and approval path</td><td>employee/manager</td><td class="passed">passed</td><td>editId=2bcd2331-ce21-4315-b484-8ea103d6e0b7, action=reject</td><td></td><td></td></tr>
+<tr><td>ATT_REG_3</td><td>Attendance Tracking And Approvals</td><td>Month 3: employee regularization and approval path</td><td>employee/manager</td><td class="passed">passed</td><td>editId=ecf5d102-0b76-4c96-a51b-2be253035a3f, action=approve</td><td></td><td></td></tr>
 <tr><td>LEAVE_1</td><td>Leave Management And Approvals</td><td>Month 1: leave request with role-played decision</td><td>employee/manager/hr</td><td class="passed">passed</td><td>leave guarded=400 Bad Request</td><td></td><td></td></tr>
 <tr><td>LEAVE_2</td><td>Leave Management And Approvals</td><td>Month 2: leave request with role-played decision</td><td>employee/manager/hr</td><td class="passed">passed</td><td>leave guarded=400 Bad Request</td><td></td><td></td></tr>
 <tr><td>LEAVE_3</td><td>Leave Management And Approvals</td><td>Month 3: leave request with role-played decision</td><td>employee/manager/hr</td><td class="passed">passed</td><td>leave guarded=400 Bad Request</td><td></td><td></td></tr>
-<tr><td>HIRING_01</td><td>Hiring And Onboarding</td><td>HR creates candidate and records offer acceptance</td><td>hr</td><td class="passed">passed</td><td>candidateId=2afd6a81-9ea4-43ff-8d38-f77778700cfd</td><td></td><td></td></tr>
+<tr><td>HIRING_01</td><td>Hiring And Onboarding</td><td>HR creates candidate and records offer acceptance</td><td>hr</td><td class="passed">passed</td><td>candidateId=db49b56e-743e-4526-84de-f4f1a6ee76d6</td><td></td><td></td></tr>
 <tr><td>PERF_01</td><td>Performance Appraisal</td><td>HR creates complete performance lifecycle for three employees</td><td>hr/manager/employee</td><td class="passed">passed</td><td>reviews=3</td><td></td><td></td></tr>
 <tr><td>EXIT_01</td><td>Resignation And Exit</td><td>Employee resignation flows into manager/HR exit workflow</td><td>employee/manager/hr</td><td class="passed">passed</td><td>resignation guarded=400 Exit case already exists for this employee</td><td></td><td></td></tr>
-<tr><td>REP_HEADCOUNT</td><td>Reports And Analytics</td><td>HR runs /reports/headcount</td><td>hr</td><td class="passed">passed</td><td>Headcount Report: records=9</td><td></td><td></td></tr>
+<tr><td>REP_HEADCOUNT</td><td>Reports And Analytics</td><td>HR runs /reports/headcount</td><td>hr</td><td class="passed">passed</td><td>Headcount Report: records=11</td><td></td><td></td></tr>
 <tr><td>REP_ATTENDANCE</td><td>Reports And Analytics</td><td>HR runs /reports/attendance-summary?startDate=2026-03-02&endDate=2026-05-11</td><td>hr</td><td class="passed">passed</td><td>Attendance Summary: records=12</td><td></td><td></td></tr>
 <tr><td>REP_LEAVE</td><td>Reports And Analytics</td><td>HR runs /reports/leave-balance</td><td>hr</td><td class="passed">passed</td><td>Leave Balance & Usage: records=36</td><td></td><td></td></tr>
 <tr><td>REP_JOINERS</td><td>Reports And Analytics</td><td>HR runs /reports/joiners-leavers?startDate=2026-03-02&endDate=2026-05-11</td><td>hr</td><td class="passed">passed</td><td>Joiners & Leavers Report: records=2</td><td></td><td></td></tr>
 <tr><td>REP_CONFIRMATION</td><td>Reports And Analytics</td><td>HR runs /reports/confirmation-due</td><td>hr</td><td class="passed">passed</td><td>Confirmation Due Report: records=3</td><td></td><td></td></tr>
 <tr><td>REP_ATTRITION</td><td>Reports And Analytics</td><td>HR runs /reports/attrition?startDate=2026-03-02&endDate=2026-05-11</td><td>hr</td><td class="passed">passed</td><td>Attrition Report: records=0</td><td></td><td></td></tr>
-<tr><td>REP_PMS</td><td>Reports And Analytics</td><td>HR runs /reports/pms-completion</td><td>hr</td><td class="passed">passed</td><td>PMS Completion Report: records=10</td><td></td><td></td></tr>
-<tr><td>REP_MISSING_DOCS</td><td>Reports And Analytics</td><td>HR runs /reports/missing-documents</td><td>hr</td><td class="passed">passed</td><td>Missing Documents Report: records=20</td><td></td><td></td></tr>
+<tr><td>REP_PMS</td><td>Reports And Analytics</td><td>HR runs /reports/pms-completion</td><td>hr</td><td class="passed">passed</td><td>PMS Completion Report: records=13</td><td></td><td></td></tr>
+<tr><td>REP_MISSING_DOCS</td><td>Reports And Analytics</td><td>HR runs /reports/missing-documents</td><td>hr</td><td class="passed">passed</td><td>Missing Documents Report: records=24</td><td></td><td></td></tr>
 <tr><td>ANA_01</td><td>Reports And Analytics</td><td>HR runs semantic analytics after data buildup</td><td>hr</td><td class="passed">passed</td><td>metrics=headcount,attendance_rate,leave_utilization</td><td></td><td></td></tr>
 <tr><td>DOC_01</td><td>Standard HR Documents</td><td>HR previews, generates, and downloads standard HR document</td><td>hr</td><td class="passed">passed</td><td>template=Offer Letter, pdfBytes=1703</td><td></td><td></td></tr>
 <tr><td>VIS_01</td><td>Go To Market Entry</td><td>Landing page renders commercial entry point</td><td>public</td><td class="passed">passed</td><td>screenshots/01-landing-page.png</td><td></td><td></td></tr>
