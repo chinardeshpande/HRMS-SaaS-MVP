@@ -31,10 +31,11 @@ function ModernSettingsContent() {
   const { user } = useAuth();
   const userRole = user?.role?.toUpperCase();
   const isAdmin = userRole === 'HR_ADMIN' || userRole === 'SYSTEM_ADMIN';
+  const isSystemAdmin = userRole === 'SYSTEM_ADMIN';
 
   // Default tab based on role
   const getDefaultTab = (): SettingsTab => {
-    return 'subscription';
+    return isSystemAdmin ? 'subscription' : 'user-management';
   };
 
   const [activeTab, setActiveTab] = useState<SettingsTab>(getDefaultTab());
@@ -92,21 +93,21 @@ function ModernSettingsContent() {
       name: 'Subscription',
       icon: CreditCardIcon,
       description: 'Manage your plan and billing',
-      roles: [UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
+      roles: [UserRole.SYSTEM_ADMIN],
     },
     {
       id: 'organization' as SettingsTab,
       name: 'Organization',
       icon: BuildingOfficeIcon,
       description: 'Company details and settings',
-      roles: [UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
+      roles: [UserRole.SYSTEM_ADMIN],
     },
     {
       id: 'payments' as SettingsTab,
       name: 'Payments',
       icon: CreditCardIcon,
       description: 'Payment history and invoices',
-      roles: [UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
+      roles: [UserRole.SYSTEM_ADMIN],
     },
     {
       id: 'user-management' as SettingsTab,

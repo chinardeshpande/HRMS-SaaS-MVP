@@ -7,10 +7,13 @@ import {
 import UsersTab from './UsersTab';
 import InvitationsTab from './InvitationsTab';
 import RolesPermissionsTab from './RolesPermissionsTab';
+import { useAuth } from '../../context/AuthContext';
 
 type UserManagementSubTab = 'users' | 'invitations' | 'roles';
 
 export default function UserManagementTab() {
+  const { user } = useAuth();
+  const isSystemAdmin = String(user?.role || '').toUpperCase() === 'SYSTEM_ADMIN';
   const [activeSubTab, setActiveSubTab] = useState<UserManagementSubTab>('users');
 
   const subTabs = [
@@ -35,7 +38,7 @@ export default function UserManagementTab() {
       description: 'Configure roles and access levels',
       count: null,
     },
-  ];
+  ].filter((subTab) => subTab.id !== 'roles' || isSystemAdmin);
 
   return (
     <div className="space-y-6">

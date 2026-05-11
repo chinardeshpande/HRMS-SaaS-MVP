@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { sendSuccess, sendError, sendCreated } from '../utils/responses';
+import { UserRole } from '../../../shared/types';
 
 // Mock data stores
 let tickets: any[] = [
@@ -40,12 +41,29 @@ let tickets: any[] = [
 
 let ticketComments: any[] = [];
 
+const canViewTenantTickets = (role?: UserRole): boolean =>
+  role === UserRole.SYSTEM_ADMIN || role === UserRole.HR_ADMIN;
+
+const canAccessTicket = (ticket: any, req: Request): boolean => {
+  const user = req.user!;
+
+  if (ticket.tenantId !== user.tenantId) {
+    return false;
+  }
+
+  return canViewTenantTickets(user.role) || ticket.createdBy === user.userId;
+};
+
 /**
  * Get all tickets
  */
 export const getAllTickets = async (req: Request, res: Response) => {
   try {
-    const tenantId = req.user?.tenantId || 'tenant-1';
+    if (!canViewTenantTickets(req.user!.role)) {
+      return sendError(res, { code: 'FORBIDDEN', message: 'You do not have permission to view all tickets' }, 403);
+    }
+
+    const tenantId = req.user!.tenantId;
     const userTickets = tickets.filter(t => t.tenantId === tenantId);
     return sendSuccess(res, userTickets);
   } catch (error: any) {
@@ -58,7 +76,7 @@ export const getAllTickets = async (req: Request, res: Response) => {
  */
 export const getMyTickets = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.userId || 'current';
+    const userId = req.user!.userId;
     const userTickets = tickets.filter(t => t.createdBy === userId);
     return sendSuccess(res, userTickets);
   } catch (error: any) {
@@ -78,6 +96,10 @@ export const getTicketById = async (req: Request, res: Response) => {
       return sendError(res, { code: 'TICKET_NOT_FOUND', message: 'Ticket not found' }, 404);
     }
 
+    if (!canAccessTicket(ticket, req)) {
+      return sendError(res, { code: 'FORBIDDEN', message: 'You do not have permission to view this ticket' }, 403);
+    }
+
     return sendSuccess(res, ticket);
   } catch (error: any) {
     return sendError(res, { code: 'FETCH_FAILED', message: error.message }, 500);
@@ -89,9 +111,9 @@ export const getTicketById = async (req: Request, res: Response) => {
  */
 export const createTicket = async (req: Request, res: Response) => {
   try {
-    const tenantId = req.user?.tenantId || 'tenant-1';
-    const userId = req.user?.userId || 'current';
-    const userName = req.user?.email || 'Current User';
+    const tenantId = req.user!.tenantId;
+    const userId = req.user!.userId;
+    const userName = req.user!.email;
     const { title, description, category, priority } = req.body;
 
     const ticketNumber = `TKT-${new Date().getFullYear()}-${String(tickets.length + 1).padStart(3, '0')}`;
@@ -133,6 +155,10 @@ export const updateTicket = async (req: Request, res: Response) => {
       return sendError(res, { code: 'TICKET_NOT_FOUND', message: 'Ticket not found' }, 404);
     }
 
+    if (!canAccessTicket(tickets[ticketIndex], req)) {
+      return sendError(res, { code: 'FORBIDDEN', message: 'You do not have permission to update this ticket' }, 403);
+    }
+
     tickets[ticketIndex] = {
       ...tickets[ticketIndex],
       ...updates,
@@ -153,12 +179,16 @@ export const addComment = async (req: Request, res: Response) => {
   try {
     const { ticketId } = req.params;
     const { comment } = req.body;
-    const userId = req.user?.userId || 'current';
-    const userName = req.user?.email || 'Current User';
+    const userId = req.user!.userId;
+    const userName = req.user!.email;
 
     const ticket = tickets.find(t => t.ticketId === ticketId);
     if (!ticket) {
       return sendError(res, { code: 'TICKET_NOT_FOUND', message: 'Ticket not found' }, 404);
+    }
+
+    if (!canAccessTicket(ticket, req)) {
+      return sendError(res, { code: 'FORBIDDEN', message: 'You do not have permission to comment on this ticket' }, 403);
     }
 
     const newComment = {
@@ -184,7 +214,11 @@ export const addComment = async (req: Request, res: Response) => {
  */
 export const getTicketStats = async (req: Request, res: Response) => {
   try {
-    const tenantId = req.user?.tenantId || 'tenant-1';
+    if (!canViewTenantTickets(req.user!.role)) {
+      return sendError(res, { code: 'FORBIDDEN', message: 'You do not have permission to view ticket statistics' }, 403);
+    }
+
+    const tenantId = req.user!.tenantId;
     const tenantTickets = tickets.filter(t => t.tenantId === tenantId);
 
     const stats = {
