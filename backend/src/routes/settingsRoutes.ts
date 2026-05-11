@@ -7,66 +7,68 @@ const router = Router();
 
 // All routes require authentication
 router.use(authenticate);
-router.use(authorize(UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN));
+
+const ownerOnly = authorize(UserRole.SYSTEM_ADMIN);
+const hrOperations = authorize(UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN);
 
 // ==================== SUBSCRIPTION ROUTES ====================
-router.get('/subscription', settingsController.getSubscription);
-router.post('/subscription', settingsController.createSubscription);
-router.put('/subscription', settingsController.updateSubscription);
-router.post('/subscription/upgrade', settingsController.upgradePlan);
-router.post('/subscription/cancel', settingsController.cancelSubscription);
+router.get('/subscription', ownerOnly, settingsController.getSubscription);
+router.post('/subscription', ownerOnly, settingsController.createSubscription);
+router.put('/subscription', ownerOnly, settingsController.updateSubscription);
+router.post('/subscription/upgrade', ownerOnly, settingsController.upgradePlan);
+router.post('/subscription/cancel', ownerOnly, settingsController.cancelSubscription);
 
 // ==================== ORGANIZATION SETTINGS ROUTES ====================
-router.get('/organization', settingsController.getOrganizationSettings);
-router.put('/organization', settingsController.updateOrganizationSettings);
+router.get('/organization', ownerOnly, settingsController.getOrganizationSettings);
+router.put('/organization', ownerOnly, settingsController.updateOrganizationSettings);
 
 // ==================== PAYMENT ROUTES ====================
-router.get('/payments', settingsController.getAllPayments);
-router.post('/payments', settingsController.createPayment);
-router.put('/payments/:paymentId/status', settingsController.updatePaymentStatus);
+router.get('/payments', ownerOnly, settingsController.getAllPayments);
+router.post('/payments', ownerOnly, settingsController.createPayment);
+router.put('/payments/:paymentId/status', ownerOnly, settingsController.updatePaymentStatus);
 
 // ==================== BUSINESS RULES ROUTES ====================
-router.get('/business-rules', settingsController.getAllBusinessRules);
-router.get('/business-rules/:ruleId', settingsController.getBusinessRuleById);
-router.post('/business-rules', settingsController.createBusinessRule);
-router.put('/business-rules/:ruleId', settingsController.updateBusinessRule);
-router.delete('/business-rules/:ruleId', settingsController.deleteBusinessRule);
+router.get('/business-rules', hrOperations, settingsController.getAllBusinessRules);
+router.get('/business-rules/:ruleId', hrOperations, settingsController.getBusinessRuleById);
+router.post('/business-rules', hrOperations, settingsController.createBusinessRule);
+router.put('/business-rules/:ruleId', hrOperations, settingsController.updateBusinessRule);
+router.delete('/business-rules/:ruleId', hrOperations, settingsController.deleteBusinessRule);
 
 // ==================== ROLE ROUTES ====================
-router.get('/roles', settingsController.getAllRoles);
-router.get('/roles/:roleId', settingsController.getRoleById);
-router.post('/roles', settingsController.createRole);
-router.put('/roles/:roleId', settingsController.updateRole);
-router.delete('/roles/:roleId', settingsController.deleteRole);
-router.post('/roles/:roleId/permissions', settingsController.assignPermissionsToRole);
+router.get('/roles', hrOperations, settingsController.getAllRoles);
+router.get('/roles/:roleId', hrOperations, settingsController.getRoleById);
+router.post('/roles', ownerOnly, settingsController.createRole);
+router.put('/roles/:roleId', ownerOnly, settingsController.updateRole);
+router.delete('/roles/:roleId', ownerOnly, settingsController.deleteRole);
+router.post('/roles/:roleId/permissions', ownerOnly, settingsController.assignPermissionsToRole);
 
 // ==================== PERMISSION ROUTES ====================
-router.get('/permissions', settingsController.getAllPermissions);
-router.get('/permissions/module/:module', settingsController.getPermissionsByModule);
-router.post('/permissions/initialize', settingsController.initializePermissions);
+router.get('/permissions', ownerOnly, settingsController.getAllPermissions);
+router.get('/permissions/module/:module', ownerOnly, settingsController.getPermissionsByModule);
+router.post('/permissions/initialize', ownerOnly, settingsController.initializePermissions);
 
 // ==================== USER MANAGEMENT ROUTES ====================
-router.get('/users', settingsController.getAllUsers);
-router.post('/users/:employeeId/role', settingsController.assignRoleToUser);
-router.post('/users/:employeeId/deactivate', settingsController.deactivateUser);
-router.post('/users/:employeeId/reactivate', settingsController.reactivateUser);
+router.get('/users', hrOperations, settingsController.getAllUsers);
+router.post('/users/:employeeId/role', hrOperations, settingsController.assignRoleToUser);
+router.post('/users/:employeeId/deactivate', hrOperations, settingsController.deactivateUser);
+router.post('/users/:employeeId/reactivate', hrOperations, settingsController.reactivateUser);
 
 // ==================== LEAVE POLICY ROUTES ====================
-router.get('/leave-policies', settingsController.getAllLeavePolicies);
-router.get('/leave-policies/:policyId', settingsController.getLeavePolicyById);
-router.post('/leave-policies', settingsController.createLeavePolicy);
-router.put('/leave-policies/:policyId', settingsController.updateLeavePolicy);
-router.delete('/leave-policies/:policyId', settingsController.deleteLeavePolicy);
+router.get('/leave-policies', hrOperations, settingsController.getAllLeavePolicies);
+router.get('/leave-policies/:policyId', hrOperations, settingsController.getLeavePolicyById);
+router.post('/leave-policies', hrOperations, settingsController.createLeavePolicy);
+router.put('/leave-policies/:policyId', hrOperations, settingsController.updateLeavePolicy);
+router.delete('/leave-policies/:policyId', hrOperations, settingsController.deleteLeavePolicy);
 
 // ==================== ATTENDANCE POLICY ROUTES ====================
-router.get('/attendance-policies', settingsController.getAllAttendancePolicies);
-router.get('/attendance-policies/:policyId', settingsController.getAttendancePolicyById);
-router.post('/attendance-policies', settingsController.createAttendancePolicy);
-router.put('/attendance-policies/:policyId', settingsController.updateAttendancePolicy);
-router.delete('/attendance-policies/:policyId', settingsController.deleteAttendancePolicy);
+router.get('/attendance-policies', hrOperations, settingsController.getAllAttendancePolicies);
+router.get('/attendance-policies/:policyId', hrOperations, settingsController.getAttendancePolicyById);
+router.post('/attendance-policies', hrOperations, settingsController.createAttendancePolicy);
+router.put('/attendance-policies/:policyId', hrOperations, settingsController.updateAttendancePolicy);
+router.delete('/attendance-policies/:policyId', hrOperations, settingsController.deleteAttendancePolicy);
 
 // ==================== SMTP CONFIGURATION ROUTES ====================
-router.get('/smtp', settingsController.getSmtpConfig);
-router.put('/smtp', settingsController.updateSmtpConfig);
+router.get('/smtp', ownerOnly, settingsController.getSmtpConfig);
+router.put('/smtp', ownerOnly, settingsController.updateSmtpConfig);
 
 export default router;

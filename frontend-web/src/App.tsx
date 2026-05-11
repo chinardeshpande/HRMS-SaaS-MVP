@@ -1,7 +1,9 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, ReactElement } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import ProtectedRoute from './components/routing/ProtectedRoute';
+import { routeAccessRules, AccessRule } from './config/accessControl';
 
 // Pages
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -88,6 +90,21 @@ function NotFoundPage() {
   );
 }
 
+const routeAccessByPath = routeAccessRules.reduce<Record<string, AccessRule>>((acc, rule) => {
+  acc[rule.path] = rule;
+  return acc;
+}, {});
+
+function protectedElement(path: string, element: ReactElement) {
+  const access = routeAccessByPath[path];
+
+  if (!access) {
+    throw new Error(`Missing route access rule for ${path}`);
+  }
+
+  return <ProtectedRoute access={access}>{element}</ProtectedRoute>;
+}
+
 function App() {
   return (
     <ErrorBoundary>
@@ -115,44 +132,44 @@ function App() {
                 <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
                 <Route path="/features/:featureId" element={<FeatureDetail />} />
 
-                {/* Onboarding route (semi-protected - requires verified registration) */}
-                <Route path="/onboarding-wizard" element={<OnboardingWizard />} />
+                {/* Onboarding route (requires verified admin session) */}
+                <Route path="/onboarding-wizard" element={protectedElement('/onboarding-wizard', <OnboardingWizard />)} />
 
                 {/* Protected routes */}
-                <Route path="/dashboard" element={<ModernDashboard />} />
-                <Route path="/employees" element={<ModernEmployees />} />
-                <Route path="/employees/:id" element={<ModernEmployeeDetail />} />
-                <Route path="/departments" element={<ModernDepartments />} />
-                <Route path="/designations" element={<ModernDesignations />} />
-                <Route path="/attendance" element={<ModernAttendance />} />
-                <Route path="/leave" element={<ModernLeave />} />
-                <Route path="/performance" element={<ModernPerformanceDashboard />} />
-                <Route path="/performance/:reviewId" element={<PerformanceReviewDetails />} />
-                <Route path="/onboarding" element={<ModernOnboardingDashboard />} />
-                <Route path="/onboarding/candidate/:candidateId" element={<CandidateDetails />} />
-                <Route path="/probation/case/:probationId" element={<ProbationCaseDetails />} />
-                <Route path="/onboarding-dashboard" element={<ModernOnboardingDashboard />} />
-                <Route path="/probation" element={<ModernProbationTracker />} />
-                <Route path="/exit" element={<ModernExitDashboard />} />
-                <Route path="/exit/:exitId" element={<ExitCaseDetails />} />
-                <Route path="/calendar" element={<ModernCalendar />} />
-                <Route path="/hr-connect" element={<ModernHRConnect />} />
-                <Route path="/chat/:conversationId" element={<ChatConversation />} />
-                <Route path="/ticket/:ticketId" element={<TicketDetails />} />
-                <Route path="/groups" element={<GroupManagement />} />
-                <Route path="/reports" element={<ModernReports />} />
-                <Route path="/documents" element={<ModernDocuments />} />
-                <Route path="/my-hr-documents" element={<MyHRDocuments />} />
-                <Route path="/org-chart" element={<ModernOrgChart />} />
-                <Route path="/settings" element={<ModernSettings />} />
+                <Route path="/dashboard" element={protectedElement('/dashboard', <ModernDashboard />)} />
+                <Route path="/employees" element={protectedElement('/employees', <ModernEmployees />)} />
+                <Route path="/employees/:id" element={protectedElement('/employees/:id', <ModernEmployeeDetail />)} />
+                <Route path="/departments" element={protectedElement('/departments', <ModernDepartments />)} />
+                <Route path="/designations" element={protectedElement('/designations', <ModernDesignations />)} />
+                <Route path="/attendance" element={protectedElement('/attendance', <ModernAttendance />)} />
+                <Route path="/leave" element={protectedElement('/leave', <ModernLeave />)} />
+                <Route path="/performance" element={protectedElement('/performance', <ModernPerformanceDashboard />)} />
+                <Route path="/performance/:reviewId" element={protectedElement('/performance/:reviewId', <PerformanceReviewDetails />)} />
+                <Route path="/onboarding" element={protectedElement('/onboarding', <ModernOnboardingDashboard />)} />
+                <Route path="/onboarding/candidate/:candidateId" element={protectedElement('/onboarding/candidate/:candidateId', <CandidateDetails />)} />
+                <Route path="/probation/case/:probationId" element={protectedElement('/probation/case/:probationId', <ProbationCaseDetails />)} />
+                <Route path="/onboarding-dashboard" element={protectedElement('/onboarding-dashboard', <ModernOnboardingDashboard />)} />
+                <Route path="/probation" element={protectedElement('/probation', <ModernProbationTracker />)} />
+                <Route path="/exit" element={protectedElement('/exit', <ModernExitDashboard />)} />
+                <Route path="/exit/:exitId" element={protectedElement('/exit/:exitId', <ExitCaseDetails />)} />
+                <Route path="/calendar" element={protectedElement('/calendar', <ModernCalendar />)} />
+                <Route path="/hr-connect" element={protectedElement('/hr-connect', <ModernHRConnect />)} />
+                <Route path="/chat/:conversationId" element={protectedElement('/chat/:conversationId', <ChatConversation />)} />
+                <Route path="/ticket/:ticketId" element={protectedElement('/ticket/:ticketId', <TicketDetails />)} />
+                <Route path="/groups" element={protectedElement('/groups', <GroupManagement />)} />
+                <Route path="/reports" element={protectedElement('/reports', <ModernReports />)} />
+                <Route path="/documents" element={protectedElement('/documents', <ModernDocuments />)} />
+                <Route path="/my-hr-documents" element={protectedElement('/my-hr-documents', <MyHRDocuments />)} />
+                <Route path="/org-chart" element={protectedElement('/org-chart', <ModernOrgChart />)} />
+                <Route path="/settings" element={protectedElement('/settings', <ModernSettings />)} />
 
                 {/* Employee Action routes */}
-                <Route path="/edit-profile" element={<ModernEditProfile />} />
-                <Route path="/transfer" element={<ModernTransfer />} />
-                <Route path="/promote" element={<ModernPromote />} />
-                <Route path="/compensation" element={<ModernCompensation />} />
-                <Route path="/performance-review" element={<ModernPerformanceReview />} />
-                <Route path="/employee-attendance" element={<ModernEmployeeAttendance />} />
+                <Route path="/edit-profile" element={protectedElement('/edit-profile', <ModernEditProfile />)} />
+                <Route path="/transfer" element={protectedElement('/transfer', <ModernTransfer />)} />
+                <Route path="/promote" element={protectedElement('/promote', <ModernPromote />)} />
+                <Route path="/compensation" element={protectedElement('/compensation', <ModernCompensation />)} />
+                <Route path="/performance-review" element={protectedElement('/performance-review', <ModernPerformanceReview />)} />
+                <Route path="/employee-attendance" element={protectedElement('/employee-attendance', <ModernEmployeeAttendance />)} />
 
                 {/* Default route */}
                 <Route path="/" element={<LandingPage />} />

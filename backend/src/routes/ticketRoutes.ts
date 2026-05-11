@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import * as ticketController from '../controllers/ticketController';
-import { optionalAuth } from '../middleware/optionalAuth';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
 // All routes require authentication
-router.use(optionalAuth);
+router.use(authenticate);
 
 // Ticket routes
 router.get('/tickets', ticketController.getAllTickets);
