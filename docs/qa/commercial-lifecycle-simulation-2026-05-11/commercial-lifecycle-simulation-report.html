@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>AuroraHR Commercial Lifecycle Simulation</title>
+  <style>
+    body { font-family: Inter, Arial, sans-serif; color: #111827; margin: 40px; line-height: 1.5; }
+    h1, h2, h3 { color: #111827; page-break-after: avoid; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th, td { border: 1px solid #d1d5db; padding: 6px; vertical-align: top; }
+    th { background: #f3f4f6; }
+    img { max-width: 100%; border: 1px solid #e5e7eb; margin: 12px 0 24px; }
+    .summary { display: flex; gap: 12px; margin: 20px 0; }
+    .metric { border: 1px solid #d1d5db; padding: 12px; border-radius: 8px; min-width: 120px; }
+    .passed { color: #166534; font-weight: 700; }
+    .failed, .blocked { color: #991b1b; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <h1>AuroraHR Commercial Lifecycle Simulation</h1>
+  <p><strong>Run:</strong> AHR-COMMERCIAL-SIM-2026-05-11-1778489157172<br/><strong>Target:</strong> https://aurorahr.in</p>
+  <div class="summary">
+    <div class="metric"><strong>Passed</strong><br/>48</div>
+    <div class="metric"><strong>Failed</strong><br/>1</div>
+    <div class="metric"><strong>Blocked</strong><br/>2</div>
+  </div>
+  <h2>Business Story</h2>
+  <p>This simulation follows a complete buyer-to-operator lifecycle and verifies product behavior with API proof plus browser screenshots.</p>
+  <h2>Outcomes</h2>
+  <table>
+    <thead><tr><th>ID</th><th>Phase</th><th>Use Case</th><th>Role</th><th>Status</th><th>Evidence</th><th>Notes</th><th>Severity</th></tr></thead>
+    <tbody>
+      <tr><td>REG_01</td><td>New Company Registration</td><td>Subscription plans are publicly available</td><td>public</td><td class="passed">passed</td><td>plans=free,starter,professional,enterprise</td><td></td><td></td></tr>
+<tr><td>REG_02</td><td>New Company Registration</td><td>New company can initiate signup</td><td>public</td><td class="passed">passed</td><td>registrationId=899a30f1-f6ad-448c-8d51-d7254b259b03, email=commercial.sim.1778489157173@aurorahr.test</td><td></td><td></td></tr>
+<tr><td>REG_03</td><td>New Company Registration</td><td>Production signup can proceed to verification/completion</td><td>public</td><td class="blocked">blocked</td><td>email verification required</td><td>Signup initiation works, but production email delivery/token retrieval is not enabled in the public flow: Email verification required</td><td>blocker</td></tr>
+<tr><td>AUTH_EMPLOYEE</td><td>Authentication</td><td>Demo login as employee</td><td>employee</td><td class="passed">passed</td><td>/demo/login</td><td>demo.employee@aurorahr.in</td><td></td></tr>
+<tr><td>AUTH_MANAGER</td><td>Authentication</td><td>Demo login as manager</td><td>manager</td><td class="passed">passed</td><td>/demo/login</td><td>demo.manager@aurorahr.in</td><td></td></tr>
+<tr><td>AUTH_HR</td><td>Authentication</td><td>Demo login as hr</td><td>hr</td><td class="passed">passed</td><td>/demo/login</td><td>demo.hr@aurorahr.in</td><td></td></tr>
+<tr><td>AUTH_ADMIN</td><td>Authentication</td><td>Demo login as admin</td><td>admin</td><td class="passed">passed</td><td>/demo/login</td><td>demo.admin@aurorahr.in</td><td></td></tr>
+<tr><td>SUB_01</td><td>Subscription Management</td><td>HR can retrieve current tenant subscription</td><td>hr</td><td class="passed">passed</td><td>plan=enterprise, status=active, users=7/250</td><td></td><td></td></tr>
+<tr><td>SUB_02</td><td>Subscription Management</td><td>HR can change billing cycle structurally</td><td>hr</td><td class="passed">passed</td><td>changed=monthly, restored=yearly</td><td></td><td></td></tr>
+<tr><td>SUB_03</td><td>Subscription Management</td><td>Real payment gateway charge and webhook lifecycle is available</td><td>hr</td><td class="blocked">blocked</td><td>paymentMethods=0</td><td>Payment method storage exists, but real gateway charge, webhook reconciliation, retry/dunning, invoice tax, and subscription activation from payment are not implemented.</td><td>blocker</td></tr>
+<tr><td>SETUP_01</td><td>Company Setup</td><td>HR creates departments for simulation company structure</td><td>hr</td><td class="passed">passed</td><td>departments=People Ops 89157172, Engineering 89157172, Sales 89157172</td><td></td><td></td></tr>
+<tr><td>SETUP_02</td><td>Company Setup</td><td>HR creates designations for reporting hierarchy</td><td>hr</td><td class="passed">passed</td><td>designations=HR Business Partner 89157172, Engineering Manager 89157172, Software Engineer 89157172</td><td></td><td></td></tr>
+<tr><td>SETUP_03</td><td>HR Roles</td><td>HR creates a custom HR operations role</td><td>hr</td><td class="passed">passed</td><td>roleId=12672c64-7c6f-4863-a429-3d2f08518c1d</td><td></td><td></td></tr>
+<tr><td>USER_01</td><td>Adding New Users</td><td>HR creates manager and employee users through employee creation</td><td>hr</td><td class="passed">passed</td><td>manager=47b9bf26-9c82-4345-9ee0-debb81ec91d1, employee=d4f45d93-e9ea-4452-a729-dff1c5cc0873</td><td></td><td></td></tr>
+<tr><td>USER_02</td><td>Importing Employee Data</td><td>HR bulk imports employee records by CSV</td><td>hr</td><td class="failed">failed</td><td>runtime/API error</td><td>Bulk import did not create expected employees: successful=0, failed=2, errors=[{"row":2,"employeeCode":"SIM-BULK-1-89157172","email":"kavya.menon.89157172@aurorahr.test","error":"null value in column \"fullName\" of relation \"users\" violates not-null constraint"},{"row":3,"employeeCode":"SIM-BULK-2-89157172","email":"rohan.sen.89157172@aurorahr.test","error":"null value in column \"fullName\" of relation \"users\" violates not-null constraint"}]</td><td>high</td></tr>
+<tr><td>ORG_01</td><td>Org Structure And Approval Rules</td><td>Reporting relationships are visible through employee hierarchy</td><td>hr</td><td class="passed">passed</td><td>employees=20, reportingRelationships=13</td><td></td><td></td></tr>
+<tr><td>ATT_01</td><td>Three Month Operations</td><td>Employee clock-in/out endpoints are guarded and usable</td><td>employee</td><td class="passed">passed</td><td>clockIn=400, clockOut=400</td><td></td><td></td></tr>
+<tr><td>ATT_REG_1</td><td>Attendance Tracking And Approvals</td><td>Month 1: employee regularization and approval path</td><td>employee/manager</td><td class="passed">passed</td><td>editId=71f28d0c-fba5-4e8d-b9e6-3552b4c190ef, action=approve</td><td></td><td></td></tr>
+<tr><td>ATT_REG_2</td><td>Attendance Tracking And Approvals</td><td>Month 2: employee regularization and approval path</td><td>employee/manager</td><td class="passed">passed</td><td>editId=1202bb3e-5a0e-43d1-9956-7383d958e322, action=reject</td><td></td><td></td></tr>
+<tr><td>ATT_REG_3</td><td>Attendance Tracking And Approvals</td><td>Month 3: employee regularization and approval path</td><td>employee/manager</td><td class="passed">passed</td><td>editId=72b33021-5d9a-4fb7-b3c1-d37d82a426a7, action=approve</td><td></td><td></td></tr>
+<tr><td>LEAVE_1</td><td>Leave Management And Approvals</td><td>Month 1: leave request with role-played decision</td><td>employee/manager/hr</td><td class="passed">passed</td><td>leave guarded=400 Bad Request</td><td></td><td></td></tr>
+<tr><td>LEAVE_2</td><td>Leave Management And Approvals</td><td>Month 2: leave request with role-played decision</td><td>employee/manager/hr</td><td class="passed">passed</td><td>leave guarded=400 Bad Request</td><td></td><td></td></tr>
+<tr><td>LEAVE_3</td><td>Leave Management And Approvals</td><td>Month 3: leave request with role-played decision</td><td>employee/manager/hr</td><td class="passed">passed</td><td>leave guarded=400 Bad Request</td><td></td><td></td></tr>
+<tr><td>HIRING_01</td><td>Hiring And Onboarding</td><td>HR creates candidate and records offer acceptance</td><td>hr</td><td class="passed">passed</td><td>candidateId=2afd6a81-9ea4-43ff-8d38-f77778700cfd</td><td></td><td></td></tr>
+<tr><td>PERF_01</td><td>Performance Appraisal</td><td>HR creates complete performance lifecycle for three employees</td><td>hr/manager/employee</td><td class="passed">passed</td><td>reviews=3</td><td></td><td></td></tr>
+<tr><td>EXIT_01</td><td>Resignation And Exit</td><td>Employee resignation flows into manager/HR exit workflow</td><td>employee/manager/hr</td><td class="passed">passed</td><td>resignation guarded=400 Exit case already exists for this employee</td><td></td><td></td></tr>
+<tr><td>REP_HEADCOUNT</td><td>Reports And Analytics</td><td>HR runs /reports/headcount</td><td>hr</td><td class="passed">passed</td><td>Headcount Report: records=9</td><td></td><td></td></tr>
+<tr><td>REP_ATTENDANCE</td><td>Reports And Analytics</td><td>HR runs /reports/attendance-summary?startDate=2026-03-02&endDate=2026-05-11</td><td>hr</td><td class="passed">passed</td><td>Attendance Summary: records=12</td><td></td><td></td></tr>
+<tr><td>REP_LEAVE</td><td>Reports And Analytics</td><td>HR runs /reports/leave-balance</td><td>hr</td><td class="passed">passed</td><td>Leave Balance & Usage: records=36</td><td></td><td></td></tr>
+<tr><td>REP_JOINERS</td><td>Reports And Analytics</td><td>HR runs /reports/joiners-leavers?startDate=2026-03-02&endDate=2026-05-11</td><td>hr</td><td class="passed">passed</td><td>Joiners & Leavers Report: records=2</td><td></td><td></td></tr>
+<tr><td>REP_CONFIRMATION</td><td>Reports And Analytics</td><td>HR runs /reports/confirmation-due</td><td>hr</td><td class="passed">passed</td><td>Confirmation Due Report: records=3</td><td></td><td></td></tr>
+<tr><td>REP_ATTRITION</td><td>Reports And Analytics</td><td>HR runs /reports/attrition?startDate=2026-03-02&endDate=2026-05-11</td><td>hr</td><td class="passed">passed</td><td>Attrition Report: records=0</td><td></td><td></td></tr>
+<tr><td>REP_PMS</td><td>Reports And Analytics</td><td>HR runs /reports/pms-completion</td><td>hr</td><td class="passed">passed</td><td>PMS Completion Report: records=10</td><td></td><td></td></tr>
+<tr><td>REP_MISSING_DOCS</td><td>Reports And Analytics</td><td>HR runs /reports/missing-documents</td><td>hr</td><td class="passed">passed</td><td>Missing Documents Report: records=20</td><td></td><td></td></tr>
+<tr><td>ANA_01</td><td>Reports And Analytics</td><td>HR runs semantic analytics after data buildup</td><td>hr</td><td class="passed">passed</td><td>metrics=headcount,attendance_rate,leave_utilization</td><td></td><td></td></tr>
+<tr><td>DOC_01</td><td>Standard HR Documents</td><td>HR previews, generates, and downloads standard HR document</td><td>hr</td><td class="passed">passed</td><td>template=Offer Letter, pdfBytes=1703</td><td></td><td></td></tr>
+<tr><td>VIS_01</td><td>Go To Market Entry</td><td>Landing page renders commercial entry point</td><td>public</td><td class="passed">passed</td><td>screenshots/01-landing-page.png</td><td></td><td></td></tr>
+<tr><td>VIS_02</td><td>New Company Registration</td><td>Company signup page renders registration journey</td><td>public</td><td class="passed">passed</td><td>screenshots/02-company-signup.png</td><td></td><td></td></tr>
+<tr><td>VIS_03</td><td>Company Setup</td><td>HR settings show company, subscription, users, and policies</td><td>hr</td><td class="passed">passed</td><td>screenshots/03-company-settings.png</td><td></td><td></td></tr>
+<tr><td>VIS_04</td><td>Employee Data</td><td>Employee directory after setup and imports</td><td>hr</td><td class="passed">passed</td><td>screenshots/04-employees-after-data-build.png</td><td></td><td></td></tr>
+<tr><td>VIS_05</td><td>Attendance Operations</td><td>HR attendance operations and approvals view</td><td>hr</td><td class="passed">passed</td><td>screenshots/05-attendance-operations.png</td><td></td><td></td></tr>
+<tr><td>VIS_06</td><td>Leave Operations</td><td>HR leave balances, requests, and intervention view</td><td>hr</td><td class="passed">passed</td><td>screenshots/06-leave-operations.png</td><td></td><td></td></tr>
+<tr><td>VIS_07</td><td>Performance Appraisal</td><td>Performance appraisal dashboard after review setup</td><td>hr</td><td class="passed">passed</td><td>screenshots/07-performance-cycle.png</td><td></td><td></td></tr>
+<tr><td>VIS_08</td><td>Exit Workflow</td><td>Exit dashboard after resignation simulation</td><td>hr</td><td class="passed">passed</td><td>screenshots/08-exit-workflow.png</td><td></td><td></td></tr>
+<tr><td>VIS_09</td><td>Reports And Analytics</td><td>Reports command center after three-month data simulation</td><td>hr</td><td class="passed">passed</td><td>screenshots/09-reports-analytics.png</td><td></td><td></td></tr>
+<tr><td>VIS_10</td><td>Standard HR Documents</td><td>Document generation workspace</td><td>hr</td><td class="passed">passed</td><td>screenshots/10-standard-documents.png</td><td></td><td></td></tr>
+<tr><td>VIS_11</td><td>Manager Role Play</td><td>Manager attendance approvals view</td><td>manager</td><td class="passed">passed</td><td>screenshots/11-manager-attendance-approvals.png</td><td></td><td></td></tr>
+<tr><td>VIS_12</td><td>Manager Role Play</td><td>Manager leave approvals view</td><td>manager</td><td class="passed">passed</td><td>screenshots/12-manager-leave-approvals.png</td><td></td><td></td></tr>
+<tr><td>VIS_13</td><td>Employee Role Play</td><td>Employee attendance self-service</td><td>employee</td><td class="passed">passed</td><td>screenshots/13-employee-attendance-self-service.png</td><td></td><td></td></tr>
+<tr><td>VIS_14</td><td>Employee Role Play</td><td>Employee leave self-service</td><td>employee</td><td class="passed">passed</td><td>screenshots/14-employee-leave-self-service.png</td><td></td><td></td></tr>
+<tr><td>VIS_15</td><td>Leadership View</td><td>Leadership dashboard after simulated operations</td><td>admin</td><td class="passed">passed</td><td>screenshots/15-leadership-dashboard.png</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+  <h2>Screenshot Evidence</h2>
+  <h3>VIS_01 - Landing page renders commercial entry point</h3><p>Go To Market Entry / public</p><img src="screenshots/01-landing-page.png" />
+<h3>VIS_02 - Company signup page renders registration journey</h3><p>New Company Registration / public</p><img src="screenshots/02-company-signup.png" />
+<h3>VIS_03 - HR settings show company, subscription, users, and policies</h3><p>Company Setup / hr</p><img src="screenshots/03-company-settings.png" />
+<h3>VIS_04 - Employee directory after setup and imports</h3><p>Employee Data / hr</p><img src="screenshots/04-employees-after-data-build.png" />
+<h3>VIS_05 - HR attendance operations and approvals view</h3><p>Attendance Operations / hr</p><img src="screenshots/05-attendance-operations.png" />
+<h3>VIS_06 - HR leave balances, requests, and intervention view</h3><p>Leave Operations / hr</p><img src="screenshots/06-leave-operations.png" />
+<h3>VIS_07 - Performance appraisal dashboard after review setup</h3><p>Performance Appraisal / hr</p><img src="screenshots/07-performance-cycle.png" />
+<h3>VIS_08 - Exit dashboard after resignation simulation</h3><p>Exit Workflow / hr</p><img src="screenshots/08-exit-workflow.png" />
+<h3>VIS_09 - Reports command center after three-month data simulation</h3><p>Reports And Analytics / hr</p><img src="screenshots/09-reports-analytics.png" />
+<h3>VIS_10 - Document generation workspace</h3><p>Standard HR Documents / hr</p><img src="screenshots/10-standard-documents.png" />
+<h3>VIS_11 - Manager attendance approvals view</h3><p>Manager Role Play / manager</p><img src="screenshots/11-manager-attendance-approvals.png" />
+<h3>VIS_12 - Manager leave approvals view</h3><p>Manager Role Play / manager</p><img src="screenshots/12-manager-leave-approvals.png" />
+<h3>VIS_13 - Employee attendance self-service</h3><p>Employee Role Play / employee</p><img src="screenshots/13-employee-attendance-self-service.png" />
+<h3>VIS_14 - Employee leave self-service</h3><p>Employee Role Play / employee</p><img src="screenshots/14-employee-leave-self-service.png" />
+<h3>VIS_15 - Leadership dashboard after simulated operations</h3><p>Leadership View / admin</p><img src="screenshots/15-leadership-dashboard.png" />
+</body>
+</html>

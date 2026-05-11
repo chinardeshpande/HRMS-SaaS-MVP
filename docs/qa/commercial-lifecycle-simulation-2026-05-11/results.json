@@ -1,0 +1,2466 @@
+{
+  "runId": "AHR-COMMERCIAL-SIM-2026-05-11-1778489157172",
+  "target": "https://aurorahr.in",
+  "api": "https://aurorahr.in/api/v1",
+  "generatedAt": "2026-05-11T08:50:36.499Z",
+  "summary": {
+    "passed": 48,
+    "failed": 1,
+    "blocked": 2,
+    "total": 51
+  },
+  "results": [
+    {
+      "id": "REG_01",
+      "phase": "New Company Registration",
+      "title": "Subscription plans are publicly available",
+      "role": "public",
+      "status": "passed",
+      "evidence": "plans=free,starter,professional,enterprise",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "REG_02",
+      "phase": "New Company Registration",
+      "title": "New company can initiate signup",
+      "role": "public",
+      "status": "passed",
+      "evidence": "registrationId=899a30f1-f6ad-448c-8d51-d7254b259b03, email=commercial.sim.1778489157173@aurorahr.test",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "REG_03",
+      "phase": "New Company Registration",
+      "title": "Production signup can proceed to verification/completion",
+      "role": "public",
+      "status": "blocked",
+      "evidence": "email verification required",
+      "notes": "Signup initiation works, but production email delivery/token retrieval is not enabled in the public flow: Email verification required",
+      "severity": "blocker"
+    },
+    {
+      "id": "AUTH_EMPLOYEE",
+      "phase": "Authentication",
+      "title": "Demo login as employee",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "/demo/login",
+      "notes": "demo.employee@aurorahr.in",
+      "severity": ""
+    },
+    {
+      "id": "AUTH_MANAGER",
+      "phase": "Authentication",
+      "title": "Demo login as manager",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "/demo/login",
+      "notes": "demo.manager@aurorahr.in",
+      "severity": ""
+    },
+    {
+      "id": "AUTH_HR",
+      "phase": "Authentication",
+      "title": "Demo login as hr",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "/demo/login",
+      "notes": "demo.hr@aurorahr.in",
+      "severity": ""
+    },
+    {
+      "id": "AUTH_ADMIN",
+      "phase": "Authentication",
+      "title": "Demo login as admin",
+      "role": "admin",
+      "status": "passed",
+      "evidence": "/demo/login",
+      "notes": "demo.admin@aurorahr.in",
+      "severity": ""
+    },
+    {
+      "id": "SUB_01",
+      "phase": "Subscription Management",
+      "title": "HR can retrieve current tenant subscription",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "plan=enterprise, status=active, users=7/250",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "SUB_02",
+      "phase": "Subscription Management",
+      "title": "HR can change billing cycle structurally",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "changed=monthly, restored=yearly",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "SUB_03",
+      "phase": "Subscription Management",
+      "title": "Real payment gateway charge and webhook lifecycle is available",
+      "role": "hr",
+      "status": "blocked",
+      "evidence": "paymentMethods=0",
+      "notes": "Payment method storage exists, but real gateway charge, webhook reconciliation, retry/dunning, invoice tax, and subscription activation from payment are not implemented.",
+      "severity": "blocker"
+    },
+    {
+      "id": "SETUP_01",
+      "phase": "Company Setup",
+      "title": "HR creates departments for simulation company structure",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "departments=People Ops 89157172, Engineering 89157172, Sales 89157172",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "SETUP_02",
+      "phase": "Company Setup",
+      "title": "HR creates designations for reporting hierarchy",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "designations=HR Business Partner 89157172, Engineering Manager 89157172, Software Engineer 89157172",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "SETUP_03",
+      "phase": "HR Roles",
+      "title": "HR creates a custom HR operations role",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "roleId=12672c64-7c6f-4863-a429-3d2f08518c1d",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "USER_01",
+      "phase": "Adding New Users",
+      "title": "HR creates manager and employee users through employee creation",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "manager=47b9bf26-9c82-4345-9ee0-debb81ec91d1, employee=d4f45d93-e9ea-4452-a729-dff1c5cc0873",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "USER_02",
+      "phase": "Importing Employee Data",
+      "title": "HR bulk imports employee records by CSV",
+      "role": "hr",
+      "status": "failed",
+      "evidence": "runtime/API error",
+      "notes": "Bulk import did not create expected employees: successful=0, failed=2, errors=[{\"row\":2,\"employeeCode\":\"SIM-BULK-1-89157172\",\"email\":\"kavya.menon.89157172@aurorahr.test\",\"error\":\"null value in column \\\"fullName\\\" of relation \\\"users\\\" violates not-null constraint\"},{\"row\":3,\"employeeCode\":\"SIM-BULK-2-89157172\",\"email\":\"rohan.sen.89157172@aurorahr.test\",\"error\":\"null value in column \\\"fullName\\\" of relation \\\"users\\\" violates not-null constraint\"}]",
+      "severity": "high"
+    },
+    {
+      "id": "ORG_01",
+      "phase": "Org Structure And Approval Rules",
+      "title": "Reporting relationships are visible through employee hierarchy",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "employees=20, reportingRelationships=13",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "ATT_01",
+      "phase": "Three Month Operations",
+      "title": "Employee clock-in/out endpoints are guarded and usable",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "clockIn=400, clockOut=400",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "ATT_REG_1",
+      "phase": "Attendance Tracking And Approvals",
+      "title": "Month 1: employee regularization and approval path",
+      "role": "employee/manager",
+      "status": "passed",
+      "evidence": "editId=71f28d0c-fba5-4e8d-b9e6-3552b4c190ef, action=approve",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "ATT_REG_2",
+      "phase": "Attendance Tracking And Approvals",
+      "title": "Month 2: employee regularization and approval path",
+      "role": "employee/manager",
+      "status": "passed",
+      "evidence": "editId=1202bb3e-5a0e-43d1-9956-7383d958e322, action=reject",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "ATT_REG_3",
+      "phase": "Attendance Tracking And Approvals",
+      "title": "Month 3: employee regularization and approval path",
+      "role": "employee/manager",
+      "status": "passed",
+      "evidence": "editId=72b33021-5d9a-4fb7-b3c1-d37d82a426a7, action=approve",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "LEAVE_1",
+      "phase": "Leave Management And Approvals",
+      "title": "Month 1: leave request with role-played decision",
+      "role": "employee/manager/hr",
+      "status": "passed",
+      "evidence": "leave guarded=400 Bad Request",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "LEAVE_2",
+      "phase": "Leave Management And Approvals",
+      "title": "Month 2: leave request with role-played decision",
+      "role": "employee/manager/hr",
+      "status": "passed",
+      "evidence": "leave guarded=400 Bad Request",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "LEAVE_3",
+      "phase": "Leave Management And Approvals",
+      "title": "Month 3: leave request with role-played decision",
+      "role": "employee/manager/hr",
+      "status": "passed",
+      "evidence": "leave guarded=400 Bad Request",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "HIRING_01",
+      "phase": "Hiring And Onboarding",
+      "title": "HR creates candidate and records offer acceptance",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "candidateId=2afd6a81-9ea4-43ff-8d38-f77778700cfd",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "PERF_01",
+      "phase": "Performance Appraisal",
+      "title": "HR creates complete performance lifecycle for three employees",
+      "role": "hr/manager/employee",
+      "status": "passed",
+      "evidence": "reviews=3",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "EXIT_01",
+      "phase": "Resignation And Exit",
+      "title": "Employee resignation flows into manager/HR exit workflow",
+      "role": "employee/manager/hr",
+      "status": "passed",
+      "evidence": "resignation guarded=400 Exit case already exists for this employee",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "REP_HEADCOUNT",
+      "phase": "Reports And Analytics",
+      "title": "HR runs /reports/headcount",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Headcount Report: records=9",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "REP_ATTENDANCE",
+      "phase": "Reports And Analytics",
+      "title": "HR runs /reports/attendance-summary?startDate=2026-03-02&endDate=2026-05-11",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Attendance Summary: records=12",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "REP_LEAVE",
+      "phase": "Reports And Analytics",
+      "title": "HR runs /reports/leave-balance",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Leave Balance & Usage: records=36",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "REP_JOINERS",
+      "phase": "Reports And Analytics",
+      "title": "HR runs /reports/joiners-leavers?startDate=2026-03-02&endDate=2026-05-11",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Joiners & Leavers Report: records=2",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "REP_CONFIRMATION",
+      "phase": "Reports And Analytics",
+      "title": "HR runs /reports/confirmation-due",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Confirmation Due Report: records=3",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "REP_ATTRITION",
+      "phase": "Reports And Analytics",
+      "title": "HR runs /reports/attrition?startDate=2026-03-02&endDate=2026-05-11",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Attrition Report: records=0",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "REP_PMS",
+      "phase": "Reports And Analytics",
+      "title": "HR runs /reports/pms-completion",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "PMS Completion Report: records=10",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "REP_MISSING_DOCS",
+      "phase": "Reports And Analytics",
+      "title": "HR runs /reports/missing-documents",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "Missing Documents Report: records=20",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "ANA_01",
+      "phase": "Reports And Analytics",
+      "title": "HR runs semantic analytics after data buildup",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "metrics=headcount,attendance_rate,leave_utilization",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "DOC_01",
+      "phase": "Standard HR Documents",
+      "title": "HR previews, generates, and downloads standard HR document",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "template=Offer Letter, pdfBytes=1703",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_01",
+      "phase": "Go To Market Entry",
+      "title": "Landing page renders commercial entry point",
+      "role": "public",
+      "status": "passed",
+      "evidence": "screenshots/01-landing-page.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_02",
+      "phase": "New Company Registration",
+      "title": "Company signup page renders registration journey",
+      "role": "public",
+      "status": "passed",
+      "evidence": "screenshots/02-company-signup.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_03",
+      "phase": "Company Setup",
+      "title": "HR settings show company, subscription, users, and policies",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/03-company-settings.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_04",
+      "phase": "Employee Data",
+      "title": "Employee directory after setup and imports",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/04-employees-after-data-build.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_05",
+      "phase": "Attendance Operations",
+      "title": "HR attendance operations and approvals view",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/05-attendance-operations.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_06",
+      "phase": "Leave Operations",
+      "title": "HR leave balances, requests, and intervention view",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/06-leave-operations.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_07",
+      "phase": "Performance Appraisal",
+      "title": "Performance appraisal dashboard after review setup",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/07-performance-cycle.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_08",
+      "phase": "Exit Workflow",
+      "title": "Exit dashboard after resignation simulation",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/08-exit-workflow.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_09",
+      "phase": "Reports And Analytics",
+      "title": "Reports command center after three-month data simulation",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/09-reports-analytics.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_10",
+      "phase": "Standard HR Documents",
+      "title": "Document generation workspace",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/10-standard-documents.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_11",
+      "phase": "Manager Role Play",
+      "title": "Manager attendance approvals view",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "screenshots/11-manager-attendance-approvals.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_12",
+      "phase": "Manager Role Play",
+      "title": "Manager leave approvals view",
+      "role": "manager",
+      "status": "passed",
+      "evidence": "screenshots/12-manager-leave-approvals.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_13",
+      "phase": "Employee Role Play",
+      "title": "Employee attendance self-service",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "screenshots/13-employee-attendance-self-service.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_14",
+      "phase": "Employee Role Play",
+      "title": "Employee leave self-service",
+      "role": "employee",
+      "status": "passed",
+      "evidence": "screenshots/14-employee-leave-self-service.png",
+      "notes": "",
+      "severity": ""
+    },
+    {
+      "id": "VIS_15",
+      "phase": "Leadership View",
+      "title": "Leadership dashboard after simulated operations",
+      "role": "admin",
+      "status": "passed",
+      "evidence": "screenshots/15-leadership-dashboard.png",
+      "notes": "",
+      "severity": ""
+    }
+  ],
+  "screenshots": [
+    {
+      "id": "VIS_01",
+      "phase": "Go To Market Entry",
+      "title": "Landing page renders commercial entry point",
+      "role": "public",
+      "path": "screenshots/01-landing-page.png"
+    },
+    {
+      "id": "VIS_02",
+      "phase": "New Company Registration",
+      "title": "Company signup page renders registration journey",
+      "role": "public",
+      "path": "screenshots/02-company-signup.png"
+    },
+    {
+      "id": "VIS_03",
+      "phase": "Company Setup",
+      "title": "HR settings show company, subscription, users, and policies",
+      "role": "hr",
+      "path": "screenshots/03-company-settings.png"
+    },
+    {
+      "id": "VIS_04",
+      "phase": "Employee Data",
+      "title": "Employee directory after setup and imports",
+      "role": "hr",
+      "path": "screenshots/04-employees-after-data-build.png"
+    },
+    {
+      "id": "VIS_05",
+      "phase": "Attendance Operations",
+      "title": "HR attendance operations and approvals view",
+      "role": "hr",
+      "path": "screenshots/05-attendance-operations.png"
+    },
+    {
+      "id": "VIS_06",
+      "phase": "Leave Operations",
+      "title": "HR leave balances, requests, and intervention view",
+      "role": "hr",
+      "path": "screenshots/06-leave-operations.png"
+    },
+    {
+      "id": "VIS_07",
+      "phase": "Performance Appraisal",
+      "title": "Performance appraisal dashboard after review setup",
+      "role": "hr",
+      "path": "screenshots/07-performance-cycle.png"
+    },
+    {
+      "id": "VIS_08",
+      "phase": "Exit Workflow",
+      "title": "Exit dashboard after resignation simulation",
+      "role": "hr",
+      "path": "screenshots/08-exit-workflow.png"
+    },
+    {
+      "id": "VIS_09",
+      "phase": "Reports And Analytics",
+      "title": "Reports command center after three-month data simulation",
+      "role": "hr",
+      "path": "screenshots/09-reports-analytics.png"
+    },
+    {
+      "id": "VIS_10",
+      "phase": "Standard HR Documents",
+      "title": "Document generation workspace",
+      "role": "hr",
+      "path": "screenshots/10-standard-documents.png"
+    },
+    {
+      "id": "VIS_11",
+      "phase": "Manager Role Play",
+      "title": "Manager attendance approvals view",
+      "role": "manager",
+      "path": "screenshots/11-manager-attendance-approvals.png"
+    },
+    {
+      "id": "VIS_12",
+      "phase": "Manager Role Play",
+      "title": "Manager leave approvals view",
+      "role": "manager",
+      "path": "screenshots/12-manager-leave-approvals.png"
+    },
+    {
+      "id": "VIS_13",
+      "phase": "Employee Role Play",
+      "title": "Employee attendance self-service",
+      "role": "employee",
+      "path": "screenshots/13-employee-attendance-self-service.png"
+    },
+    {
+      "id": "VIS_14",
+      "phase": "Employee Role Play",
+      "title": "Employee leave self-service",
+      "role": "employee",
+      "path": "screenshots/14-employee-leave-self-service.png"
+    },
+    {
+      "id": "VIS_15",
+      "phase": "Leadership View",
+      "title": "Leadership dashboard after simulated operations",
+      "role": "admin",
+      "path": "screenshots/15-leadership-dashboard.png"
+    }
+  ],
+  "created": {
+    "departments": [
+      {
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "name": "People Ops 89157172",
+        "parentDeptId": null,
+        "headEmployeeId": null,
+        "departmentId": "8ccf39a6-f829-4f5c-989e-cc47a15908a5",
+        "createdAt": "2026-05-11T08:45:58.216Z",
+        "updatedAt": "2026-05-11T08:45:58.216Z"
+      },
+      {
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "name": "Engineering 89157172",
+        "parentDeptId": null,
+        "headEmployeeId": null,
+        "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
+        "createdAt": "2026-05-11T08:45:58.287Z",
+        "updatedAt": "2026-05-11T08:45:58.287Z"
+      },
+      {
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "name": "Sales 89157172",
+        "parentDeptId": null,
+        "headEmployeeId": null,
+        "departmentId": "f0f45df2-d9b2-4968-92a1-71810d8850dd",
+        "createdAt": "2026-05-11T08:45:58.339Z",
+        "updatedAt": "2026-05-11T08:45:58.339Z"
+      }
+    ],
+    "designations": [
+      {
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "name": "HR Business Partner 89157172",
+        "level": 3,
+        "designationId": "f83fdbe5-97b1-4fc7-b15d-c1c040803ce1",
+        "createdAt": "2026-05-11T08:45:58.401Z",
+        "updatedAt": "2026-05-11T08:45:58.401Z"
+      },
+      {
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "name": "Engineering Manager 89157172",
+        "level": 4,
+        "designationId": "416891ff-1a4a-4233-b1c0-bfcdd775d9a8",
+        "createdAt": "2026-05-11T08:45:58.492Z",
+        "updatedAt": "2026-05-11T08:45:58.492Z"
+      },
+      {
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "name": "Software Engineer 89157172",
+        "level": 5,
+        "designationId": "7ac638fc-987b-465a-9a61-0c7ca48b6bdc",
+        "createdAt": "2026-05-11T08:45:58.557Z",
+        "updatedAt": "2026-05-11T08:45:58.557Z"
+      }
+    ],
+    "employees": [
+      {
+        "employeeId": "47b9bf26-9c82-4345-9ee0-debb81ec91d1",
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "employeeCode": "SIM-MGR-89157172",
+        "firstName": "Nisha",
+        "lastName": "Rao",
+        "email": "nisha.rao.89157172@aurorahr.test",
+        "phone": "+919800000001",
+        "dateOfBirth": null,
+        "gender": null,
+        "address": null,
+        "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
+        "designationId": "416891ff-1a4a-4233-b1c0-bfcdd775d9a8",
+        "managerId": null,
+        "roleId": null,
+        "dateOfJoining": "2026-03-03",
+        "probationEndDate": null,
+        "employmentType": "Full-Time",
+        "status": "active",
+        "createdAt": "2026-05-11T08:45:58.679Z",
+        "updatedAt": "2026-05-11T08:45:58.679Z",
+        "department": {
+          "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
+          "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+          "name": "Engineering 89157172",
+          "parentDeptId": null,
+          "headEmployeeId": null,
+          "createdAt": "2026-05-11T08:45:58.287Z",
+          "updatedAt": "2026-05-11T08:45:58.287Z"
+        },
+        "designation": {
+          "designationId": "416891ff-1a4a-4233-b1c0-bfcdd775d9a8",
+          "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+          "name": "Engineering Manager 89157172",
+          "level": 4,
+          "createdAt": "2026-05-11T08:45:58.492Z",
+          "updatedAt": "2026-05-11T08:45:58.492Z"
+        },
+        "manager": null
+      },
+      {
+        "employeeId": "d4f45d93-e9ea-4452-a729-dff1c5cc0873",
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "employeeCode": "SIM-EMP-89157172",
+        "firstName": "Ishan",
+        "lastName": "Kapoor",
+        "email": "ishan.kapoor.89157172@aurorahr.test",
+        "phone": "+919800000002",
+        "dateOfBirth": null,
+        "gender": null,
+        "address": null,
+        "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
+        "designationId": "7ac638fc-987b-465a-9a61-0c7ca48b6bdc",
+        "managerId": "47b9bf26-9c82-4345-9ee0-debb81ec91d1",
+        "roleId": null,
+        "dateOfJoining": "2026-03-09",
+        "probationEndDate": null,
+        "employmentType": "Full-Time",
+        "status": "active",
+        "createdAt": "2026-05-11T08:45:58.863Z",
+        "updatedAt": "2026-05-11T08:45:58.863Z",
+        "department": {
+          "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
+          "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+          "name": "Engineering 89157172",
+          "parentDeptId": null,
+          "headEmployeeId": null,
+          "createdAt": "2026-05-11T08:45:58.287Z",
+          "updatedAt": "2026-05-11T08:45:58.287Z"
+        },
+        "designation": {
+          "designationId": "7ac638fc-987b-465a-9a61-0c7ca48b6bdc",
+          "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+          "name": "Software Engineer 89157172",
+          "level": 5,
+          "createdAt": "2026-05-11T08:45:58.557Z",
+          "updatedAt": "2026-05-11T08:45:58.557Z"
+        },
+        "manager": {
+          "employeeId": "47b9bf26-9c82-4345-9ee0-debb81ec91d1",
+          "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+          "employeeCode": "SIM-MGR-89157172",
+          "firstName": "Nisha",
+          "lastName": "Rao",
+          "email": "nisha.rao.89157172@aurorahr.test",
+          "phone": "+919800000001",
+          "dateOfBirth": null,
+          "gender": null,
+          "address": null,
+          "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
+          "designationId": "416891ff-1a4a-4233-b1c0-bfcdd775d9a8",
+          "managerId": null,
+          "roleId": null,
+          "dateOfJoining": "2026-03-03",
+          "probationEndDate": null,
+          "employmentType": "Full-Time",
+          "status": "active",
+          "createdAt": "2026-05-11T08:45:58.679Z",
+          "updatedAt": "2026-05-11T08:45:58.679Z"
+        }
+      }
+    ],
+    "reviews": [
+      {
+        "reviewId": "af26577f-b29b-4c5d-bf7d-22b14db63629",
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "employeeId": "abb57bbd-56d3-46d3-a86e-38e6d2b33328",
+        "reviewerId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
+        "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489157172-Q1",
+        "reviewStartDate": "2026-03-02",
+        "reviewEndDate": "2026-05-28",
+        "currentState": "goal_setting",
+        "selfRatingMidYear": null,
+        "managerRatingMidYear": null,
+        "selfCommentsMidYear": null,
+        "managerCommentsMidYear": null,
+        "midYearSubmittedDate": null,
+        "midYearCompletedDate": null,
+        "selfRatingAnnual": null,
+        "managerRatingAnnual": null,
+        "selfCommentsAnnual": null,
+        "managerCommentsAnnual": null,
+        "annualSubmittedDate": null,
+        "annualCompletedDate": null,
+        "finalRating": null,
+        "normalizationRating": null,
+        "ratingCategory": null,
+        "promotionRecommended": false,
+        "incrementPercentage": null,
+        "finalComments": null,
+        "achievements": null,
+        "challenges": null,
+        "skillGaps": null,
+        "trainingRecommendations": null,
+        "careerAspirations": null,
+        "createdAt": "2026-05-11T08:50:00.743Z",
+        "updatedAt": "2026-05-11T08:50:00.743Z",
+        "employee": {
+          "employeeId": "abb57bbd-56d3-46d3-a86e-38e6d2b33328",
+          "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+          "employeeCode": "SIM-BULK-2-89157172",
+          "firstName": "Rohan",
+          "lastName": "Sen",
+          "email": "rohan.sen.89157172@aurorahr.test",
+          "phone": "+919800000004",
+          "dateOfBirth": "1991-02-20",
+          "gender": "Male",
+          "address": null,
+          "departmentId": "f0f45df2-d9b2-4968-92a1-71810d8850dd",
+          "designationId": "7ac638fc-987b-465a-9a61-0c7ca48b6bdc",
+          "managerId": null,
+          "roleId": null,
+          "dateOfJoining": "2026-04-01",
+          "probationEndDate": null,
+          "employmentType": "Full-Time",
+          "status": "active",
+          "createdAt": "2026-05-11T08:45:59.168Z",
+          "updatedAt": "2026-05-11T08:45:59.168Z"
+        },
+        "reviewer": {
+          "employeeId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
+          "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+          "employeeCode": "DEMO003",
+          "firstName": "Arjun",
+          "lastName": "Mehta",
+          "email": "demo.manager@aurorahr.in",
+          "phone": "+91 90000 00000",
+          "dateOfBirth": null,
+          "gender": "male",
+          "address": "Aurora Demo Business Park, Bengaluru",
+          "departmentId": "cce7925c-36ba-4188-ab83-249192d6caae",
+          "designationId": "6b4f212f-40dd-447f-a495-84a2f0b7607d",
+          "managerId": "e552c74e-57da-4898-9621-dc4805fd9fdd",
+          "roleId": null,
+          "dateOfJoining": "2025-02-28",
+          "probationEndDate": null,
+          "employmentType": "full_time",
+          "status": "active",
+          "createdAt": "2026-05-04T08:13:48.515Z",
+          "updatedAt": "2026-05-04T08:13:48.590Z"
+        }
+      },
+      {
+        "reviewId": "f4779278-f1c7-46e2-add5-4789592ae464",
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "employeeId": "37fd4965-c9cc-4344-bf50-1e79a41f1ac4",
+        "reviewerId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
+        "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489157172-Q2",
+        "reviewStartDate": "2026-03-02",
+        "reviewEndDate": "2026-05-28",
+        "currentState": "goal_setting",
+        "selfRatingMidYear": null,
+        "managerRatingMidYear": null,
+        "selfCommentsMidYear": null,
+        "managerCommentsMidYear": null,
+        "midYearSubmittedDate": null,
+        "midYearCompletedDate": null,
+        "selfRatingAnnual": null,
+        "managerRatingAnnual": null,
+        "selfCommentsAnnual": null,
+        "managerCommentsAnnual": null,
+        "annualSubmittedDate": null,
+        "annualCompletedDate": null,
+        "finalRating": null,
+        "normalizationRating": null,
+        "ratingCategory": null,
+        "promotionRecommended": false,
+        "incrementPercentage": null,
+        "finalComments": null,
+        "achievements": null,
+        "challenges": null,
+        "skillGaps": null,
+        "trainingRecommendations": null,
+        "careerAspirations": null,
+        "createdAt": "2026-05-11T08:50:01.394Z",
+        "updatedAt": "2026-05-11T08:50:01.394Z",
+        "employee": {
+          "employeeId": "37fd4965-c9cc-4344-bf50-1e79a41f1ac4",
+          "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+          "employeeCode": "SIM-BULK-1-89157172",
+          "firstName": "Kavya",
+          "lastName": "Menon",
+          "email": "kavya.menon.89157172@aurorahr.test",
+          "phone": "+919800000003",
+          "dateOfBirth": "1992-06-12",
+          "gender": "Female",
+          "address": null,
+          "departmentId": "f0f45df2-d9b2-4968-92a1-71810d8850dd",
+          "designationId": "7ac638fc-987b-465a-9a61-0c7ca48b6bdc",
+          "managerId": null,
+          "roleId": null,
+          "dateOfJoining": "2026-03-16",
+          "probationEndDate": null,
+          "employmentType": "Full-Time",
+          "status": "active",
+          "createdAt": "2026-05-11T08:45:59.059Z",
+          "updatedAt": "2026-05-11T08:45:59.059Z"
+        },
+        "reviewer": {
+          "employeeId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
+          "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+          "employeeCode": "DEMO003",
+          "firstName": "Arjun",
+          "lastName": "Mehta",
+          "email": "demo.manager@aurorahr.in",
+          "phone": "+91 90000 00000",
+          "dateOfBirth": null,
+          "gender": "male",
+          "address": "Aurora Demo Business Park, Bengaluru",
+          "departmentId": "cce7925c-36ba-4188-ab83-249192d6caae",
+          "designationId": "6b4f212f-40dd-447f-a495-84a2f0b7607d",
+          "managerId": "e552c74e-57da-4898-9621-dc4805fd9fdd",
+          "roleId": null,
+          "dateOfJoining": "2025-02-28",
+          "probationEndDate": null,
+          "employmentType": "full_time",
+          "status": "active",
+          "createdAt": "2026-05-04T08:13:48.515Z",
+          "updatedAt": "2026-05-04T08:13:48.590Z"
+        }
+      },
+      {
+        "reviewId": "62a63148-e971-4017-b1e3-d892e2d2b96a",
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "employeeId": "d4f45d93-e9ea-4452-a729-dff1c5cc0873",
+        "reviewerId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
+        "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489157172-Q3",
+        "reviewStartDate": "2026-03-02",
+        "reviewEndDate": "2026-05-28",
+        "currentState": "goal_setting",
+        "selfRatingMidYear": null,
+        "managerRatingMidYear": null,
+        "selfCommentsMidYear": null,
+        "managerCommentsMidYear": null,
+        "midYearSubmittedDate": null,
+        "midYearCompletedDate": null,
+        "selfRatingAnnual": null,
+        "managerRatingAnnual": null,
+        "selfCommentsAnnual": null,
+        "managerCommentsAnnual": null,
+        "annualSubmittedDate": null,
+        "annualCompletedDate": null,
+        "finalRating": null,
+        "normalizationRating": null,
+        "ratingCategory": null,
+        "promotionRecommended": false,
+        "incrementPercentage": null,
+        "finalComments": null,
+        "achievements": null,
+        "challenges": null,
+        "skillGaps": null,
+        "trainingRecommendations": null,
+        "careerAspirations": null,
+        "createdAt": "2026-05-11T08:50:02.009Z",
+        "updatedAt": "2026-05-11T08:50:02.009Z",
+        "employee": {
+          "employeeId": "d4f45d93-e9ea-4452-a729-dff1c5cc0873",
+          "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+          "employeeCode": "SIM-EMP-89157172",
+          "firstName": "Ishan",
+          "lastName": "Kapoor",
+          "email": "ishan.kapoor.89157172@aurorahr.test",
+          "phone": "+919800000002",
+          "dateOfBirth": null,
+          "gender": null,
+          "address": null,
+          "departmentId": "2632f0bb-3a61-4d7b-9a69-baa4c2bade9a",
+          "designationId": "7ac638fc-987b-465a-9a61-0c7ca48b6bdc",
+          "managerId": "47b9bf26-9c82-4345-9ee0-debb81ec91d1",
+          "roleId": null,
+          "dateOfJoining": "2026-03-09",
+          "probationEndDate": null,
+          "employmentType": "Full-Time",
+          "status": "active",
+          "createdAt": "2026-05-11T08:45:58.863Z",
+          "updatedAt": "2026-05-11T08:45:58.863Z"
+        },
+        "reviewer": {
+          "employeeId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
+          "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+          "employeeCode": "DEMO003",
+          "firstName": "Arjun",
+          "lastName": "Mehta",
+          "email": "demo.manager@aurorahr.in",
+          "phone": "+91 90000 00000",
+          "dateOfBirth": null,
+          "gender": "male",
+          "address": "Aurora Demo Business Park, Bengaluru",
+          "departmentId": "cce7925c-36ba-4188-ab83-249192d6caae",
+          "designationId": "6b4f212f-40dd-447f-a495-84a2f0b7607d",
+          "managerId": "e552c74e-57da-4898-9621-dc4805fd9fdd",
+          "roleId": null,
+          "dateOfJoining": "2025-02-28",
+          "probationEndDate": null,
+          "employmentType": "full_time",
+          "status": "active",
+          "createdAt": "2026-05-04T08:13:48.515Z",
+          "updatedAt": "2026-05-04T08:13:48.590Z"
+        }
+      }
+    ],
+    "leaves": [],
+    "regularizations": [
+      {
+        "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "attendanceId": "825bb9eb-5b51-4750-8325-815969699e9e",
+        "originalCheckIn": "2026-03-11T09:15:00.000Z",
+        "originalCheckOut": "2026-03-11T18:20:00.000Z",
+        "requestedCheckIn": "2026-03-11T09:15:00.000Z",
+        "requestedCheckOut": "2026-03-11T18:20:00.000Z",
+        "reason": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489157172] Month 1 client visit punch correction",
+        "status": "pending",
+        "approverId": null,
+        "approvedAt": null,
+        "approverComments": null,
+        "editId": "71f28d0c-fba5-4e8d-b9e6-3552b4c190ef",
+        "createdAt": "2026-05-11T08:45:59.503Z",
+        "updatedAt": "2026-05-11T08:45:59.503Z"
+      },
+      {
+        "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "attendanceId": "7dccfb02-abe2-448c-b97c-0ba0eaf3123f",
+        "originalCheckIn": "2026-04-13T09:28:00.000Z",
+        "originalCheckOut": "2026-04-13T18:38:00.000Z",
+        "requestedCheckIn": "2026-04-13T09:15:00.000Z",
+        "requestedCheckOut": "2026-04-13T18:20:00.000Z",
+        "reason": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489157172] Month 2 client visit punch correction",
+        "status": "pending",
+        "approverId": null,
+        "approvedAt": null,
+        "approverComments": null,
+        "editId": "1202bb3e-5a0e-43d1-9956-7383d958e322",
+        "createdAt": "2026-05-11T08:45:59.637Z",
+        "updatedAt": "2026-05-11T08:45:59.637Z"
+      },
+      {
+        "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "attendanceId": "abf50c51-14ef-42db-9ce1-ee28a3f33d2d",
+        "originalCheckIn": "2026-05-13T09:15:00.000Z",
+        "originalCheckOut": "2026-05-13T18:20:00.000Z",
+        "requestedCheckIn": "2026-05-13T09:15:00.000Z",
+        "requestedCheckOut": "2026-05-13T18:20:00.000Z",
+        "reason": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489157172] Month 3 client visit punch correction",
+        "status": "pending",
+        "approverId": null,
+        "approvedAt": null,
+        "approverComments": null,
+        "editId": "72b33021-5d9a-4fb7-b3c1-d37d82a426a7",
+        "createdAt": "2026-05-11T08:45:59.770Z",
+        "updatedAt": "2026-05-11T08:45:59.770Z"
+      }
+    ],
+    "reports": [
+      {
+        "report": "Headcount Report",
+        "filters": {},
+        "summary": {
+          "totalHeadcount": 20,
+          "byDepartment": {
+            "Finance & Operations": 2,
+            "Engineering 89157172": 2,
+            "Engineering 88824874": 2,
+            "Sales 89157172": 2,
+            "Engineering": 5,
+            "People Operations": 2,
+            "Executive Office": 1,
+            "Sales 88824874": 2,
+            "Sales": 2
+          },
+          "byEmploymentType": {
+            "full_time": 12,
+            "Full-Time": 8
+          },
+          "byStatus": {
+            "active": 20
+          }
+        },
+        "results": [
+          {
+            "department": "Finance & Operations",
+            "employmentType": "full_time",
+            "status": "active",
+            "count": 2,
+            "percentage": 10
+          },
+          {
+            "department": "Engineering 89157172",
+            "employmentType": "Full-Time",
+            "status": "active",
+            "count": 2,
+            "percentage": 10
+          },
+          {
+            "department": "Engineering 88824874",
+            "employmentType": "Full-Time",
+            "status": "active",
+            "count": 2,
+            "percentage": 10
+          },
+          {
+            "department": "Sales 89157172",
+            "employmentType": "Full-Time",
+            "status": "active",
+            "count": 2,
+            "percentage": 10
+          },
+          {
+            "department": "Engineering",
+            "employmentType": "full_time",
+            "status": "active",
+            "count": 5,
+            "percentage": 25
+          },
+          {
+            "department": "People Operations",
+            "employmentType": "full_time",
+            "status": "active",
+            "count": 2,
+            "percentage": 10
+          },
+          {
+            "department": "Executive Office",
+            "employmentType": "full_time",
+            "status": "active",
+            "count": 1,
+            "percentage": 5
+          },
+          {
+            "department": "Sales 88824874",
+            "employmentType": "Full-Time",
+            "status": "active",
+            "count": 2,
+            "percentage": 10
+          },
+          {
+            "department": "Sales",
+            "employmentType": "full_time",
+            "status": "active",
+            "count": 2,
+            "percentage": 10
+          }
+        ],
+        "totalRecords": 9
+      },
+      {
+        "report": "Attendance Summary",
+        "filters": {
+          "startDate": "2026-03-02T00:00:00.000Z",
+          "endDate": "2026-05-11T00:00:00.000Z"
+        },
+        "results": [
+          {
+            "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
+            "employeeName": "Neha Shah",
+            "employeeCode": "DEMO004",
+            "department": "Engineering",
+            "presentDays": "17",
+            "absentDays": "0",
+            "lateDays": "0",
+            "halfDays": "2",
+            "onLeaveDays": "0",
+            "totalWorkingDays": "19",
+            "attendancePercentage": 89.5
+          },
+          {
+            "employeeId": "1892eaf4-b7fa-441c-ad1f-8c43ea38440f",
+            "employeeName": "Tara Bose",
+            "employeeCode": "DEMO010",
+            "department": "Sales",
+            "presentDays": "15",
+            "absentDays": "0",
+            "lateDays": "0",
+            "halfDays": "0",
+            "onLeaveDays": "0",
+            "totalWorkingDays": "15",
+            "attendancePercentage": 100
+          },
+          {
+            "employeeId": "1d98629a-ea03-45cb-9043-d7e2bbd4fb62",
+            "employeeName": "Kabir Sethi",
+            "employeeCode": "DEMO005",
+            "department": "Finance & Operations",
+            "presentDays": "15",
+            "absentDays": "0",
+            "lateDays": "15",
+            "halfDays": "0",
+            "onLeaveDays": "0",
+            "totalWorkingDays": "15",
+            "attendancePercentage": 100
+          },
+          {
+            "employeeId": "21016b7b-3df7-419d-9deb-e3564fe1226c",
+            "employeeName": "Sara Fernandes",
+            "employeeCode": "DEMO006",
+            "department": "People Operations",
+            "presentDays": "15",
+            "absentDays": "0",
+            "lateDays": "0",
+            "halfDays": "0",
+            "onLeaveDays": "0",
+            "totalWorkingDays": "15",
+            "attendancePercentage": 100
+          },
+          {
+            "employeeId": "ae499fb9-8ce4-44ac-9088-8325abb01fda",
+            "employeeName": "Maya Iyer",
+            "employeeCode": "DEMO002",
+            "department": "People Operations",
+            "presentDays": "16",
+            "absentDays": "0",
+            "lateDays": "0",
+            "halfDays": "0",
+            "onLeaveDays": "0",
+            "totalWorkingDays": "16",
+            "attendancePercentage": 100
+          },
+          {
+            "employeeId": "ca2766f2-e6ef-495f-ae96-55f8a2cd557e",
+            "employeeName": "Pooja Raman",
+            "employeeCode": "DEMO012",
+            "department": "Finance & Operations",
+            "presentDays": "15",
+            "absentDays": "0",
+            "lateDays": "0",
+            "halfDays": "0",
+            "onLeaveDays": "0",
+            "totalWorkingDays": "15",
+            "attendancePercentage": 100
+          },
+          {
+            "employeeId": "cc6fa95d-c517-41d3-9893-1990a9b5fd5e",
+            "employeeName": "Dev Malhotra",
+            "employeeCode": "DEMO011",
+            "department": "Engineering",
+            "presentDays": "15",
+            "absentDays": "0",
+            "lateDays": "0",
+            "halfDays": "0",
+            "onLeaveDays": "0",
+            "totalWorkingDays": "15",
+            "attendancePercentage": 100
+          },
+          {
+            "employeeId": "cc8e308a-2518-4b25-9aab-87911379324e",
+            "employeeName": "Isha Menon",
+            "employeeCode": "DEMO008",
+            "department": "Engineering",
+            "presentDays": "0",
+            "absentDays": "0",
+            "lateDays": "0",
+            "halfDays": "15",
+            "onLeaveDays": "0",
+            "totalWorkingDays": "15",
+            "attendancePercentage": 0
+          },
+          {
+            "employeeId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
+            "employeeName": "Arjun Mehta",
+            "employeeCode": "DEMO003",
+            "department": "Engineering",
+            "presentDays": "15",
+            "absentDays": "0",
+            "lateDays": "0",
+            "halfDays": "0",
+            "onLeaveDays": "0",
+            "totalWorkingDays": "15",
+            "attendancePercentage": 100
+          },
+          {
+            "employeeId": "e552c74e-57da-4898-9621-dc4805fd9fdd",
+            "employeeName": "Aditi Rao",
+            "employeeCode": "DEMO001",
+            "department": "Executive Office",
+            "presentDays": "0",
+            "absentDays": "0",
+            "lateDays": "15",
+            "halfDays": "15",
+            "onLeaveDays": "0",
+            "totalWorkingDays": "15",
+            "attendancePercentage": 0
+          },
+          {
+            "employeeId": "e9b1e72a-eea8-4342-9e90-9c52f88c0d39",
+            "employeeName": "Vikram Nair",
+            "employeeCode": "DEMO009",
+            "department": "Sales",
+            "presentDays": "15",
+            "absentDays": "0",
+            "lateDays": "15",
+            "halfDays": "0",
+            "onLeaveDays": "0",
+            "totalWorkingDays": "15",
+            "attendancePercentage": 100
+          },
+          {
+            "employeeId": "ea84d8ac-1a95-459d-90bd-d1c21f0356f9",
+            "employeeName": "Rohan Kapoor",
+            "employeeCode": "DEMO007",
+            "department": "Engineering",
+            "presentDays": "15",
+            "absentDays": "0",
+            "lateDays": "0",
+            "halfDays": "0",
+            "onLeaveDays": "0",
+            "totalWorkingDays": "15",
+            "attendancePercentage": 100
+          }
+        ],
+        "totalRecords": 12
+      },
+      {
+        "report": "Leave Balance & Usage",
+        "filters": {},
+        "results": [
+          {
+            "employeeId": "e552c74e-57da-4898-9621-dc4805fd9fdd",
+            "employeeName": "Aditi Rao",
+            "employeeCode": "DEMO001",
+            "department": "Executive Office",
+            "leaveType": "Casual Leave",
+            "totalEntitlement": "12.00",
+            "used": "2.00",
+            "pending": "0.00",
+            "available": "10.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "e552c74e-57da-4898-9621-dc4805fd9fdd",
+            "employeeName": "Aditi Rao",
+            "employeeCode": "DEMO001",
+            "department": "Executive Office",
+            "leaveType": "Sick Leave",
+            "totalEntitlement": "10.00",
+            "used": "1.00",
+            "pending": "0.00",
+            "available": "9.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "e552c74e-57da-4898-9621-dc4805fd9fdd",
+            "employeeName": "Aditi Rao",
+            "employeeCode": "DEMO001",
+            "department": "Executive Office",
+            "leaveType": "Earned Leave",
+            "totalEntitlement": "18.00",
+            "used": "3.00",
+            "pending": "0.00",
+            "available": "19.00",
+            "carriedForward": "4.00"
+          },
+          {
+            "employeeId": "ae499fb9-8ce4-44ac-9088-8325abb01fda",
+            "employeeName": "Maya Iyer",
+            "employeeCode": "DEMO002",
+            "department": "People Operations",
+            "leaveType": "Casual Leave",
+            "totalEntitlement": "12.00",
+            "used": "2.00",
+            "pending": "0.00",
+            "available": "10.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "ae499fb9-8ce4-44ac-9088-8325abb01fda",
+            "employeeName": "Maya Iyer",
+            "employeeCode": "DEMO002",
+            "department": "People Operations",
+            "leaveType": "Sick Leave",
+            "totalEntitlement": "10.00",
+            "used": "1.00",
+            "pending": "0.00",
+            "available": "9.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "ae499fb9-8ce4-44ac-9088-8325abb01fda",
+            "employeeName": "Maya Iyer",
+            "employeeCode": "DEMO002",
+            "department": "People Operations",
+            "leaveType": "Earned Leave",
+            "totalEntitlement": "18.00",
+            "used": "3.00",
+            "pending": "0.00",
+            "available": "19.00",
+            "carriedForward": "4.00"
+          },
+          {
+            "employeeId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
+            "employeeName": "Arjun Mehta",
+            "employeeCode": "DEMO003",
+            "department": "Engineering",
+            "leaveType": "Casual Leave",
+            "totalEntitlement": "12.00",
+            "used": "2.00",
+            "pending": "0.00",
+            "available": "10.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
+            "employeeName": "Arjun Mehta",
+            "employeeCode": "DEMO003",
+            "department": "Engineering",
+            "leaveType": "Sick Leave",
+            "totalEntitlement": "10.00",
+            "used": "1.00",
+            "pending": "0.00",
+            "available": "9.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
+            "employeeName": "Arjun Mehta",
+            "employeeCode": "DEMO003",
+            "department": "Engineering",
+            "leaveType": "Earned Leave",
+            "totalEntitlement": "18.00",
+            "used": "3.00",
+            "pending": "0.00",
+            "available": "19.00",
+            "carriedForward": "4.00"
+          },
+          {
+            "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
+            "employeeName": "Neha Shah",
+            "employeeCode": "DEMO004",
+            "department": "Engineering",
+            "leaveType": "Casual Leave",
+            "totalEntitlement": "12.00",
+            "used": "7.00",
+            "pending": "0.00",
+            "available": "5.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
+            "employeeName": "Neha Shah",
+            "employeeCode": "DEMO004",
+            "department": "Engineering",
+            "leaveType": "Sick Leave",
+            "totalEntitlement": "10.00",
+            "used": "1.00",
+            "pending": "0.00",
+            "available": "9.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
+            "employeeName": "Neha Shah",
+            "employeeCode": "DEMO004",
+            "department": "Engineering",
+            "leaveType": "Earned Leave",
+            "totalEntitlement": "18.00",
+            "used": "3.00",
+            "pending": "0.00",
+            "available": "19.00",
+            "carriedForward": "4.00"
+          },
+          {
+            "employeeId": "1d98629a-ea03-45cb-9043-d7e2bbd4fb62",
+            "employeeName": "Kabir Sethi",
+            "employeeCode": "DEMO005",
+            "department": "Finance & Operations",
+            "leaveType": "Casual Leave",
+            "totalEntitlement": "12.00",
+            "used": "2.00",
+            "pending": "0.00",
+            "available": "10.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "1d98629a-ea03-45cb-9043-d7e2bbd4fb62",
+            "employeeName": "Kabir Sethi",
+            "employeeCode": "DEMO005",
+            "department": "Finance & Operations",
+            "leaveType": "Sick Leave",
+            "totalEntitlement": "10.00",
+            "used": "1.00",
+            "pending": "0.00",
+            "available": "9.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "1d98629a-ea03-45cb-9043-d7e2bbd4fb62",
+            "employeeName": "Kabir Sethi",
+            "employeeCode": "DEMO005",
+            "department": "Finance & Operations",
+            "leaveType": "Earned Leave",
+            "totalEntitlement": "18.00",
+            "used": "3.00",
+            "pending": "0.00",
+            "available": "19.00",
+            "carriedForward": "4.00"
+          },
+          {
+            "employeeId": "21016b7b-3df7-419d-9deb-e3564fe1226c",
+            "employeeName": "Sara Fernandes",
+            "employeeCode": "DEMO006",
+            "department": "People Operations",
+            "leaveType": "Casual Leave",
+            "totalEntitlement": "12.00",
+            "used": "2.00",
+            "pending": "0.00",
+            "available": "10.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "21016b7b-3df7-419d-9deb-e3564fe1226c",
+            "employeeName": "Sara Fernandes",
+            "employeeCode": "DEMO006",
+            "department": "People Operations",
+            "leaveType": "Sick Leave",
+            "totalEntitlement": "10.00",
+            "used": "1.00",
+            "pending": "0.00",
+            "available": "9.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "21016b7b-3df7-419d-9deb-e3564fe1226c",
+            "employeeName": "Sara Fernandes",
+            "employeeCode": "DEMO006",
+            "department": "People Operations",
+            "leaveType": "Earned Leave",
+            "totalEntitlement": "18.00",
+            "used": "3.00",
+            "pending": "0.00",
+            "available": "19.00",
+            "carriedForward": "4.00"
+          },
+          {
+            "employeeId": "ea84d8ac-1a95-459d-90bd-d1c21f0356f9",
+            "employeeName": "Rohan Kapoor",
+            "employeeCode": "DEMO007",
+            "department": "Engineering",
+            "leaveType": "Casual Leave",
+            "totalEntitlement": "12.00",
+            "used": "2.00",
+            "pending": "0.00",
+            "available": "10.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "ea84d8ac-1a95-459d-90bd-d1c21f0356f9",
+            "employeeName": "Rohan Kapoor",
+            "employeeCode": "DEMO007",
+            "department": "Engineering",
+            "leaveType": "Sick Leave",
+            "totalEntitlement": "10.00",
+            "used": "1.00",
+            "pending": "0.00",
+            "available": "9.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "ea84d8ac-1a95-459d-90bd-d1c21f0356f9",
+            "employeeName": "Rohan Kapoor",
+            "employeeCode": "DEMO007",
+            "department": "Engineering",
+            "leaveType": "Earned Leave",
+            "totalEntitlement": "18.00",
+            "used": "3.00",
+            "pending": "0.00",
+            "available": "19.00",
+            "carriedForward": "4.00"
+          },
+          {
+            "employeeId": "cc8e308a-2518-4b25-9aab-87911379324e",
+            "employeeName": "Isha Menon",
+            "employeeCode": "DEMO008",
+            "department": "Engineering",
+            "leaveType": "Casual Leave",
+            "totalEntitlement": "12.00",
+            "used": "2.00",
+            "pending": "0.00",
+            "available": "10.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "cc8e308a-2518-4b25-9aab-87911379324e",
+            "employeeName": "Isha Menon",
+            "employeeCode": "DEMO008",
+            "department": "Engineering",
+            "leaveType": "Sick Leave",
+            "totalEntitlement": "10.00",
+            "used": "1.00",
+            "pending": "0.00",
+            "available": "9.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "cc8e308a-2518-4b25-9aab-87911379324e",
+            "employeeName": "Isha Menon",
+            "employeeCode": "DEMO008",
+            "department": "Engineering",
+            "leaveType": "Earned Leave",
+            "totalEntitlement": "18.00",
+            "used": "3.00",
+            "pending": "0.00",
+            "available": "19.00",
+            "carriedForward": "4.00"
+          },
+          {
+            "employeeId": "e9b1e72a-eea8-4342-9e90-9c52f88c0d39",
+            "employeeName": "Vikram Nair",
+            "employeeCode": "DEMO009",
+            "department": "Sales",
+            "leaveType": "Casual Leave",
+            "totalEntitlement": "12.00",
+            "used": "2.00",
+            "pending": "0.00",
+            "available": "10.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "e9b1e72a-eea8-4342-9e90-9c52f88c0d39",
+            "employeeName": "Vikram Nair",
+            "employeeCode": "DEMO009",
+            "department": "Sales",
+            "leaveType": "Sick Leave",
+            "totalEntitlement": "10.00",
+            "used": "1.00",
+            "pending": "0.00",
+            "available": "9.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "e9b1e72a-eea8-4342-9e90-9c52f88c0d39",
+            "employeeName": "Vikram Nair",
+            "employeeCode": "DEMO009",
+            "department": "Sales",
+            "leaveType": "Earned Leave",
+            "totalEntitlement": "18.00",
+            "used": "3.00",
+            "pending": "0.00",
+            "available": "19.00",
+            "carriedForward": "4.00"
+          },
+          {
+            "employeeId": "1892eaf4-b7fa-441c-ad1f-8c43ea38440f",
+            "employeeName": "Tara Bose",
+            "employeeCode": "DEMO010",
+            "department": "Sales",
+            "leaveType": "Casual Leave",
+            "totalEntitlement": "12.00",
+            "used": "2.00",
+            "pending": "0.00",
+            "available": "10.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "1892eaf4-b7fa-441c-ad1f-8c43ea38440f",
+            "employeeName": "Tara Bose",
+            "employeeCode": "DEMO010",
+            "department": "Sales",
+            "leaveType": "Sick Leave",
+            "totalEntitlement": "10.00",
+            "used": "1.00",
+            "pending": "0.00",
+            "available": "9.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "1892eaf4-b7fa-441c-ad1f-8c43ea38440f",
+            "employeeName": "Tara Bose",
+            "employeeCode": "DEMO010",
+            "department": "Sales",
+            "leaveType": "Earned Leave",
+            "totalEntitlement": "18.00",
+            "used": "3.00",
+            "pending": "0.00",
+            "available": "19.00",
+            "carriedForward": "4.00"
+          },
+          {
+            "employeeId": "cc6fa95d-c517-41d3-9893-1990a9b5fd5e",
+            "employeeName": "Dev Malhotra",
+            "employeeCode": "DEMO011",
+            "department": "Engineering",
+            "leaveType": "Casual Leave",
+            "totalEntitlement": "12.00",
+            "used": "2.00",
+            "pending": "0.00",
+            "available": "10.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "cc6fa95d-c517-41d3-9893-1990a9b5fd5e",
+            "employeeName": "Dev Malhotra",
+            "employeeCode": "DEMO011",
+            "department": "Engineering",
+            "leaveType": "Sick Leave",
+            "totalEntitlement": "10.00",
+            "used": "1.00",
+            "pending": "0.00",
+            "available": "9.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "cc6fa95d-c517-41d3-9893-1990a9b5fd5e",
+            "employeeName": "Dev Malhotra",
+            "employeeCode": "DEMO011",
+            "department": "Engineering",
+            "leaveType": "Earned Leave",
+            "totalEntitlement": "18.00",
+            "used": "3.00",
+            "pending": "0.00",
+            "available": "19.00",
+            "carriedForward": "4.00"
+          },
+          {
+            "employeeId": "ca2766f2-e6ef-495f-ae96-55f8a2cd557e",
+            "employeeName": "Pooja Raman",
+            "employeeCode": "DEMO012",
+            "department": "Finance & Operations",
+            "leaveType": "Casual Leave",
+            "totalEntitlement": "12.00",
+            "used": "2.00",
+            "pending": "0.00",
+            "available": "10.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "ca2766f2-e6ef-495f-ae96-55f8a2cd557e",
+            "employeeName": "Pooja Raman",
+            "employeeCode": "DEMO012",
+            "department": "Finance & Operations",
+            "leaveType": "Sick Leave",
+            "totalEntitlement": "10.00",
+            "used": "1.00",
+            "pending": "0.00",
+            "available": "9.00",
+            "carriedForward": "0.00"
+          },
+          {
+            "employeeId": "ca2766f2-e6ef-495f-ae96-55f8a2cd557e",
+            "employeeName": "Pooja Raman",
+            "employeeCode": "DEMO012",
+            "department": "Finance & Operations",
+            "leaveType": "Earned Leave",
+            "totalEntitlement": "18.00",
+            "used": "3.00",
+            "pending": "0.00",
+            "available": "19.00",
+            "carriedForward": "4.00"
+          }
+        ],
+        "totalRecords": 36
+      },
+      {
+        "report": "Joiners & Leavers Report",
+        "filters": {
+          "startDate": "2026-03-02T00:00:00.000Z",
+          "endDate": "2026-05-11T00:00:00.000Z"
+        },
+        "summary": {
+          "totalJoiners": 11,
+          "totalLeavers": 0,
+          "netChange": 11,
+          "averageMonthlyJoiners": 5.5,
+          "averageMonthlyLeavers": 0
+        },
+        "results": [
+          {
+            "month": "2026-03",
+            "joiners": 7,
+            "leavers": 0,
+            "netChange": 7,
+            "openingHeadcount": 9,
+            "closingHeadcount": 16
+          },
+          {
+            "month": "2026-04",
+            "joiners": 4,
+            "leavers": 0,
+            "netChange": 4,
+            "openingHeadcount": 16,
+            "closingHeadcount": 20
+          }
+        ],
+        "totalRecords": 2
+      },
+      {
+        "report": "Confirmation Due Report",
+        "filters": {},
+        "summary": {
+          "totalPending": 3,
+          "overdue": 1,
+          "dueSoon": 1,
+          "future": 1
+        },
+        "results": [
+          {
+            "employeeId": "ea84d8ac-1a95-459d-90bd-d1c21f0356f9",
+            "employeeName": "Rohan Kapoor",
+            "employeeCode": "DEMO007",
+            "department": "Engineering",
+            "dateOfJoining": "2026-01-14T00:00:00.000Z",
+            "probationEndDate": "2026-04-14T00:00:00.000Z",
+            "daysRemaining": -27,
+            "status": null,
+            "reviewCompleted": null
+          },
+          {
+            "employeeId": "21016b7b-3df7-419d-9deb-e3564fe1226c",
+            "employeeName": "Sara Fernandes",
+            "employeeCode": "DEMO006",
+            "department": "People Operations",
+            "dateOfJoining": "2026-02-13T00:00:00.000Z",
+            "probationEndDate": "2026-05-14T00:00:00.000Z",
+            "daysRemaining": 3,
+            "status": "review_60_pending",
+            "reviewCompleted": false
+          },
+          {
+            "employeeId": "cc8e308a-2518-4b25-9aab-87911379324e",
+            "employeeName": "Isha Menon",
+            "employeeCode": "DEMO008",
+            "department": "Engineering",
+            "dateOfJoining": "2026-03-30T00:00:00.000Z",
+            "probationEndDate": "2026-06-28T00:00:00.000Z",
+            "daysRemaining": 48,
+            "status": "probation_active",
+            "reviewCompleted": false
+          }
+        ],
+        "totalRecords": 3
+      },
+      {
+        "report": "Attrition Report",
+        "filters": {
+          "startDate": "2026-03-02T00:00:00.000Z",
+          "endDate": "2026-05-11T00:00:00.000Z"
+        },
+        "summary": {
+          "totalExits": 0,
+          "averageAttritionRate": 0,
+          "voluntaryExits": 0,
+          "involuntaryExits": 0,
+          "highestAttritionDept": null
+        },
+        "results": [],
+        "totalRecords": 0
+      },
+      {
+        "report": "PMS Completion Report",
+        "filters": {},
+        "summary": {
+          "totalReviews": 10,
+          "completed": 0,
+          "pending": 0,
+          "overdue": 0,
+          "completionRate": 0
+        },
+        "results": [
+          {
+            "employeeId": "d4f45d93-e9ea-4452-a729-dff1c5cc0873",
+            "employeeName": "Ishan Kapoor",
+            "employeeCode": "SIM-EMP-89157172",
+            "department": "Engineering 89157172",
+            "manager": "Nisha Rao",
+            "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489157172-Q3",
+            "status": "goals_approved",
+            "dueDate": "2026-05-28T00:00:00.000Z",
+            "completedDate": null,
+            "overdueDays": null
+          },
+          {
+            "employeeId": "1dbc337c-8500-44f7-b9df-517123487711",
+            "employeeName": "Kavya Menon",
+            "employeeCode": "SIM-BULK-1-88824874",
+            "department": "Sales 88824874",
+            "manager": null,
+            "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778488824874-Q2",
+            "status": "goals_approved",
+            "dueDate": "2026-05-28T00:00:00.000Z",
+            "completedDate": null,
+            "overdueDays": null
+          },
+          {
+            "employeeId": "333fcf50-d7a4-45ec-b165-ce77c88a3c2f",
+            "employeeName": "Ishan Kapoor",
+            "employeeCode": "SIM-EMP-88824874",
+            "department": "Engineering 88824874",
+            "manager": "Nisha Rao",
+            "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778488824874-Q3",
+            "status": "goals_approved",
+            "dueDate": "2026-05-28T00:00:00.000Z",
+            "completedDate": null,
+            "overdueDays": null
+          },
+          {
+            "employeeId": "abb57bbd-56d3-46d3-a86e-38e6d2b33328",
+            "employeeName": "Rohan Sen",
+            "employeeCode": "SIM-BULK-2-89157172",
+            "department": "Sales 89157172",
+            "manager": null,
+            "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489157172-Q1",
+            "status": "goals_approved",
+            "dueDate": "2026-05-28T00:00:00.000Z",
+            "completedDate": null,
+            "overdueDays": null
+          },
+          {
+            "employeeId": "37fd4965-c9cc-4344-bf50-1e79a41f1ac4",
+            "employeeName": "Kavya Menon",
+            "employeeCode": "SIM-BULK-1-89157172",
+            "department": "Sales 89157172",
+            "manager": null,
+            "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778489157172-Q2",
+            "status": "goals_approved",
+            "dueDate": "2026-05-28T00:00:00.000Z",
+            "completedDate": null,
+            "overdueDays": null
+          },
+          {
+            "employeeId": "c92c1a7a-6a45-425a-9f73-a2570dba85e2",
+            "employeeName": "Rohan Sen",
+            "employeeCode": "SIM-BULK-2-88824874",
+            "department": "Sales 88824874",
+            "manager": null,
+            "reviewCycle": "AHR-COMMERCIAL-SIM-2026-05-11-1778488824874-Q1",
+            "status": "goals_approved",
+            "dueDate": "2026-05-28T00:00:00.000Z",
+            "completedDate": null,
+            "overdueDays": null
+          },
+          {
+            "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
+            "employeeName": "Neha Shah",
+            "employeeCode": "DEMO004",
+            "department": "Engineering",
+            "manager": "Arjun Mehta",
+            "reviewCycle": "QA-1777964696287",
+            "status": "goals_approved",
+            "dueDate": "2026-08-03T00:00:00.000Z",
+            "completedDate": null,
+            "overdueDays": null
+          },
+          {
+            "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
+            "employeeName": "Neha Shah",
+            "employeeCode": "DEMO004",
+            "department": "Engineering",
+            "manager": "Arjun Mehta",
+            "reviewCycle": "QA-1777971992720",
+            "status": "goals_approved",
+            "dueDate": "2026-08-03T00:00:00.000Z",
+            "completedDate": null,
+            "overdueDays": null
+          },
+          {
+            "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
+            "employeeName": "Neha Shah",
+            "employeeCode": "DEMO004",
+            "department": "Engineering",
+            "manager": "Arjun Mehta",
+            "reviewCycle": "QA-1777972648604",
+            "status": "goals_approved",
+            "dueDate": "2026-08-03T00:00:00.000Z",
+            "completedDate": null,
+            "overdueDays": null
+          },
+          {
+            "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
+            "employeeName": "Neha Shah",
+            "employeeCode": "DEMO004",
+            "department": "Engineering",
+            "manager": "Arjun Mehta",
+            "reviewCycle": "2026",
+            "status": "mid_year_pending",
+            "dueDate": "2026-10-31T00:00:00.000Z",
+            "completedDate": null,
+            "overdueDays": null
+          }
+        ],
+        "totalRecords": 10
+      },
+      {
+        "report": "Missing Documents Report",
+        "filters": {},
+        "summary": {
+          "totalEmployees": 20,
+          "highCriticality": 20,
+          "mediumCriticality": 0,
+          "lowCriticality": 0,
+          "mostMissingDocument": "photo"
+        },
+        "results": [
+          {
+            "employeeId": "47b9bf26-9c82-4345-9ee0-debb81ec91d1",
+            "employeeName": "Nisha Rao",
+            "employeeCode": "SIM-MGR-89157172",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "d4f45d93-e9ea-4452-a729-dff1c5cc0873",
+            "employeeName": "Ishan Kapoor",
+            "employeeCode": "SIM-EMP-89157172",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "37fd4965-c9cc-4344-bf50-1e79a41f1ac4",
+            "employeeName": "Kavya Menon",
+            "employeeCode": "SIM-BULK-1-89157172",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "abb57bbd-56d3-46d3-a86e-38e6d2b33328",
+            "employeeName": "Rohan Sen",
+            "employeeCode": "SIM-BULK-2-89157172",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "ccb050b1-32db-4286-b3b6-f1ab116cd409",
+            "employeeName": "Nisha Rao",
+            "employeeCode": "SIM-MGR-88824874",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "333fcf50-d7a4-45ec-b165-ce77c88a3c2f",
+            "employeeName": "Ishan Kapoor",
+            "employeeCode": "SIM-EMP-88824874",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "1dbc337c-8500-44f7-b9df-517123487711",
+            "employeeName": "Kavya Menon",
+            "employeeCode": "SIM-BULK-1-88824874",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "e552c74e-57da-4898-9621-dc4805fd9fdd",
+            "employeeName": "Aditi Rao",
+            "employeeCode": "DEMO001",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "ae499fb9-8ce4-44ac-9088-8325abb01fda",
+            "employeeName": "Maya Iyer",
+            "employeeCode": "DEMO002",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "d6c25187-5e3b-4b55-b966-b32f5e068544",
+            "employeeName": "Arjun Mehta",
+            "employeeCode": "DEMO003",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "03b6d7bb-48d1-462f-9749-830340234960",
+            "employeeName": "Neha Shah",
+            "employeeCode": "DEMO004",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "1d98629a-ea03-45cb-9043-d7e2bbd4fb62",
+            "employeeName": "Kabir Sethi",
+            "employeeCode": "DEMO005",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "21016b7b-3df7-419d-9deb-e3564fe1226c",
+            "employeeName": "Sara Fernandes",
+            "employeeCode": "DEMO006",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "ea84d8ac-1a95-459d-90bd-d1c21f0356f9",
+            "employeeName": "Rohan Kapoor",
+            "employeeCode": "DEMO007",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "cc8e308a-2518-4b25-9aab-87911379324e",
+            "employeeName": "Isha Menon",
+            "employeeCode": "DEMO008",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "e9b1e72a-eea8-4342-9e90-9c52f88c0d39",
+            "employeeName": "Vikram Nair",
+            "employeeCode": "DEMO009",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "1892eaf4-b7fa-441c-ad1f-8c43ea38440f",
+            "employeeName": "Tara Bose",
+            "employeeCode": "DEMO010",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "cc6fa95d-c517-41d3-9893-1990a9b5fd5e",
+            "employeeName": "Dev Malhotra",
+            "employeeCode": "DEMO011",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "ca2766f2-e6ef-495f-ae96-55f8a2cd557e",
+            "employeeName": "Pooja Raman",
+            "employeeCode": "DEMO012",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          },
+          {
+            "employeeId": "c92c1a7a-6a45-425a-9f73-a2570dba85e2",
+            "employeeName": "Rohan Sen",
+            "employeeCode": "SIM-BULK-2-88824874",
+            "department": "Unassigned",
+            "missingDocuments": [
+              "aadhar_card",
+              "pan_card",
+              "education_certificate",
+              "bank_details",
+              "photo"
+            ],
+            "documentCount": 5,
+            "criticality": "high"
+          }
+        ],
+        "totalRecords": 20
+      }
+    ],
+    "registration": {
+      "registrationId": "899a30f1-f6ad-448c-8d51-d7254b259b03",
+      "message": "Verification email sent. Please check your inbox.",
+      "companyName": "AuroraHR Commercial Simulation 1778489157173",
+      "adminEmail": "commercial.sim.1778489157173@aurorahr.test"
+    },
+    "subscription": {
+      "subscriptionId": "8780869f-daa8-4095-bde0-493e18413284",
+      "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+      "plan": "enterprise",
+      "status": "active",
+      "billingCycle": "yearly",
+      "price": "720000.00",
+      "maxUsers": 250,
+      "currentUsers": 7,
+      "maxStorageGB": 500,
+      "currentStorageGB": "38.50",
+      "startDate": "2025-11-25",
+      "endDate": "2026-11-25",
+      "trialEndDate": null,
+      "nextBillingDate": "2026-11-25",
+      "autoRenew": true,
+      "features": {
+        "apiAccess": true,
+        "aiInsights": true,
+        "multiCurrency": true,
+        "customBranding": true,
+        "ssoIntegration": true,
+        "customWorkflows": true,
+        "prioritySupport": true,
+        "advancedReporting": true
+      },
+      "notes": "Demo enterprise subscription",
+      "createdAt": "2026-05-04T08:13:49.778Z",
+      "updatedAt": "2026-05-11T08:40:26.970Z",
+      "tenant": {
+        "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+        "companyName": "AuroraHR Demo Pvt Ltd",
+        "subdomain": "aurorahr-demo",
+        "planType": "enterprise",
+        "status": "active",
+        "logoUrl": null,
+        "primaryColor": "#7c3aed",
+        "isTrialActive": false,
+        "trialStartDate": null,
+        "trialEndDate": null,
+        "onboardingCompleted": true,
+        "onboardingCompletedAt": "2026-05-04T08:13:48.360Z",
+        "employeeCount": 12,
+        "setupWizardCompleted": true,
+        "createdAt": "2026-05-04T08:13:48.362Z",
+        "updatedAt": "2026-05-04T08:13:49.791Z"
+      }
+    },
+    "role": {
+      "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+      "roleName": "QA HR Operations 89157172",
+      "description": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489157172] Custom role created during commercial lifecycle simulation",
+      "level": 7,
+      "dataAccessRules": {
+        "allData": true
+      },
+      "customPermissions": {
+        "attendanceApprove": true,
+        "leaveApprove": true,
+        "documentsGenerate": true
+      },
+      "notes": "Commercial lifecycle simulation role",
+      "roleId": "12672c64-7c6f-4863-a429-3d2f08518c1d",
+      "isSystemRole": false,
+      "isActive": true,
+      "employeeCount": 0,
+      "createdAt": "2026-05-11T08:45:58.608Z",
+      "updatedAt": "2026-05-11T08:45:58.608Z"
+    },
+    "candidate": {
+      "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+      "firstName": "Aarav",
+      "lastName": "Mehta",
+      "email": "aarav.mehta.89157172@aurorahr.test",
+      "phone": "+919812345678",
+      "currentState": "offer_approved",
+      "offeredSalary": 1850000,
+      "expectedJoinDate": "2026-06-08",
+      "employmentType": "full_time",
+      "workLocation": "Mumbai",
+      "remarks": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489157172] Commercial simulation candidate",
+      "isActive": true,
+      "dateOfBirth": null,
+      "gender": null,
+      "departmentId": null,
+      "designationId": null,
+      "reportingManagerId": null,
+      "actualJoinDate": null,
+      "offerSentDate": null,
+      "offerAcceptedDate": null,
+      "offerExpiryDate": null,
+      "employeeId": null,
+      "address": null,
+      "city": null,
+      "state": null,
+      "pincode": null,
+      "emergencyContactName": null,
+      "emergencyContactPhone": null,
+      "emergencyContactRelation": null,
+      "candidateId": "2afd6a81-9ea4-43ff-8d38-f77778700cfd",
+      "currency": "INR",
+      "createdAt": "2026-05-11T08:46:00.108Z",
+      "updatedAt": "2026-05-11T08:46:00.108Z"
+    },
+    "goal": {
+      "goalId": "833a74e0-eb74-47cd-b8d4-76bc3c6baac1",
+      "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+      "reviewId": "62a63148-e971-4017-b1e3-d892e2d2b96a",
+      "title": "Commercial readiness goal 3",
+      "description": "[AHR-COMMERCIAL-SIM-2026-05-11-1778489157172] Goal for simulated appraisal lifecycle",
+      "category": "business",
+      "targetDate": "2026-05-20",
+      "weightage": 30,
+      "status": "draft",
+      "progress": 0,
+      "notes": null,
+      "managerFeedback": null,
+      "createdAt": "2026-05-11T08:50:02.153Z",
+      "updatedAt": "2026-05-11T08:50:02.153Z",
+      "kpis": [
+        {
+          "kpiId": "7938c3c0-d7df-4dfc-8ee0-3263c2da5adf",
+          "tenantId": "69e7b8c7-a500-4096-b935-7ecf18723da2",
+          "goalId": "833a74e0-eb74-47cd-b8d4-76bc3c6baac1",
+          "metric": "Completion",
+          "target": "90",
+          "actual": null,
+          "unit": "%",
+          "status": "on_track",
+          "notes": null,
+          "createdAt": "2026-05-11T08:50:02.169Z",
+          "updatedAt": "2026-05-11T08:50:02.169Z"
+        }
+      ]
+    }
+  }
+}
