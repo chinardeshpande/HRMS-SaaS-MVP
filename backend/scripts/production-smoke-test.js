@@ -65,7 +65,7 @@ async function createSmokeUser() {
       "createdAt",
       "updatedAt"
     ) values ($1, $2, $3, $4, $5, $6, true, now(), now())`,
-    [tenantId, email.toLowerCase(), passwordHash, 'Codex Smoke Test', 'hr_admin', employeeId]
+    [tenantId, email.toLowerCase(), passwordHash, 'Codex Smoke Test', 'system_admin', employeeId]
   );
 }
 
