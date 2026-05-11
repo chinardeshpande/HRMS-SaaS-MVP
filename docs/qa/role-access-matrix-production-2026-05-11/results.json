@@ -1,0 +1,172 @@
+{
+  "runId": "ROLE-ACCESS-2026-05-11-1778505887457",
+  "target": "https://aurorahr.in",
+  "api": "https://aurorahr.in/api/v1",
+  "generatedAt": "2026-05-11T13:25:16.116Z",
+  "summary": {
+    "passed": 20,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "ALLOW_EMPLOYEE_DASHBOARD",
+      "title": "employee can access /dashboard",
+      "persona": "employee",
+      "status": "passed",
+      "evidence": "docs/qa/role-access-matrix-production-2026-05-11/screenshots/employee-dashboard.png",
+      "notes": ""
+    },
+    {
+      "id": "ALLOW_EMPLOYEE_ATTENDANCE",
+      "title": "employee can access /attendance",
+      "persona": "employee",
+      "status": "passed",
+      "evidence": "docs/qa/role-access-matrix-production-2026-05-11/screenshots/employee-attendance.png",
+      "notes": ""
+    },
+    {
+      "id": "ALLOW_EMPLOYEE_LEAVE",
+      "title": "employee can access /leave",
+      "persona": "employee",
+      "status": "passed",
+      "evidence": "docs/qa/role-access-matrix-production-2026-05-11/screenshots/employee-leave.png",
+      "notes": ""
+    },
+    {
+      "id": "ALLOW_EMPLOYEE_MY_DOCUMENTS",
+      "title": "employee can access /my-hr-documents",
+      "persona": "employee",
+      "status": "passed",
+      "evidence": "docs/qa/role-access-matrix-production-2026-05-11/screenshots/employee-my_documents.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_EMPLOYEE_SETTINGS",
+      "title": "employee is denied /settings",
+      "persona": "employee",
+      "status": "passed",
+      "evidence": "docs/qa/role-access-matrix-production-2026-05-11/screenshots/employee-denied-settings.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_EMPLOYEE_EMPLOYEES",
+      "title": "employee is denied /employees",
+      "persona": "employee",
+      "status": "passed",
+      "evidence": "docs/qa/role-access-matrix-production-2026-05-11/screenshots/employee-denied-employees.png",
+      "notes": ""
+    },
+    {
+      "id": "NAV_EMPLOYEE_EXCLUDES",
+      "title": "employee navigation excludes restricted modules",
+      "persona": "employee",
+      "status": "passed",
+      "evidence": "Settings, Employees, Reports, Onboarding, Master Data",
+      "notes": ""
+    },
+    {
+      "id": "ALLOW_MANAGER_EMPLOYEES",
+      "title": "manager can access /employees",
+      "persona": "manager",
+      "status": "passed",
+      "evidence": "docs/qa/role-access-matrix-production-2026-05-11/screenshots/manager-employees.png",
+      "notes": ""
+    },
+    {
+      "id": "ALLOW_MANAGER_PERFORMANCE",
+      "title": "manager can access /performance",
+      "persona": "manager",
+      "status": "passed",
+      "evidence": "docs/qa/role-access-matrix-production-2026-05-11/screenshots/manager-performance.png",
+      "notes": ""
+    },
+    {
+      "id": "ALLOW_MANAGER_EXIT",
+      "title": "manager can access /exit",
+      "persona": "manager",
+      "status": "passed",
+      "evidence": "docs/qa/role-access-matrix-production-2026-05-11/screenshots/manager-exit.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_MANAGER_SETTINGS",
+      "title": "manager is denied /settings",
+      "persona": "manager",
+      "status": "passed",
+      "evidence": "docs/qa/role-access-matrix-production-2026-05-11/screenshots/manager-denied-settings.png",
+      "notes": ""
+    },
+    {
+      "id": "NAV_MANAGER_EXCLUDES",
+      "title": "manager navigation excludes restricted modules",
+      "persona": "manager",
+      "status": "passed",
+      "evidence": "Settings, Reports, Onboarding, Master Data",
+      "notes": ""
+    },
+    {
+      "id": "ALLOW_HR_SETTINGS",
+      "title": "hr can access /settings",
+      "persona": "hr",
+      "status": "passed",
+      "evidence": "docs/qa/role-access-matrix-production-2026-05-11/screenshots/hr-settings.png",
+      "notes": ""
+    },
+    {
+      "id": "ALLOW_HR_REPORTS",
+      "title": "hr can access /reports",
+      "persona": "hr",
+      "status": "passed",
+      "evidence": "docs/qa/role-access-matrix-production-2026-05-11/screenshots/hr-reports.png",
+      "notes": ""
+    },
+    {
+      "id": "ALLOW_HR_ONBOARDING",
+      "title": "hr can access /onboarding",
+      "persona": "hr",
+      "status": "passed",
+      "evidence": "docs/qa/role-access-matrix-production-2026-05-11/screenshots/hr-onboarding.png",
+      "notes": ""
+    },
+    {
+      "id": "API_TICKETS_UNAUTH_DENIED",
+      "title": "Unauthenticated ticket list is denied",
+      "persona": "public",
+      "status": "passed",
+      "evidence": "status=401",
+      "notes": ""
+    },
+    {
+      "id": "API_TICKETS_EMPLOYEE_ALL_DENIED",
+      "title": "Employee cannot list all tenant tickets",
+      "persona": "employee",
+      "status": "passed",
+      "evidence": "status=403",
+      "notes": ""
+    },
+    {
+      "id": "API_TICKETS_EMPLOYEE_MY_ALLOWED",
+      "title": "Employee can list own tickets",
+      "persona": "employee",
+      "status": "passed",
+      "evidence": "status=200",
+      "notes": ""
+    },
+    {
+      "id": "API_TICKETS_HR_ALL_ALLOWED",
+      "title": "HR can list tenant tickets",
+      "persona": "hr",
+      "status": "passed",
+      "evidence": "status=200",
+      "notes": ""
+    },
+    {
+      "id": "API_SETTINGS_HR_SUBSCRIPTION_DENIED",
+      "title": "HR admin cannot access owner subscription settings",
+      "persona": "hr",
+      "status": "passed",
+      "evidence": "status=403",
+      "notes": ""
+    }
+  ]
+}
