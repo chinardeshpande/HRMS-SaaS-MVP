@@ -28,10 +28,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [tokens, setTokens] = useState<AuthTokens | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const decodeTokenPayload = (token?: string): Partial<User> | null => {
+    if (!token) return null;
+
+    try {
+      const payload = token.split('.')[1];
+      if (!payload) return null;
+
+      const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const paddedPayload = normalizedPayload.padEnd(normalizedPayload.length + ((4 - normalizedPayload.length % 4) % 4), '=');
+      return JSON.parse(window.atob(paddedPayload));
+    } catch (error) {
+      console.error('Error decoding auth token:', error);
+      return null;
+    }
+  };
+
+  const userFromToken = (userData: User, tokenData: AuthTokens): User | null => {
+    const tokenPayload = decodeTokenPayload(tokenData.token);
+    if (!tokenPayload?.userId || !tokenPayload?.tenantId || !tokenPayload?.role) {
+      return null;
+    }
+
+    return {
+      ...userData,
+      userId: String(tokenPayload.userId),
+      tenantId: String(tokenPayload.tenantId),
+      email: String(tokenPayload.email || userData.email),
+      role: tokenPayload.role as User['role'],
+      employeeId: tokenPayload.employeeId ? String(tokenPayload.employeeId) : userData.employeeId,
+    };
+  };
+
   const persistSession = (userData: User, tokenData: AuthTokens): void => {
-    setUser(userData);
+    const trustedUser = userFromToken(userData, tokenData) || userData;
+    setUser(trustedUser);
     setTokens(tokenData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('user', JSON.stringify(trustedUser));
     localStorage.setItem('tokens', JSON.stringify(tokenData));
   };
 
@@ -43,8 +76,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const storedTokens = localStorage.getItem('tokens');
 
         if (storedUser && storedTokens) {
-          setUser(JSON.parse(storedUser));
-          setTokens(JSON.parse(storedTokens));
+          const parsedUser = JSON.parse(storedUser);
+          const parsedTokens = JSON.parse(storedTokens);
+          const trustedUser = userFromToken(parsedUser, parsedTokens);
+
+          if (!trustedUser) {
+            throw new Error('Stored session token is invalid');
+          }
+
+          setUser(trustedUser);
+          setTokens(parsedTokens);
+          localStorage.setItem('user', JSON.stringify(trustedUser));
         }
       } catch (error) {
         console.error('Error loading user from localStorage:', error);

@@ -1,0 +1,788 @@
+{
+  "runId": "ROLE-PERSONA-HARDENING-2026-05-11-1778513478852",
+  "target": "http://127.0.0.1:5180",
+  "api": "https://aurorahr.in/api/v1",
+  "generatedAt": "2026-05-11T15:32:34.056Z",
+  "summary": {
+    "passed": 54,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "AUTH_ADMIN",
+      "useCase": "Demo login succeeds for Owner / System Admin",
+      "role": "admin",
+      "expected": "Authenticated demo session with user and token",
+      "actual": "demo.admin@aurorahr.in",
+      "status": "passed",
+      "evidence": "POST /demo/login",
+      "notes": ""
+    },
+    {
+      "id": "AUTH_HR",
+      "useCase": "Demo login succeeds for HR Operations",
+      "role": "hr",
+      "expected": "Authenticated demo session with user and token",
+      "actual": "demo.hr@aurorahr.in",
+      "status": "passed",
+      "evidence": "POST /demo/login",
+      "notes": ""
+    },
+    {
+      "id": "AUTH_MANAGER",
+      "useCase": "Demo login succeeds for Manager / Approver",
+      "role": "manager",
+      "expected": "Authenticated demo session with user and token",
+      "actual": "demo.manager@aurorahr.in",
+      "status": "passed",
+      "evidence": "POST /demo/login",
+      "notes": ""
+    },
+    {
+      "id": "AUTH_EMPLOYEE",
+      "useCase": "Demo login succeeds for Individual Employee",
+      "role": "employee",
+      "expected": "Authenticated demo session with user and token",
+      "actual": "demo.employee@aurorahr.in",
+      "status": "passed",
+      "evidence": "POST /demo/login",
+      "notes": ""
+    },
+    {
+      "id": "API_PUBLIC_DASHBOARD_DENIED",
+      "useCase": "Public request cannot read dashboard stats",
+      "role": "public",
+      "expected": "HTTP 401",
+      "actual": "HTTP 401",
+      "status": "passed",
+      "evidence": "/dashboard/stats status=401",
+      "notes": ""
+    },
+    {
+      "id": "API_EMPLOYEE_DASHBOARD_ALLOWED",
+      "useCase": "Employee can read own dashboard stats",
+      "role": "employee",
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "status": "passed",
+      "evidence": "/dashboard/stats status=200",
+      "notes": ""
+    },
+    {
+      "id": "API_MANAGER_DASHBOARD_ALLOWED",
+      "useCase": "Manager can read team dashboard stats",
+      "role": "manager",
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "status": "passed",
+      "evidence": "/dashboard/stats status=200",
+      "notes": ""
+    },
+    {
+      "id": "API_HR_DASHBOARD_ALLOWED",
+      "useCase": "HR can read operations dashboard stats",
+      "role": "hr",
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "status": "passed",
+      "evidence": "/dashboard/stats status=200",
+      "notes": ""
+    },
+    {
+      "id": "API_ADMIN_DASHBOARD_ALLOWED",
+      "useCase": "Owner can read implementation dashboard stats",
+      "role": "admin",
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "status": "passed",
+      "evidence": "/dashboard/stats status=200",
+      "notes": ""
+    },
+    {
+      "id": "API_EMPLOYEE_TENANT_TICKETS_DENIED",
+      "useCase": "Employee cannot list all tenant tickets",
+      "role": "employee",
+      "expected": "HTTP 403",
+      "actual": "HTTP 403",
+      "status": "passed",
+      "evidence": "/helpdesk/tickets status=403",
+      "notes": ""
+    },
+    {
+      "id": "API_EMPLOYEE_MY_TICKETS_ALLOWED",
+      "useCase": "Employee can list own helpdesk tickets",
+      "role": "employee",
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "status": "passed",
+      "evidence": "/helpdesk/tickets/my status=200",
+      "notes": ""
+    },
+    {
+      "id": "API_HR_TENANT_TICKETS_ALLOWED",
+      "useCase": "HR can list tenant helpdesk tickets",
+      "role": "hr",
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "status": "passed",
+      "evidence": "/helpdesk/tickets status=200",
+      "notes": ""
+    },
+    {
+      "id": "API_HR_SUBSCRIPTION_DENIED",
+      "useCase": "HR cannot access owner subscription settings",
+      "role": "hr",
+      "expected": "HTTP 403",
+      "actual": "HTTP 403",
+      "status": "passed",
+      "evidence": "/settings/subscription status=403",
+      "notes": ""
+    },
+    {
+      "id": "API_ADMIN_SUBSCRIPTION_ALLOWED",
+      "useCase": "Owner can access subscription settings",
+      "role": "admin",
+      "expected": "HTTP 200",
+      "actual": "HTTP 200",
+      "status": "passed",
+      "evidence": "/settings/subscription status=200",
+      "notes": ""
+    },
+    {
+      "id": "AUTH_PUBLIC_REDIRECT",
+      "useCase": "Unauthenticated visitor cannot open the dashboard directly",
+      "role": "public",
+      "expected": "Redirect to login",
+      "actual": "http://127.0.0.1:5180/login",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/public-dashboard-redirect-login.png",
+      "notes": ""
+    },
+    {
+      "id": "AUTH_TAMPERED_ROLE_DENIED",
+      "useCase": "Employee session with a tampered local role cannot enter admin settings",
+      "role": "employee",
+      "expected": "Server/session role remains authoritative enough to deny settings",
+      "actual": "Settings denied",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/tampered-role-settings-denied.png",
+      "notes": ""
+    },
+    {
+      "id": "DASH_ADMIN",
+      "useCase": "Owner / System Admin sees the correct role dashboard and navigation",
+      "role": "admin",
+      "expected": "Role-specific dashboard, nav allow-list, and nav deny-list are correct",
+      "actual": "Dashboard matched expected role controls",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/admin-dashboard-persona.png",
+      "notes": ""
+    },
+    {
+      "id": "ACTION_ADMIN_SUBSCRIPTION_AND_BILLING",
+      "useCase": "Owner / System Admin dashboard action \"Subscription and billing\" opens the right journey",
+      "role": "admin",
+      "expected": "Navigate to /settings",
+      "actual": "http://127.0.0.1:5180/settings",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/admin-action-subscription-and-billing.png",
+      "notes": ""
+    },
+    {
+      "id": "ACTION_ADMIN_EXECUTIVE_REPORTS",
+      "useCase": "Owner / System Admin dashboard action \"Executive reports\" opens the right journey",
+      "role": "admin",
+      "expected": "Navigate to /reports",
+      "actual": "http://127.0.0.1:5180/reports",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/admin-action-executive-reports.png",
+      "notes": ""
+    },
+    {
+      "id": "MOBILE_ADMIN_DASHBOARD",
+      "useCase": "Owner / System Admin dashboard is usable on mobile viewport",
+      "role": "admin",
+      "expected": "Persona heading renders and restricted content stays hidden",
+      "actual": "Mobile dashboard rendered without error",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/admin-mobile-dashboard.png",
+      "notes": ""
+    },
+    {
+      "id": "DASH_HR",
+      "useCase": "HR Operations sees the correct role dashboard and navigation",
+      "role": "hr",
+      "expected": "Role-specific dashboard, nav allow-list, and nav deny-list are correct",
+      "actual": "Dashboard matched expected role controls",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/hr-dashboard-persona.png",
+      "notes": ""
+    },
+    {
+      "id": "ACTION_HR_LEAVE_APPROVALS",
+      "useCase": "HR Operations dashboard action \"Leave approvals\" opens the right journey",
+      "role": "hr",
+      "expected": "Navigate to /leave",
+      "actual": "http://127.0.0.1:5180/leave?filter=pending",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/hr-action-leave-approvals.png",
+      "notes": ""
+    },
+    {
+      "id": "ACTION_HR_ATTENDANCE_REGULARIZATIONS",
+      "useCase": "HR Operations dashboard action \"Attendance regularizations\" opens the right journey",
+      "role": "hr",
+      "expected": "Navigate to /attendance",
+      "actual": "http://127.0.0.1:5180/attendance?filter=pending",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/hr-action-attendance-regularizations.png",
+      "notes": ""
+    },
+    {
+      "id": "ACTION_HR_PERFORMANCE_REVIEWS",
+      "useCase": "HR Operations dashboard action \"Performance reviews\" opens the right journey",
+      "role": "hr",
+      "expected": "Navigate to /performance",
+      "actual": "http://127.0.0.1:5180/performance",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/hr-action-performance-reviews.png",
+      "notes": ""
+    },
+    {
+      "id": "DROPDOWN_HR_APPROVALS",
+      "useCase": "HR Operations can inspect approval categories from dashboard",
+      "role": "hr",
+      "expected": "Approval dropdown lists leave, attendance, and appraisal paths",
+      "actual": "Dropdown rendered expected categories",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/hr-approvals-dropdown.png",
+      "notes": ""
+    },
+    {
+      "id": "MOBILE_HR_DASHBOARD",
+      "useCase": "HR Operations dashboard is usable on mobile viewport",
+      "role": "hr",
+      "expected": "Persona heading renders and restricted content stays hidden",
+      "actual": "Mobile dashboard rendered without error",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/hr-mobile-dashboard.png",
+      "notes": ""
+    },
+    {
+      "id": "DASH_MANAGER",
+      "useCase": "Manager / Approver sees the correct role dashboard and navigation",
+      "role": "manager",
+      "expected": "Role-specific dashboard, nav allow-list, and nav deny-list are correct",
+      "actual": "Dashboard matched expected role controls",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-dashboard-persona.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_MANAGER__SETTINGS",
+      "useCase": "manager cannot deep-link into restricted route /settings",
+      "role": "manager",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-denied--settings.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_MANAGER__REPORTS",
+      "useCase": "manager cannot deep-link into restricted route /reports",
+      "role": "manager",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-denied--reports.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_MANAGER__ONBOARDING",
+      "useCase": "manager cannot deep-link into restricted route /onboarding",
+      "role": "manager",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-denied--onboarding.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_MANAGER__DEPARTMENTS",
+      "useCase": "manager cannot deep-link into restricted route /departments",
+      "role": "manager",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-denied--departments.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_MANAGER__DESIGNATIONS",
+      "useCase": "manager cannot deep-link into restricted route /designations",
+      "role": "manager",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-denied--designations.png",
+      "notes": ""
+    },
+    {
+      "id": "ACTION_MANAGER_LEAVE_APPROVALS",
+      "useCase": "Manager / Approver dashboard action \"Leave approvals\" opens the right journey",
+      "role": "manager",
+      "expected": "Navigate to /leave",
+      "actual": "http://127.0.0.1:5180/leave?filter=pending",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-action-leave-approvals.png",
+      "notes": ""
+    },
+    {
+      "id": "ACTION_MANAGER_ATTENDANCE_REGULARIZATIONS",
+      "useCase": "Manager / Approver dashboard action \"Attendance regularizations\" opens the right journey",
+      "role": "manager",
+      "expected": "Navigate to /attendance",
+      "actual": "http://127.0.0.1:5180/attendance?filter=pending",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-action-attendance-regularizations.png",
+      "notes": ""
+    },
+    {
+      "id": "ACTION_MANAGER_PERFORMANCE_REVIEWS",
+      "useCase": "Manager / Approver dashboard action \"Performance reviews\" opens the right journey",
+      "role": "manager",
+      "expected": "Navigate to /performance",
+      "actual": "http://127.0.0.1:5180/performance",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-action-performance-reviews.png",
+      "notes": ""
+    },
+    {
+      "id": "DROPDOWN_MANAGER_APPROVALS",
+      "useCase": "Manager / Approver can inspect approval categories from dashboard",
+      "role": "manager",
+      "expected": "Approval dropdown lists leave, attendance, and appraisal paths",
+      "actual": "Dropdown rendered expected categories",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-approvals-dropdown.png",
+      "notes": ""
+    },
+    {
+      "id": "MOBILE_MANAGER_DASHBOARD",
+      "useCase": "Manager / Approver dashboard is usable on mobile viewport",
+      "role": "manager",
+      "expected": "Persona heading renders and restricted content stays hidden",
+      "actual": "Mobile dashboard rendered without error",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-mobile-dashboard.png",
+      "notes": ""
+    },
+    {
+      "id": "DASH_EMPLOYEE",
+      "useCase": "Individual Employee sees the correct role dashboard and navigation",
+      "role": "employee",
+      "expected": "Role-specific dashboard, nav allow-list, and nav deny-list are correct",
+      "actual": "Dashboard matched expected role controls",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-dashboard-persona.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_EMPLOYEE__EMPLOYEES",
+      "useCase": "employee cannot deep-link into restricted route /employees",
+      "role": "employee",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--employees.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_EMPLOYEE__PERFORMANCE",
+      "useCase": "employee cannot deep-link into restricted route /performance",
+      "role": "employee",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--performance.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_EMPLOYEE__EXIT",
+      "useCase": "employee cannot deep-link into restricted route /exit",
+      "role": "employee",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--exit.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_EMPLOYEE__DOCUMENTS",
+      "useCase": "employee cannot deep-link into restricted route /documents",
+      "role": "employee",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--documents.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_EMPLOYEE__SETTINGS",
+      "useCase": "employee cannot deep-link into restricted route /settings",
+      "role": "employee",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--settings.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_EMPLOYEE__REPORTS",
+      "useCase": "employee cannot deep-link into restricted route /reports",
+      "role": "employee",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--reports.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_EMPLOYEE__ONBOARDING",
+      "useCase": "employee cannot deep-link into restricted route /onboarding",
+      "role": "employee",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--onboarding.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_EMPLOYEE__DEPARTMENTS",
+      "useCase": "employee cannot deep-link into restricted route /departments",
+      "role": "employee",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--departments.png",
+      "notes": ""
+    },
+    {
+      "id": "DENY_EMPLOYEE__DESIGNATIONS",
+      "useCase": "employee cannot deep-link into restricted route /designations",
+      "role": "employee",
+      "expected": "Permission-denied page with safe dashboard return",
+      "actual": "Restricted route denied in UI",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--designations.png",
+      "notes": ""
+    },
+    {
+      "id": "ACTION_EMPLOYEE_CLOCK_IN_OUT_AND_TIMESHEET",
+      "useCase": "Individual Employee dashboard action \"Clock in/out and timesheet\" opens the right journey",
+      "role": "employee",
+      "expected": "Navigate to /attendance",
+      "actual": "http://127.0.0.1:5180/attendance",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-action-clock-in/out-and-timesheet.png",
+      "notes": ""
+    },
+    {
+      "id": "ACTION_EMPLOYEE_APPLY_FOR_LEAVE",
+      "useCase": "Individual Employee dashboard action \"Apply for leave\" opens the right journey",
+      "role": "employee",
+      "expected": "Navigate to /leave",
+      "actual": "http://127.0.0.1:5180/leave",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-action-apply-for-leave.png",
+      "notes": ""
+    },
+    {
+      "id": "ACTION_EMPLOYEE_MY_HR_DOCUMENTS",
+      "useCase": "Individual Employee dashboard action \"My HR documents\" opens the right journey",
+      "role": "employee",
+      "expected": "Navigate to /my-hr-documents",
+      "actual": "http://127.0.0.1:5180/my-hr-documents",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-action-my-hr-documents.png",
+      "notes": ""
+    },
+    {
+      "id": "ACTION_EMPLOYEE_HR_CONNECT",
+      "useCase": "Individual Employee dashboard action \"HR Connect\" opens the right journey",
+      "role": "employee",
+      "expected": "Navigate to /hr-connect",
+      "actual": "http://127.0.0.1:5180/hr-connect",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-action-hr-connect.png",
+      "notes": ""
+    },
+    {
+      "id": "MOBILE_EMPLOYEE_DASHBOARD",
+      "useCase": "Individual Employee dashboard is usable on mobile viewport",
+      "role": "employee",
+      "expected": "Persona heading renders and restricted content stays hidden",
+      "actual": "Mobile dashboard rendered without error",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-mobile-dashboard.png",
+      "notes": ""
+    },
+    {
+      "id": "FAILURE_DASHBOARD_STATS_FALLBACK",
+      "useCase": "Dashboard remains usable when dashboard stats API fails",
+      "role": "employee",
+      "expected": "Fallback metrics render without blocking self-service",
+      "actual": "Dashboard rendered fallback self-service view",
+      "status": "passed",
+      "evidence": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-dashboard-api-fallback.png",
+      "notes": ""
+    },
+    {
+      "id": "STRESS_CONCURRENT_DASHBOARDS",
+      "useCase": "Concurrent role dashboard loads remain stable across personas",
+      "role": "all",
+      "expected": "12 parallel dashboard loads render correct persona headings",
+      "actual": "All concurrent loads rendered correctly",
+      "status": "passed",
+      "evidence": "12 browser contexts",
+      "notes": ""
+    }
+  ],
+  "screenshots": [
+    {
+      "id": "AUTH_PUBLIC_REDIRECT",
+      "title": "Public user is redirected to login",
+      "role": "public",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/public-dashboard-redirect-login.png"
+    },
+    {
+      "id": "AUTH_TAMPERED_ROLE_DENIED",
+      "title": "Tampered local role denied by route/session consistency",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/tampered-role-settings-denied.png"
+    },
+    {
+      "id": "DASH_ADMIN",
+      "title": "Owner / System Admin dashboard",
+      "role": "admin",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/admin-dashboard-persona.png"
+    },
+    {
+      "id": "ACTION_ADMIN_SUBSCRIPTION_AND_BILLING",
+      "title": "admin dashboard action Subscription and billing",
+      "role": "admin",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/admin-action-subscription-and-billing.png"
+    },
+    {
+      "id": "ACTION_ADMIN_EXECUTIVE_REPORTS",
+      "title": "admin dashboard action Executive reports",
+      "role": "admin",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/admin-action-executive-reports.png"
+    },
+    {
+      "id": "MOBILE_ADMIN_DASHBOARD",
+      "title": "admin mobile dashboard",
+      "role": "admin",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/admin-mobile-dashboard.png"
+    },
+    {
+      "id": "DASH_HR",
+      "title": "HR Operations dashboard",
+      "role": "hr",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/hr-dashboard-persona.png"
+    },
+    {
+      "id": "ACTION_HR_LEAVE_APPROVALS",
+      "title": "hr dashboard action Leave approvals",
+      "role": "hr",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/hr-action-leave-approvals.png"
+    },
+    {
+      "id": "ACTION_HR_ATTENDANCE_REGULARIZATIONS",
+      "title": "hr dashboard action Attendance regularizations",
+      "role": "hr",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/hr-action-attendance-regularizations.png"
+    },
+    {
+      "id": "ACTION_HR_PERFORMANCE_REVIEWS",
+      "title": "hr dashboard action Performance reviews",
+      "role": "hr",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/hr-action-performance-reviews.png"
+    },
+    {
+      "id": "DROPDOWN_HR_APPROVALS",
+      "title": "hr approvals dropdown",
+      "role": "hr",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/hr-approvals-dropdown.png"
+    },
+    {
+      "id": "MOBILE_HR_DASHBOARD",
+      "title": "hr mobile dashboard",
+      "role": "hr",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/hr-mobile-dashboard.png"
+    },
+    {
+      "id": "DASH_MANAGER",
+      "title": "Manager / Approver dashboard",
+      "role": "manager",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-dashboard-persona.png"
+    },
+    {
+      "id": "DENY_MANAGER__SETTINGS",
+      "title": "manager denied /settings",
+      "role": "manager",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-denied--settings.png"
+    },
+    {
+      "id": "DENY_MANAGER__REPORTS",
+      "title": "manager denied /reports",
+      "role": "manager",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-denied--reports.png"
+    },
+    {
+      "id": "DENY_MANAGER__ONBOARDING",
+      "title": "manager denied /onboarding",
+      "role": "manager",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-denied--onboarding.png"
+    },
+    {
+      "id": "DENY_MANAGER__DEPARTMENTS",
+      "title": "manager denied /departments",
+      "role": "manager",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-denied--departments.png"
+    },
+    {
+      "id": "DENY_MANAGER__DESIGNATIONS",
+      "title": "manager denied /designations",
+      "role": "manager",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-denied--designations.png"
+    },
+    {
+      "id": "ACTION_MANAGER_LEAVE_APPROVALS",
+      "title": "manager dashboard action Leave approvals",
+      "role": "manager",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-action-leave-approvals.png"
+    },
+    {
+      "id": "ACTION_MANAGER_ATTENDANCE_REGULARIZATIONS",
+      "title": "manager dashboard action Attendance regularizations",
+      "role": "manager",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-action-attendance-regularizations.png"
+    },
+    {
+      "id": "ACTION_MANAGER_PERFORMANCE_REVIEWS",
+      "title": "manager dashboard action Performance reviews",
+      "role": "manager",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-action-performance-reviews.png"
+    },
+    {
+      "id": "DROPDOWN_MANAGER_APPROVALS",
+      "title": "manager approvals dropdown",
+      "role": "manager",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-approvals-dropdown.png"
+    },
+    {
+      "id": "MOBILE_MANAGER_DASHBOARD",
+      "title": "manager mobile dashboard",
+      "role": "manager",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/manager-mobile-dashboard.png"
+    },
+    {
+      "id": "DASH_EMPLOYEE",
+      "title": "Individual Employee dashboard",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-dashboard-persona.png"
+    },
+    {
+      "id": "DENY_EMPLOYEE__EMPLOYEES",
+      "title": "employee denied /employees",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--employees.png"
+    },
+    {
+      "id": "DENY_EMPLOYEE__PERFORMANCE",
+      "title": "employee denied /performance",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--performance.png"
+    },
+    {
+      "id": "DENY_EMPLOYEE__EXIT",
+      "title": "employee denied /exit",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--exit.png"
+    },
+    {
+      "id": "DENY_EMPLOYEE__DOCUMENTS",
+      "title": "employee denied /documents",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--documents.png"
+    },
+    {
+      "id": "DENY_EMPLOYEE__SETTINGS",
+      "title": "employee denied /settings",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--settings.png"
+    },
+    {
+      "id": "DENY_EMPLOYEE__REPORTS",
+      "title": "employee denied /reports",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--reports.png"
+    },
+    {
+      "id": "DENY_EMPLOYEE__ONBOARDING",
+      "title": "employee denied /onboarding",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--onboarding.png"
+    },
+    {
+      "id": "DENY_EMPLOYEE__DEPARTMENTS",
+      "title": "employee denied /departments",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--departments.png"
+    },
+    {
+      "id": "DENY_EMPLOYEE__DESIGNATIONS",
+      "title": "employee denied /designations",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-denied--designations.png"
+    },
+    {
+      "id": "ACTION_EMPLOYEE_CLOCK_IN_OUT_AND_TIMESHEET",
+      "title": "employee dashboard action Clock in/out and timesheet",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-action-clock-in/out-and-timesheet.png"
+    },
+    {
+      "id": "ACTION_EMPLOYEE_APPLY_FOR_LEAVE",
+      "title": "employee dashboard action Apply for leave",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-action-apply-for-leave.png"
+    },
+    {
+      "id": "ACTION_EMPLOYEE_MY_HR_DOCUMENTS",
+      "title": "employee dashboard action My HR documents",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-action-my-hr-documents.png"
+    },
+    {
+      "id": "ACTION_EMPLOYEE_HR_CONNECT",
+      "title": "employee dashboard action HR Connect",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-action-hr-connect.png"
+    },
+    {
+      "id": "MOBILE_EMPLOYEE_DASHBOARD",
+      "title": "employee mobile dashboard",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-mobile-dashboard.png"
+    },
+    {
+      "id": "FAILURE_DASHBOARD_STATS_FALLBACK",
+      "title": "Employee dashboard survives stats API failure",
+      "role": "employee",
+      "path": "docs/qa/role-persona-hardening-local-2026-05-11/screenshots/employee-dashboard-api-fallback.png"
+    }
+  ]
+}
