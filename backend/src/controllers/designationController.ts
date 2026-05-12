@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../config/database';
 import { Designation } from '../models/Designation';
+import { Employee } from '../models/Employee';
 import { sendSuccess, sendError, sendCreated } from '../utils/responses';
 
 export const getDesignations = async (req: Request, res: Response) => {
@@ -58,10 +59,15 @@ export const createDesignation = async (req: Request, res: Response) => {
     }
 
     const designationRepo = AppDataSource.getRepository(Designation);
+    const name = String(req.body.name || '').trim();
+
+    if (!name) {
+      return sendError(res, { code: 'VALIDATION_ERROR', message: 'Designation name is required' }, 400);
+    }
 
     // Check for duplicate
     const existing = await designationRepo.findOne({
-      where: { name: req.body.name, tenantId },
+      where: { name, tenantId },
     });
 
     if (existing) {
@@ -70,6 +76,7 @@ export const createDesignation = async (req: Request, res: Response) => {
 
     const designation = designationRepo.create({
       ...req.body,
+      name,
       tenantId,
     });
 
@@ -91,6 +98,12 @@ export const updateDesignation = async (req: Request, res: Response) => {
     }
 
     const designationRepo = AppDataSource.getRepository(Designation);
+    const name = req.body.name !== undefined ? String(req.body.name || '').trim() : undefined;
+
+    if (req.body.name !== undefined && !name) {
+      return sendError(res, { code: 'VALIDATION_ERROR', message: 'Designation name is required' }, 400);
+    }
+
     const designation = await designationRepo.findOne({
       where: { designationId: id, tenantId },
     });
@@ -99,7 +112,17 @@ export const updateDesignation = async (req: Request, res: Response) => {
       return sendError(res, { code: 'NOT_FOUND', message: 'Designation not found' }, 404);
     }
 
-    Object.assign(designation, req.body);
+    if (name && name !== designation.name) {
+      const existing = await designationRepo.findOne({
+        where: { name, tenantId },
+      });
+
+      if (existing && existing.designationId !== id) {
+        return sendError(res, { code: 'DUPLICATE', message: 'Designation with this name already exists' }, 400);
+      }
+    }
+
+    Object.assign(designation, req.body, name ? { name } : {});
     await designationRepo.save(designation);
 
     return sendSuccess(res, designation);
@@ -119,6 +142,16 @@ export const deleteDesignation = async (req: Request, res: Response) => {
     }
 
     const designationRepo = AppDataSource.getRepository(Designation);
+    const employeeRepo = AppDataSource.getRepository(Employee);
+
+    const employeeCount = await employeeRepo.count({
+      where: { designationId: id, tenantId },
+    });
+
+    if (employeeCount > 0) {
+      return sendError(res, { code: 'IN_USE', message: 'Cannot delete designation with assigned employees' }, 400);
+    }
+
     const result = await designationRepo.delete({
       designationId: id,
       tenantId,

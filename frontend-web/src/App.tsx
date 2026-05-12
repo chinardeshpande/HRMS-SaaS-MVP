@@ -28,6 +28,7 @@ const ModernEmployees = lazy(() => import('./pages/ModernEmployees'));
 const ModernEmployeeDetail = lazy(() => import('./pages/ModernEmployeeDetail'));
 const ModernAttendance = lazy(() => import('./pages/ModernAttendance'));
 const ModernLeave = lazy(() => import('./pages/ModernLeave'));
+const ModernMasterData = lazy(() => import('./pages/ModernMasterData'));
 const ModernDepartments = lazy(() => import('./pages/ModernDepartments'));
 const ModernDesignations = lazy(() => import('./pages/ModernDesignations'));
 const ModernPerformanceDashboard = lazy(() => import('./pages/ModernPerformanceDashboard'));
@@ -139,6 +140,7 @@ function App() {
                 <Route path="/dashboard" element={protectedElement('/dashboard', <ModernDashboard />)} />
                 <Route path="/employees" element={protectedElement('/employees', <ModernEmployees />)} />
                 <Route path="/employees/:id" element={protectedElement('/employees/:id', <ModernEmployeeDetail />)} />
+                <Route path="/master-data" element={protectedElement('/master-data', <ModernMasterData />)} />
                 <Route path="/departments" element={protectedElement('/departments', <ModernDepartments />)} />
                 <Route path="/designations" element={protectedElement('/designations', <ModernDesignations />)} />
                 <Route path="/attendance" element={protectedElement('/attendance', <ModernAttendance />)} />

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AppDataSource } from '../config/database';
 import { Department } from '../models/Department';
+import { Employee } from '../models/Employee';
 import { sendSuccess, sendError, sendCreated } from '../utils/responses';
 
 export const getDepartments = async (req: Request, res: Response) => {
@@ -58,8 +59,33 @@ export const createDepartment = async (req: Request, res: Response) => {
     }
 
     const departmentRepo = AppDataSource.getRepository(Department);
+    const name = String(req.body.name || '').trim();
+
+    if (!name) {
+      return sendError(res, { code: 'VALIDATION_ERROR', message: 'Department name is required' }, 400);
+    }
+
+    const existing = await departmentRepo.findOne({
+      where: { name, tenantId },
+    });
+
+    if (existing) {
+      return sendError(res, { code: 'DUPLICATE', message: 'Department with this name already exists' }, 400);
+    }
+
+    if (req.body.parentDeptId) {
+      const parent = await departmentRepo.findOne({
+        where: { departmentId: req.body.parentDeptId, tenantId },
+      });
+
+      if (!parent) {
+        return sendError(res, { code: 'VALIDATION_ERROR', message: 'Parent department not found' }, 400);
+      }
+    }
+
     const department = departmentRepo.create({
       ...req.body,
+      name,
       tenantId,
     });
 
@@ -81,6 +107,12 @@ export const updateDepartment = async (req: Request, res: Response) => {
     }
 
     const departmentRepo = AppDataSource.getRepository(Department);
+    const name = req.body.name !== undefined ? String(req.body.name || '').trim() : undefined;
+
+    if (req.body.name !== undefined && !name) {
+      return sendError(res, { code: 'VALIDATION_ERROR', message: 'Department name is required' }, 400);
+    }
+
     const department = await departmentRepo.findOne({
       where: { departmentId: id, tenantId },
     });
@@ -89,7 +121,31 @@ export const updateDepartment = async (req: Request, res: Response) => {
       return sendError(res, { code: 'NOT_FOUND', message: 'Department not found' }, 404);
     }
 
-    Object.assign(department, req.body);
+    if (req.body.parentDeptId === id) {
+      return sendError(res, { code: 'VALIDATION_ERROR', message: 'A department cannot be its own parent' }, 400);
+    }
+
+    if (req.body.parentDeptId) {
+      const parent = await departmentRepo.findOne({
+        where: { departmentId: req.body.parentDeptId, tenantId },
+      });
+
+      if (!parent) {
+        return sendError(res, { code: 'VALIDATION_ERROR', message: 'Parent department not found' }, 400);
+      }
+    }
+
+    if (name && name !== department.name) {
+      const existing = await departmentRepo.findOne({
+        where: { name, tenantId },
+      });
+
+      if (existing && existing.departmentId !== id) {
+        return sendError(res, { code: 'DUPLICATE', message: 'Department with this name already exists' }, 400);
+      }
+    }
+
+    Object.assign(department, req.body, name ? { name } : {});
     await departmentRepo.save(department);
 
     return sendSuccess(res, department);
@@ -109,6 +165,21 @@ export const deleteDepartment = async (req: Request, res: Response) => {
     }
 
     const departmentRepo = AppDataSource.getRepository(Department);
+    const employeeRepo = AppDataSource.getRepository(Employee);
+
+    const [employeeCount, childDepartmentCount] = await Promise.all([
+      employeeRepo.count({ where: { departmentId: id, tenantId } }),
+      departmentRepo.count({ where: { parentDeptId: id, tenantId } }),
+    ]);
+
+    if (employeeCount > 0) {
+      return sendError(res, { code: 'IN_USE', message: 'Cannot delete department with assigned employees' }, 400);
+    }
+
+    if (childDepartmentCount > 0) {
+      return sendError(res, { code: 'IN_USE', message: 'Cannot delete department with sub-departments' }, 400);
+    }
+
     const result = await departmentRepo.delete({
       departmentId: id,
       tenantId,
