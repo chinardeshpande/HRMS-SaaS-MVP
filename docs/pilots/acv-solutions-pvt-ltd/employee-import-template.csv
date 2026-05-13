@@ -1,0 +1,6 @@
+employeeCode,firstName,lastName,email,phone,dateOfBirth,gender,department,designation,dateOfJoining,employmentType,managerEmail
+ACV001,Director,User,director@acvsolutions.example,+910000000001,1980-01-01,Male,Executive,Director,2024-01-01,Full-Time,
+ACV002,HR,Leader,hr.leader@acvsolutions.example,+910000000002,1985-01-01,Female,Human Resources,HR Manager,2024-01-01,Full-Time,director@acvsolutions.example
+ACV003,Team,Manager,team.manager@acvsolutions.example,+910000000003,1988-01-01,Male,Operations,Manager,2024-01-01,Full-Time,director@acvsolutions.example
+ACV004,Sample,Employee,sample.employee@acvsolutions.example,+910000000004,1992-01-01,Female,Operations,Executive,2024-01-01,Full-Time,team.manager@acvsolutions.example
+

@@ -1,0 +1,9 @@
+type,name,parent,level,notes
+department,Executive,,,
+department,Human Resources,,,
+department,Operations,,,
+designation,Director,,1,
+designation,HR Manager,,2,
+designation,Manager,,3,
+designation,Executive,,4,
+
