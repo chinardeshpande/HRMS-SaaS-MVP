@@ -6,6 +6,8 @@ Implement AuroraHR as a controlled real-organization pilot for ACV Solutions Pvt
 
 This pilot must be treated differently from demo data. Demo tenants are disposable. ACV data is confidential production data and must be handled with explicit controls, backups, validation logs, and a rollback plan.
 
+Clean-room rules for this implementation are documented in [clean-room-implementation-protocol.md](clean-room-implementation-protocol.md). That protocol is mandatory before real ACV employee data is imported.
+
 ## Pilot Principles
 
 - Keep ACV data in its own tenant only.
@@ -19,32 +21,34 @@ This pilot must be treated differently from demo data. Demo tenants are disposab
 
 1. Create or confirm the ACV tenant.
 2. Configure organization settings, subscription state, roles, and HR admin ownership.
-3. Load master data:
+3. Run the ACV tenant cleanliness audit and confirm there is no inherited demo, QA, CampusLife, Acme, or previous testing data.
+4. Load master data:
    - departments
    - designations
    - work locations, if available
    - employment types
    - leave policies
    - attendance policy
-4. Validate masters with ACV HR.
-5. Import employees in dependency order:
+5. Validate masters with ACV HR.
+6. Re-run the cleanliness audit before employee import.
+7. Import employees in dependency order:
    - directors and HR admins
    - managers
    - individual contributors
-6. Validate reporting relationships and role access.
-7. Configure workflows:
+8. Validate reporting relationships and role access.
+9. Configure workflows:
    - attendance approvals
    - leave approvals
    - probation rules
    - performance review visibility
    - exit approvals
-8. Run controlled pilot QA.
-9. Share credentials with:
+10. Run controlled pilot QA.
+11. Share credentials with:
    - Director
    - HR leader
    - selected managers
    - selected employee sample
-10. Run a monitored pilot period and capture issues.
+12. Run a monitored pilot period and capture issues.
 
 ## Current Product Fit
 
@@ -90,4 +94,3 @@ Required controls:
 - Attendance and leave workflows work for at least one employee-manager-HR approval chain.
 - Documents can be generated for at least one employee.
 - Reports reflect imported ACV data.
-
