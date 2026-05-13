@@ -1,10 +1,37 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import path from 'path';
 import { AppDataSource } from '../config/database';
 import { User } from '../models/User';
+import { Employee } from '../models/Employee';
 import { config } from '../config/config';
 import emailService from '../services/emailService';
+
+const serializeUser = (user: User) => ({
+  userId: user.userId,
+  tenantId: user.tenantId,
+  email: user.email,
+  fullName: user.fullName,
+  role: user.role,
+  employeeId: user.employeeId,
+  profilePhotoUrl: user.profilePhotoUrl,
+  employee: user.employee
+    ? {
+        employeeId: user.employee.employeeId,
+        employeeCode: user.employee.employeeCode,
+        firstName: user.employee.firstName,
+        lastName: user.employee.lastName,
+        email: user.employee.email,
+        phone: user.employee.phone,
+        dateOfBirth: user.employee.dateOfBirth,
+        gender: user.employee.gender,
+        address: user.employee.address,
+        department: user.employee.department,
+        designation: user.employee.designation,
+      }
+    : null,
+});
 
 /**
  * @swagger
@@ -127,30 +154,10 @@ export const login = async (req: Request, res: Response) => {
     await userRepository.save(user);
 
     // Return user data without password
-    const userData = {
-      userId: user.userId,
-      tenantId: user.tenantId,
-      email: user.email,
-      fullName: user.fullName,
-      role: user.role,
-      employeeId: user.employeeId,
-      employee: user.employee
-        ? {
-            employeeId: user.employee.employeeId,
-            employeeCode: user.employee.employeeCode,
-            firstName: user.employee.firstName,
-            lastName: user.employee.lastName,
-            email: user.employee.email,
-            department: user.employee.department,
-            designation: user.employee.designation,
-          }
-        : null,
-    };
-
     return res.json({
       success: true,
       data: {
-        user: userData,
+        user: serializeUser(user),
         tokens: {
           token,
           refreshToken,
@@ -213,29 +220,9 @@ export const getCurrentUser = async (req: Request, res: Response) => {
       });
     }
 
-    const userData = {
-      userId: user.userId,
-      tenantId: user.tenantId,
-      email: user.email,
-      fullName: user.fullName,
-      role: user.role,
-      employeeId: user.employeeId,
-      employee: user.employee
-        ? {
-            employeeId: user.employee.employeeId,
-            employeeCode: user.employee.employeeCode,
-            firstName: user.employee.firstName,
-            lastName: user.employee.lastName,
-            email: user.employee.email,
-            department: user.employee.department,
-            designation: user.employee.designation,
-          }
-        : null,
-    };
-
     return res.json({
       success: true,
-      data: userData,
+      data: serializeUser(user),
     });
   } catch (error: any) {
     console.error('Get current user error:', error);
@@ -245,6 +232,201 @@ export const getCurrentUser = async (req: Request, res: Response) => {
         code: 'SERVER_ERROR',
         message: 'An error occurred',
       },
+    });
+  }
+};
+
+export const updateCurrentUserProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+    const tenantId = req.user?.tenantId;
+
+    if (!userId || !tenantId) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+      });
+    }
+
+    const {
+      fullName,
+      firstName,
+      lastName,
+      phone,
+      dateOfBirth,
+      gender,
+      address,
+    } = req.body;
+
+    const userRepository = AppDataSource.getRepository(User);
+    const employeeRepository = AppDataSource.getRepository(Employee);
+
+    const user = await userRepository.findOne({
+      where: { userId, tenantId },
+      relations: ['employee', 'employee.department', 'employee.designation'],
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'USER_NOT_FOUND', message: 'User not found' },
+      });
+    }
+
+    if (typeof fullName === 'string' && fullName.trim().length >= 2) {
+      user.fullName = fullName.trim();
+    }
+
+    if (user.employeeId) {
+      const employee = await employeeRepository.findOne({
+        where: { employeeId: user.employeeId, tenantId },
+        relations: ['department', 'designation'],
+      });
+
+      if (employee) {
+        if (typeof firstName === 'string' && firstName.trim()) employee.firstName = firstName.trim();
+        if (typeof lastName === 'string' && lastName.trim()) employee.lastName = lastName.trim();
+        if (typeof phone === 'string') employee.phone = phone.trim() || undefined;
+        if (typeof gender === 'string') employee.gender = gender.trim() || undefined;
+        if (typeof address === 'string') employee.address = address.trim() || undefined;
+        if (typeof dateOfBirth === 'string') {
+          employee.dateOfBirth = dateOfBirth ? new Date(dateOfBirth) : undefined;
+        }
+
+        if (!fullName && (firstName || lastName)) {
+          user.fullName = `${employee.firstName} ${employee.lastName}`.trim();
+        }
+
+        await employeeRepository.save(employee);
+      }
+    }
+
+    await userRepository.save(user);
+
+    const updatedUser = await userRepository.findOne({
+      where: { userId, tenantId },
+      relations: ['employee', 'employee.department', 'employee.designation'],
+    });
+
+    return res.json({
+      success: true,
+      data: serializeUser(updatedUser || user),
+    });
+  } catch (error: any) {
+    console.error('Update current user profile error:', error);
+    return res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Unable to update profile' },
+    });
+  }
+};
+
+export const changePassword = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+    const tenantId = req.user?.tenantId;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!userId || !tenantId) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+      });
+    }
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'VALIDATION_ERROR', message: 'Current password and new password are required' },
+      });
+    }
+
+    if (String(newPassword).length < 8) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'VALIDATION_ERROR', message: 'Password must be at least 8 characters long' },
+      });
+    }
+
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOne({ where: { userId, tenantId } });
+
+    if (!user || !user.isActive) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'USER_NOT_FOUND', message: 'User not found' },
+      });
+    }
+
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_CURRENT_PASSWORD', message: 'Current password is incorrect' },
+      });
+    }
+
+    user.password = newPassword;
+    await userRepository.save(user);
+
+    return res.json({
+      success: true,
+      data: { message: 'Password changed successfully' },
+    });
+  } catch (error: any) {
+    console.error('Change password error:', error);
+    return res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Unable to change password' },
+    });
+  }
+};
+
+export const uploadProfilePhoto = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+    const tenantId = req.user?.tenantId;
+    const file = req.file;
+
+    if (!userId || !tenantId) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+      });
+    }
+
+    if (!file) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'NO_FILE', message: 'Profile photo is required' },
+      });
+    }
+
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOne({
+      where: { userId, tenantId },
+      relations: ['employee', 'employee.department', 'employee.designation'],
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'USER_NOT_FOUND', message: 'User not found' },
+      });
+    }
+
+    user.profilePhotoUrl = `/uploads/profiles/${path.basename(file.filename)}`;
+    await userRepository.save(user);
+
+    return res.json({
+      success: true,
+      data: serializeUser(user),
+    });
+  } catch (error: any) {
+    console.error('Upload profile photo error:', error);
+    return res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Unable to upload profile photo' },
     });
   }
 };
@@ -284,6 +466,28 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
       config.jwt.secret,
       { expiresIn: '1h' }
     );
+
+    if (!emailService.isConfigured()) {
+      console.warn(`Password reset requested for ${user.email}, but SMTP is not configured.`);
+
+      return res.status(config.nodeEnv === 'production' ? 503 : 200).json({
+        success: config.nodeEnv !== 'production',
+        data:
+          config.nodeEnv !== 'production'
+            ? {
+                message: 'Email is not configured. Use this development reset link.',
+                resetUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`,
+              }
+            : undefined,
+        error:
+          config.nodeEnv === 'production'
+            ? {
+                code: 'EMAIL_NOT_CONFIGURED',
+                message: 'Password reset email is not configured. Please contact your HR administrator.',
+              }
+            : undefined,
+      });
+    }
 
     await emailService.sendPasswordResetEmail({
       to: user.email,
@@ -403,6 +607,9 @@ export const resetPassword = async (req: Request, res: Response) => {
 export default {
   login,
   getCurrentUser,
+  updateCurrentUserProfile,
+  changePassword,
+  uploadProfilePhoto,
   requestPasswordReset,
   resetPassword,
 };

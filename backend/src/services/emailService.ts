@@ -23,11 +23,19 @@ class EmailService {
     });
   }
 
+  isConfigured(): boolean {
+    return Boolean(config.smtp.host && config.smtp.user && config.smtp.password && config.smtp.from);
+  }
+
   /**
    * Send an email
    */
   async sendEmail(options: EmailOptions): Promise<void> {
     try {
+      if (!this.isConfigured()) {
+        throw new Error('SMTP is not configured');
+      }
+
       const info = await this.transporter.sendMail({
         from: config.smtp.from,
         to: options.to,

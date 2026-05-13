@@ -68,6 +68,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.setItem('tokens', JSON.stringify(tokenData));
   };
 
+  useEffect(() => {
+    const handleUserUpdated = (event: Event) => {
+      const updatedUser = (event as CustomEvent<User>).detail;
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
+    };
+
+    window.addEventListener('aurorahr:user-updated', handleUserUpdated as EventListener);
+    return () => {
+      window.removeEventListener('aurorahr:user-updated', handleUserUpdated as EventListener);
+    };
+  }, []);
+
   // Load user from localStorage on mount
   useEffect(() => {
     const loadUser = () => {

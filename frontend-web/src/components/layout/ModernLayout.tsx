@@ -25,6 +25,13 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
   const [demoSwitching, setDemoSwitching] = useState(false);
 
   const navigation = filterNavItemsForRole(navigationItems, user?.role);
+  const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+  const assetBaseUrl = apiBaseUrl.replace('/api/v1', '');
+  const profilePhotoUrl = user?.profilePhotoUrl
+    ? user.profilePhotoUrl.startsWith('http')
+      ? user.profilePhotoUrl
+      : `${assetBaseUrl}${user.profilePhotoUrl}`
+    : '';
 
   const handleLogout = () => {
     logout();
@@ -171,10 +178,14 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
           <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
             <div className="flex items-center w-full">
               <div className="flex-shrink-0">
-                <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600">
-                  <span className="text-sm font-medium text-white">
-                    {user?.fullName?.charAt(0) || 'U'}
-                  </span>
+                <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 overflow-hidden">
+                  {profilePhotoUrl ? (
+                    <img src={profilePhotoUrl} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-sm font-medium text-white">
+                      {user?.fullName?.charAt(0) || 'U'}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="ml-3 flex-1">
@@ -303,11 +314,18 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
 
               {/* User menu - only show on desktop, mobile shows in sidebar */}
               <div className="hidden md:block">
-                <div className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                  <div className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-br from-primary-500 to-primary-600">
-                    <span className="text-xs font-medium text-white">
-                      {user?.fullName?.charAt(0) || 'U'}
-                    </span>
+                <div
+                  onClick={() => navigate('/edit-profile')}
+                  className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                >
+                  <div className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 overflow-hidden">
+                    {profilePhotoUrl ? (
+                      <img src={profilePhotoUrl} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="text-xs font-medium text-white">
+                        {user?.fullName?.charAt(0) || 'U'}
+                      </span>
+                    )}
                   </div>
                   <div className="text-left">
                     <p className="text-sm font-medium text-gray-700">{user?.fullName || 'User'}</p>

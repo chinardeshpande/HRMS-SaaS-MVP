@@ -1,186 +1,356 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { ModernLayout } from '../components/layout/ModernLayout';
-import employeeService from '../services/employeeService';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import accountService from '../services/accountService';
+import { User } from '../types';
+import {
+  CameraIcon,
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  LockClosedIcon,
+  UserCircleIcon,
+} from '@heroicons/react/24/outline';
+
+interface ProfileForm {
+  fullName: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  dateOfBirth: string;
+  gender: string;
+  address: string;
+}
+
+interface PasswordForm {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+const toDateInput = (value?: string): string => {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toISOString().slice(0, 10);
+};
+
+const persistUser = (user: User) => {
+  localStorage.setItem('user', JSON.stringify(user));
+  window.dispatchEvent(new CustomEvent('aurorahr:user-updated', { detail: user }));
+};
 
 export default function ModernEditProfile() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const employee = location.state?.employee;
-
-  const [formData, setFormData] = useState({
-    firstName: employee?.firstName || '',
-    lastName: employee?.lastName || '',
-    email: employee?.email || '',
-    phone: employee?.phone || '',
-    dateOfBirth: employee?.dateOfBirth || '',
-    gender: employee?.gender || '',
-    maritalStatus: employee?.maritalStatus || '',
-    nationality: employee?.nationality || '',
-    address: employee?.address || '',
-    emergencyContact: employee?.emergencyContact || '',
-    emergencyPhone: employee?.emergencyPhone || '',
+  const [user, setUser] = useState<User | null>(null);
+  const [profileForm, setProfileForm] = useState<ProfileForm>({
+    fullName: '',
+    firstName: '',
+    lastName: '',
+    phone: '',
+    dateOfBirth: '',
+    gender: '',
+    address: '',
   });
-
-  const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({
-    show: false,
-    message: '',
-    type: 'success',
+  const [passwordForm, setPasswordForm] = useState<PasswordForm>({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   });
+  const [loading, setLoading] = useState(true);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [notice, setNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+  const assetBaseUrl = apiBaseUrl.replace('/api/v1', '');
+  const photoUrl = useMemo(() => {
+    if (!user?.profilePhotoUrl) return '';
+    return user.profilePhotoUrl.startsWith('http')
+      ? user.profilePhotoUrl
+      : `${assetBaseUrl}${user.profilePhotoUrl}`;
+  }, [assetBaseUrl, user?.profilePhotoUrl]);
 
   useEffect(() => {
-    if (!employee) navigate('/employees');
-  }, [employee, navigate]);
+    const loadProfile = async () => {
+      try {
+        const currentUser = await accountService.getMe();
+        setUser(currentUser);
+        setProfileForm({
+          fullName: currentUser.fullName || '',
+          firstName: currentUser.employee?.firstName || '',
+          lastName: currentUser.employee?.lastName || '',
+          phone: currentUser.employee?.phone || '',
+          dateOfBirth: toDateInput(currentUser.employee?.dateOfBirth),
+          gender: currentUser.employee?.gender || '',
+          address: currentUser.employee?.address || '',
+        });
+      } catch (error: any) {
+        setNotice({ type: 'error', message: error.message || 'Unable to load profile' });
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    loadProfile();
+  }, []);
+
+  const updateProfileField = (name: keyof ProfileForm, value: string) => {
+    setProfileForm((current) => ({ ...current, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const updatePasswordField = (name: keyof PasswordForm, value: string) => {
+    setPasswordForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const handleProfileSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setNotice(null);
+    setSavingProfile(true);
 
     try {
-      await employeeService.update(employee.employeeId, formData);
-      showNotification('Profile updated successfully!', 'success');
-      setTimeout(() => navigate(`/employees/${employee.employeeId}`), 1500);
-    } catch (err: any) {
-      showNotification('Failed to update profile', 'error');
+      const updatedUser = await accountService.updateProfile(profileForm);
+      setUser(updatedUser);
+      persistUser(updatedUser);
+      setNotice({ type: 'success', message: 'Profile updated successfully.' });
+    } catch (error: any) {
+      setNotice({ type: 'error', message: error.message || 'Unable to update profile' });
     } finally {
-      setLoading(false);
+      setSavingProfile(false);
     }
   };
 
-  const showNotification = (message: string, type: 'success' | 'error') => {
-    setNotification({ show: true, message, type });
-    setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 3000);
+  const handlePasswordSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setNotice(null);
+
+    if (passwordForm.newPassword.length < 8) {
+      setNotice({ type: 'error', message: 'New password must be at least 8 characters long.' });
+      return;
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setNotice({ type: 'error', message: 'New password and confirmation do not match.' });
+      return;
+    }
+
+    setSavingPassword(true);
+    try {
+      await accountService.changePassword({
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword,
+      });
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setNotice({ type: 'success', message: 'Password changed successfully.' });
+    } catch (error: any) {
+      setNotice({ type: 'error', message: error.message || 'Unable to change password' });
+    } finally {
+      setSavingPassword(false);
+    }
   };
 
-  if (!employee) return null;
+  const handlePhotoChange = async (file?: File) => {
+    if (!file) return;
+    setNotice(null);
+    setUploadingPhoto(true);
+
+    try {
+      const updatedUser = await accountService.uploadProfilePhoto(file);
+      setUser(updatedUser);
+      persistUser(updatedUser);
+      setNotice({ type: 'success', message: 'Profile photo updated successfully.' });
+    } catch (error: any) {
+      setNotice({ type: 'error', message: error.message || 'Unable to upload profile photo' });
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
 
   return (
     <ModernLayout>
-      {notification.show && (
-        <div className="fixed top-4 right-4 z-50 animate-slide-in">
-          <div className={`rounded-lg px-4 py-3 shadow-xl ${notification.type === 'success' ? 'bg-success-600' : 'bg-danger-600'}`}>
-            <p className="text-sm font-medium text-white">{notification.message}</p>
-          </div>
-        </div>
-      )}
-
-      <div className="max-w-5xl mx-auto">
-        <button onClick={() => navigate(`/employees/${employee.employeeId}`)} className="btn btn-secondary mb-4">
-          <ArrowLeftIcon className="h-4 w-4 mr-2" />
-          Back
-        </button>
-
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Edit Profile</h1>
-            <p className="text-sm text-gray-600 mt-1">{employee.firstName} {employee.lastName} • {employee.employeeCode}</p>
-          </div>
+      <div className="mx-auto max-w-5xl space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">My profile</h1>
+          <p className="mt-1 text-sm text-gray-600">Manage your account, personal details, and sign-in security.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div className="card border-2 border-purple-200">
-            <div className="card-body p-5">
-              <h3 className="text-xs font-bold text-gray-900 mb-3 pb-2 border-b-2 border-purple-200 flex items-center">
-                <span className="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs mr-2">👤</span>
-                Personal Information
-              </h3>
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">First Name *</label>
-                  <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} required className="input input-sm" />
+        {notice && (
+          <div
+            className={`flex items-start gap-3 rounded-lg border px-4 py-3 ${
+              notice.type === 'success'
+                ? 'border-success-200 bg-success-50 text-success-800'
+                : 'border-danger-200 bg-danger-50 text-danger-800'
+            }`}
+          >
+            {notice.type === 'success' ? (
+              <CheckCircleIcon className="mt-0.5 h-5 w-5 flex-shrink-0" />
+            ) : (
+              <ExclamationCircleIcon className="mt-0.5 h-5 w-5 flex-shrink-0" />
+            )}
+            <p className="text-sm font-medium">{notice.message}</p>
+          </div>
+        )}
+
+        {loading ? (
+          <div className="rounded-lg border border-gray-200 bg-white p-8 text-sm text-gray-600">
+            Loading profile...
+          </div>
+        ) : (
+          <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+            <section className="rounded-lg border border-gray-200 bg-white p-5">
+              <div className="flex flex-col items-center text-center">
+                <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-primary-100">
+                  {photoUrl ? (
+                    <img src={photoUrl} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <UserCircleIcon className="h-20 w-20 text-primary-600" />
+                  )}
                 </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Last Name *</label>
-                  <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} required className="input input-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Date of Birth</label>
-                  <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} className="input input-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Gender</label>
-                  <select name="gender" value={formData.gender} onChange={handleChange} className="input input-sm">
-                    <option value="">Select</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Marital Status</label>
-                  <select name="maritalStatus" value={formData.maritalStatus} onChange={handleChange} className="input input-sm">
-                    <option value="">Select</option>
-                    <option value="single">Single</option>
-                    <option value="married">Married</option>
-                    <option value="divorced">Divorced</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Nationality</label>
-                  <input type="text" name="nationality" value={formData.nationality} onChange={handleChange} className="input input-sm" />
-                </div>
+                <h2 className="mt-4 text-lg font-semibold text-gray-900">{user?.fullName || 'User'}</h2>
+                <p className="mt-1 text-sm text-gray-500">{user?.email}</p>
+                <p className="mt-1 text-xs uppercase tracking-wide text-gray-400">{String(user?.role || '').replace('_', ' ')}</p>
+
+                <label className="btn btn-secondary mt-5 inline-flex cursor-pointer items-center">
+                  <CameraIcon className="mr-2 h-4 w-4" />
+                  {uploadingPhoto ? 'Uploading...' : 'Upload photo'}
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    disabled={uploadingPhoto}
+                    onChange={(event) => handlePhotoChange(event.target.files?.[0])}
+                  />
+                </label>
+                <p className="mt-3 text-xs text-gray-500">JPG, PNG, or WebP up to 2 MB.</p>
               </div>
+            </section>
+
+            <div className="space-y-6">
+              <form onSubmit={handleProfileSubmit} className="rounded-lg border border-gray-200 bg-white p-5">
+                <div className="mb-5 flex items-center gap-2 border-b border-gray-200 pb-3">
+                  <UserCircleIcon className="h-5 w-5 text-primary-600" />
+                  <h2 className="text-base font-semibold text-gray-900">Personal details</h2>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">Display name</label>
+                    <input
+                      className="input"
+                      value={profileForm.fullName}
+                      onChange={(event) => updateProfileField('fullName', event.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">Phone</label>
+                    <input
+                      className="input"
+                      value={profileForm.phone}
+                      onChange={(event) => updateProfileField('phone', event.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">First name</label>
+                    <input
+                      className="input"
+                      value={profileForm.firstName}
+                      onChange={(event) => updateProfileField('firstName', event.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">Last name</label>
+                    <input
+                      className="input"
+                      value={profileForm.lastName}
+                      onChange={(event) => updateProfileField('lastName', event.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">Date of birth</label>
+                    <input
+                      type="date"
+                      className="input"
+                      value={profileForm.dateOfBirth}
+                      onChange={(event) => updateProfileField('dateOfBirth', event.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">Gender</label>
+                    <select
+                      className="input"
+                      value={profileForm.gender}
+                      onChange={(event) => updateProfileField('gender', event.target.value)}
+                    >
+                      <option value="">Prefer not to say</option>
+                      <option value="Female">Female</option>
+                      <option value="Male">Male</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="mb-1 block text-sm font-medium text-gray-700">Address</label>
+                    <textarea
+                      rows={3}
+                      className="input"
+                      value={profileForm.address}
+                      onChange={(event) => updateProfileField('address', event.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-5 flex justify-end">
+                  <button type="submit" className="btn btn-primary" disabled={savingProfile}>
+                    {savingProfile ? 'Saving...' : 'Save profile'}
+                  </button>
+                </div>
+              </form>
+
+              <form onSubmit={handlePasswordSubmit} className="rounded-lg border border-gray-200 bg-white p-5">
+                <div className="mb-5 flex items-center gap-2 border-b border-gray-200 pb-3">
+                  <LockClosedIcon className="h-5 w-5 text-primary-600" />
+                  <h2 className="text-base font-semibold text-gray-900">Password</h2>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-3">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">Current password</label>
+                    <input
+                      type="password"
+                      className="input"
+                      autoComplete="current-password"
+                      value={passwordForm.currentPassword}
+                      onChange={(event) => updatePasswordField('currentPassword', event.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">New password</label>
+                    <input
+                      type="password"
+                      className="input"
+                      autoComplete="new-password"
+                      value={passwordForm.newPassword}
+                      onChange={(event) => updatePasswordField('newPassword', event.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">Confirm password</label>
+                    <input
+                      type="password"
+                      className="input"
+                      autoComplete="new-password"
+                      value={passwordForm.confirmPassword}
+                      onChange={(event) => updatePasswordField('confirmPassword', event.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-5 flex justify-end">
+                  <button type="submit" className="btn btn-primary" disabled={savingPassword}>
+                    {savingPassword ? 'Changing...' : 'Change password'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-
-          <div className="card border-2 border-blue-200">
-            <div className="card-body p-5">
-              <h3 className="text-xs font-bold text-gray-900 mb-3 pb-2 border-b-2 border-blue-200 flex items-center">
-                <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mr-2">📧</span>
-                Contact Details
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Email *</label>
-                  <input type="email" name="email" value={formData.email} onChange={handleChange} required className="input input-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Phone</label>
-                  <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="input input-sm" />
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Address</label>
-                  <textarea name="address" value={formData.address} onChange={handleChange} rows={2} className="input input-sm" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="card border-2 border-red-200">
-            <div className="card-body p-5">
-              <h3 className="text-xs font-bold text-gray-900 mb-3 pb-2 border-b-2 border-red-200 flex items-center">
-                <span className="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs mr-2">🆘</span>
-                Emergency Contact
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Contact Name</label>
-                  <input type="text" name="emergencyContact" value={formData.emergencyContact} onChange={handleChange} className="input input-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Contact Phone</label>
-                  <input type="tel" name="emergencyPhone" value={formData.emergencyPhone} onChange={handleChange} className="input input-sm" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end space-x-3">
-            <button type="button" onClick={() => navigate(`/employees/${employee.employeeId}`)} className="btn btn-secondary">
-              Cancel
-            </button>
-            <button type="submit" disabled={loading} className="btn btn-primary">
-              {loading ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
-        </form>
+        )}
       </div>
     </ModernLayout>
   );

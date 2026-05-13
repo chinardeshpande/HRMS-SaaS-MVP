@@ -44,6 +44,9 @@ export class User {
   @Column({ type: 'uuid', nullable: true })
   employeeId?: string;
 
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  profilePhotoUrl?: string;
+
   @Column({ type: 'boolean', default: true })
   isActive!: boolean;
 

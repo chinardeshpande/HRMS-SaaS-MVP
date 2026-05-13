@@ -14,6 +14,20 @@ export interface User {
   fullName: string;
   role: UserRole;
   employeeId?: string;
+  profilePhotoUrl?: string;
+  employee?: {
+    employeeId: string;
+    employeeCode: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    dateOfBirth?: string;
+    gender?: string;
+    address?: string;
+    department?: any;
+    designation?: any;
+  } | null;
   isDemoMode?: boolean;
   demoPersona?: string;
   tenant?: {
