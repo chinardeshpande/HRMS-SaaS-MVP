@@ -22,7 +22,9 @@
     "seed:templates": "ts-node src/scripts/seedDocumentTemplates.ts",
     "seed:hrconnect": "ts-node src/scripts/seedHRConnectData.ts",
     "seed:all": "npm run seed && npm run seed:attendance && npm run seed:onboarding && npm run seed:hrconnect",
-    "sync:employees": "ts-node src/scripts/syncCandidatesToEmployees.ts"
+    "sync:employees": "ts-node src/scripts/syncCandidatesToEmployees.ts",
+    "audit:tenant-clean": "ts-node src/scripts/auditTenantCleanliness.ts",
+    "import:pilot-org": "ts-node src/scripts/importPilotOrganization.ts"
   },
   "keywords": [
     "hrms",
