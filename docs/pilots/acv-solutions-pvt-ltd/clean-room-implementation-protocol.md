@@ -40,10 +40,41 @@ It must not contain:
 
 5. Load ACV master data only after the audit passes.
 6. Re-run the audit with employee limit still set to zero.
-7. Import ACV employees from the approved private CSV.
-8. Reconcile imported counts against the approved source file.
-9. Run role-based UI and API checks.
-10. Release credentials in waves: Director and HR first, then managers, then employees.
+7. Dry-run the reviewed private CSV import using the pilot import utility.
+8. Import ACV employees from the approved private CSV only after the dry-run passes.
+9. Reconcile imported counts against the approved source file.
+10. Run role-based UI and API checks.
+11. Release credentials in waves: Director and HR first, then managers, then employees.
+
+## Import Utility
+
+Use private CSV paths only. Do not commit real employee files or generated credential files.
+
+Dry-run:
+
+```bash
+npm --prefix backend run import:pilot-org -- \
+  --company-name="ACV Solutions Pvt Ltd" \
+  --allowed-email-domain=acvsolutions.in \
+  --masters-csv=/private/tmp/acv-onboarding-prep/final/acv-master-data-final.csv \
+  --employees-csv=/private/tmp/acv-onboarding-prep/final/acv-employee-import-final.csv
+```
+
+Execution is intentionally explicit:
+
+```bash
+PILOT_DEFAULT_PASSWORD="<temporary-password>" \
+npm --prefix backend run import:pilot-org -- \
+  --company-name="ACV Solutions Pvt Ltd" \
+  --allowed-email-domain=acvsolutions.in \
+  --masters-csv=/private/tmp/acv-onboarding-prep/final/acv-master-data-final.csv \
+  --employees-csv=/private/tmp/acv-onboarding-prep/final/acv-employee-import-final.csv \
+  --create-users \
+  --credentials-out=/private/tmp/acv-onboarding-prep/final/acv-credentials.csv \
+  --execute
+```
+
+The script refuses to import into a tenant that already has employees unless `--allow-existing-employees` is passed deliberately after review.
 
 ## If Audit Fails
 
@@ -58,4 +89,3 @@ Do not clean manually inside production without a reviewed plan. First determine
 - a legitimate admin user exceeds the configured threshold
 
 Then either recreate a fresh tenant or execute a reviewed rollback/cleanup with a fresh backup.
-
