@@ -414,22 +414,37 @@ const importData = async (options: Options): Promise<void> => {
 
           const hasSubordinates = subordinateManagerEmails.has(email);
           const userRole = getUserRole(row.role || '', hasSubordinates, options.autoManagerRole);
-          const user = userRepo.create({
-            tenantId: tenant.tenantId,
-            email,
-            fullName: `${normalize(row.firstName)} ${normalize(row.lastName)}`,
-            role: userRole,
-            employeeId: employee.employeeId,
-            isActive: true,
-            password: options.defaultPassword,
-          });
+          const fullName = `${normalize(row.firstName)} ${normalize(row.lastName)}`;
+          let user = await userRepo.findOne({ where: { tenantId: tenant.tenantId, email } });
+          const wasExistingUser = Boolean(user);
+
+          if (user) {
+            user.fullName = fullName;
+            user.role = userRole;
+            user.employeeId = employee.employeeId;
+            user.isActive = true;
+          } else {
+            user = userRepo.create({
+              tenantId: tenant.tenantId,
+              email,
+              fullName,
+              role: userRole,
+              employeeId: employee.employeeId,
+              isActive: true,
+              password: options.defaultPassword,
+            });
+          }
+
           await userRepo.save(user);
-          credentials.push({
-            employeeCode: normalize(row.employeeCode),
-            email,
-            temporaryPassword: options.defaultPassword || '',
-            role: userRole,
-          });
+
+          if (!credentials.some((credential) => credential.email === email)) {
+            credentials.push({
+              employeeCode: normalize(row.employeeCode),
+              email,
+              temporaryPassword: wasExistingUser ? 'existing-user-password-unchanged' : options.defaultPassword || '',
+              role: userRole,
+            });
+          }
         }
 
         if (options.credentialsOut) {
