@@ -5,8 +5,8 @@ export interface Department {
   name: string;
   tenantId: string;
   code?: string;
-  parentId?: string;
-  headId?: string;
+  parentDeptId?: string;
+  headEmployeeId?: string;
   isActive?: boolean;
   createdAt?: Date;
   updatedAt?: Date;

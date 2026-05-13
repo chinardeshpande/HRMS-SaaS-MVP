@@ -57,6 +57,7 @@ export const routeAccessRules: AccessRule[] = [
   { path: '/onboarding-wizard', roles: ADMIN_ROLES },
   { path: '/employees', roles: MANAGER_PLUS_ROLES },
   { path: '/employees/:id', roles: MANAGER_PLUS_ROLES },
+  { path: '/master-data', roles: ADMIN_ROLES },
   { path: '/departments', roles: ADMIN_ROLES },
   { path: '/designations', roles: ADMIN_ROLES },
   { path: '/attendance' },
