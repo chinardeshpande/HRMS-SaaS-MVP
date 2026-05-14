@@ -1,724 +1,655 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  SparklesIcon,
-  BoltIcon,
-  CheckCircleIcon,
   ArrowRightIcon,
   Bars3Icon,
-  XMarkIcon,
-  ChevronUpIcon,
-  DocumentChartBarIcon,
+  BuildingOffice2Icon,
+  ChartBarIcon,
+  ChatBubbleLeftRightIcon,
+  CheckCircleIcon,
+  ClipboardDocumentCheckIcon,
+  ClockIcon,
+  DocumentTextIcon,
+  FingerPrintIcon,
+  GlobeAltIcon,
+  LockClosedIcon,
+  ShieldCheckIcon,
+  SparklesIcon,
   UserGroupIcon,
-  BriefcaseIcon,
-  StarIcon,
+  UserPlusIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
-import HeroCarousel from '../components/landing/HeroCarousel';
-import { modules } from '../data/modulesData';
+
+type Capability = {
+  title: string;
+  description: string;
+  image: string;
+  icon: typeof UserGroupIcon;
+  points: string[];
+};
+
+type JourneyStep = {
+  title: string;
+  description: string;
+  image: string;
+};
+
+const navigation = [
+  { label: 'Platform', target: 'platform' },
+  { label: 'Journeys', target: 'journeys' },
+  { label: 'For India GCCs', target: 'gcc' },
+  { label: 'Pricing', target: 'pricing' },
+];
+
+const proofMetrics = [
+  { value: '3 months', label: 'GCC-ready operating horizon' },
+  { value: 'Multi-role', label: 'Owner, HR, manager, employee workspaces' },
+  { value: 'Tenant-safe', label: 'Company data separation by design' },
+  { value: 'End-to-end', label: 'Hire, manage, grow, exit lifecycle' },
+];
+
+const capabilities: Capability[] = [
+  {
+    title: 'Implementation console for a clean company launch',
+    description:
+      'Set up a new company with masters, departments, designations, users, reporting relationships, approval flows, document templates, and onboarding readiness from one operating layer.',
+    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png',
+    icon: BuildingOffice2Icon,
+    points: ['Company setup', 'Masters migration', 'Role-based access'],
+  },
+  {
+    title: 'Employee lifecycle that behaves like a real HR operating system',
+    description:
+      'Manage employee records, joining, probation, transfers, promotions, compensation context, documents, performance cycles, and exits without scattering data across spreadsheets.',
+    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.15.14-AM.png',
+    icon: UserGroupIcon,
+    points: ['Employee 360', 'Lifecycle history', 'Document vault'],
+  },
+  {
+    title: 'Attendance and leave with approval depth',
+    description:
+      'Support employee self-service, manager approvals, HR intervention, bulk updates, monthly views, balances, regularization, and operational reporting for distributed Indian teams.',
+    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.04-AM.png',
+    icon: ClockIcon,
+    points: ['Daily operations', 'Leave balances', 'Manager approvals'],
+  },
+  {
+    title: 'Performance, probation, and exit workflows with accountability',
+    description:
+      'Convert sensitive HR events into structured cases with owners, status, evidence, approvals, and review steps so teams can run the process consistently.',
+    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.58-AM.png',
+    icon: ClipboardDocumentCheckIcon,
+    points: ['Review cycles', 'Probation cases', 'Exit clearance'],
+  },
+  {
+    title: 'HR Connect for communication and service moments',
+    description:
+      'Bring HR announcements, employee conversations, group collaboration, tickets, appointments, and technical hooks for chat, audio, and video-led service into the HR workspace.',
+    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.21.10-AM.png',
+    icon: ChatBubbleLeftRightIcon,
+    points: ['Wall feeds', 'Chat context', 'Appointments'],
+  },
+  {
+    title: 'Documents, reports, and analytics for leadership confidence',
+    description:
+      'Generate HR documents, preserve employee records, and surface dashboards that help founders, HR leaders, and GCC leadership understand operational health quickly.',
+    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.18-AM.png',
+    icon: ChartBarIcon,
+    points: ['Standard letters', 'Analytics views', 'Audit trail'],
+  },
+];
+
+const journeySteps: JourneyStep[] = [
+  {
+    title: 'Register the company',
+    description:
+      'The HR owner creates the tenant, verifies the account, and enters the guided workspace for company setup.',
+    image: '/images/Hero-Images/hero-leadership.jpg',
+  },
+  {
+    title: 'Configure the operating model',
+    description:
+      'Masters, roles, departments, designations, locations, reporting lines, approval rules, and templates are set before employees are invited.',
+    image: '/images/Module-Headers/organization-header.jpg',
+  },
+  {
+    title: 'Invite users and run HR operations',
+    description:
+      'Employees get self-service; managers receive team approvals; HR controls global data, reports, documents, and exceptions.',
+    image: '/images/Hero-Images/hero-team-collaboration.jpg',
+  },
+  {
+    title: 'Use demo mode when the team needs confidence',
+    description:
+      'A curated sample workspace can show good data and complete workflows without polluting the company’s real records.',
+    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.42-AM.png',
+  },
+];
+
+const personaCards = [
+  {
+    title: 'Western MNCs building India GCCs',
+    description:
+      'Launch the India HR foundation fast while preserving global governance, local compliance expectations, role clarity, and auditable workflows.',
+    icon: GlobeAltIcon,
+  },
+  {
+    title: 'Indian SMEs professionalizing HR',
+    description:
+      'Move beyond spreadsheets into clean employee records, approvals, documents, attendance, leave, and reports without enterprise-suite complexity.',
+    icon: BuildingOffice2Icon,
+  },
+  {
+    title: 'New-age startups scaling teams',
+    description:
+      'Give founders and HR operators enough structure for scale while keeping employee self-service clean, modern, and low-friction.',
+    icon: SparklesIcon,
+  },
+];
+
+const pricingPlans = [
+  {
+    name: 'Pilot',
+    price: 'Free',
+    description: 'For evaluation, demo journeys, and first-company setup.',
+    features: ['Guided registration', 'Core HR modules', 'Demo workspace', 'Initial tenant setup'],
+    action: 'Start pilot',
+  },
+  {
+    name: 'Growth',
+    price: 'Per employee',
+    description: 'For SMEs and startups ready to operate HR on AuroraHR.',
+    features: ['Role-based dashboards', 'Attendance and leave', 'Performance and exit', 'Reports and documents'],
+    action: 'Register company',
+    featured: true,
+  },
+  {
+    name: 'GCC Launch',
+    price: 'Custom',
+    description: 'For MNCs planning India entity setup, migration, and rollout.',
+    features: ['Implementation planning', 'Data migration support', 'Workflow configuration', 'Leadership reporting'],
+    action: 'Talk to us',
+  },
+];
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  // Smooth scroll to section
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId.replace('#', ''));
-    if (element) {
-      const offset = 80; // Account for fixed navbar
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-    }
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    const top = element.getBoundingClientRect().top + window.scrollY - 76;
+    window.scrollTo({ top, behavior: 'smooth' });
     setMobileMenuOpen(false);
   };
 
-  // Handle scroll to show/hide scroll-to-top button
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.pageYOffset > 300);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
+  const requestDemo = () => {
+    window.location.href =
+      'mailto:sales@aurorahr.in?subject=AuroraHR%20Demo%20Request&body=Hi%2C%0A%0AI%20would%20like%20to%20schedule%20an%20AuroraHR%20demo.%0A%0ACompany%20Name%3A%0AEmployee%20Count%3A%0AUse%20Case%3A%20GCC%20setup%20%2F%20SME%20HR%20operations%20%2F%20Startup%20scale-up%0APreferred%20Date%2FTime%3A%0A';
   };
 
-
-  const benefits = [
-    {
-      title: 'Illuminate The Path',
-      description: 'Clear visibility into every employee journey from day one to promotion and beyond',
-      metric: '360°',
-      label: 'Visibility',
-    },
-    {
-      title: 'Accelerate Growth',
-      description: 'Data-driven insights that help every person reach their full potential',
-      metric: '3x',
-      label: 'Faster Development',
-    },
-    {
-      title: 'Build Connection',
-      description: 'Foster a culture where every person feels valued, heard, and empowered',
-      metric: '92%',
-      label: 'Employee Satisfaction',
-    },
-  ];
-
-  const pricingPlans = [
-    {
-      name: 'Starter',
-      price: '$49',
-      period: '/month',
-      description: 'Perfect for small teams getting started',
-      features: [
-        'Up to 50 employees',
-        'Employee management',
-        'Attendance tracking',
-        'Basic reports',
-        'Email support',
-      ],
-      cta: 'Start Free Trial',
-      highlighted: false,
-    },
-    {
-      name: 'Professional',
-      price: '$99',
-      period: '/month',
-      description: 'Ideal for growing organizations',
-      features: [
-        'Up to 200 employees',
-        'All Starter features',
-        'Performance reviews',
-        'Onboarding workflows',
-        'Advanced analytics',
-        'Priority support',
-      ],
-      cta: 'Start Free Trial',
-      highlighted: true,
-    },
-    {
-      name: 'Enterprise',
-      price: 'Custom',
-      period: '',
-      description: 'Tailored for large enterprises',
-      features: [
-        'Unlimited employees',
-        'All Professional features',
-        'Custom integrations',
-        'Dedicated account manager',
-        'SLA guarantee',
-        '24/7 phone support',
-      ],
-      cta: 'Contact Sales',
-      highlighted: false,
-    },
-  ];
-
-  const testimonials = [
-    {
-      name: 'Sarah Johnson',
-      role: 'HR Director',
-      company: 'TechCorp Inc.',
-      image: null,
-      quote: 'AuroraHR transformed our HR operations. We reduced onboarding time by 60% and employee satisfaction has never been higher.',
-      rating: 5,
-    },
-    {
-      name: 'Michael Chen',
-      role: 'CEO',
-      company: 'InnovateLabs',
-      image: null,
-      quote: 'The analytics and reporting features give us invaluable insights into our workforce. Best investment we made this year.',
-      rating: 5,
-    },
-    {
-      name: 'Emily Rodriguez',
-      role: 'Operations Manager',
-      company: 'GlobalSolutions',
-      image: null,
-      quote: 'Incredible platform with exceptional support. The automation features saved us countless hours every week.',
-      rating: 5,
-    },
-  ];
-
-  const stats = [
-    { value: '500+', label: 'Companies Trust Us' },
-    { value: '50K+', label: 'Employees Managed' },
-    { value: '99.9%', label: 'Uptime' },
-    { value: '24/7', label: 'Support Available' },
-  ];
-
   return (
-    <div className="bg-white">
-      {/* Navigation */}
-      <nav className="fixed w-full bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex items-center">
-              <img
-                src="/images/AuroraHR-logo.png"
-                alt="AuroraHR - Illuminate The Journey | Grow Every Person"
-                className="h-12 w-auto cursor-pointer"
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              />
+    <div className="bg-white text-gray-900">
+      <nav
+        className={`fixed inset-x-0 top-0 z-50 border-b transition-colors ${
+          scrolled ? 'border-gray-200 bg-white/95 shadow-sm backdrop-blur' : 'border-white/10 bg-gray-950/35 backdrop-blur'
+        }`}
+      >
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <button onClick={() => scrollToSection('top')} className="flex items-center">
+            <img
+              src="/images/AuroraHR-logo.png"
+              alt="AuroraHR"
+              className={`h-10 w-auto ${scrolled ? '' : 'rounded-sm bg-white/95 px-2 py-1'}`}
+            />
+          </button>
+
+          <div className={`hidden items-center gap-7 text-sm font-medium md:flex ${scrolled ? 'text-gray-700' : 'text-white'}`}>
+            {navigation.map((item) => (
+              <button key={item.target} onClick={() => scrollToSection(item.target)} className="hover:text-primary-300">
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="hidden items-center gap-3 md:flex">
+            <button
+              onClick={() => navigate('/login')}
+              className={`px-4 py-2 text-sm font-semibold ${scrolled ? 'text-gray-700 hover:text-primary-700' : 'text-white hover:text-primary-100'}`}
+            >
+              Login
+            </button>
+            <button
+              onClick={() => navigate('/register')}
+              className="rounded-md bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-700"
+            >
+              Register company
+            </button>
+          </div>
+
+          <button
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            className={`md:hidden ${scrolled ? 'text-gray-800' : 'text-white'}`}
+            aria-label="Open menu"
+          >
+            {mobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
+          </button>
+        </div>
+
+        {mobileMenuOpen && (
+          <div className="border-t border-gray-200 bg-white px-4 py-4 shadow-lg md:hidden">
+            <div className="flex flex-col gap-4 text-left text-sm font-medium text-gray-700">
+              {navigation.map((item) => (
+                <button key={item.target} onClick={() => scrollToSection(item.target)} className="text-left">
+                  {item.label}
+                </button>
+              ))}
+              <button onClick={() => navigate('/login')} className="rounded-md border border-gray-300 px-4 py-2">
+                Login
+              </button>
+              <button onClick={() => navigate('/register')} className="rounded-md bg-primary-600 px-4 py-2 text-white">
+                Register company
+              </button>
+            </div>
+          </div>
+        )}
+      </nav>
+
+      <header id="top" className="relative min-h-[92svh] overflow-hidden bg-gray-950">
+        <img
+          src="/images/Hero-Images/hero-employee-onboarding.jpg"
+          alt="HR team using AuroraHR for employee onboarding"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gray-950/68" />
+        <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-white to-transparent" />
+
+        <div className="relative mx-auto flex min-h-[92svh] max-w-7xl flex-col justify-center px-4 pb-24 pt-28 sm:px-6 lg:px-8">
+          <div className="max-w-4xl">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-md border border-white/25 bg-white/10 px-3 py-2 text-sm font-semibold text-white backdrop-blur">
+              <ShieldCheckIcon className="h-5 w-5 text-primary-200" />
+              Built for India HR operations, GCC launches, and fast-scaling teams
             </div>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
+            <h1 className="max-w-3xl text-5xl font-bold leading-tight text-white sm:text-6xl lg:text-7xl">
+              AuroraHR
+            </h1>
+            <p className="mt-6 max-w-3xl text-xl leading-8 text-gray-100 sm:text-2xl">
+              A modern HRMS for companies that need clean implementation, real workflows, role-based workspaces,
+              and a dependable employee lifecycle from registration to exit.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <button
-                onClick={() => scrollToSection('features')}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                onClick={() => navigate('/register')}
+                className="inline-flex items-center justify-center rounded-md bg-primary-600 px-6 py-3 text-base font-semibold text-white shadow-lg hover:bg-primary-700"
               >
-                Features
-              </button>
-              <button
-                onClick={() => scrollToSection('pricing')}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                Pricing
-              </button>
-              <button
-                onClick={() => scrollToSection('testimonials')}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                Testimonials
+                Register company
+                <ArrowRightIcon className="ml-2 h-5 w-5" />
               </button>
               <button
                 onClick={() => navigate('/login')}
-                className="btn btn-ghost text-primary-600"
+                className="inline-flex items-center justify-center rounded-md border border-white/70 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur hover:bg-white/20"
               >
-                Sign In
+                Login to workspace
               </button>
               <button
-                onClick={() => navigate('/login')}
-                className="btn btn-primary"
+                onClick={requestDemo}
+                className="inline-flex items-center justify-center rounded-md border border-white/30 px-6 py-3 text-base font-semibold text-white hover:bg-white/10"
               >
-                Start Free Trial
-              </button>
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                {mobileMenuOpen ? (
-                  <XMarkIcon className="h-6 w-6" />
-                ) : (
-                  <Bars3Icon className="h-6 w-6" />
-                )}
+                Request demo
               </button>
             </div>
           </div>
 
-          {/* Mobile menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden py-4 border-t border-gray-200">
-              <div className="flex flex-col space-y-4">
-                <button
-                  onClick={() => scrollToSection('features')}
-                  className="text-gray-600 hover:text-gray-900 transition-colors text-left"
-                >
-                  Features
-                </button>
-                <button
-                  onClick={() => scrollToSection('pricing')}
-                  className="text-gray-600 hover:text-gray-900 transition-colors text-left"
-                >
-                  Pricing
-                </button>
-                <button
-                  onClick={() => scrollToSection('testimonials')}
-                  className="text-gray-600 hover:text-gray-900 transition-colors text-left"
-                >
-                  Testimonials
-                </button>
-                <button
-                  onClick={() => navigate('/login')}
-                  className="btn btn-ghost text-primary-600 w-full"
-                >
-                  Sign In
-                </button>
-                <button
-                  onClick={() => navigate('/login')}
-                  className="btn btn-primary w-full"
-                >
-                  Start Free Trial
-                </button>
+          <div className="mt-14 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {proofMetrics.map((metric) => (
+              <div key={metric.label} className="rounded-md border border-white/20 bg-white/10 p-4 text-white backdrop-blur">
+                <div className="text-2xl font-bold">{metric.value}</div>
+                <div className="mt-1 text-sm text-gray-200">{metric.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section className="-mt-12 px-4 pb-16 sm:px-6 lg:px-8">
+          <div className="relative mx-auto max-w-7xl overflow-hidden rounded-md border border-gray-200 bg-white shadow-xl">
+            <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
+              <div className="p-6 sm:p-8 lg:p-10">
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Current product depth</p>
+                <h2 className="mt-3 text-3xl font-bold text-gray-900">
+                  Not a brochure tool. A working HR operating layer.
+                </h2>
+                <p className="mt-4 text-base leading-7 text-gray-600">
+                  AuroraHR already supports registration, onboarding, employee records, masters, attendance, leave,
+                  probation, performance, exit, HR Connect, reports, documents, demo mode, role-based dashboards,
+                  and production tenant pilots.
+                </p>
+                <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                  {[
+                    'Owner implementation console',
+                    'HR operations workspace',
+                    'Manager approval queue',
+                    'Employee self-service',
+                    'Demo data mode',
+                    'Production pilot import',
+                  ].map((item) => (
+                    <div key={item} className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <CheckCircleIcon className="h-5 w-5 flex-none text-success-600" />
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-gray-950 p-4 sm:p-6">
+                <img
+                  src="/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png"
+                  alt="AuroraHR dashboard sample"
+                  className="h-full min-h-[300px] w-full rounded-md object-cover object-left-top"
+                />
               </div>
             </div>
-          )}
-        </div>
-      </nav>
+          </div>
+        </section>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white via-primary-50 to-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Hero Content */}
-            <div>
-              <div className="inline-flex items-center space-x-2 bg-primary-100 text-primary-700 rounded-full px-4 py-2 mb-6">
-                <SparklesIcon className="h-5 w-5" />
-                <span className="text-sm font-medium">Illuminate The Journey | Grow Every Person</span>
-              </div>
-
-              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                Illuminate The Journey.
-                <span className="block bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
-                  Grow Every Person.
-                </span>
-              </h1>
-
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Transform HR from administrative overhead into a strategic growth engine.
-                AuroraHR empowers you to nurture talent, streamline operations, and build
-                a workplace where every person thrives.
+        <section id="platform" className="bg-gray-50 px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="max-w-3xl">
+              <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Platform capabilities</p>
+              <h2 className="mt-3 text-4xl font-bold text-gray-900">A complete HRMS around real work, not isolated screens.</h2>
+              <p className="mt-4 text-lg leading-8 text-gray-600">
+                Each module has been tested as a role-based journey: employee action, manager approval, HR intervention,
+                leadership visibility, and reporting evidence.
               </p>
+            </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                <button
-                  onClick={() => navigate('/login')}
-                  className="btn btn-primary btn-lg group"
-                >
-                  Start Free Trial
-                  <ArrowRightIcon className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </button>
-                <button
-                  onClick={() => window.location.href = 'mailto:sales@aurorahr.in?subject=Request%20Demo%20-%20AuroraHR&body=Hi%2C%0A%0AI%20would%20like%20to%20schedule%20a%20demo%20with%20a%20product%20expert.%0A%0ACompany%20Name%3A%20%0ANumber%20of%20Employees%3A%20%0APreferred%20Date%2FTime%3A%20%0A%0AThank%20you!'}
-                  className="btn btn-outline btn-lg"
-                >
-                  Request Demo
-                </button>
+            <div className="mt-12 grid gap-6 lg:grid-cols-2">
+              {capabilities.map((capability) => (
+                <article key={capability.title} className="overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm">
+                  <div className="grid min-h-full md:grid-cols-[0.92fr_1.08fr]">
+                    <div className="p-6">
+                      <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-md bg-primary-50 text-primary-700">
+                        <capability.icon className="h-6 w-6" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900">{capability.title}</h3>
+                      <p className="mt-3 text-sm leading-6 text-gray-600">{capability.description}</p>
+                      <div className="mt-5 flex flex-wrap gap-2">
+                        {capability.points.map((point) => (
+                          <span key={point} className="rounded-md bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">
+                            {point}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="min-h-[230px] bg-gray-100">
+                      <img src={capability.image} alt={`${capability.title} visual`} className="h-full w-full object-cover object-left-top" />
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="journeys" className="bg-white px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Registration to onboarding</p>
+                <h2 className="mt-3 text-4xl font-bold text-gray-900">
+                  The first journey is intentionally simple.
+                </h2>
+                <p className="mt-4 text-lg leading-8 text-gray-600">
+                  The landing page should move a buyer cleanly into company registration, then into verification,
+                  onboarding, configuration, user invites, and daily operations.
+                </p>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row lg:flex-col">
+                  <button
+                    onClick={() => navigate('/register')}
+                    className="inline-flex items-center justify-center rounded-md bg-primary-600 px-5 py-3 font-semibold text-white hover:bg-primary-700"
+                  >
+                    Start registration
+                    <ArrowRightIcon className="ml-2 h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="inline-flex items-center justify-center rounded-md border border-gray-300 px-5 py-3 font-semibold text-gray-800 hover:border-primary-300 hover:text-primary-700"
+                  >
+                    Existing customer login
+                  </button>
+                </div>
               </div>
 
-              {/* Stats */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-                {stats.map((stat, index) => (
-                  <div key={index}>
-                    <div className="text-3xl font-bold text-gray-900">{stat.value}</div>
-                    <div className="text-sm text-gray-600">{stat.label}</div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {journeySteps.map((step, index) => (
+                  <article key={step.title} className="overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm">
+                    <div className="relative h-44">
+                      <img src={step.image} alt={step.title} className="h-full w-full object-cover" />
+                      <div className="absolute left-4 top-4 rounded-md bg-white px-2.5 py-1 text-sm font-bold text-primary-700 shadow-sm">
+                        {String(index + 1).padStart(2, '0')}
+                      </div>
+                    </div>
+                    <div className="p-5">
+                      <h3 className="text-lg font-bold text-gray-900">{step.title}</h3>
+                      <p className="mt-2 text-sm leading-6 text-gray-600">{step.description}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="gcc" className="bg-gray-950 px-4 py-20 text-white sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-center">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary-200">Built for serious adoption</p>
+                <h2 className="mt-3 text-4xl font-bold">Designed for GCC launches, SMEs, and startup scale.</h2>
+                <p className="mt-4 text-lg leading-8 text-gray-300">
+                  AuroraHR is positioned for organizations that need the discipline of enterprise HR without waiting
+                  months for a heavyweight implementation. It fits a Western MNC setting up in India, an SME bringing
+                  order to people operations, or a startup preparing for its next growth stage.
+                </p>
+
+                <div className="mt-8 grid gap-4 md:grid-cols-3">
+                  {personaCards.map((card) => (
+                    <div key={card.title} className="rounded-md border border-white/15 bg-white/10 p-5">
+                      <card.icon className="h-7 w-7 text-primary-200" />
+                      <h3 className="mt-4 text-base font-bold">{card.title}</h3>
+                      <p className="mt-2 text-sm leading-6 text-gray-300">{card.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="overflow-hidden rounded-md border border-white/15 bg-white/10 p-4">
+                <img
+                  src="/images/Hero-Images/hero-happy-employees.jpg"
+                  alt="Employees collaborating in a modern workplace"
+                  className="h-[420px] w-full rounded-md object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-8 lg:grid-cols-3">
+              <div className="lg:col-span-1">
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Trust and control</p>
+                <h2 className="mt-3 text-3xl font-bold text-gray-900">The essentials commercial buyers ask for.</h2>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
+                {[
+                  {
+                    title: 'Authentic multi-tenancy',
+                    description: 'Tenant-aware data access and production pilot workflows keep company records separated.',
+                    icon: FingerPrintIcon,
+                  },
+                  {
+                    title: 'Role-based UX',
+                    description: 'Owners, HR managers, senior employees, managers, and employees see the work that matters to them.',
+                    icon: UserPlusIcon,
+                  },
+                  {
+                    title: 'Operational evidence',
+                    description: 'Visual QA, screenshots, workflow reports, and seeded demo journeys support investor and customer demos.',
+                    icon: DocumentTextIcon,
+                  },
+                  {
+                    title: 'Security-conscious account flows',
+                    description: 'Login, profile management, password change, reset hooks, and invite flows are treated as product-critical paths.',
+                    icon: LockClosedIcon,
+                  },
+                ].map((item) => (
+                  <div key={item.title} className="rounded-md border border-gray-200 p-6">
+                    <item.icon className="h-7 w-7 text-primary-700" />
+                    <h3 className="mt-4 text-lg font-bold text-gray-900">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-gray-600">{item.description}</p>
                   </div>
                 ))}
               </div>
             </div>
+          </div>
+        </section>
 
-            {/* Hero Carousel */}
-            <div className="relative animate-slide-in-right h-[500px]">
-              <HeroCarousel />
+        <section id="pricing" className="bg-gray-50 px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="max-w-3xl">
+              <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Commercial path</p>
+              <h2 className="mt-3 text-4xl font-bold text-gray-900">Start with a pilot. Grow into production.</h2>
+              <p className="mt-4 text-lg leading-8 text-gray-600">
+                Pricing should support evaluation, real-company pilots, and implementation-heavy GCC rollouts.
+              </p>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Benefits Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Every Journey Needs Light</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              From hiring to retiring, illuminate every step of your employee journey with tools
-              that empower growth and celebrate potential.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {benefits.map((benefit, index) => (
-              <div
-                key={index}
-                className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl transition-shadow"
-              >
-                <div className="text-5xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent mb-2">
-                  {benefit.metric}
-                </div>
-                <div className="text-sm text-gray-500 mb-4">{benefit.label}</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{benefit.title}</h3>
-                <p className="text-gray-600">{benefit.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Light Every Step of The Journey
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Complete HR toolkit to support, develop, and celebrate every person at every stage
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {modules.map((module) => {
-              const IconComponent = module.icon;
-              return (
-                <div
-                  key={module.id}
-                  onClick={() => navigate(`/features/${module.id}`)}
-                  className="bg-white rounded-2xl p-8 hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group"
-                >
-                  <div className={`bg-gradient-to-br ${module.gradient} rounded-xl p-3 w-fit mb-6 group-hover:scale-110 transition-transform`}>
-                    <IconComponent className="h-8 w-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors">
-                    {module.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed mb-4">{module.description}</p>
-                  <div className="flex items-center text-primary-600 font-medium group-hover:translate-x-2 transition-transform">
-                    Learn more
-                    <ArrowRightIcon className="h-4 w-4 ml-2" />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Begin Your Journey Today</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Three simple steps to transform how you nurture and grow your team
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                step: '01',
-                title: 'Create Account',
-                description: 'Sign up and set up your company profile in under 5 minutes',
-                icon: UserGroupIcon,
-              },
-              {
-                step: '02',
-                title: 'Import Data',
-                description: 'Easily import employee data from spreadsheets or your existing system',
-                icon: DocumentChartBarIcon,
-              },
-              {
-                step: '03',
-                title: 'Start Managing',
-                description: 'Begin automating HR workflows and empowering your team',
-                icon: BoltIcon,
-              },
-            ].map((step, index) => (
-              <div key={index} className="relative">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 text-white text-2xl font-bold mb-6">
-                    {step.step}
-                  </div>
-                  <div className="bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl p-3 w-fit mx-auto mb-6">
-                    <step.icon className="h-8 w-8 text-primary-600" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
-                  <p className="text-gray-600">{step.description}</p>
-                </div>
-                {index < 2 && (
-                  <div className="hidden md:block absolute top-10 left-full w-full h-0.5 bg-gradient-to-r from-primary-300 to-transparent"></div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Choose the plan that fits your team size and needs
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {pricingPlans.map((plan, index) => (
-              <div
-                key={index}
-                className={`bg-white rounded-2xl p-8 ${
-                  plan.highlighted
-                    ? 'ring-2 ring-primary-600 shadow-2xl scale-105'
-                    : 'border border-gray-200'
-                }`}
-              >
-                {plan.highlighted && (
-                  <div className="bg-primary-600 text-white text-sm font-semibold text-center py-2 px-4 rounded-lg mb-6">
-                    Most Popular
-                  </div>
-                )}
-
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                  <p className="text-gray-600 mb-4">{plan.description}</p>
-                  <div className="flex items-baseline">
-                    <span className="text-5xl font-bold text-gray-900">{plan.price}</span>
-                    <span className="text-gray-600 ml-2">{plan.period}</span>
-                  </div>
-                </div>
-
-                <ul className="space-y-4 mb-8">
-                  {plan.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start">
-                      <CheckCircleIcon className="h-6 w-6 text-primary-600 flex-shrink-0" />
-                      <span className="ml-3 text-gray-600">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  onClick={() => navigate('/login')}
-                  className={`btn w-full ${
-                    plan.highlighted ? 'btn-primary' : 'btn-outline'
+            <div className="mt-10 grid gap-6 lg:grid-cols-3">
+              {pricingPlans.map((plan) => (
+                <article
+                  key={plan.name}
+                  className={`rounded-md border bg-white p-7 shadow-sm ${
+                    plan.featured ? 'border-primary-600 ring-2 ring-primary-100' : 'border-gray-200'
                   }`}
                 >
-                  {plan.cta}
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <p className="text-gray-600">
-              All plans include 14-day free trial. No credit card required.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Loved by HR Teams Worldwide
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              See what our customers have to say about AuroraHR
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div
-                key={index}
-                className="bg-gray-50 rounded-2xl p-8 hover:shadow-xl transition-shadow"
-              >
-                <div className="flex items-center space-x-1 mb-6">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <StarIcon key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-
-                <p className="text-gray-700 mb-6 leading-relaxed italic">
-                  "{testimonial.quote}"
-                </p>
-
-                <div className="flex items-center space-x-4">
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-bold">
-                    {testimonial.name.split(' ').map(n => n[0]).join('')}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                    <div className="text-sm text-gray-600">
-                      {testimonial.role}, {testimonial.company}
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
+                      <p className="mt-2 text-sm leading-6 text-gray-600">{plan.description}</p>
                     </div>
+                    {plan.featured && <span className="rounded-md bg-success-50 px-2.5 py-1 text-xs font-bold text-success-700">Best fit</span>}
                   </div>
-                </div>
-              </div>
-            ))}
+                  <div className="mt-6 text-3xl font-bold text-gray-900">{plan.price}</div>
+                  <ul className="mt-6 space-y-3">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex gap-2 text-sm text-gray-700">
+                        <CheckCircleIcon className="mt-0.5 h-5 w-5 flex-none text-success-600" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    onClick={plan.name === 'GCC Launch' ? requestDemo : () => navigate('/register')}
+                    className={`mt-7 w-full rounded-md px-4 py-3 font-semibold ${
+                      plan.featured ? 'bg-primary-600 text-white hover:bg-primary-700' : 'border border-gray-300 text-gray-800 hover:border-primary-300'
+                    }`}
+                  >
+                    {plan.action}
+                  </button>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="relative overflow-hidden bg-primary-700 px-4 py-20 text-white sm:px-6 lg:px-8">
+          <img
+            src="/images/Hero-Images/hero-team-collaboration.jpg"
+            alt="Team reviewing HR data"
+            className="absolute inset-0 h-full w-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-primary-800/82" />
+          <div className="relative mx-auto max-w-4xl text-center">
+            <h2 className="text-4xl font-bold">Give every buyer a clear next step.</h2>
+            <p className="mt-4 text-lg leading-8 text-primary-50">
+              New companies register and onboard. Existing users login. Decision makers request a guided demo.
+              The product journey stays simple while the platform depth remains visible.
+            </p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <button
+                onClick={() => navigate('/register')}
+                className="inline-flex items-center justify-center rounded-md bg-white px-6 py-3 font-semibold text-primary-700 hover:bg-gray-100"
+              >
+                Register company
+                <ArrowRightIcon className="ml-2 h-5 w-5" />
+              </button>
+              <button
+                onClick={() => navigate('/login')}
+                className="inline-flex items-center justify-center rounded-md border border-white/70 px-6 py-3 font-semibold text-white hover:bg-white/10"
+              >
+                Login
+              </button>
+              <button
+                onClick={requestDemo}
+                className="inline-flex items-center justify-center rounded-md border border-white/35 px-6 py-3 font-semibold text-white hover:bg-white/10"
+              >
+                Request demo
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="bg-gray-950 px-4 py-12 text-gray-300 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
+          <div>
+            <img src="/images/AuroraHR-logo-with-tagline.png" alt="AuroraHR" className="h-12 w-auto rounded-sm bg-white px-2 py-1" />
+            <p className="mt-4 max-w-md text-sm leading-6 text-gray-400">
+              AuroraHR helps organizations launch, operate, and improve HR with strong workflows, role clarity,
+              and a practical path from pilot to production.
+            </p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-white">Platform</h3>
+            <div className="mt-3 space-y-2 text-sm">
+              <button onClick={() => scrollToSection('platform')} className="block hover:text-white">Capabilities</button>
+              <button onClick={() => scrollToSection('journeys')} className="block hover:text-white">User journeys</button>
+              <button onClick={() => scrollToSection('pricing')} className="block hover:text-white">Pricing</button>
+            </div>
+          </div>
+          <div>
+            <h3 className="font-semibold text-white">Access</h3>
+            <div className="mt-3 space-y-2 text-sm">
+              <button onClick={() => navigate('/register')} className="block hover:text-white">Register</button>
+              <button onClick={() => navigate('/login')} className="block hover:text-white">Login</button>
+              <button onClick={requestDemo} className="block hover:text-white">Request demo</button>
+            </div>
+          </div>
+          <div>
+            <h3 className="font-semibold text-white">Audience</h3>
+            <div className="mt-3 space-y-2 text-sm text-gray-400">
+              <div>India GCC launch teams</div>
+              <div>Indian SMEs</div>
+              <div>Scaling startups</div>
+            </div>
           </div>
         </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary-600 to-primary-800">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">
-            Ready to Illuminate Your Journey?
-          </h2>
-          <p className="text-xl text-primary-100 mb-8">
-            Join organizations worldwide who are growing every person and building exceptional workplaces with AuroraHR
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => navigate('/login')}
-              className="btn bg-white text-primary-600 hover:bg-gray-100 btn-lg group"
-            >
-              Start Free Trial
-              <ArrowRightIcon className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button
-              onClick={() => window.location.href = 'mailto:sales@aurorahr.in?subject=Schedule%20Demo%20-%20AuroraHR&body=Hi%2C%0A%0AI%20would%20like%20to%20schedule%20a%20demo%20with%20a%20product%20expert.%0A%0ACompany%20Name%3A%20%0ANumber%20of%20Employees%3A%20%0APreferred%20Date%2FTime%3A%20%0A%0AThank%20you!'}
-              className="btn btn-outline border-white text-white hover:bg-white hover:text-primary-600 btn-lg"
-            >
-              Talk to an Expert
-            </button>
-          </div>
-
-          <p className="text-primary-200 text-sm mt-6">
-            No credit card required • 14-day free trial • Cancel anytime
-          </p>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            {/* Company Info */}
-            <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl p-2">
-                  <BriefcaseIcon className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <div className="text-xl font-bold text-white">AuroraHR</div>
-                  <div className="text-xs text-primary-300 italic">Illuminate The Journey | Grow Every Person</div>
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm">
-                Empowering HR teams to nurture talent and build exceptional workplaces.
-              </p>
-            </div>
-
-            {/* Product */}
-            <div>
-              <h3 className="text-white font-semibold mb-4">Product</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a href="#features" className="hover:text-white transition-colors">
-                    Features
-                  </a>
-                </li>
-                <li>
-                  <a href="#pricing" className="hover:text-white transition-colors">
-                    Pricing
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Integrations
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Security
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Company */}
-            <div>
-              <h3 className="text-white font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Careers
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Contact
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Legal */}
-            <div>
-              <h3 className="text-white font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Terms of Service
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Cookie Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    GDPR
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-sm text-gray-400">
-                © 2025 AuroraHR. All rights reserved.
-              </p>
-              <div className="flex space-x-6 mt-4 md:mt-0">
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  Twitter
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  LinkedIn
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  GitHub
-                </a>
-              </div>
-            </div>
-          </div>
+        <div className="mx-auto mt-10 max-w-7xl border-t border-white/10 pt-6 text-sm text-gray-500">
+          © 2026 AuroraHR. Illuminate The Journey. Grow Every Person.
         </div>
       </footer>
-
-      {/* Scroll to Top Button */}
-      {showScrollTop && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-8 right-8 bg-primary-600 hover:bg-primary-700 text-white p-4 rounded-full shadow-2xl transition-all hover:scale-110 z-50 animate-fade-in"
-          aria-label="Scroll to top"
-        >
-          <ChevronUpIcon className="h-6 w-6" />
-        </button>
-      )}
     </div>
   );
 }
