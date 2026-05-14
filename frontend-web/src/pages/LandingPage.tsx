@@ -19,8 +19,10 @@ import {
   UserPlusIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
+import { adoptionJourneys } from '../data/adoptionJourneys';
 
 type Capability = {
+  moduleId: string;
   title: string;
   description: string;
   image: string;
@@ -28,15 +30,10 @@ type Capability = {
   points: string[];
 };
 
-type JourneyStep = {
-  title: string;
-  description: string;
-  image: string;
-};
-
 const navigation = [
   { label: 'Platform', target: 'platform' },
   { label: 'Journeys', target: 'journeys' },
+  { label: 'What is unique', target: 'unique' },
   { label: 'For India GCCs', target: 'gcc' },
   { label: 'Pricing', target: 'pricing' },
 ];
@@ -50,6 +47,7 @@ const proofMetrics = [
 
 const capabilities: Capability[] = [
   {
+    moduleId: 'organization',
     title: 'Implementation console for a clean company launch',
     description:
       'Set up a new company with masters, departments, designations, users, reporting relationships, approval flows, document templates, and onboarding readiness from one operating layer.',
@@ -58,6 +56,7 @@ const capabilities: Capability[] = [
     points: ['Company setup', 'Masters migration', 'Role-based access'],
   },
   {
+    moduleId: 'employee-management',
     title: 'Employee lifecycle that behaves like a real HR operating system',
     description:
       'Manage employee records, joining, probation, transfers, promotions, compensation context, documents, performance cycles, and exits without scattering data across spreadsheets.',
@@ -66,6 +65,7 @@ const capabilities: Capability[] = [
     points: ['Employee 360', 'Lifecycle history', 'Document vault'],
   },
   {
+    moduleId: 'attendance',
     title: 'Attendance and leave with approval depth',
     description:
       'Support employee self-service, manager approvals, HR intervention, bulk updates, monthly views, balances, regularization, and operational reporting for distributed Indian teams.',
@@ -74,6 +74,7 @@ const capabilities: Capability[] = [
     points: ['Daily operations', 'Leave balances', 'Manager approvals'],
   },
   {
+    moduleId: 'performance',
     title: 'Performance, probation, and exit workflows with accountability',
     description:
       'Convert sensitive HR events into structured cases with owners, status, evidence, approvals, and review steps so teams can run the process consistently.',
@@ -82,6 +83,7 @@ const capabilities: Capability[] = [
     points: ['Review cycles', 'Probation cases', 'Exit clearance'],
   },
   {
+    moduleId: 'hr-connect',
     title: 'HR Connect for communication and service moments',
     description:
       'Bring HR announcements, employee conversations, group collaboration, tickets, appointments, and technical hooks for chat, audio, and video-led service into the HR workspace.',
@@ -90,39 +92,13 @@ const capabilities: Capability[] = [
     points: ['Wall feeds', 'Chat context', 'Appointments'],
   },
   {
+    moduleId: 'dashboard',
     title: 'Documents, reports, and analytics for leadership confidence',
     description:
       'Generate HR documents, preserve employee records, and surface dashboards that help founders, HR leaders, and GCC leadership understand operational health quickly.',
     image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.18-AM.png',
     icon: ChartBarIcon,
     points: ['Standard letters', 'Analytics views', 'Audit trail'],
-  },
-];
-
-const journeySteps: JourneyStep[] = [
-  {
-    title: 'Register the company',
-    description:
-      'The HR owner creates the tenant, verifies the account, and enters the guided workspace for company setup.',
-    image: '/images/Hero-Images/hero-leadership.jpg',
-  },
-  {
-    title: 'Configure the operating model',
-    description:
-      'Masters, roles, departments, designations, locations, reporting lines, approval rules, and templates are set before employees are invited.',
-    image: '/images/Module-Headers/organization-header.jpg',
-  },
-  {
-    title: 'Invite users and run HR operations',
-    description:
-      'Employees get self-service; managers receive team approvals; HR controls global data, reports, documents, and exceptions.',
-    image: '/images/Hero-Images/hero-team-collaboration.jpg',
-  },
-  {
-    title: 'Use demo mode when the team needs confidence',
-    description:
-      'A curated sample workspace can show good data and complete workflows without polluting the company’s real records.',
-    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.42-AM.png',
   },
 ];
 
@@ -207,9 +183,9 @@ export default function LandingPage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <button onClick={() => scrollToSection('top')} className="flex items-center">
             <img
-              src="/images/AuroraHR-logo.png"
+              src="/images/aurora-logo-navbar.svg"
               alt="AuroraHR"
-              className={`h-10 w-auto ${scrolled ? '' : 'rounded-sm bg-white/95 px-2 py-1'}`}
+              className={`h-10 w-auto transition-all ${scrolled ? '' : 'brightness-0 invert'}`}
             />
           </button>
 
@@ -367,33 +343,77 @@ export default function LandingPage() {
           <div className="mx-auto max-w-7xl">
             <div className="max-w-3xl">
               <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Platform capabilities</p>
-              <h2 className="mt-3 text-4xl font-bold text-gray-900">A complete HRMS around real work, not isolated screens.</h2>
+              <h2 className="mt-3 text-4xl font-bold text-gray-900">The HR foundation for a company that is ready to operate.</h2>
               <p className="mt-4 text-lg leading-8 text-gray-600">
-                Each module has been tested as a role-based journey: employee action, manager approval, HR intervention,
-                leadership visibility, and reporting evidence.
+                AuroraHR is organized around the operating moments HR teams handle every week: clean data,
+                employee self-service, manager approvals, HR exceptions, documents, communication, and leadership visibility.
               </p>
             </div>
 
-            <div className="mt-12 grid gap-6 lg:grid-cols-2">
+            <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {[
+                {
+                  title: 'Implementation ready',
+                  description: 'Masters, role access, reporting lines, approval flows, templates, and employee import are part of the product story.',
+                  icon: BuildingOffice2Icon,
+                },
+                {
+                  title: 'Human HR journeys',
+                  description: 'Every process is shaped around the employee, manager, HR manager, and leadership view instead of a generic admin grid.',
+                  icon: UserGroupIcon,
+                },
+                {
+                  title: 'Workflow depth',
+                  description: 'Attendance, leave, onboarding, probation, performance, documents, HR Connect, and exit are connected to real approvals.',
+                  icon: ClipboardDocumentCheckIcon,
+                },
+                {
+                  title: 'Decision visibility',
+                  description: 'Reports, dashboards, demo data, and visual QA evidence help leadership trust the system before full rollout.',
+                  icon: ChartBarIcon,
+                },
+              ].map((feature) => (
+                <div key={feature.title} className="rounded-md border border-gray-200 bg-white p-6 shadow-sm">
+                  <feature.icon className="h-7 w-7 text-primary-700" />
+                  <h3 className="mt-5 text-lg font-bold text-gray-900">{feature.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-gray-600">{feature.description}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-14 flex items-end justify-between gap-6">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Explore the modules</p>
+                <h3 className="mt-2 text-2xl font-bold text-gray-900">Each capability opens into a focused product page.</h3>
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-6 lg:grid-cols-3">
               {capabilities.map((capability) => (
-                <article key={capability.title} className="overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm">
-                  <div className="grid min-h-full md:grid-cols-[0.92fr_1.08fr]">
-                    <div className="p-6">
-                      <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-md bg-primary-50 text-primary-700">
-                        <capability.icon className="h-6 w-6" />
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900">{capability.title}</h3>
-                      <p className="mt-3 text-sm leading-6 text-gray-600">{capability.description}</p>
-                      <div className="mt-5 flex flex-wrap gap-2">
-                        {capability.points.map((point) => (
-                          <span key={point} className="rounded-md bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">
-                            {point}
-                          </span>
-                        ))}
-                      </div>
+                <article
+                  key={capability.title}
+                  onClick={() => navigate(`/features/${capability.moduleId}`)}
+                  className="group cursor-pointer overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                >
+                  <div className="h-44 bg-gray-100">
+                    <img src={capability.image} alt={`${capability.title} visual`} className="h-full w-full object-cover object-left-top" />
+                  </div>
+                  <div className="p-6">
+                    <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-md bg-primary-50 text-primary-700">
+                      <capability.icon className="h-6 w-6" />
                     </div>
-                    <div className="min-h-[230px] bg-gray-100">
-                      <img src={capability.image} alt={`${capability.title} visual`} className="h-full w-full object-cover object-left-top" />
+                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary-700">{capability.title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-gray-600">{capability.description}</p>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {capability.points.map((point) => (
+                        <span key={point} className="rounded-md bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">
+                          {point}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-5 inline-flex items-center text-sm font-semibold text-primary-700">
+                      View capability
+                      <ArrowRightIcon className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
                     </div>
                   </div>
                 </article>
@@ -404,47 +424,113 @@ export default function LandingPage() {
 
         <section id="journeys" className="bg-white px-4 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+            <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+              <div className="lg:sticky lg:top-24">
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Registration to adoption</p>
+                <h2 className="mt-3 text-4xl font-bold text-gray-900">A simple path from first visit to mature HR operations.</h2>
+                <p className="mt-4 text-lg leading-8 text-gray-600">
+                  The onboarding journey is designed to feel obvious: register, configure, migrate, operate,
+                  train with demo mode, and then scale the HR operating model.
+                </p>
+                <button
+                  onClick={() => navigate('/register')}
+                  className="mt-8 inline-flex items-center justify-center rounded-md bg-primary-600 px-5 py-3 font-semibold text-white hover:bg-primary-700"
+                >
+                  Start registration
+                  <ArrowRightIcon className="ml-2 h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="relative">
+                <div className="absolute left-5 top-8 hidden h-[calc(100%-4rem)] w-px bg-primary-200 md:block" />
+                <div className="space-y-5">
+                  {adoptionJourneys.map((journey, index) => (
+                    <article
+                      key={journey.id}
+                      onClick={() => navigate(`/journeys/${journey.id}`)}
+                      className="group relative cursor-pointer rounded-md border border-gray-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg md:ml-12"
+                    >
+                      <div className="absolute -left-[3.25rem] top-6 hidden h-10 w-10 items-center justify-center rounded-full border-4 border-white bg-primary-600 text-sm font-bold text-white shadow md:flex">
+                        {index + 1}
+                      </div>
+                      <div className="grid gap-4 md:grid-cols-[190px_1fr]">
+                        <div className="relative h-36 overflow-hidden rounded-md bg-gray-100">
+                          <img src={journey.image} alt={journey.title} className="h-full w-full object-cover" />
+                          <div className="absolute left-3 top-3 rounded-md bg-white px-2 py-1 text-xs font-bold text-primary-700 md:hidden">
+                            {String(index + 1).padStart(2, '0')}
+                          </div>
+                        </div>
+                        <div className="flex flex-col justify-center">
+                          <div className="flex items-center gap-3">
+                            <journey.icon className="h-6 w-6 text-primary-700" />
+                            <p className="text-xs font-semibold uppercase tracking-wide text-primary-700">{journey.shortTitle}</p>
+                          </div>
+                          <h3 className="mt-2 text-xl font-bold text-gray-900 group-hover:text-primary-700">{journey.title}</h3>
+                          <p className="mt-2 text-sm leading-6 text-gray-600">{journey.description}</p>
+                          <div className="mt-4 inline-flex items-center text-sm font-semibold text-primary-700">
+                            View adoption stage
+                            <ArrowRightIcon className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="unique" className="bg-gray-50 px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Registration to onboarding</p>
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">What is unique</p>
                 <h2 className="mt-3 text-4xl font-bold text-gray-900">
-                  The first journey is intentionally simple.
+                  Focused HR software that respects how people actually work.
                 </h2>
                 <p className="mt-4 text-lg leading-8 text-gray-600">
-                  The landing page should move a buyer cleanly into company registration, then into verification,
-                  onboarding, configuration, user invites, and daily operations.
+                  AuroraHR is intentionally human-centric and HR-focused. It gives every persona a clean,
+                  relevant workspace while avoiding the trap of becoming a bloated all-in-one suite.
                 </p>
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row lg:flex-col">
-                  <button
-                    onClick={() => navigate('/register')}
-                    className="inline-flex items-center justify-center rounded-md bg-primary-600 px-5 py-3 font-semibold text-white hover:bg-primary-700"
-                  >
-                    Start registration
-                    <ArrowRightIcon className="ml-2 h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={() => navigate('/login')}
-                    className="inline-flex items-center justify-center rounded-md border border-gray-300 px-5 py-3 font-semibold text-gray-800 hover:border-primary-300 hover:text-primary-700"
-                  >
-                    Existing customer login
-                  </button>
+                <div className="mt-8 rounded-md border border-primary-100 bg-white p-6 shadow-sm">
+                  <h3 className="text-lg font-bold text-gray-900">Clear product scope</h3>
+                  <p className="mt-2 text-sm leading-6 text-gray-600">
+                    Payroll and recruitment or talent acquisition are deliberately outside the core scope.
+                    This keeps AuroraHR simple, implementation-friendly, and easy to connect with payroll,
+                    ATS, finance, identity, and communication tools already present in the customer environment.
+                  </p>
                 </div>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                {journeySteps.map((step, index) => (
-                  <article key={step.title} className="overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm">
-                    <div className="relative h-44">
-                      <img src={step.image} alt={step.title} className="h-full w-full object-cover" />
-                      <div className="absolute left-4 top-4 rounded-md bg-white px-2.5 py-1 text-sm font-bold text-primary-700 shadow-sm">
-                        {String(index + 1).padStart(2, '0')}
-                      </div>
-                    </div>
-                    <div className="p-5">
-                      <h3 className="text-lg font-bold text-gray-900">{step.title}</h3>
-                      <p className="mt-2 text-sm leading-6 text-gray-600">{step.description}</p>
-                    </div>
-                  </article>
+                {[
+                  {
+                    title: 'Intuitive by role',
+                    description: 'Owners, HR teams, managers, and employees see focused dashboards instead of one overloaded workspace.',
+                    icon: UserGroupIcon,
+                  },
+                  {
+                    title: 'Human-centric UX',
+                    description: 'The product follows real HR moments: joining, attendance, leave, probation, performance, documents, communication, and exit.',
+                    icon: SparklesIcon,
+                  },
+                  {
+                    title: 'Built for GCC, SME, and startup adoption',
+                    description: 'Implementation depth supports serious company rollout while keeping the day-to-day interface simple.',
+                    icon: GlobeAltIcon,
+                  },
+                  {
+                    title: 'Co-exists with the stack',
+                    description: 'A focused HRMS can sit beside payroll, hiring, finance, collaboration, and analytics systems without forcing replacement.',
+                    icon: ChatBubbleLeftRightIcon,
+                  },
+                ].map((item) => (
+                  <div key={item.title} className="rounded-md border border-gray-200 bg-white p-6 shadow-sm">
+                    <item.icon className="h-7 w-7 text-primary-700" />
+                    <h3 className="mt-4 text-lg font-bold text-gray-900">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-gray-600">{item.description}</p>
+                  </div>
                 ))}
               </div>
             </div>
@@ -626,6 +712,7 @@ export default function LandingPage() {
             <div className="mt-3 space-y-2 text-sm">
               <button onClick={() => scrollToSection('platform')} className="block hover:text-white">Capabilities</button>
               <button onClick={() => scrollToSection('journeys')} className="block hover:text-white">User journeys</button>
+              <button onClick={() => scrollToSection('unique')} className="block hover:text-white">What is unique</button>
               <button onClick={() => scrollToSection('pricing')} className="block hover:text-white">Pricing</button>
             </div>
           </div>
