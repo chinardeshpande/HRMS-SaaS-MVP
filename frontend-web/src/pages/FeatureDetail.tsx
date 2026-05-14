@@ -50,7 +50,7 @@ export default function FeatureDetail() {
           <div className="flex justify-between items-center h-14">
             <div className="flex items-center space-x-4">
               <img
-                src="/images/aurorahr-logo-primary.svg"
+                src="/images/AuroraHR_logo.svg?v=20260514b"
                 alt="AuroraHR"
                 className="h-8 w-auto cursor-pointer"
                 onClick={() => navigate('/')}

@@ -38,7 +38,7 @@ export default function AdoptionJourneyDetail() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4">
             <img
-              src="/images/aurorahr-logo-primary.svg"
+              src="/images/AuroraHR_logo.svg?v=20260514b"
               alt="AuroraHR"
               className="h-9 w-auto cursor-pointer"
               onClick={() => navigate('/')}

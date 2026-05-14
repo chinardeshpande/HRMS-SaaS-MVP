@@ -205,7 +205,7 @@ export default function CompanySignup() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
               <img
-                src="/images/aurorahr-logo-primary.svg"
+                src="/images/AuroraHR_logo.svg?v=20260514b"
                 alt="AuroraHR"
                 className="h-12 w-auto"
               />

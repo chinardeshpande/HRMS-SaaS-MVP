@@ -76,7 +76,7 @@ export default function EmailVerificationPending() {
         <div className="text-center mb-8">
           <div className="inline-block bg-white rounded-xl p-4 shadow-sm mb-4">
             <img
-              src="/images/aurorahr-logo-primary.svg"
+              src="/images/AuroraHR_logo.svg?v=20260514b"
               alt="AuroraHR"
               className="h-12 w-auto"
             />

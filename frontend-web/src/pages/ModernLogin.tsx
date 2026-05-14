@@ -91,7 +91,7 @@ export default function ModernLogin() {
           <div>
             <div className="mb-8 bg-white/95 rounded-xl p-4 inline-block">
               <img
-                src="/images/aurorahr-logo-primary.svg"
+                src="/images/AuroraHR_logo.svg?v=20260514b"
                 alt="AuroraHR - Illuminate The Journey | Grow Every Person"
                 className="h-14 w-auto"
               />

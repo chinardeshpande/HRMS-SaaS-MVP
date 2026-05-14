@@ -246,7 +246,7 @@ export default function LandingPage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <button onClick={() => scrollToSection('top')} className="flex items-center">
             <img
-              src="/images/aurorahr-logo-primary.svg"
+              src="/images/AuroraHR_logo.svg?v=20260514b"
               alt="AuroraHR"
               className="h-10 w-auto transition-all"
             />
@@ -942,7 +942,7 @@ export default function LandingPage() {
       <footer className="border-t border-gray-200 bg-white px-4 py-12 text-gray-600 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
           <div>
-            <img src="/images/aurorahr-logo-primary.svg" alt="AuroraHR" className="h-12 w-auto" />
+            <img src="/images/AuroraHR_logo.svg?v=20260514b" alt="AuroraHR" className="h-12 w-auto" />
             <p className="mt-4 max-w-md text-sm leading-6 text-gray-600">
               AuroraHR helps organizations launch, operate, and improve HR with strong workflows, role clarity,
               and a practical path from pilot to production.

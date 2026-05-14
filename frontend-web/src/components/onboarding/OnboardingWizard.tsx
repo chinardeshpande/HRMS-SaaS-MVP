@@ -291,7 +291,7 @@ export default function OnboardingWizard() {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <img
-                src="/images/aurorahr-logo-primary.svg"
+                src="/images/AuroraHR_logo.svg?v=20260514b"
                 alt="AuroraHR"
                 className="h-12 w-auto"
               />
