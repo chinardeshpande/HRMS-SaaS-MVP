@@ -44,7 +44,7 @@ export default function PlatformPillarDetail() {
               onClick={() => navigate('/')}
             />
             <button
-              onClick={() => navigate('/#platform')}
+              onClick={() => navigate('/', { state: { scrollTo: 'platform' } })}
               className="inline-flex items-center gap-1 text-sm font-semibold text-gray-600 hover:text-primary-700"
             >
               <ArrowLeftIcon className="h-4 w-4" />

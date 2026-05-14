@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   ArrowRightIcon,
   Bars3Icon,
@@ -13,7 +13,6 @@ import {
   FingerPrintIcon,
   GlobeAltIcon,
   LockClosedIcon,
-  ShieldCheckIcon,
   SparklesIcon,
   UserGroupIcon,
   UserPlusIcon,
@@ -38,13 +37,6 @@ const navigation = [
   { label: 'What is unique', target: 'unique' },
   { label: 'For India GCCs', target: 'gcc' },
   { label: 'Pricing', target: 'pricing' },
-];
-
-const proofMetrics = [
-  { value: '3 months', label: 'GCC-ready operating horizon' },
-  { value: 'Multi-role', label: 'Owner, HR, manager, employee workspaces' },
-  { value: 'Tenant-safe', label: 'Company data separation by design' },
-  { value: 'End-to-end', label: 'Hire, manage, grow, exit lifecycle' },
 ];
 
 const capabilities: Capability[] = [
@@ -176,6 +168,7 @@ const pricingPlans = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -194,6 +187,15 @@ export default function LandingPage() {
     setMobileMenuOpen(false);
   };
 
+  useEffect(() => {
+    const sectionFromState = (location.state as { scrollTo?: string } | null)?.scrollTo;
+    const sectionFromHash = location.hash?.replace('#', '');
+    const target = sectionFromState || sectionFromHash;
+    if (!target) return;
+    window.setTimeout(() => scrollToSection(target), 80);
+    window.setTimeout(() => scrollToSection(target), 450);
+  }, [location.hash, location.state]);
+
   const requestDemo = () => {
     window.location.href =
       'mailto:sales@aurorahr.in?subject=AuroraHR%20Demo%20Request&body=Hi%2C%0A%0AI%20would%20like%20to%20schedule%20an%20AuroraHR%20demo.%0A%0ACompany%20Name%3A%0AEmployee%20Count%3A%0AUse%20Case%3A%20GCC%20setup%20%2F%20SME%20HR%20operations%20%2F%20Startup%20scale-up%0APreferred%20Date%2FTime%3A%0A';
@@ -202,22 +204,22 @@ export default function LandingPage() {
   return (
     <div className="bg-white text-gray-900">
       <nav
-        className={`fixed inset-x-0 top-0 z-50 border-b transition-colors ${
-          scrolled ? 'border-gray-200 bg-white/95 shadow-sm backdrop-blur' : 'border-white/10 bg-gray-950/35 backdrop-blur'
+        className={`fixed inset-x-0 top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur transition-shadow ${
+          scrolled ? 'shadow-sm' : ''
         }`}
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <button onClick={() => scrollToSection('top')} className="flex items-center">
             <img
-              src={scrolled ? '/images/aurorahr-logo-primary.svg' : '/images/aurorahr-logo-white.svg'}
+              src="/images/aurorahr-logo-primary.svg"
               alt="AuroraHR"
               className="h-10 w-auto transition-all"
             />
           </button>
 
-          <div className={`hidden items-center gap-7 text-sm font-medium md:flex ${scrolled ? 'text-gray-700' : 'text-white'}`}>
+          <div className="hidden items-center gap-7 text-sm font-medium text-gray-700 md:flex">
             {navigation.map((item) => (
-              <button key={item.target} onClick={() => scrollToSection(item.target)} className="hover:text-primary-300">
+              <button key={item.target} onClick={() => scrollToSection(item.target)} className="hover:text-primary-700">
                 {item.label}
               </button>
             ))}
@@ -226,7 +228,7 @@ export default function LandingPage() {
           <div className="hidden items-center gap-3 md:flex">
             <button
               onClick={() => navigate('/login')}
-              className={`px-4 py-2 text-sm font-semibold ${scrolled ? 'text-gray-700 hover:text-primary-700' : 'text-white hover:text-primary-100'}`}
+              className="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-primary-700"
             >
               Login
             </button>
@@ -240,7 +242,7 @@ export default function LandingPage() {
 
           <button
             onClick={() => setMobileMenuOpen((open) => !open)}
-            className={`md:hidden ${scrolled ? 'text-gray-800' : 'text-white'}`}
+            className="text-gray-800 md:hidden"
             aria-label="Open menu"
           >
             {mobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
@@ -266,66 +268,109 @@ export default function LandingPage() {
         )}
       </nav>
 
-      <header id="top" className="relative min-h-[92svh] overflow-hidden bg-gray-950">
-        <img
-          src="/images/Hero-Images/hero-employee-onboarding.jpg"
-          alt="HR team using AuroraHR for employee onboarding"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gray-950/68" />
-        <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-white to-transparent" />
-
-        <div className="relative mx-auto flex min-h-[92svh] max-w-7xl flex-col justify-center px-4 pb-24 pt-28 sm:px-6 lg:px-8">
-          <div className="max-w-4xl">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-md border border-white/25 bg-white/10 px-3 py-2 text-sm font-semibold text-white backdrop-blur">
-              <ShieldCheckIcon className="h-5 w-5 text-primary-200" />
-              Built for India HR operations, GCC launches, and fast-scaling teams
-            </div>
-
-            <h1 className="max-w-3xl text-5xl font-bold leading-tight text-white sm:text-6xl lg:text-7xl">
-              AuroraHR
-            </h1>
-            <p className="mt-6 max-w-3xl text-xl leading-8 text-gray-100 sm:text-2xl">
-              A modern HRMS for companies that need clean implementation, real workflows, role-based workspaces,
-              and a dependable employee lifecycle from registration to exit.
-            </p>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <button
-                onClick={() => navigate('/register')}
-                className="inline-flex items-center justify-center rounded-md bg-primary-600 px-6 py-3 text-base font-semibold text-white shadow-lg hover:bg-primary-700"
-              >
-                Register company
-                <ArrowRightIcon className="ml-2 h-5 w-5" />
-              </button>
-              <button
-                onClick={() => navigate('/login')}
-                className="inline-flex items-center justify-center rounded-md border border-white/70 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur hover:bg-white/20"
-              >
-                Login to workspace
-              </button>
-              <button
-                onClick={requestDemo}
-                className="inline-flex items-center justify-center rounded-md border border-white/30 px-6 py-3 text-base font-semibold text-white hover:bg-white/10"
-              >
-                Request demo
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-14 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {proofMetrics.map((metric) => (
-              <div key={metric.label} className="rounded-md border border-white/20 bg-white/10 p-4 text-white backdrop-blur">
-                <div className="text-2xl font-bold">{metric.value}</div>
-                <div className="mt-1 text-sm text-gray-200">{metric.label}</div>
+      <header id="top" className="relative overflow-hidden bg-white pt-16">
+        <span id="gcc" className="absolute top-0" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_9%_11%,rgba(37,99,235,0.16),transparent_28%),radial-gradient(circle_at_88%_18%,rgba(14,165,233,0.13),transparent_28%),linear-gradient(135deg,rgba(248,253,255,1),rgba(230,244,250,0.9))]" />
+        <div className="relative mx-auto flex min-h-[calc(100svh-5rem)] max-w-7xl items-center px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
+          <div className="grid w-full overflow-hidden rounded-md border border-white/80 bg-white/72 shadow-2xl shadow-primary-900/10 backdrop-blur lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="flex items-center p-5 sm:p-7 lg:p-7 xl:p-8">
+              <div className="max-w-3xl">
+              <div className="inline-flex items-center rounded-full border border-primary-200 bg-white/75 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-primary-800 shadow-sm backdrop-blur sm:text-xs">
+                Built for serious adoption
               </div>
-            ))}
+              <h1 className="mt-3 max-w-3xl text-[2rem] font-bold leading-[1.04] text-gray-950 sm:text-5xl lg:text-[3.05rem] xl:text-[3.25rem]">
+                A clean HR foundation for GCC launches, SMEs, and startup scale.
+              </h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-700 sm:text-base lg:text-base lg:leading-6">
+                Launch people operations quickly with role-based workspaces, employee lifecycle workflows,
+                documents, HR Connect, and leadership visibility without forcing payroll or recruitment lock-in.
+              </p>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                {[
+                  { label: 'Fast implementation', path: '/platform/implementation-ready' },
+                  { label: 'Human HR journeys', path: '/platform/human-hr-journeys' },
+                  { label: 'Tenant-safe operations', path: '/platform/workflow-depth' },
+                ].map((item) => (
+                  <button
+                    key={item.label}
+                    onClick={() => navigate(item.path)}
+                    className="rounded-full border border-primary-100 bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-800 transition hover:border-primary-300 hover:bg-primary-100"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                <button
+                  onClick={() => navigate('/register')}
+                  className="inline-flex items-center justify-center rounded-md bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary-900/15 hover:bg-primary-700"
+                >
+                  Register company
+                  <ArrowRightIcon className="ml-2 h-4 w-4" />
+                </button>
+                <button
+                  onClick={requestDemo}
+                  className="inline-flex items-center justify-center rounded-md border border-primary-200 bg-white/75 px-5 py-2.5 text-sm font-semibold text-primary-800 shadow-sm backdrop-blur hover:border-primary-300 hover:bg-white"
+                >
+                  Request demo
+                </button>
+              </div>
+
+              <div className="mt-[34px] hidden gap-3 md:grid md:grid-cols-3">
+                {personaCards.map((card) => (
+                  <div
+                    key={card.title}
+                    className="max-h-36 overflow-hidden rounded-md border border-gray-200/80 bg-white/86 p-3 shadow-md shadow-primary-900/5 backdrop-blur"
+                  >
+                    <card.icon className="h-5 w-5 text-primary-700" />
+                    <h2 className="mt-2 text-sm font-bold leading-tight text-gray-950">{card.title}</h2>
+                    <p className="mt-2 max-h-12 overflow-hidden text-[11px] leading-4 text-gray-600">{card.description}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[11px] font-semibold text-primary-900 md:hidden">
+                <div className="rounded-md border border-primary-100 bg-white/80 px-2 py-2">GCCs</div>
+                <div className="rounded-md border border-primary-100 bg-white/80 px-2 py-2">SMEs</div>
+                <div className="rounded-md border border-primary-100 bg-white/80 px-2 py-2">Startups</div>
+              </div>
+              </div>
+            </div>
+
+            <div className="order-first flex h-[176px] flex-col bg-white sm:h-[260px] lg:order-none lg:h-[620px] xl:h-[640px]">
+              <div className="relative min-h-0 flex-1">
+                <img
+                  src="/images/Hero-Images/hero-happy-employees.jpg"
+                  alt="Employees collaborating in a modern workplace"
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-950/18 via-transparent to-transparent lg:bg-gradient-to-r lg:from-primary-50/25 lg:via-transparent lg:to-transparent" />
+              </div>
+              <div className="bg-primary-50/80 pt-3">
+                <div className="min-h-36 rounded-md border border-gray-200/80 bg-white/86 p-3 shadow-md shadow-primary-900/5 backdrop-blur">
+                  <p className="text-xs font-bold uppercase tracking-wide text-primary-700">Practical HRMS</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs leading-5 text-gray-700 lg:text-sm">
+                    <span>Focused on</span>
+                    {['HR operations', 'lifecycle workflows', 'documents', 'collaboration', 'adoption'].map((attribute, index) => (
+                      <span key={attribute} className="inline-flex items-center">
+                        <span className="rounded-full border border-primary-100 bg-primary-50 px-2 py-0.5 text-[11px] font-semibold text-primary-800 lg:text-xs">
+                          {attribute}
+                        </span>
+                        {index < 4 && <span className="ml-1 text-gray-400">,</span>}
+                      </span>
+                    ))}
+                    <span>.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
       <main>
-        <section className="-mt-12 px-4 pb-16 sm:px-6 lg:px-8">
+        <section className="px-4 py-16 sm:px-6 lg:px-8">
           <div className="relative mx-auto max-w-7xl overflow-hidden rounded-md border border-gray-200 bg-white shadow-xl">
             <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
               <div className="p-6 sm:p-8 lg:p-10">
@@ -587,44 +632,6 @@ export default function LandingPage() {
                     </div>
                   </div>
                 ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="gcc" className="bg-white px-4 py-20 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <div className="overflow-hidden rounded-md border border-gray-200 bg-primary-50 shadow-xl">
-              <div className="grid gap-0 lg:grid-cols-[1fr_0.95fr] lg:items-stretch">
-              <div>
-                  <div className="p-8 sm:p-10 lg:p-12">
-                    <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Built for serious adoption</p>
-                    <h2 className="mt-3 text-4xl font-bold text-gray-900 lg:text-5xl">Designed for GCC launches, SMEs, and startup scale.</h2>
-                    <p className="mt-5 text-lg leading-8 text-gray-700">
-                      AuroraHR is meant for organizations that need the discipline of enterprise HR without waiting
-                      months for a heavyweight suite implementation. It gives Western MNCs, Indian SMEs, and new-age
-                      startups a practical people-operations layer they can adopt quickly and integrate cleanly.
-                    </p>
-
-                    <div className="mt-8 grid gap-4 md:grid-cols-3">
-                      {personaCards.map((card) => (
-                        <div key={card.title} className="rounded-md border border-primary-100 bg-white p-5 shadow-sm">
-                          <card.icon className="h-7 w-7 text-primary-700" />
-                          <h3 className="mt-4 text-base font-bold text-gray-900">{card.title}</h3>
-                          <p className="mt-2 text-sm leading-6 text-gray-600">{card.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="min-h-[420px] bg-white p-4">
-                  <img
-                    src="/images/Hero-Images/hero-happy-employees.jpg"
-                    alt="Employees collaborating in a modern workplace"
-                    className="h-full min-h-[420px] w-full rounded-md object-cover"
-                  />
-                </div>
               </div>
             </div>
           </div>
