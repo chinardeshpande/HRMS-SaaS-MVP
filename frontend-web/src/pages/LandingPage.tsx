@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   ArrowRightIcon,
@@ -20,6 +20,7 @@ import {
 } from '@heroicons/react/24/outline';
 import BrandedScreenshot from '../components/landing/BrandedScreenshot';
 import { adoptionJourneys } from '../data/adoptionJourneys';
+import { differentiators } from '../data/differentiators';
 import { platformPillars } from '../data/platformPillars';
 
 type Capability = {
@@ -32,11 +33,11 @@ type Capability = {
 };
 
 const navigation = [
+  { label: 'Home', target: 'top' },
   { label: 'Platform', target: 'platform' },
-  { label: 'Journeys', target: 'journeys' },
-  { label: 'What is unique', target: 'unique' },
-  { label: 'For India GCCs', target: 'gcc' },
-  { label: 'Pricing', target: 'pricing' },
+  { label: 'Uniqueness', target: 'unique' },
+  { label: 'Ease of Adoption', target: 'journeys' },
+  { label: 'Contact Us', target: 'contact' },
 ];
 
 const capabilities: Capability[] = [
@@ -117,30 +118,6 @@ const personaCards = [
   },
 ];
 
-const differentiators = [
-  {
-    title: 'HR Connect is collaboration with HR context',
-    description:
-      'Not just chat. HR Connect brings wall feeds, conversations, groups, service requests, appointments, and communication guardrails into the same HR workspace where employee lifecycle context already exists.',
-    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.21.10-AM.png',
-    icon: ChatBubbleLeftRightIcon,
-  },
-  {
-    title: 'Document Library supports lifecycle formalities',
-    description:
-      'HR managers can generate standard documents, preserve lifecycle evidence, and share the right supporting material safely through the employee journey instead of chasing files across mail and drives.',
-    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.18-AM.png',
-    icon: DocumentTextIcon,
-  },
-  {
-    title: 'Timeline-led process UX keeps HR intuitive',
-    description:
-      'Sensitive processes like onboarding, probation, performance, and exit become easier to understand when users see status, ownership, history, and next action as an HR timeline.',
-    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.58-AM.png',
-    icon: ClipboardDocumentCheckIcon,
-  },
-];
-
 const pricingPlans = [
   {
     name: 'Pilot',
@@ -171,9 +148,36 @@ export default function LandingPage() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('top');
+  const [activePlatformTab, setActivePlatformTab] = useState<'depth' | 'capabilities' | 'modules' | 'trust'>('depth');
+  const [activeUniqueTab, setActiveUniqueTab] = useState<'unique' | 'differentiators'>('unique');
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    company: '',
+    email: '',
+    phone: '',
+    interest: 'GCC launch',
+    preferredDate: '',
+    preferredTime: '',
+    message: '',
+  });
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const sectionIds = navigation.map((item) => item.target);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 24);
+
+      let currentSection = 'top';
+      sectionIds.forEach((id) => {
+        const element = document.getElementById(id);
+        if (element && element.getBoundingClientRect().top <= 120) {
+          currentSection = id;
+        }
+      });
+
+      setActiveSection(currentSection);
+    };
+
     onScroll();
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
@@ -182,13 +186,21 @@ export default function LandingPage() {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (!element) return;
-    const top = element.getBoundingClientRect().top + window.scrollY - 76;
+    const nav = document.querySelector('nav');
+    const navHeight = nav instanceof HTMLElement ? nav.getBoundingClientRect().height : 64;
+    const contentElement = id === 'top' ? element : element.firstElementChild;
+    const targetElement = contentElement instanceof HTMLElement ? contentElement : element;
+    const top = targetElement.getBoundingClientRect().top + window.scrollY - navHeight;
     window.scrollTo({ top, behavior: 'smooth' });
     setMobileMenuOpen(false);
   };
 
   useEffect(() => {
-    const sectionFromState = (location.state as { scrollTo?: string } | null)?.scrollTo;
+    const routeState = location.state as { scrollTo?: string; uniqueTab?: 'unique' | 'differentiators' } | null;
+    if (routeState?.uniqueTab) {
+      setActiveUniqueTab(routeState.uniqueTab);
+    }
+    const sectionFromState = routeState?.scrollTo;
     const sectionFromHash = location.hash?.replace('#', '');
     const target = sectionFromState || sectionFromHash;
     if (!target) return;
@@ -197,8 +209,31 @@ export default function LandingPage() {
   }, [location.hash, location.state]);
 
   const requestDemo = () => {
-    window.location.href =
-      'mailto:sales@aurorahr.in?subject=AuroraHR%20Demo%20Request&body=Hi%2C%0A%0AI%20would%20like%20to%20schedule%20an%20AuroraHR%20demo.%0A%0ACompany%20Name%3A%0AEmployee%20Count%3A%0AUse%20Case%3A%20GCC%20setup%20%2F%20SME%20HR%20operations%20%2F%20Startup%20scale-up%0APreferred%20Date%2FTime%3A%0A';
+    scrollToSection('contact');
+  };
+
+  const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const body = [
+      'Hi Anupama,',
+      '',
+      'A new AuroraHR website enquiry has been submitted.',
+      '',
+      `Name: ${contactForm.name}`,
+      `Company: ${contactForm.company}`,
+      `Email: ${contactForm.email}`,
+      `Phone: ${contactForm.phone}`,
+      `Interest: ${contactForm.interest}`,
+      `Preferred demo date: ${contactForm.preferredDate || 'Not specified'}`,
+      `Preferred demo time: ${contactForm.preferredTime || 'Not specified'}`,
+      '',
+      'Message:',
+      contactForm.message || 'Not specified',
+    ].join('\n');
+
+    window.location.href = `mailto:Anupama.Bhat@acvsolutions.in?subject=${encodeURIComponent(
+      `AuroraHR enquiry - ${contactForm.company || contactForm.name || 'Website lead'}`
+    )}&body=${encodeURIComponent(body)}`;
   };
 
   return (
@@ -217,9 +252,17 @@ export default function LandingPage() {
             />
           </button>
 
-          <div className="hidden items-center gap-7 text-sm font-medium text-gray-700 md:flex">
+          <div className="hidden items-center gap-1 rounded-full border border-gray-200 bg-white/80 p-1 text-sm font-semibold text-gray-600 shadow-sm lg:flex">
             {navigation.map((item) => (
-              <button key={item.target} onClick={() => scrollToSection(item.target)} className="hover:text-primary-700">
+              <button
+                key={item.target}
+                onClick={() => scrollToSection(item.target)}
+                className={`rounded-full px-4 py-2 transition ${
+                  activeSection === item.target
+                    ? 'bg-primary-600 text-white shadow-sm'
+                    : 'hover:bg-primary-50 hover:text-primary-700'
+                }`}
+              >
                 {item.label}
               </button>
             ))}
@@ -230,19 +273,19 @@ export default function LandingPage() {
               onClick={() => navigate('/login')}
               className="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-primary-700"
             >
-              Login
+              Sign In
             </button>
             <button
               onClick={() => navigate('/register')}
               className="rounded-md bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-700"
             >
-              Register company
+              Sign Up / Register
             </button>
           </div>
 
           <button
             onClick={() => setMobileMenuOpen((open) => !open)}
-            className="text-gray-800 md:hidden"
+            className="text-gray-800 lg:hidden"
             aria-label="Open menu"
           >
             {mobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
@@ -250,26 +293,33 @@ export default function LandingPage() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="border-t border-gray-200 bg-white px-4 py-4 shadow-lg md:hidden">
-            <div className="flex flex-col gap-4 text-left text-sm font-medium text-gray-700">
+          <div className="border-t border-gray-200 bg-white px-4 py-4 shadow-lg lg:hidden">
+            <div className="flex flex-col gap-2 text-left text-sm font-semibold text-gray-700">
               {navigation.map((item) => (
-                <button key={item.target} onClick={() => scrollToSection(item.target)} className="text-left">
+                <button
+                  key={item.target}
+                  onClick={() => scrollToSection(item.target)}
+                  className={`rounded-md px-3 py-3 text-left ${
+                    activeSection === item.target ? 'bg-primary-50 text-primary-800' : 'hover:bg-gray-50'
+                  }`}
+                >
                   {item.label}
                 </button>
               ))}
-              <button onClick={() => navigate('/login')} className="rounded-md border border-gray-300 px-4 py-2">
-                Login
-              </button>
-              <button onClick={() => navigate('/register')} className="rounded-md bg-primary-600 px-4 py-2 text-white">
-                Register company
-              </button>
+              <div className="mt-2 grid gap-2 border-t border-gray-100 pt-3">
+                <button onClick={() => navigate('/login')} className="rounded-md border border-gray-300 px-4 py-3">
+                  Sign In
+                </button>
+                <button onClick={() => navigate('/register')} className="rounded-md bg-primary-600 px-4 py-3 text-white">
+                  Sign Up / Register
+                </button>
+              </div>
             </div>
           </div>
         )}
       </nav>
 
       <header id="top" className="relative overflow-hidden bg-white pt-16">
-        <span id="gcc" className="absolute top-0" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_9%_11%,rgba(37,99,235,0.16),transparent_28%),radial-gradient(circle_at_88%_18%,rgba(14,165,233,0.13),transparent_28%),linear-gradient(135deg,rgba(248,253,255,1),rgba(230,244,250,0.9))]" />
         <div className="relative mx-auto flex min-h-[calc(100svh-5rem)] max-w-7xl items-center px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
           <div className="grid w-full overflow-hidden rounded-md border border-white/80 bg-white/72 shadow-2xl shadow-primary-900/10 backdrop-blur lg:grid-cols-[0.95fr_1.05fr]">
@@ -370,198 +420,227 @@ export default function LandingPage() {
       </header>
 
       <main>
-        <section className="px-4 py-16 sm:px-6 lg:px-8">
-          <div className="relative mx-auto max-w-7xl overflow-hidden rounded-md border border-gray-200 bg-white shadow-xl">
-            <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
-              <div className="p-6 sm:p-8 lg:p-10">
-                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Current product depth</p>
-                <h2 className="mt-3 text-3xl font-bold text-gray-900">
-                  Not a brochure tool. A working HR operating layer.
-                </h2>
-                <p className="mt-4 text-base leading-7 text-gray-600">
-                  AuroraHR already supports registration, onboarding, employee records, masters, attendance, leave,
-                  probation, performance, exit, HR Connect, reports, documents, demo mode, role-based dashboards,
-                  and production tenant pilots.
-                </p>
-                <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                  {[
-                    'Owner implementation console',
-                    'HR operations workspace',
-                    'Manager approval queue',
-                    'Employee self-service',
-                    'Demo data mode',
-                    'Production pilot import',
-                  ].map((item) => (
-                    <div key={item} className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                      <CheckCircleIcon className="h-5 w-5 flex-none text-success-600" />
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="bg-gray-950 p-4 sm:p-6">
-                <BrandedScreenshot
-                  src="/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png"
-                  alt="AuroraHR dashboard sample"
-                  className="h-full min-h-[300px] w-full rounded-md"
-                  imageClassName="h-full min-h-[300px] w-full rounded-md object-cover object-left-top"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="platform" className="bg-gray-50 px-4 py-20 sm:px-6 lg:px-8">
+        <section id="platform" className="bg-gray-50 px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <div className="max-w-3xl">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-3xl">
               <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Platform capabilities</p>
               <h2 className="mt-3 text-4xl font-bold text-gray-900">The HR foundation for a company that is ready to operate.</h2>
               <p className="mt-4 text-lg leading-8 text-gray-600">
                 AuroraHR is organized around the operating moments HR teams handle every week: clean data,
                 employee self-service, manager approvals, HR exceptions, documents, communication, and leadership visibility.
               </p>
-            </div>
-
-            <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {platformPillars.map((feature) => (
-                <button
-                  key={feature.id}
-                  onClick={() => navigate(`/platform/${feature.id}`)}
-                  className="group rounded-md border border-gray-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-primary-300 hover:shadow-lg"
-                >
-                  <feature.icon className="h-7 w-7 text-primary-700" />
-                  <h3 className="mt-5 text-lg font-bold text-gray-900 group-hover:text-primary-700">{feature.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-gray-600">{feature.description}</p>
-                  <span className="mt-5 inline-flex items-center text-sm font-semibold text-primary-700">
-                    Open page
-                    <ArrowRightIcon className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-14 flex items-end justify-between gap-6">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Explore the modules</p>
-                <h3 className="mt-2 text-2xl font-bold text-gray-900">Each capability opens into a focused product page.</h3>
               </div>
-            </div>
-
-            <div className="mt-8 grid gap-6 lg:grid-cols-3">
-              {capabilities.map((capability) => (
-                <article
-                  key={capability.title}
-                  onClick={() => navigate(`/features/${capability.moduleId}`)}
-                  className="group cursor-pointer overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-                >
-                  <BrandedScreenshot
-                    src={capability.image}
-                    alt={`${capability.title} visual`}
-                    className="h-44 bg-gray-100"
-                    imageClassName="h-full w-full object-cover object-left-top"
-                  />
-                  <div className="p-6">
-                    <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-md bg-primary-50 text-primary-700">
-                      <capability.icon className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary-700">{capability.title}</h3>
-                    <p className="mt-3 text-sm leading-6 text-gray-600">{capability.description}</p>
-                    <div className="mt-5 flex flex-wrap gap-2">
-                      {capability.points.map((point) => (
-                        <span key={point} className="rounded-md bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">
-                          {point}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="mt-5 inline-flex items-center text-sm font-semibold text-primary-700">
-                      View capability
-                      <ArrowRightIcon className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-white px-4 py-20 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Differentiators</p>
-                <h2 className="mt-3 text-4xl font-bold text-gray-900">Three product choices that make AuroraHR feel different.</h2>
-                <p className="mt-4 text-lg leading-8 text-gray-600">
-                  The strongest parts of AuroraHR are not only modules. They are the connective ideas that make HR work easier:
-                  context-rich collaboration, document-backed lifecycle actions, and timeline-led process UX.
-                </p>
-              </div>
-              <div className="grid gap-5">
-                {differentiators.map((item) => (
-                  <article key={item.title} className="grid overflow-hidden rounded-md border border-gray-200 bg-gray-50 shadow-sm md:grid-cols-[0.9fr_1.1fr]">
-                    <BrandedScreenshot
-                      src={item.image}
-                      alt={`${item.title} visual`}
-                      className="min-h-[220px] bg-white"
-                      imageClassName="h-full w-full object-cover object-left-top"
-                    />
-                    <div className="p-6">
-                      <item.icon className="h-7 w-7 text-primary-700" />
-                      <h3 className="mt-4 text-xl font-bold text-gray-900">{item.title}</h3>
-                      <p className="mt-3 text-sm leading-6 text-gray-600">{item.description}</p>
-                    </div>
-                  </article>
+              <div className="grid gap-2 rounded-md border border-gray-200 bg-white p-1 text-sm font-semibold text-gray-600 shadow-sm sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  { id: 'depth', label: 'Current Product Depth' },
+                  { id: 'capabilities', label: 'Platform Capabilities' },
+                  { id: 'modules', label: 'Explore Modules' },
+                  { id: 'trust', label: 'Trust & Control' },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActivePlatformTab(tab.id as 'depth' | 'capabilities' | 'modules' | 'trust')}
+                    className={`rounded-md px-4 py-2.5 text-left transition sm:text-center ${
+                      activePlatformTab === tab.id ? 'bg-primary-600 text-white shadow-sm' : 'hover:bg-primary-50 hover:text-primary-700'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
                 ))}
               </div>
             </div>
+
+            {activePlatformTab === 'depth' && (
+              <div className="mt-10 overflow-hidden rounded-md border border-gray-200 bg-white shadow-xl">
+                <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
+                  <div className="p-6 sm:p-8 lg:p-10">
+                    <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Current product depth</p>
+                    <h3 className="mt-3 text-3xl font-bold text-gray-900">
+                      Not a brochure tool. A working HR operating layer.
+                    </h3>
+                    <p className="mt-4 text-base leading-7 text-gray-600">
+                      AuroraHR already supports registration, onboarding, employee records, masters, attendance, leave,
+                      probation, performance, exit, HR Connect, reports, documents, demo mode, role-based dashboards,
+                      and production tenant pilots.
+                    </p>
+                    <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                      {[
+                        'Owner implementation console',
+                        'HR operations workspace',
+                        'Manager approval queue',
+                        'Employee self-service',
+                        'Demo data mode',
+                        'Production pilot import',
+                      ].map((item) => (
+                        <div key={item} className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                          <CheckCircleIcon className="h-5 w-5 flex-none text-success-600" />
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="bg-gray-950 p-4 sm:p-6">
+                    <BrandedScreenshot
+                      src="/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png"
+                      alt="AuroraHR dashboard sample"
+                      className="h-full min-h-[300px] w-full rounded-md"
+                      imageClassName="h-full min-h-[300px] w-full rounded-md object-cover object-left-top"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activePlatformTab === 'capabilities' && (
+              <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {platformPillars.map((feature) => (
+                  <button
+                    key={feature.id}
+                    onClick={() => navigate(`/platform/${feature.id}`)}
+                    className="group rounded-md border border-gray-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-primary-300 hover:shadow-lg"
+                  >
+                    <feature.icon className="h-7 w-7 text-primary-700" />
+                    <h3 className="mt-5 text-lg font-bold text-gray-900 group-hover:text-primary-700">{feature.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-gray-600">{feature.description}</p>
+                    <span className="mt-5 inline-flex items-center text-sm font-semibold text-primary-700">
+                      Open page
+                      <ArrowRightIcon className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {activePlatformTab === 'modules' && (
+              <div className="mt-10">
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Explore the modules</p>
+                <h3 className="mt-2 text-2xl font-bold text-gray-900">Each capability opens into a focused product page.</h3>
+                <div className="mt-6 grid gap-6 lg:grid-cols-3">
+                  {capabilities.map((capability) => (
+                    <article
+                      key={capability.title}
+                      onClick={() => navigate(`/features/${capability.moduleId}`)}
+                      className="group cursor-pointer overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                    >
+                      <BrandedScreenshot
+                        src={capability.image}
+                        alt={`${capability.title} visual`}
+                        className="h-44 bg-gray-100"
+                        imageClassName="h-full w-full object-cover object-left-top"
+                      />
+                      <div className="p-6">
+                        <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-md bg-primary-50 text-primary-700">
+                          <capability.icon className="h-6 w-6" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary-700">{capability.title}</h3>
+                        <p className="mt-3 text-sm leading-6 text-gray-600">{capability.description}</p>
+                        <div className="mt-5 flex flex-wrap gap-2">
+                          {capability.points.map((point) => (
+                            <span key={point} className="rounded-md bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">
+                              {point}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="mt-5 inline-flex items-center text-sm font-semibold text-primary-700">
+                          View capability
+                          <ArrowRightIcon className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activePlatformTab === 'trust' && (
+              <div className="mt-10 grid gap-8 lg:grid-cols-3">
+                <div className="lg:col-span-1">
+                  <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Trust and control</p>
+                  <h3 className="mt-3 text-3xl font-bold text-gray-900">The essentials commercial buyers ask for.</h3>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
+                  {[
+                    {
+                      title: 'Authentic multi-tenancy',
+                      description: 'Tenant-aware data access and production pilot workflows keep company records separated.',
+                      icon: FingerPrintIcon,
+                    },
+                    {
+                      title: 'Role-based UX',
+                      description: 'Owners, HR managers, senior employees, managers, and employees see the work that matters to them.',
+                      icon: UserPlusIcon,
+                    },
+                    {
+                      title: 'Operational evidence',
+                      description: 'Visual QA, screenshots, workflow reports, and seeded demo journeys support investor and customer demos.',
+                      icon: DocumentTextIcon,
+                    },
+                    {
+                      title: 'Security-conscious account flows',
+                      description: 'Login, profile management, password change, reset hooks, and invite flows are treated as product-critical paths.',
+                      icon: LockClosedIcon,
+                    },
+                  ].map((item) => (
+                    <div key={item.title} className="rounded-md border border-gray-200 bg-white p-6 shadow-sm">
+                      <item.icon className="h-7 w-7 text-primary-700" />
+                      <h4 className="mt-4 text-lg font-bold text-gray-900">{item.title}</h4>
+                      <p className="mt-2 text-sm leading-6 text-gray-600">{item.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
-        <section id="journeys" className="bg-white px-4 py-20 sm:px-6 lg:px-8">
+        <section id="journeys" className="bg-white px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
-              <div className="lg:sticky lg:top-24">
+            <div>
                 <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Registration to adoption</p>
-                <h2 className="mt-3 text-4xl font-bold text-gray-900">A simple path from first visit to mature HR operations.</h2>
-                <p className="mt-4 text-lg leading-8 text-gray-600">
+              <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <div className="max-w-3xl">
+                  <h2 className="text-4xl font-bold text-gray-900">A simple path from first visit to mature HR operations.</h2>
+                  <p className="mt-4 text-lg leading-8 text-gray-600">
                   The onboarding journey is designed to feel obvious: register, configure, migrate, operate,
                   train with demo mode, and then scale the HR operating model.
                 </p>
+                </div>
                 <button
                   onClick={() => navigate('/register')}
-                  className="mt-8 inline-flex items-center justify-center rounded-md bg-primary-600 px-5 py-3 font-semibold text-white hover:bg-primary-700"
+                  className="inline-flex items-center justify-center rounded-md bg-primary-600 px-5 py-3 font-semibold text-white hover:bg-primary-700"
                 >
                   Start registration
                   <ArrowRightIcon className="ml-2 h-5 w-5" />
                 </button>
               </div>
 
-              <div className="relative">
-                <div className="absolute left-5 top-8 hidden h-[calc(100%-4rem)] w-px bg-primary-200 md:block" />
-                <div className="space-y-5">
+              <div className="mt-8 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                   {adoptionJourneys.map((journey, index) => (
                     <article
                       key={journey.id}
                       onClick={() => navigate(`/journeys/${journey.id}`)}
-                      className="group relative cursor-pointer rounded-md border border-gray-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg md:ml-12"
+                    className="group cursor-pointer rounded-md border border-gray-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:border-primary-200 hover:shadow-lg"
                     >
-                      <div className="absolute -left-[3.25rem] top-6 hidden h-10 w-10 items-center justify-center rounded-full border-4 border-white bg-primary-600 text-sm font-bold text-white shadow md:flex">
-                        {index + 1}
-                      </div>
-                      <div className="grid gap-4 md:grid-cols-[190px_1fr]">
-                        <div className="relative h-36 overflow-hidden rounded-md bg-gray-100">
-                          <img src={journey.image} alt={journey.title} className="h-full w-full object-cover" />
-                          <div className="absolute left-3 top-3 rounded-md bg-white px-2 py-1 text-xs font-bold text-primary-700 md:hidden">
-                            {String(index + 1).padStart(2, '0')}
-                          </div>
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-primary-600 text-sm font-bold text-white">
+                        {String(index + 1).padStart(2, '0')}
                         </div>
-                        <div className="flex flex-col justify-center">
-                          <div className="flex items-center gap-3">
-                            <journey.icon className="h-6 w-6 text-primary-700" />
-                            <p className="text-xs font-semibold uppercase tracking-wide text-primary-700">{journey.shortTitle}</p>
-                          </div>
-                          <h3 className="mt-2 text-xl font-bold text-gray-900 group-hover:text-primary-700">{journey.title}</h3>
-                          <p className="mt-2 text-sm leading-6 text-gray-600">{journey.description}</p>
-                          <div className="mt-4 inline-flex items-center text-sm font-semibold text-primary-700">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <journey.icon className="h-5 w-5 text-primary-700" />
+                          <p className="text-xs font-semibold uppercase tracking-wide text-primary-700">{journey.shortTitle}</p>
+                        </div>
+                        <h3 className="mt-1 text-base font-bold leading-snug text-gray-900 group-hover:text-primary-700">{journey.title}</h3>
+                      </div>
+                    </div>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-[120px_1fr]">
+                      <div className="relative h-24 overflow-hidden rounded-md bg-gray-100">
+                          <img src={journey.image} alt={journey.title} className="h-full w-full object-cover" />
+                        </div>
+                      <div>
+                        <p className="text-sm leading-6 text-gray-600">{journey.description}</p>
+                        <div className="mt-3 inline-flex items-center text-sm font-semibold text-primary-700">
                             View adoption stage
                             <ArrowRightIcon className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
                           </div>
@@ -570,24 +649,49 @@ export default function LandingPage() {
                     </article>
                   ))}
                 </div>
-              </div>
             </div>
           </div>
         </section>
 
-        <section id="unique" className="bg-gray-50 px-4 py-20 sm:px-6 lg:px-8">
+        <section id="unique" className="bg-gray-50 px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">What is unique</p>
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-3xl">
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">
+                  {activeUniqueTab === 'unique' ? 'What is unique' : 'Key differentiators'}
+                </p>
                 <h2 className="mt-3 text-4xl font-bold text-gray-900">
-                  Focused HR software that avoids the all-in-one trap.
+                  {activeUniqueTab === 'unique'
+                    ? 'Focused HR software that avoids the all-in-one trap.'
+                    : 'Three product choices that make AuroraHR feel different.'}
                 </h2>
                 <p className="mt-4 text-lg leading-8 text-gray-600">
-                  AuroraHR is intentionally human-centric, HR-focused, and ecosystem-friendly. It gives each persona
-                  a clean workspace while leaving room for the customer’s existing payroll, recruitment, finance,
-                  identity, and collaboration systems.
+                  {activeUniqueTab === 'unique'
+                    ? 'AuroraHR is intentionally human-centric, HR-focused, and ecosystem-friendly. It gives each persona a clean workspace while leaving room for the customer’s existing payroll, recruitment, finance, identity, and collaboration systems.'
+                    : 'The strongest parts of AuroraHR are the connective ideas that make HR work easier: context-rich collaboration, document-backed lifecycle actions, and timeline-led process UX.'}
                 </p>
+              </div>
+              <div className="grid gap-2 rounded-md border border-gray-200 bg-white p-1 text-sm font-semibold text-gray-600 shadow-sm sm:grid-cols-2">
+                {[
+                  { id: 'unique', label: 'What is Unique' },
+                  { id: 'differentiators', label: 'Key Differentiators' },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveUniqueTab(tab.id as 'unique' | 'differentiators')}
+                    className={`rounded-md px-4 py-2.5 text-left transition sm:text-center ${
+                      activeUniqueTab === tab.id ? 'bg-primary-600 text-white shadow-sm' : 'hover:bg-primary-50 hover:text-primary-700'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {activeUniqueTab === 'unique' && (
+              <div className="mt-10 grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+                <div>
                 <div className="mt-8 rounded-md border border-primary-200 bg-primary-700 p-6 text-white shadow-lg">
                   <p className="text-sm font-semibold uppercase tracking-wide text-primary-100">Scope discipline</p>
                   <h3 className="mt-2 text-2xl font-bold">Payroll and recruitment are not missing. They are intentionally left out.</h3>
@@ -599,82 +703,64 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="grid gap-4">
-                {[
-                  {
-                    title: 'Intuitive by role',
-                    description: 'Owners, HR teams, managers, and employees see focused dashboards instead of one overloaded workspace.',
-                    icon: UserGroupIcon,
-                  },
-                  {
-                    title: 'Human-centric UX',
-                    description: 'The product follows real HR moments: joining, attendance, leave, probation, performance, documents, communication, and exit.',
-                    icon: SparklesIcon,
-                  },
-                  {
-                    title: 'Built for GCCs, SMEs, and startups',
-                    description: 'The platform supports serious implementation without forcing enterprise-suite complexity on teams that need speed and clarity.',
-                    icon: GlobeAltIcon,
-                  },
-                  {
-                    title: 'Co-exists instead of locking customers in',
-                    description: 'Leaving payroll and recruitment out of core scope makes integration easier and avoids forcing buyers into one complex HR monolith.',
-                    icon: ChatBubbleLeftRightIcon,
-                  },
-                ].map((item) => (
-                  <div key={item.title} className="grid gap-4 rounded-md border border-gray-200 bg-white p-5 shadow-sm sm:grid-cols-[48px_1fr]">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary-50 text-primary-700">
-                      <item.icon className="h-7 w-7" />
+                <div className="grid gap-4">
+                  {[
+                    {
+                      title: 'Intuitive by role',
+                      description: 'Owners, HR teams, managers, and employees see focused dashboards instead of one overloaded workspace.',
+                      icon: UserGroupIcon,
+                    },
+                    {
+                      title: 'Human-centric UX',
+                      description: 'The product follows real HR moments: joining, attendance, leave, probation, performance, documents, communication, and exit.',
+                      icon: SparklesIcon,
+                    },
+                    {
+                      title: 'Built for GCCs, SMEs, and startups',
+                      description: 'The platform supports serious implementation without forcing enterprise-suite complexity on teams that need speed and clarity.',
+                      icon: GlobeAltIcon,
+                    },
+                    {
+                      title: 'Co-exists instead of locking customers in',
+                      description: 'Leaving payroll and recruitment out of core scope makes integration easier and avoids forcing buyers into one complex HR monolith.',
+                      icon: ChatBubbleLeftRightIcon,
+                    },
+                  ].map((item) => (
+                    <div key={item.title} className="grid gap-4 rounded-md border border-gray-200 bg-white p-5 shadow-sm sm:grid-cols-[48px_1fr]">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary-50 text-primary-700">
+                        <item.icon className="h-7 w-7" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">{item.title}</h3>
+                        <p className="mt-2 text-sm leading-6 text-gray-600">{item.description}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-900">{item.title}</h3>
-                      <p className="mt-2 text-sm leading-6 text-gray-600">{item.description}</p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          </div>
-        </section>
+            )}
 
-        <section className="bg-white px-4 py-20 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <div className="grid gap-8 lg:grid-cols-3">
-              <div className="lg:col-span-1">
-                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Trust and control</p>
-                <h2 className="mt-3 text-3xl font-bold text-gray-900">The essentials commercial buyers ask for.</h2>
+            {activeUniqueTab === 'differentiators' && (
+              <div className="mt-10">
+                <div className="grid gap-5 lg:grid-cols-3">
+                  {differentiators.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => navigate(`/differentiators/${item.id}`)}
+                      className="group rounded-md border border-gray-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:border-primary-300 hover:shadow-lg"
+                    >
+                        <item.icon className="h-7 w-7 text-primary-700" />
+                        <h4 className="mt-4 text-lg font-bold leading-tight text-gray-900">{item.title}</h4>
+                        <p className="mt-3 line-clamp-4 text-sm leading-6 text-gray-600">{item.description}</p>
+                      <span className="mt-5 inline-flex items-center text-sm font-semibold text-primary-700">
+                        View differentiator
+                        <ArrowRightIcon className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
-                {[
-                  {
-                    title: 'Authentic multi-tenancy',
-                    description: 'Tenant-aware data access and production pilot workflows keep company records separated.',
-                    icon: FingerPrintIcon,
-                  },
-                  {
-                    title: 'Role-based UX',
-                    description: 'Owners, HR managers, senior employees, managers, and employees see the work that matters to them.',
-                    icon: UserPlusIcon,
-                  },
-                  {
-                    title: 'Operational evidence',
-                    description: 'Visual QA, screenshots, workflow reports, and seeded demo journeys support investor and customer demos.',
-                    icon: DocumentTextIcon,
-                  },
-                  {
-                    title: 'Security-conscious account flows',
-                    description: 'Login, profile management, password change, reset hooks, and invite flows are treated as product-critical paths.',
-                    icon: LockClosedIcon,
-                  },
-                ].map((item) => (
-                  <div key={item.title} className="rounded-md border border-gray-200 p-6">
-                    <item.icon className="h-7 w-7 text-primary-700" />
-                    <h3 className="mt-4 text-lg font-bold text-gray-900">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-gray-600">{item.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            )}
           </div>
         </section>
 
@@ -726,80 +812,169 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="relative overflow-hidden bg-primary-700 px-4 py-20 text-white sm:px-6 lg:px-8">
-          <img
-            src="/images/Hero-Images/hero-team-collaboration.jpg"
-            alt="Team reviewing HR data"
-            className="absolute inset-0 h-full w-full object-cover opacity-20"
-          />
-          <div className="absolute inset-0 bg-primary-800/82" />
-          <div className="relative mx-auto max-w-4xl text-center">
-            <h2 className="text-4xl font-bold">Give every buyer a clear next step.</h2>
-            <p className="mt-4 text-lg leading-8 text-primary-50">
-              New companies register and onboard. Existing users login. Decision makers request a guided demo.
-              The product journey stays simple while the platform depth remains visible.
-            </p>
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <button
-                onClick={() => navigate('/register')}
-                className="inline-flex items-center justify-center rounded-md bg-white px-6 py-3 font-semibold text-primary-700 hover:bg-gray-100"
-              >
-                Register company
-                <ArrowRightIcon className="ml-2 h-5 w-5" />
-              </button>
-              <button
-                onClick={() => navigate('/login')}
-                className="inline-flex items-center justify-center rounded-md border border-white/70 px-6 py-3 font-semibold text-white hover:bg-white/10"
-              >
-                Login
-              </button>
-              <button
-                onClick={requestDemo}
-                className="inline-flex items-center justify-center rounded-md border border-white/35 px-6 py-3 font-semibold text-white hover:bg-white/10"
-              >
-                Request demo
-              </button>
+        <section id="contact" className="bg-white px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Contact us</p>
+              <h2 className="mt-3 text-4xl font-bold text-gray-900">Request a focused AuroraHR conversation.</h2>
+              <p className="mt-4 text-lg leading-8 text-gray-600">
+                Share your context and a preferred time slot. For now, the enquiry will be routed by email to
+                Anupama Bhat while we build the full lead-management admin panel later.
+              </p>
+              <div className="mt-8 rounded-md border border-primary-100 bg-primary-50 p-5">
+                <h3 className="text-base font-bold text-gray-900">Best for</h3>
+                <div className="mt-4 grid gap-3 text-sm text-gray-700">
+                  {['Western MNCs planning India GCCs', 'Indian SMEs professionalizing HR', 'Startups building HR operating discipline'].map((item) => (
+                    <div key={item} className="flex gap-2">
+                      <CheckCircleIcon className="mt-0.5 h-5 w-5 flex-none text-success-600" />
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
+
+            <form onSubmit={handleContactSubmit} className="rounded-md border border-gray-200 bg-gray-50 p-5 shadow-sm sm:p-6">
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="text-sm font-semibold text-gray-700">
+                  Name
+                  <input
+                    required
+                    value={contactForm.name}
+                    onChange={(event) => setContactForm((form) => ({ ...form, name: event.target.value }))}
+                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                    placeholder="Your name"
+                  />
+                </label>
+                <label className="text-sm font-semibold text-gray-700">
+                  Company
+                  <input
+                    required
+                    value={contactForm.company}
+                    onChange={(event) => setContactForm((form) => ({ ...form, company: event.target.value }))}
+                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                    placeholder="Company name"
+                  />
+                </label>
+                <label className="text-sm font-semibold text-gray-700">
+                  Work email
+                  <input
+                    required
+                    type="email"
+                    value={contactForm.email}
+                    onChange={(event) => setContactForm((form) => ({ ...form, email: event.target.value }))}
+                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                    placeholder="name@company.com"
+                  />
+                </label>
+                <label className="text-sm font-semibold text-gray-700">
+                  Phone
+                  <input
+                    value={contactForm.phone}
+                    onChange={(event) => setContactForm((form) => ({ ...form, phone: event.target.value }))}
+                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                    placeholder="+91 ..."
+                  />
+                </label>
+                <label className="text-sm font-semibold text-gray-700 md:col-span-2">
+                  What are you exploring?
+                  <select
+                    value={contactForm.interest}
+                    onChange={(event) => setContactForm((form) => ({ ...form, interest: event.target.value }))}
+                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                  >
+                    <option>GCC launch</option>
+                    <option>SME HR operations</option>
+                    <option>Startup HR scale-up</option>
+                    <option>Product demo</option>
+                    <option>Implementation discussion</option>
+                  </select>
+                </label>
+                <label className="text-sm font-semibold text-gray-700">
+                  Preferred date
+                  <input
+                    type="date"
+                    value={contactForm.preferredDate}
+                    onChange={(event) => setContactForm((form) => ({ ...form, preferredDate: event.target.value }))}
+                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                  />
+                </label>
+                <label className="text-sm font-semibold text-gray-700">
+                  Preferred time
+                  <input
+                    type="time"
+                    value={contactForm.preferredTime}
+                    onChange={(event) => setContactForm((form) => ({ ...form, preferredTime: event.target.value }))}
+                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                  />
+                </label>
+                <label className="text-sm font-semibold text-gray-700 md:col-span-2">
+                  Message
+                  <textarea
+                    value={contactForm.message}
+                    onChange={(event) => setContactForm((form) => ({ ...form, message: event.target.value }))}
+                    className="mt-2 min-h-28 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                    placeholder="Tell us what you want to evaluate, implement, or discuss."
+                  />
+                </label>
+              </div>
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                <button type="submit" className="inline-flex items-center justify-center rounded-md bg-primary-600 px-5 py-3 font-semibold text-white hover:bg-primary-700">
+                  Send enquiry
+                  <ArrowRightIcon className="ml-2 h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate('/register')}
+                  className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-5 py-3 font-semibold text-gray-800 hover:border-primary-300 hover:text-primary-700"
+                >
+                  Sign Up / Register
+                </button>
+              </div>
+              <p className="mt-4 text-xs leading-5 text-gray-500">
+                This temporary form opens an email draft to Anupama.Bhat@acvsolutions.in. Lead capture, analytics, and admin workflows will be added later.
+              </p>
+            </form>
           </div>
         </section>
       </main>
 
-      <footer className="bg-gray-950 px-4 py-12 text-gray-300 sm:px-6 lg:px-8">
+      <footer className="border-t border-gray-200 bg-white px-4 py-12 text-gray-600 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
           <div>
-            <img src="/images/aurorahr-logo-white.svg" alt="AuroraHR" className="h-12 w-auto" />
-            <p className="mt-4 max-w-md text-sm leading-6 text-gray-400">
+            <img src="/images/aurorahr-logo-primary.svg" alt="AuroraHR" className="h-12 w-auto" />
+            <p className="mt-4 max-w-md text-sm leading-6 text-gray-600">
               AuroraHR helps organizations launch, operate, and improve HR with strong workflows, role clarity,
               and a practical path from pilot to production.
             </p>
           </div>
           <div>
-            <h3 className="font-semibold text-white">Platform</h3>
+            <h3 className="font-semibold text-gray-900">Platform</h3>
             <div className="mt-3 space-y-2 text-sm">
-              <button onClick={() => scrollToSection('platform')} className="block hover:text-white">Capabilities</button>
-              <button onClick={() => scrollToSection('journeys')} className="block hover:text-white">User journeys</button>
-              <button onClick={() => scrollToSection('unique')} className="block hover:text-white">What is unique</button>
-              <button onClick={() => scrollToSection('pricing')} className="block hover:text-white">Pricing</button>
+              <button onClick={() => scrollToSection('platform')} className="block hover:text-primary-700">Capabilities</button>
+              <button onClick={() => scrollToSection('journeys')} className="block hover:text-primary-700">User journeys</button>
+              <button onClick={() => scrollToSection('unique')} className="block hover:text-primary-700">What is unique</button>
+              <button onClick={() => scrollToSection('pricing')} className="block hover:text-primary-700">Pricing</button>
             </div>
           </div>
           <div>
-            <h3 className="font-semibold text-white">Access</h3>
+            <h3 className="font-semibold text-gray-900">Access</h3>
             <div className="mt-3 space-y-2 text-sm">
-              <button onClick={() => navigate('/register')} className="block hover:text-white">Register</button>
-              <button onClick={() => navigate('/login')} className="block hover:text-white">Login</button>
-              <button onClick={requestDemo} className="block hover:text-white">Request demo</button>
+              <button onClick={() => navigate('/register')} className="block hover:text-primary-700">Register</button>
+              <button onClick={() => navigate('/login')} className="block hover:text-primary-700">Login</button>
+              <button onClick={requestDemo} className="block hover:text-primary-700">Request demo</button>
             </div>
           </div>
           <div>
-            <h3 className="font-semibold text-white">Audience</h3>
-            <div className="mt-3 space-y-2 text-sm text-gray-400">
+            <h3 className="font-semibold text-gray-900">Audience</h3>
+            <div className="mt-3 space-y-2 text-sm text-gray-600">
               <div>India GCC launch teams</div>
               <div>Indian SMEs</div>
               <div>Scaling startups</div>
             </div>
           </div>
         </div>
-        <div className="mx-auto mt-10 max-w-7xl border-t border-white/10 pt-6 text-sm text-gray-500">
+        <div className="mx-auto mt-10 max-w-7xl border-t border-gray-200 pt-6 text-sm text-gray-500">
           © 2026 AuroraHR. Illuminate The Journey. Grow Every Person.
         </div>
       </footer>

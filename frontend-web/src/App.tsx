@@ -8,6 +8,7 @@ import { routeAccessRules, AccessRule } from './config/accessControl';
 // Pages
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const FeatureDetail = lazy(() => import('./pages/FeatureDetail'));
+const DifferentiatorDetail = lazy(() => import('./pages/DifferentiatorDetail'));
 const AdoptionJourneyDetail = lazy(() => import('./pages/AdoptionJourneyDetail'));
 const PlatformPillarDetail = lazy(() => import('./pages/PlatformPillarDetail'));
 const ModernLogin = lazy(() => import('./pages/ModernLogin'));
@@ -134,6 +135,7 @@ function App() {
                 <Route path="/create-password" element={<CreatePassword />} />
                 <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
                 <Route path="/features/:featureId" element={<FeatureDetail />} />
+                <Route path="/differentiators/:differentiatorId" element={<DifferentiatorDetail />} />
                 <Route path="/platform/:pillarId" element={<PlatformPillarDetail />} />
                 <Route path="/journeys/:journeyId" element={<AdoptionJourneyDetail />} />
 
