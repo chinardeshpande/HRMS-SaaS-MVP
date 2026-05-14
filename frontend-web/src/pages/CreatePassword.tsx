@@ -85,7 +85,7 @@ export default function CreatePassword() {
         <div className="text-center mb-8">
           <div className="inline-block bg-white rounded-xl p-4 shadow-sm mb-4">
             <img
-              src="/images/AuroraHR-logo-with-tagline.png"
+              src="/images/aurorahr-logo-primary.svg"
               alt="AuroraHR"
               className="h-12 w-auto"
             />

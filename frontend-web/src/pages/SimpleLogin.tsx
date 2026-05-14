@@ -55,7 +55,7 @@ export default function SimpleLogin() {
       }}>
         <div style={{ marginBottom: '30px', textAlign: 'center' }}>
           <img
-            src="/images/AuroraHR-logo-with-tagline.png"
+            src="/images/aurorahr-logo-primary.svg"
             alt="AuroraHR - Illuminate The Journey | Grow Every Person"
             style={{ height: '70px', width: 'auto' }}
           />

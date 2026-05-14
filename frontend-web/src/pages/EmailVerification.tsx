@@ -64,7 +64,7 @@ export default function EmailVerification() {
         {/* Logo */}
         <div className="text-center mb-8">
           <img
-            src="/images/AuroraHR-logo-with-tagline.png"
+            src="/images/aurorahr-logo-primary.svg"
             alt="AuroraHR - Illuminate The Journey | Grow Every Person"
             className="h-20 w-auto mx-auto"
           />

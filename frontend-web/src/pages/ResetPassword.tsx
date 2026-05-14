@@ -92,7 +92,7 @@ export default function ResetPassword() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <img
-            src="/images/AuroraHR-logo-with-tagline.png"
+            src="/images/aurorahr-logo-primary.svg"
             alt="AuroraHR - Illuminate The Journey | Grow Every Person"
             className="mx-auto h-16 w-auto"
           />

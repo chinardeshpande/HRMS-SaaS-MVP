@@ -9,6 +9,7 @@ import { routeAccessRules, AccessRule } from './config/accessControl';
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const FeatureDetail = lazy(() => import('./pages/FeatureDetail'));
 const AdoptionJourneyDetail = lazy(() => import('./pages/AdoptionJourneyDetail'));
+const PlatformPillarDetail = lazy(() => import('./pages/PlatformPillarDetail'));
 const ModernLogin = lazy(() => import('./pages/ModernLogin'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
@@ -133,6 +134,7 @@ function App() {
                 <Route path="/create-password" element={<CreatePassword />} />
                 <Route path="/accept-invitation/:token" element={<AcceptInvitation />} />
                 <Route path="/features/:featureId" element={<FeatureDetail />} />
+                <Route path="/platform/:pillarId" element={<PlatformPillarDetail />} />
                 <Route path="/journeys/:journeyId" element={<AdoptionJourneyDetail />} />
 
                 {/* Onboarding route (requires verified admin session) */}

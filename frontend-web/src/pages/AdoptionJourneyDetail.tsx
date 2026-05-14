@@ -5,6 +5,7 @@ import {
   ArrowRightIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
+import BrandedScreenshot from '../components/landing/BrandedScreenshot';
 import { getAdoptionJourneyById } from '../data/adoptionJourneys';
 
 export default function AdoptionJourneyDetail() {
@@ -37,7 +38,7 @@ export default function AdoptionJourneyDetail() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4">
             <img
-              src="/images/aurora-logo-navbar.svg"
+              src="/images/aurorahr-logo-primary.svg"
               alt="AuroraHR"
               className="h-9 w-auto cursor-pointer"
               onClick={() => navigate('/')}
@@ -97,7 +98,12 @@ export default function AdoptionJourneyDetail() {
             </div>
 
             <div className="overflow-hidden rounded-md border border-gray-200 bg-gray-950 p-4 shadow-lg">
-              <img src={journey.screenshot} alt={`${journey.title} screenshot`} className="h-full min-h-[360px] w-full rounded-md object-cover object-left-top" />
+              <BrandedScreenshot
+                src={journey.screenshot}
+                alt={`${journey.title} screenshot`}
+                className="h-full min-h-[360px] w-full rounded-md"
+                imageClassName="h-full min-h-[360px] w-full rounded-md object-cover object-left-top"
+              />
             </div>
           </div>
         </section>

@@ -19,7 +19,9 @@ import {
   UserPlusIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
+import BrandedScreenshot from '../components/landing/BrandedScreenshot';
 import { adoptionJourneys } from '../data/adoptionJourneys';
+import { platformPillars } from '../data/platformPillars';
 
 type Capability = {
   moduleId: string;
@@ -123,6 +125,30 @@ const personaCards = [
   },
 ];
 
+const differentiators = [
+  {
+    title: 'HR Connect is collaboration with HR context',
+    description:
+      'Not just chat. HR Connect brings wall feeds, conversations, groups, service requests, appointments, and communication guardrails into the same HR workspace where employee lifecycle context already exists.',
+    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.21.10-AM.png',
+    icon: ChatBubbleLeftRightIcon,
+  },
+  {
+    title: 'Document Library supports lifecycle formalities',
+    description:
+      'HR managers can generate standard documents, preserve lifecycle evidence, and share the right supporting material safely through the employee journey instead of chasing files across mail and drives.',
+    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.18-AM.png',
+    icon: DocumentTextIcon,
+  },
+  {
+    title: 'Timeline-led process UX keeps HR intuitive',
+    description:
+      'Sensitive processes like onboarding, probation, performance, and exit become easier to understand when users see status, ownership, history, and next action as an HR timeline.',
+    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.58-AM.png',
+    icon: ClipboardDocumentCheckIcon,
+  },
+];
+
 const pricingPlans = [
   {
     name: 'Pilot',
@@ -183,9 +209,9 @@ export default function LandingPage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <button onClick={() => scrollToSection('top')} className="flex items-center">
             <img
-              src="/images/aurora-logo-navbar.svg"
+              src={scrolled ? '/images/aurorahr-logo-primary.svg' : '/images/aurorahr-logo-white.svg'}
               alt="AuroraHR"
-              className={`h-10 w-auto transition-all ${scrolled ? '' : 'brightness-0 invert'}`}
+              className="h-10 w-auto transition-all"
             />
           </button>
 
@@ -329,10 +355,11 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="bg-gray-950 p-4 sm:p-6">
-                <img
+                <BrandedScreenshot
                   src="/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png"
                   alt="AuroraHR dashboard sample"
-                  className="h-full min-h-[300px] w-full rounded-md object-cover object-left-top"
+                  className="h-full min-h-[300px] w-full rounded-md"
+                  imageClassName="h-full min-h-[300px] w-full rounded-md object-cover object-left-top"
                 />
               </div>
             </div>
@@ -351,33 +378,20 @@ export default function LandingPage() {
             </div>
 
             <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {[
-                {
-                  title: 'Implementation ready',
-                  description: 'Masters, role access, reporting lines, approval flows, templates, and employee import are part of the product story.',
-                  icon: BuildingOffice2Icon,
-                },
-                {
-                  title: 'Human HR journeys',
-                  description: 'Every process is shaped around the employee, manager, HR manager, and leadership view instead of a generic admin grid.',
-                  icon: UserGroupIcon,
-                },
-                {
-                  title: 'Workflow depth',
-                  description: 'Attendance, leave, onboarding, probation, performance, documents, HR Connect, and exit are connected to real approvals.',
-                  icon: ClipboardDocumentCheckIcon,
-                },
-                {
-                  title: 'Decision visibility',
-                  description: 'Reports, dashboards, demo data, and visual QA evidence help leadership trust the system before full rollout.',
-                  icon: ChartBarIcon,
-                },
-              ].map((feature) => (
-                <div key={feature.title} className="rounded-md border border-gray-200 bg-white p-6 shadow-sm">
+              {platformPillars.map((feature) => (
+                <button
+                  key={feature.id}
+                  onClick={() => navigate(`/platform/${feature.id}`)}
+                  className="group rounded-md border border-gray-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-primary-300 hover:shadow-lg"
+                >
                   <feature.icon className="h-7 w-7 text-primary-700" />
-                  <h3 className="mt-5 text-lg font-bold text-gray-900">{feature.title}</h3>
+                  <h3 className="mt-5 text-lg font-bold text-gray-900 group-hover:text-primary-700">{feature.title}</h3>
                   <p className="mt-2 text-sm leading-6 text-gray-600">{feature.description}</p>
-                </div>
+                  <span className="mt-5 inline-flex items-center text-sm font-semibold text-primary-700">
+                    Open page
+                    <ArrowRightIcon className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
+                  </span>
+                </button>
               ))}
             </div>
 
@@ -395,9 +409,12 @@ export default function LandingPage() {
                   onClick={() => navigate(`/features/${capability.moduleId}`)}
                   className="group cursor-pointer overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
                 >
-                  <div className="h-44 bg-gray-100">
-                    <img src={capability.image} alt={`${capability.title} visual`} className="h-full w-full object-cover object-left-top" />
-                  </div>
+                  <BrandedScreenshot
+                    src={capability.image}
+                    alt={`${capability.title} visual`}
+                    className="h-44 bg-gray-100"
+                    imageClassName="h-full w-full object-cover object-left-top"
+                  />
                   <div className="p-6">
                     <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-md bg-primary-50 text-primary-700">
                       <capability.icon className="h-6 w-6" />
@@ -418,6 +435,38 @@ export default function LandingPage() {
                   </div>
                 </article>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Differentiators</p>
+                <h2 className="mt-3 text-4xl font-bold text-gray-900">Three product choices that make AuroraHR feel different.</h2>
+                <p className="mt-4 text-lg leading-8 text-gray-600">
+                  The strongest parts of AuroraHR are not only modules. They are the connective ideas that make HR work easier:
+                  context-rich collaboration, document-backed lifecycle actions, and timeline-led process UX.
+                </p>
+              </div>
+              <div className="grid gap-5">
+                {differentiators.map((item) => (
+                  <article key={item.title} className="grid overflow-hidden rounded-md border border-gray-200 bg-gray-50 shadow-sm md:grid-cols-[0.9fr_1.1fr]">
+                    <BrandedScreenshot
+                      src={item.image}
+                      alt={`${item.title} visual`}
+                      className="min-h-[220px] bg-white"
+                      imageClassName="h-full w-full object-cover object-left-top"
+                    />
+                    <div className="p-6">
+                      <item.icon className="h-7 w-7 text-primary-700" />
+                      <h3 className="mt-4 text-xl font-bold text-gray-900">{item.title}</h3>
+                      <p className="mt-3 text-sm leading-6 text-gray-600">{item.description}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -483,27 +532,29 @@ export default function LandingPage() {
 
         <section id="unique" className="bg-gray-50 px-4 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">What is unique</p>
                 <h2 className="mt-3 text-4xl font-bold text-gray-900">
-                  Focused HR software that respects how people actually work.
+                  Focused HR software that avoids the all-in-one trap.
                 </h2>
                 <p className="mt-4 text-lg leading-8 text-gray-600">
-                  AuroraHR is intentionally human-centric and HR-focused. It gives every persona a clean,
-                  relevant workspace while avoiding the trap of becoming a bloated all-in-one suite.
+                  AuroraHR is intentionally human-centric, HR-focused, and ecosystem-friendly. It gives each persona
+                  a clean workspace while leaving room for the customer’s existing payroll, recruitment, finance,
+                  identity, and collaboration systems.
                 </p>
-                <div className="mt-8 rounded-md border border-primary-100 bg-white p-6 shadow-sm">
-                  <h3 className="text-lg font-bold text-gray-900">Clear product scope</h3>
-                  <p className="mt-2 text-sm leading-6 text-gray-600">
-                    Payroll and recruitment or talent acquisition are deliberately outside the core scope.
-                    This keeps AuroraHR simple, implementation-friendly, and easy to connect with payroll,
-                    ATS, finance, identity, and communication tools already present in the customer environment.
+                <div className="mt-8 rounded-md border border-primary-200 bg-primary-700 p-6 text-white shadow-lg">
+                  <p className="text-sm font-semibold uppercase tracking-wide text-primary-100">Scope discipline</p>
+                  <h3 className="mt-2 text-2xl font-bold">Payroll and recruitment are not missing. They are intentionally left out.</h3>
+                  <p className="mt-3 text-sm leading-6 text-primary-50">
+                    For GCCs, SMEs, and startups, this is an advantage. Customers can keep their preferred payroll,
+                    ATS, finance, and communication stack while AuroraHR becomes the focused people-operations layer
+                    for lifecycle, workflows, documents, collaboration, and reporting.
                   </p>
                 </div>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4">
                 {[
                   {
                     title: 'Intuitive by role',
@@ -516,20 +567,24 @@ export default function LandingPage() {
                     icon: SparklesIcon,
                   },
                   {
-                    title: 'Built for GCC, SME, and startup adoption',
-                    description: 'Implementation depth supports serious company rollout while keeping the day-to-day interface simple.',
+                    title: 'Built for GCCs, SMEs, and startups',
+                    description: 'The platform supports serious implementation without forcing enterprise-suite complexity on teams that need speed and clarity.',
                     icon: GlobeAltIcon,
                   },
                   {
-                    title: 'Co-exists with the stack',
-                    description: 'A focused HRMS can sit beside payroll, hiring, finance, collaboration, and analytics systems without forcing replacement.',
+                    title: 'Co-exists instead of locking customers in',
+                    description: 'Leaving payroll and recruitment out of core scope makes integration easier and avoids forcing buyers into one complex HR monolith.',
                     icon: ChatBubbleLeftRightIcon,
                   },
                 ].map((item) => (
-                  <div key={item.title} className="rounded-md border border-gray-200 bg-white p-6 shadow-sm">
-                    <item.icon className="h-7 w-7 text-primary-700" />
-                    <h3 className="mt-4 text-lg font-bold text-gray-900">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-gray-600">{item.description}</p>
+                  <div key={item.title} className="grid gap-4 rounded-md border border-gray-200 bg-white p-5 shadow-sm sm:grid-cols-[48px_1fr]">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary-50 text-primary-700">
+                      <item.icon className="h-7 w-7" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900">{item.title}</h3>
+                      <p className="mt-2 text-sm leading-6 text-gray-600">{item.description}</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -537,35 +592,39 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="gcc" className="bg-gray-950 px-4 py-20 text-white sm:px-6 lg:px-8">
+        <section id="gcc" className="bg-white px-4 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <div className="grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-center">
+            <div className="overflow-hidden rounded-md border border-gray-200 bg-primary-50 shadow-xl">
+              <div className="grid gap-0 lg:grid-cols-[1fr_0.95fr] lg:items-stretch">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-wide text-primary-200">Built for serious adoption</p>
-                <h2 className="mt-3 text-4xl font-bold">Designed for GCC launches, SMEs, and startup scale.</h2>
-                <p className="mt-4 text-lg leading-8 text-gray-300">
-                  AuroraHR is positioned for organizations that need the discipline of enterprise HR without waiting
-                  months for a heavyweight implementation. It fits a Western MNC setting up in India, an SME bringing
-                  order to people operations, or a startup preparing for its next growth stage.
-                </p>
+                  <div className="p-8 sm:p-10 lg:p-12">
+                    <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Built for serious adoption</p>
+                    <h2 className="mt-3 text-4xl font-bold text-gray-900 lg:text-5xl">Designed for GCC launches, SMEs, and startup scale.</h2>
+                    <p className="mt-5 text-lg leading-8 text-gray-700">
+                      AuroraHR is meant for organizations that need the discipline of enterprise HR without waiting
+                      months for a heavyweight suite implementation. It gives Western MNCs, Indian SMEs, and new-age
+                      startups a practical people-operations layer they can adopt quickly and integrate cleanly.
+                    </p>
 
-                <div className="mt-8 grid gap-4 md:grid-cols-3">
-                  {personaCards.map((card) => (
-                    <div key={card.title} className="rounded-md border border-white/15 bg-white/10 p-5">
-                      <card.icon className="h-7 w-7 text-primary-200" />
-                      <h3 className="mt-4 text-base font-bold">{card.title}</h3>
-                      <p className="mt-2 text-sm leading-6 text-gray-300">{card.description}</p>
+                    <div className="mt-8 grid gap-4 md:grid-cols-3">
+                      {personaCards.map((card) => (
+                        <div key={card.title} className="rounded-md border border-primary-100 bg-white p-5 shadow-sm">
+                          <card.icon className="h-7 w-7 text-primary-700" />
+                          <h3 className="mt-4 text-base font-bold text-gray-900">{card.title}</h3>
+                          <p className="mt-2 text-sm leading-6 text-gray-600">{card.description}</p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </div>
 
-              <div className="overflow-hidden rounded-md border border-white/15 bg-white/10 p-4">
-                <img
-                  src="/images/Hero-Images/hero-happy-employees.jpg"
-                  alt="Employees collaborating in a modern workplace"
-                  className="h-[420px] w-full rounded-md object-cover"
-                />
+                <div className="min-h-[420px] bg-white p-4">
+                  <img
+                    src="/images/Hero-Images/hero-happy-employees.jpg"
+                    alt="Employees collaborating in a modern workplace"
+                    className="h-full min-h-[420px] w-full rounded-md object-cover"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -701,7 +760,7 @@ export default function LandingPage() {
       <footer className="bg-gray-950 px-4 py-12 text-gray-300 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
           <div>
-            <img src="/images/AuroraHR-logo-with-tagline.png" alt="AuroraHR" className="h-12 w-auto rounded-sm bg-white px-2 py-1" />
+            <img src="/images/aurorahr-logo-white.svg" alt="AuroraHR" className="h-12 w-auto" />
             <p className="mt-4 max-w-md text-sm leading-6 text-gray-400">
               AuroraHR helps organizations launch, operate, and improve HR with strong workflows, role clarity,
               and a practical path from pilot to production.

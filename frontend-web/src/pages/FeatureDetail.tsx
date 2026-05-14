@@ -5,6 +5,7 @@ import {
   CheckCircleIcon,
   ChevronDownIcon,
 } from '@heroicons/react/24/outline';
+import BrandedScreenshot from '../components/landing/BrandedScreenshot';
 import { getModuleById } from '../data/modulesData';
 
 
@@ -49,7 +50,7 @@ export default function FeatureDetail() {
           <div className="flex justify-between items-center h-14">
             <div className="flex items-center space-x-4">
               <img
-                src="/images/AuroraHR-logo.png"
+                src="/images/aurorahr-logo-primary.svg"
                 alt="AuroraHR"
                 className="h-8 w-auto cursor-pointer"
                 onClick={() => navigate('/')}
@@ -180,13 +181,11 @@ export default function FeatureDetail() {
               <div className="grid md:grid-cols-3 gap-4">
                 {module.screenshots.slice(0, 3).map((screenshot, index) => (
                   <div key={index} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                    <img
+                    <BrandedScreenshot
                       src={screenshot}
                       alt={`${module.title} screenshot ${index + 1}`}
-                      className="w-full h-auto"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
+                      className="w-full bg-gray-100"
+                      imageClassName="w-full h-auto"
                     />
                   </div>
                 ))}
