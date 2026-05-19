@@ -280,9 +280,9 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
           >
             <Bars3Icon className="h-6 w-6" />
           </button>
-          <div className="flex-1 px-4 flex justify-between items-center">
+          <div className="flex-1 min-w-0 px-3 sm:px-4 flex justify-between items-center">
             {/* Search bar */}
-            <div className="flex-1 flex">
+            <div className="flex-1 min-w-0 flex">
               <form className="w-full flex md:ml-0" action="#" method="GET">
                 <label htmlFor="search-field" className="sr-only">
                   Search
@@ -293,14 +293,14 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                   </div>
                   <input
                     id="search-field"
-                    className="block w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-transparent sm:text-sm"
-                    placeholder="Search employees, attendance, leave..."
+                    className="block w-full h-full min-w-0 pl-8 pr-3 py-2 border-transparent text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-transparent"
+                    placeholder="Search"
                     type="search"
                   />
                 </div>
               </form>
             </div>
-            <div className="ml-4 flex items-center md:ml-6 space-x-3">
+            <div className="ml-2 flex shrink-0 items-center md:ml-6 space-x-2 sm:space-x-3">
               {isDemoMode && (
                 <div className="hidden sm:flex items-center rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">
                   Demo Mode

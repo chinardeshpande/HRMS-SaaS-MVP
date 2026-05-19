@@ -421,10 +421,10 @@ export default function ModernHRConnect() {
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
+            <div className="grid w-full grid-cols-2 gap-1 bg-gray-100 p-1 rounded-lg sm:flex sm:w-auto sm:items-center sm:space-x-1 sm:gap-0">
               <button
                 onClick={() => setActiveTab('feed')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
+                className={`justify-center px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
                   activeTab === 'feed' ? 'bg-white text-pink-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -433,7 +433,7 @@ export default function ModernHRConnect() {
               </button>
               <button
                 onClick={() => setActiveTab('chat')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
+                className={`justify-center px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
                   activeTab === 'chat' ? 'bg-white text-pink-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -445,7 +445,7 @@ export default function ModernHRConnect() {
               </button>
               <button
                 onClick={() => setActiveTab('groups')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
+                className={`justify-center px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
                   activeTab === 'groups' ? 'bg-white text-pink-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -454,7 +454,7 @@ export default function ModernHRConnect() {
               </button>
               <button
                 onClick={() => setActiveTab('helpdesk')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
+                className={`justify-center px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
                   activeTab === 'helpdesk' ? 'bg-white text-pink-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
