@@ -30,6 +30,13 @@ export default defineConfig({
         target: apiProxyTarget,
         changeOrigin: true,
         secure: true,
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            if (apiProxyTarget.startsWith('https://aurorahr.in')) {
+              proxyReq.setHeader('origin', 'https://aurorahr.in')
+            }
+          })
+        },
       },
     },
   },
