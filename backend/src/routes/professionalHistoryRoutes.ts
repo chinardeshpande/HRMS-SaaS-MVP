@@ -1,8 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
+import { authorize } from '../middleware/auth';
 import professionalHistoryService from '../services/professionalHistoryService';
 import managerTeamService from '../services/managerTeamService';
 import { UserRole } from '../../../shared/types';
+import { ManualEmploymentHistoryType } from '../models/ManualEmploymentHistory';
 
 const router = Router();
 
@@ -49,6 +51,44 @@ const denyHistoryAccess = (res: Response) => res.status(403).json({
   },
 });
 
+const parseManualHistoryPayload = (body: any) => {
+  const allowedTypes = new Set(Object.values(ManualEmploymentHistoryType));
+  const eventType = body.eventType;
+
+  if (!allowedTypes.has(eventType)) {
+    throw new Error('A valid event type is required');
+  }
+
+  if (!body.title || !String(body.title).trim()) {
+    throw new Error('Title is required');
+  }
+
+  if (!body.effectiveDate || Number.isNaN(new Date(body.effectiveDate).getTime())) {
+    throw new Error('A valid effective date is required');
+  }
+
+  const amount =
+    body.amount === undefined || body.amount === null || body.amount === ''
+      ? undefined
+      : Number(body.amount);
+
+  if (amount !== undefined && Number.isNaN(amount)) {
+    throw new Error('Amount must be numeric');
+  }
+
+  return {
+    eventType,
+    title: String(body.title),
+    effectiveDate: new Date(body.effectiveDate),
+    description: body.description === undefined ? undefined : body.description,
+    fromValue: body.fromValue === undefined ? undefined : body.fromValue,
+    toValue: body.toValue === undefined ? undefined : body.toValue,
+    amount,
+    currency: body.currency === undefined ? undefined : body.currency,
+    notes: body.notes === undefined ? undefined : body.notes,
+  };
+};
+
 /**
  * GET /api/v1/professional-history/employee/:employeeId
  * Get combined professional history for an employee
@@ -78,6 +118,130 @@ router.get('/employee/:employeeId', async (req: Request, res: Response) => {
     });
   }
 });
+
+/**
+ * POST /api/v1/professional-history/manual/:employeeId
+ * Create manual employment history entry
+ */
+router.post(
+  '/manual/:employeeId',
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = req.user!.tenantId;
+      const { employeeId } = req.params;
+      const payload = parseManualHistoryPayload(req.body);
+
+      const entry = await professionalHistoryService.createManualEmploymentHistory({
+        tenantId,
+        employeeId,
+        ...payload,
+        createdBy: req.user!.employeeId,
+      });
+
+      res.status(201).json({
+        success: true,
+        data: entry,
+        message: 'Manual employment history entry created successfully',
+      });
+    } catch (error: any) {
+      const status = error.message === 'Employee not found' ? 404 : 400;
+      res.status(status).json({
+        success: false,
+        error: {
+          code: status === 404 ? 'NOT_FOUND' : 'VALIDATION_ERROR',
+          message: error.message || 'Failed to create manual employment history entry',
+        },
+      });
+    }
+  }
+);
+
+/**
+ * PUT /api/v1/professional-history/manual/:manualHistoryId
+ * Update manual employment history entry
+ */
+router.put(
+  '/manual/:manualHistoryId',
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = req.user!.tenantId;
+      const { manualHistoryId } = req.params;
+      const payload = parseManualHistoryPayload(req.body);
+
+      const entry = await professionalHistoryService.updateManualEmploymentHistory(
+        tenantId,
+        manualHistoryId,
+        {
+          ...payload,
+          updatedBy: req.user!.employeeId,
+        }
+      );
+
+      if (!entry) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 'NOT_FOUND', message: 'Manual employment history entry not found' },
+        });
+      }
+
+      res.json({
+        success: true,
+        data: entry,
+        message: 'Manual employment history entry updated successfully',
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: error.message || 'Failed to update manual employment history entry',
+        },
+      });
+    }
+  }
+);
+
+/**
+ * DELETE /api/v1/professional-history/manual/:manualHistoryId
+ * Delete manual employment history entry
+ */
+router.delete(
+  '/manual/:manualHistoryId',
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = req.user!.tenantId;
+      const { manualHistoryId } = req.params;
+      const deleted = await professionalHistoryService.deleteManualEmploymentHistory(
+        tenantId,
+        manualHistoryId
+      );
+
+      if (!deleted) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 'NOT_FOUND', message: 'Manual employment history entry not found' },
+        });
+      }
+
+      res.json({
+        success: true,
+        data: { manualHistoryId },
+        message: 'Manual employment history entry deleted successfully',
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: {
+          code: 'DELETE_ERROR',
+          message: error.message || 'Failed to delete manual employment history entry',
+        },
+      });
+    }
+  }
+);
 
 /**
  * GET /api/v1/professional-history/position/:employeeId

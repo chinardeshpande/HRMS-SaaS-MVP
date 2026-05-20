@@ -42,6 +42,7 @@ import { DevelopmentActionItem } from '../models/DevelopmentActionItem';
 // Professional History entities
 import { PositionHistory } from '../models/PositionHistory';
 import { CompensationHistory } from '../models/CompensationHistory';
+import { ManualEmploymentHistory } from '../models/ManualEmploymentHistory';
 // HR Connect entities
 import { HRConnectPost } from '../models/HRConnectPost';
 import { HRConnectComment } from '../models/HRConnectComment';
@@ -124,6 +125,7 @@ export const AppDataSource = new DataSource({
     // Professional History
     PositionHistory,
     CompensationHistory,
+    ManualEmploymentHistory,
     // HR Connect
     HRConnectPost,
     HRConnectComment,

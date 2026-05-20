@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ModernLayout } from '../components/layout/ModernLayout';
+import api from '../services/api';
 import employeeService from '../services/employeeService';
 import departmentService, { Department } from '../services/departmentService';
 import designationService, { Designation } from '../services/designationService';
@@ -19,18 +20,46 @@ import {
   StarIcon,
   SparklesIcon,
   XMarkIcon,
+  PlusIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline';
+
+type ManualHistoryAction = 'create' | 'edit' | 'delete';
+type ManualHistoryType =
+  | 'promotion'
+  | 'transfer'
+  | 'salary_increase'
+  | 'bonus'
+  | 'unpaid_break'
+  | 'sabbatical'
+  | 'role_change'
+  | 'other';
 
 interface HistoryEvent {
   id: string;
-  type: 'joining' | 'promotion' | 'transfer' | 'salary_increase' | 'performance_review' | 'probation_end';
+  type:
+    | 'joining'
+    | 'promotion'
+    | 'transfer'
+    | 'salary_increase'
+    | 'performance_review'
+    | 'probation_end'
+    | 'bonus'
+    | 'unpaid_break'
+    | 'sabbatical'
+    | 'role_change'
+    | 'other';
   date: string;
   title: string;
   description: string;
+  source?: 'system' | 'manual';
+  eventType?: ManualHistoryType;
+  notes?: string;
   details?: {
     from?: string;
     to?: string;
     amount?: number;
+    currency?: string;
     rating?: string;
   };
 }
@@ -155,6 +184,29 @@ const nullableSelect = (value: string) => (value === '' ? null : value);
 const getDesignationName = (employee: { designation?: { title?: string; name?: string } }) =>
   employee.designation?.title || employee.designation?.name;
 
+const emptyManualHistoryForm = {
+  eventType: 'other' as ManualHistoryType,
+  title: '',
+  effectiveDate: new Date().toISOString().slice(0, 10),
+  description: '',
+  fromValue: '',
+  toValue: '',
+  amount: '',
+  currency: 'INR',
+  notes: '',
+};
+
+const manualHistoryTypeOptions: { value: ManualHistoryType; label: string }[] = [
+  { value: 'promotion', label: 'Promotion' },
+  { value: 'transfer', label: 'Transfer' },
+  { value: 'salary_increase', label: 'Salary increase' },
+  { value: 'bonus', label: 'Bonus paid' },
+  { value: 'unpaid_break', label: 'Unpaid break' },
+  { value: 'sabbatical', label: 'Sabbatical' },
+  { value: 'role_change', label: 'Role change' },
+  { value: 'other', label: 'Other' },
+];
+
 export default function ModernEmployeeDetail() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -179,8 +231,17 @@ export default function ModernEmployeeDetail() {
   const [professionalHistory, setProfessionalHistory] = useState<{
     positionChanges: any[];
     compensationChanges: any[];
+    manualEntries?: any[];
   } | null>(null);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [manualHistoryPrompt, setManualHistoryPrompt] = useState<{
+    action: ManualHistoryAction;
+    event?: HistoryEvent;
+  } | null>(null);
+  const [showManualHistoryForm, setShowManualHistoryForm] = useState(false);
+  const [editingManualHistory, setEditingManualHistory] = useState<HistoryEvent | null>(null);
+  const [manualHistoryForm, setManualHistoryForm] = useState(emptyManualHistoryForm);
+  const [manualHistorySaving, setManualHistorySaving] = useState(false);
 
   // Form states for personal tab
   const [personalForm, setPersonalForm] = useState({
@@ -209,13 +270,15 @@ export default function ModernEmployeeDetail() {
   });
 
   // Convert professional history from API to UI format
-  const convertProfessionalHistoryToEvents = (): HistoryEvent[] => {
-    if (!professionalHistory) return [];
+  const convertProfessionalHistoryToEvents = (
+    history = professionalHistory
+  ): HistoryEvent[] => {
+    if (!history) return [];
 
     const events: HistoryEvent[] = [];
 
     // Convert position changes
-    professionalHistory.positionChanges.forEach((change) => {
+    history.positionChanges.forEach((change) => {
       let eventType: HistoryEvent['type'] = 'transfer';
       let title = '';
       let description = '';
@@ -247,6 +310,7 @@ export default function ModernEmployeeDetail() {
         date: change.effectiveDate,
         title,
         description,
+        source: 'system',
         details: {
           from: change.fromDesignation?.name || change.fromDepartment?.name,
           to: change.toDesignation?.name || change.toDepartment?.name,
@@ -255,7 +319,7 @@ export default function ModernEmployeeDetail() {
     });
 
     // Convert compensation changes
-    professionalHistory.compensationChanges.forEach((change) => {
+    history.compensationChanges.forEach((change) => {
       if (change.changeType === 'increment' || change.changeType === 'promotion') {
         events.push({
           id: change.historyId,
@@ -263,11 +327,31 @@ export default function ModernEmployeeDetail() {
           date: change.effectiveDate,
           title: change.changeType === 'promotion' ? 'Promotion Salary Increase' : 'Annual Salary Review',
           description: change.reason || 'Salary increased based on performance',
+          source: 'system',
           details: {
             amount: change.changePercentage || 0,
           },
         });
       }
+    });
+
+    (history.manualEntries || []).forEach((entry) => {
+      events.push({
+        id: entry.manualHistoryId,
+        type: entry.eventType || 'other',
+        eventType: entry.eventType || 'other',
+        date: entry.effectiveDate,
+        title: entry.title,
+        description: entry.description || entry.notes || 'Manual employment history entry',
+        source: 'manual',
+        notes: entry.notes,
+        details: {
+          from: entry.fromValue,
+          to: entry.toValue,
+          amount: entry.amount ? Number(entry.amount) : undefined,
+          currency: entry.currency,
+        },
+      });
     });
 
     // Sort by date
@@ -343,11 +427,20 @@ export default function ModernEmployeeDetail() {
     try {
       setLoadingHistory(true);
       const response = await api.get(`/professional-history/employee/${id}`);
-      setProfessionalHistory(response.data);
+      const historyData = response.data;
+      setProfessionalHistory(historyData);
+      setEmployee((current) =>
+        current
+          ? {
+              ...current,
+              organizationalHistory: convertProfessionalHistoryToEvents(historyData),
+            }
+          : current
+      );
     } catch (err) {
       console.error('Error fetching professional history:', err);
       // Fallback to empty history if API fails
-      setProfessionalHistory({ positionChanges: [], compensationChanges: [] });
+      setProfessionalHistory({ positionChanges: [], compensationChanges: [], manualEntries: [] });
     } finally {
       setLoadingHistory(false);
     }
@@ -575,6 +668,105 @@ export default function ModernEmployeeDetail() {
     }
   };
 
+  const openManualHistoryPrompt = (action: ManualHistoryAction, event?: HistoryEvent) => {
+    setManualHistoryPrompt({ action, event });
+  };
+
+  const closeManualHistoryForm = () => {
+    setShowManualHistoryForm(false);
+    setEditingManualHistory(null);
+    setManualHistoryForm(emptyManualHistoryForm);
+  };
+
+  const handleManualHistoryPromptNo = () => {
+    setManualHistoryPrompt(null);
+  };
+
+  const handleManualHistoryPromptYes = async () => {
+    if (!manualHistoryPrompt) return;
+
+    const { action, event } = manualHistoryPrompt;
+    setManualHistoryPrompt(null);
+
+    if (action === 'delete' && event) {
+      try {
+        setManualHistorySaving(true);
+        await api.delete(`/professional-history/manual/${event.id}`);
+        await fetchProfessionalHistory();
+      } catch (err) {
+        console.error('Error deleting manual employment history:', err);
+        setError('Failed to delete manual employment history entry');
+      } finally {
+        setManualHistorySaving(false);
+      }
+      return;
+    }
+
+    if (action === 'edit' && event) {
+      setEditingManualHistory(event);
+      setManualHistoryForm({
+        eventType: event.eventType || 'other',
+        title: event.title || '',
+        effectiveDate: event.date ? new Date(event.date).toISOString().slice(0, 10) : '',
+        description: event.description || '',
+        fromValue: event.details?.from || '',
+        toValue: event.details?.to || '',
+        amount: event.details?.amount !== undefined ? String(event.details.amount) : '',
+        currency: event.details?.currency || 'INR',
+        notes: event.notes || '',
+      });
+    } else {
+      setEditingManualHistory(null);
+      setManualHistoryForm(emptyManualHistoryForm);
+    }
+
+    setShowManualHistoryForm(true);
+  };
+
+  const handleSaveManualHistory = async () => {
+    if (!id) return;
+
+    if (!manualHistoryForm.title.trim()) {
+      setError('Manual employment history title is required');
+      return;
+    }
+
+    if (!manualHistoryForm.effectiveDate) {
+      setError('Manual employment history effective date is required');
+      return;
+    }
+
+    const payload = {
+      eventType: manualHistoryForm.eventType,
+      title: manualHistoryForm.title.trim(),
+      effectiveDate: manualHistoryForm.effectiveDate,
+      description: nullableText(manualHistoryForm.description),
+      fromValue: nullableText(manualHistoryForm.fromValue),
+      toValue: nullableText(manualHistoryForm.toValue),
+      amount: manualHistoryForm.amount.trim() === '' ? null : Number(manualHistoryForm.amount),
+      currency: nullableText(manualHistoryForm.currency),
+      notes: nullableText(manualHistoryForm.notes),
+    };
+
+    try {
+      setManualHistorySaving(true);
+      if (editingManualHistory) {
+        await api.put(`/professional-history/manual/${editingManualHistory.id}`, payload);
+      } else {
+        await api.post(`/professional-history/manual/${id}`, payload);
+      }
+
+      await fetchProfessionalHistory();
+      closeManualHistoryForm();
+      setError(null);
+    } catch (err) {
+      console.error('Error saving manual employment history:', err);
+      setError('Failed to save manual employment history entry');
+    } finally {
+      setManualHistorySaving(false);
+    }
+  };
+
   const handleAction = (action: string) => {
     switch (action) {
       case 'promotion':
@@ -784,14 +976,24 @@ export default function ModernEmployeeDetail() {
             </div>
           ) : (
             <>
-              <button
-                onClick={handleEdit}
-                className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                title={activeTab === 'history' ? 'History is view-only' : 'Edit'}
-                disabled={activeTab === 'history'}
-              >
-                <PencilIcon className="h-4 w-4" />
-              </button>
+              {activeTab === 'history' ? (
+                <button
+                  onClick={() => openManualHistoryPrompt('create')}
+                  className="px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm flex items-center"
+                  title="Add manual employment history"
+                >
+                  <PlusIcon className="h-4 w-4 mr-1.5" />
+                  Manual Entry
+                </button>
+              ) : (
+                <button
+                  onClick={handleEdit}
+                  className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                  title="Edit"
+                >
+                  <PencilIcon className="h-4 w-4" />
+                </button>
+              )}
               <button onClick={() => handleAction('promotion')} className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Promote">
                 <ArrowTrendingUpIcon className="h-4 w-4" />
               </button>
@@ -1118,6 +1320,11 @@ export default function ModernEmployeeDetail() {
           {/* Organizational History Tab */}
           {activeTab === 'history' && (
             <div>
+              {loadingHistory && (
+                <div className="mb-4 p-3 bg-primary-50 border border-primary-100 rounded-lg text-sm text-primary-700 font-medium">
+                  Loading employment history...
+                </div>
+              )}
               {employee.organizationalHistory && employee.organizationalHistory.length > 0 ? (
                 <div className="overflow-x-auto pb-4 relative">
                   {/* Horizontal Timeline Line */}
@@ -1165,11 +1372,20 @@ export default function ModernEmployeeDetail() {
                             <div className={`card border-2 ${borderColor} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full h-56`}>
                               <div className="card-body p-4">
                                 {/* Icon Badge */}
-                                <div className="flex items-center gap-2 mb-3">
+                                <div className="flex items-start justify-between gap-2 mb-3">
+                                  <div className="flex items-center gap-2 min-w-0">
                                   <div className={`w-8 h-8 rounded-lg ${bgColor} bg-opacity-20 flex items-center justify-center text-${colorClass}-600`}>
                                     {getEventIcon(event.type)}
                                   </div>
-                                  <h4 className={`font-bold text-sm text-${colorClass}-600`}>{event.title}</h4>
+                                    <h4 className={`font-bold text-sm text-${colorClass}-600 line-clamp-2`}>{event.title}</h4>
+                                  </div>
+                                  <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                    event.source === 'manual'
+                                      ? 'bg-amber-100 text-amber-700'
+                                      : 'bg-gray-100 text-gray-600'
+                                  }`}>
+                                    {event.source === 'manual' ? 'Manual' : 'System'}
+                                  </span>
                                 </div>
 
                                 <p className="text-xs text-gray-600 mb-3 line-clamp-2">{event.description}</p>
@@ -1188,7 +1404,11 @@ export default function ModernEmployeeDetail() {
                                     )}
                                     <div className="flex gap-2 justify-center">
                                       {event.details.amount && (
-                                        <span className="badge badge-success">+{event.details.amount}%</span>
+                                        <span className="badge badge-success">
+                                          {event.source === 'manual' && event.details.currency
+                                            ? `${event.details.currency} ${event.details.amount}`
+                                            : `+${event.details.amount}%`}
+                                        </span>
                                       )}
                                       {event.details.rating && (
                                         <span className="badge badge-warning flex items-center gap-1">
@@ -1197,6 +1417,24 @@ export default function ModernEmployeeDetail() {
                                         </span>
                                       )}
                                     </div>
+                                  </div>
+                                )}
+                                {event.source === 'manual' && (
+                                  <div className="flex gap-2 justify-end mt-3 pt-3 border-t border-gray-100">
+                                    <button
+                                      onClick={() => openManualHistoryPrompt('edit', event)}
+                                      className="px-2 py-1 text-xs font-semibold text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-md flex items-center"
+                                    >
+                                      <PencilIcon className="h-3.5 w-3.5 mr-1" />
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() => openManualHistoryPrompt('delete', event)}
+                                      className="px-2 py-1 text-xs font-semibold text-red-700 bg-red-50 hover:bg-red-100 rounded-md flex items-center"
+                                    >
+                                      <TrashIcon className="h-3.5 w-3.5 mr-1" />
+                                      Delete
+                                    </button>
                                   </div>
                                 )}
                               </div>
@@ -1211,12 +1449,159 @@ export default function ModernEmployeeDetail() {
                   <HistoryIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-500 mb-2">No History Available</h3>
                   <p className="text-sm text-gray-400">Organizational history will appear here as events occur</p>
+                  <button
+                    onClick={() => openManualHistoryPrompt('create')}
+                    className="mt-5 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm inline-flex items-center"
+                  >
+                    <PlusIcon className="h-4 w-4 mr-1.5" />
+                    Add Manual Entry
+                  </button>
                 </div>
               )}
             </div>
           )}
         </div>
       </div>
+
+      {manualHistoryPrompt && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-3">Manual Employment History Update</h3>
+            <p className="text-sm text-gray-700 mb-6">
+              Are you sure you want to manually update the employment history?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={handleManualHistoryPromptNo}
+                className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold text-sm"
+              >
+                No
+              </button>
+              <button
+                onClick={handleManualHistoryPromptYes}
+                className="px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 font-semibold text-sm"
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showManualHistoryForm && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-6">
+            <div className="flex items-start justify-between mb-5">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">
+                  {editingManualHistory ? 'Edit Manual History Entry' : 'Add Manual History Entry'}
+                </h3>
+                <p className="text-xs text-gray-500 mt-1">
+                  Use this only for implementation cleanup or legacy employment-history corrections.
+                </p>
+              </div>
+              <button
+                onClick={closeManualHistoryForm}
+                className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
+                disabled={manualHistorySaving}
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <EditableSelect
+                label="Event Type"
+                value={manualHistoryForm.eventType}
+                onChange={(value) => setManualHistoryForm({
+                  ...manualHistoryForm,
+                  eventType: value as ManualHistoryType,
+                })}
+                options={manualHistoryTypeOptions}
+              />
+              <EditableField
+                label="Effective Date"
+                type="date"
+                value={manualHistoryForm.effectiveDate}
+                onChange={(value) => setManualHistoryForm({ ...manualHistoryForm, effectiveDate: value })}
+              />
+              <EditableField
+                label="Title"
+                value={manualHistoryForm.title}
+                onChange={(value) => setManualHistoryForm({ ...manualHistoryForm, title: value })}
+                placeholder="Promotion, transfer, bonus, sabbatical..."
+              />
+              <EditableField
+                label="From"
+                value={manualHistoryForm.fromValue}
+                onChange={(value) => setManualHistoryForm({ ...manualHistoryForm, fromValue: value })}
+                placeholder="Previous role/location/value"
+              />
+              <EditableField
+                label="To"
+                value={manualHistoryForm.toValue}
+                onChange={(value) => setManualHistoryForm({ ...manualHistoryForm, toValue: value })}
+                placeholder="New role/location/value"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <EditableField
+                  label="Amount"
+                  type="number"
+                  value={manualHistoryForm.amount}
+                  onChange={(value) => setManualHistoryForm({ ...manualHistoryForm, amount: value })}
+                  placeholder="Optional"
+                />
+                <EditableField
+                  label="Currency"
+                  value={manualHistoryForm.currency}
+                  onChange={(value) => setManualHistoryForm({ ...manualHistoryForm, currency: value })}
+                  placeholder="INR"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <label className="text-xs font-semibold text-gray-500 mb-1 block">Description</label>
+                <textarea
+                  value={manualHistoryForm.description}
+                  onChange={(e) => setManualHistoryForm({ ...manualHistoryForm, description: e.target.value })}
+                  rows={3}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="Short visible explanation for the history timeline"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 mb-1 block">Internal Notes</label>
+                <textarea
+                  value={manualHistoryForm.notes}
+                  onChange={(e) => setManualHistoryForm({ ...manualHistoryForm, notes: e.target.value })}
+                  rows={3}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="Optional implementation or correction note"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={closeManualHistoryForm}
+                disabled={manualHistorySaving}
+                className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold text-sm disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveManualHistory}
+                disabled={manualHistorySaving}
+                className="px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 font-semibold text-sm disabled:opacity-50"
+              >
+                {manualHistorySaving ? 'Saving...' : 'Save Manual Entry'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </ModernLayout>
   );
 }

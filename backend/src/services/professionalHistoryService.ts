@@ -2,16 +2,22 @@ import { Repository } from 'typeorm';
 import { AppDataSource } from '../config/database';
 import { PositionHistory, PositionChangeType } from '../models/PositionHistory';
 import { CompensationHistory, CompensationChangeType, CompensationComponent } from '../models/CompensationHistory';
+import {
+  ManualEmploymentHistory,
+  ManualEmploymentHistoryType,
+} from '../models/ManualEmploymentHistory';
 import { Employee } from '../models/Employee';
 
 export class ProfessionalHistoryService {
   private positionHistoryRepo: Repository<PositionHistory>;
   private compensationHistoryRepo: Repository<CompensationHistory>;
+  private manualEmploymentHistoryRepo: Repository<ManualEmploymentHistory>;
   private employeeRepo: Repository<Employee>;
 
   constructor() {
     this.positionHistoryRepo = AppDataSource.getRepository(PositionHistory);
     this.compensationHistoryRepo = AppDataSource.getRepository(CompensationHistory);
+    this.manualEmploymentHistoryRepo = AppDataSource.getRepository(ManualEmploymentHistory);
     this.employeeRepo = AppDataSource.getRepository(Employee);
   }
 
@@ -140,16 +146,117 @@ export class ProfessionalHistoryService {
   ): Promise<{
     positionChanges: PositionHistory[];
     compensationChanges: CompensationHistory[];
+    manualEntries: ManualEmploymentHistory[];
   }> {
-    const [positionChanges, compensationChanges] = await Promise.all([
+    const [positionChanges, compensationChanges, manualEntries] = await Promise.all([
       this.getPositionHistory(tenantId, employeeId),
       this.getCompensationHistory(tenantId, employeeId),
+      this.getManualEmploymentHistory(tenantId, employeeId),
     ]);
 
     return {
       positionChanges,
       compensationChanges,
+      manualEntries,
     };
+  }
+
+  async getManualEmploymentHistory(
+    tenantId: string,
+    employeeId: string
+  ): Promise<ManualEmploymentHistory[]> {
+    return await this.manualEmploymentHistoryRepo.find({
+      where: { tenantId, employeeId },
+      relations: ['creator', 'updater'],
+      order: { effectiveDate: 'DESC', createdAt: 'DESC' },
+    });
+  }
+
+  async createManualEmploymentHistory(params: {
+    tenantId: string;
+    employeeId: string;
+    eventType: ManualEmploymentHistoryType;
+    title: string;
+    effectiveDate: Date;
+    description?: string;
+    fromValue?: string;
+    toValue?: string;
+    amount?: number;
+    currency?: string;
+    notes?: string;
+    createdBy?: string;
+  }): Promise<ManualEmploymentHistory> {
+    await this.assertEmployeeBelongsToTenant(params.tenantId, params.employeeId);
+
+    const entry = this.manualEmploymentHistoryRepo.create({
+      ...params,
+      title: params.title.trim(),
+      description: params.description?.trim() || undefined,
+      fromValue: params.fromValue?.trim() || undefined,
+      toValue: params.toValue?.trim() || undefined,
+      currency: params.currency?.trim().toUpperCase() || undefined,
+      notes: params.notes?.trim() || undefined,
+    });
+
+    return await this.manualEmploymentHistoryRepo.save(entry);
+  }
+
+  async updateManualEmploymentHistory(
+    tenantId: string,
+    manualHistoryId: string,
+    updates: Partial<{
+      eventType: ManualEmploymentHistoryType;
+      title: string;
+      effectiveDate: Date;
+      description: string | null;
+      fromValue: string | null;
+      toValue: string | null;
+      amount: number | null;
+      currency: string | null;
+      notes: string | null;
+      updatedBy: string;
+    }>
+  ): Promise<ManualEmploymentHistory | null> {
+    const entry = await this.manualEmploymentHistoryRepo.findOne({
+      where: { tenantId, manualHistoryId },
+    });
+
+    if (!entry) return null;
+
+    Object.assign(entry, {
+      ...updates,
+      title: updates.title?.trim() ?? entry.title,
+      description: this.cleanNullableText(updates.description, entry.description),
+      fromValue: this.cleanNullableText(updates.fromValue, entry.fromValue),
+      toValue: this.cleanNullableText(updates.toValue, entry.toValue),
+      currency:
+        updates.currency === null
+          ? null
+          : updates.currency?.trim().toUpperCase() || entry.currency,
+      notes: this.cleanNullableText(updates.notes, entry.notes),
+    });
+
+    return await this.manualEmploymentHistoryRepo.save(entry);
+  }
+
+  async deleteManualEmploymentHistory(tenantId: string, manualHistoryId: string): Promise<boolean> {
+    const result = await this.manualEmploymentHistoryRepo.delete({ tenantId, manualHistoryId });
+    return Boolean(result.affected);
+  }
+
+  private async assertEmployeeBelongsToTenant(tenantId: string, employeeId: string): Promise<void> {
+    const employee = await this.employeeRepo.findOne({ where: { tenantId, employeeId } });
+    if (!employee) {
+      throw new Error('Employee not found');
+    }
+  }
+
+  private cleanNullableText(value: string | null | undefined, fallback?: string): string | null | undefined {
+    if (value === undefined) return fallback;
+    if (value === null) return null;
+
+    const trimmed = value.trim();
+    return trimmed ? trimmed : null;
   }
 
   /**
