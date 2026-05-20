@@ -561,8 +561,51 @@ async function runInvitationLifecycleWorkflow(token) {
   let invitationId;
   let invitedToken;
   let invitedEmployeeId;
+  let originalSubscription;
 
   try {
+    const tenantRows = await dataSource.query(
+      'select "tenantId" from users where email = $1',
+      [email.toLowerCase()]
+    );
+    const tenantId = tenantRows[0]?.tenantId;
+    if (!tenantId) {
+      throw new Error('Smoke user tenant was not found for invitation lifecycle check');
+    }
+
+    const [subscription] = await dataSource.query(
+      `select
+        "subscriptionId",
+        status,
+        "maxUsers",
+        "currentUsers",
+        "trialEndDate",
+        "updatedAt"
+      from subscriptions
+      where "tenantId" = $1
+      limit 1`,
+      [tenantId]
+    );
+    if (!subscription) {
+      throw new Error('Subscription was not found for invitation lifecycle check');
+    }
+    originalSubscription = subscription;
+
+    const [activeUsers] = await dataSource.query(
+      'select count(*)::int as count from users where "tenantId" = $1 and "isActive" = true',
+      [tenantId]
+    );
+
+    await dataSource.query(
+      `update subscriptions
+       set status = 'active',
+           "maxUsers" = greatest("maxUsers", $1),
+           "currentUsers" = $2,
+           "updatedAt" = now()
+       where "tenantId" = $3`,
+      [activeUsers.count + 2, activeUsers.count, tenantId]
+    );
+
     const invitation = await requestWithStatus(
       '/invitations',
       {
@@ -641,12 +684,24 @@ async function runInvitationLifecycleWorkflow(token) {
     if (invitationId) {
       await dataSource.query('delete from user_invitations where "invitationId" = $1', [invitationId]).catch(() => undefined);
     }
-    const tenantRows = await dataSource.query(
-      'select "tenantId" from users where email = $1',
-      [email.toLowerCase()]
-    ).catch(() => []);
-    if (tenantRows[0]?.tenantId) {
-      await syncSubscriptionCurrentUsers(tenantRows[0].tenantId).catch(() => undefined);
+    if (originalSubscription) {
+      await dataSource.query(
+        `update subscriptions
+         set status = $1,
+             "maxUsers" = $2,
+             "currentUsers" = $3,
+             "trialEndDate" = $4,
+             "updatedAt" = $5
+         where "subscriptionId" = $6`,
+        [
+          originalSubscription.status,
+          originalSubscription.maxUsers,
+          originalSubscription.currentUsers,
+          originalSubscription.trialEndDate,
+          originalSubscription.updatedAt,
+          originalSubscription.subscriptionId,
+        ]
+      ).catch(() => undefined);
     }
   }
 }
