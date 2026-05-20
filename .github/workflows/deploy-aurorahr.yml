@@ -79,7 +79,30 @@ jobs:
 
       - name: Audit Frontend Production Dependencies
         working-directory: ./frontend-web
-        run: yarn audit --groups dependencies --level high
+        run: |
+          set +e
+          audit_output=$(yarn audit --groups dependencies --level high 2>&1)
+          audit_status=$?
+          set -e
+
+          echo "$audit_output"
+
+          if [ "$audit_status" -eq 0 ]; then
+            exit 0
+          fi
+
+          if ! echo "$audit_output" | grep -q "vulnerabilities found"; then
+            exit "$audit_status"
+          fi
+
+          # Yarn v1 uses a severity bitmask for audit exit codes:
+          # 8 = high, 16 = critical. Keep the high-severity gate strict,
+          # but do not block deploys for low/moderate findings.
+          if (( audit_status & 24 )); then
+            exit "$audit_status"
+          fi
+
+          echo "Frontend audit reported no high or critical production vulnerabilities."
 
       - name: Build Frontend
         working-directory: ./frontend-web
