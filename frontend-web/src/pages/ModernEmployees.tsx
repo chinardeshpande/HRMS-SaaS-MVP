@@ -125,7 +125,7 @@ export default function ModernEmployees() {
       emp.lastName || '-',
       emp.email || '-',
       emp.department?.name || '-',
-      emp.designation?.title || '-',
+      getDesignationName(emp),
       emp.status || '-',
       emp.dateOfJoining || '-',
     ]);
@@ -179,6 +179,9 @@ export default function ModernEmployees() {
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
   };
+
+  const getDesignationName = (employee: Employee) =>
+    employee.designation?.title || employee.designation?.name || 'No Designation';
 
   const handleStatCardClick = (status: string) => {
     if (status === 'all') {
@@ -416,7 +419,7 @@ export default function ModernEmployees() {
                           <span className="text-gray-300">•</span>
                           <p className="text-sm text-gray-600">{employee.department?.name || 'No Department'}</p>
                           <span className="text-gray-300">•</span>
-                          <p className="text-sm text-gray-600">{employee.designation?.title || 'No Designation'}</p>
+                          <p className="text-sm text-gray-600">{getDesignationName(employee)}</p>
                         </div>
                       </div>
 

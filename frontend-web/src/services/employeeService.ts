@@ -34,7 +34,7 @@ export interface Employee {
   designation?: {
     designationId: string;
     name?: string;
-    title: string;
+    title?: string;
     level?: string;
   };
   manager?: {
