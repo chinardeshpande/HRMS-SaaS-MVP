@@ -17,6 +17,11 @@ export interface Employee {
   dateOfJoining: string;
   probationEndDate?: string;
   employmentType?: string;
+  workLocation?: string;
+  maritalStatus?: string;
+  nationality?: string;
+  emergencyContact?: string;
+  emergencyPhone?: string;
   status: 'active' | 'inactive' | 'exited';
   createdAt?: string;
   updatedAt?: string;
@@ -28,6 +33,7 @@ export interface Employee {
   };
   designation?: {
     designationId: string;
+    name?: string;
     title: string;
     level?: string;
   };
@@ -73,6 +79,11 @@ export interface CreateEmployeeData {
   dateOfJoining: string;
   probationEndDate?: string;
   employmentType?: string;
+  workLocation?: string;
+  maritalStatus?: string;
+  nationality?: string;
+  emergencyContact?: string;
+  emergencyPhone?: string;
   status?: 'active' | 'inactive' | 'exited';
   // User creation options
   createUser?: boolean;

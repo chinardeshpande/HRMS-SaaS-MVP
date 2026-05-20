@@ -372,11 +372,13 @@ export default function LandingPage() {
                 {personaCards.map((card) => (
                   <div
                     key={card.title}
-                    className="max-h-36 overflow-hidden rounded-md border border-gray-200/80 bg-white/86 p-3 shadow-md shadow-primary-900/5 backdrop-blur"
+                    className="rounded-md border border-gray-200/80 bg-white/86 p-3 shadow-md shadow-primary-900/5 backdrop-blur"
                   >
                     <card.icon className="h-5 w-5 text-primary-700" />
                     <h2 className="mt-2 text-sm font-bold leading-tight text-gray-950">{card.title}</h2>
-                    <p className="mt-2 max-h-12 overflow-hidden text-[11px] leading-4 text-gray-600">{card.description}</p>
+                    <p className="mt-2 overflow-hidden text-[11px] leading-4 text-gray-600 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]">
+                      {card.description}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -388,8 +390,8 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="order-first flex h-[176px] flex-col bg-white sm:h-[260px] lg:order-none lg:h-[620px] xl:h-[640px]">
-              <div className="relative min-h-0 flex-1">
+            <div className="order-first flex flex-col bg-white lg:order-none lg:h-[560px] xl:h-[580px]">
+              <div className="relative h-36 flex-none sm:h-52 lg:min-h-0 lg:flex-1">
                 <img
                   src="/images/Hero-Images/hero-happy-employees.jpg"
                   alt="Employees collaborating in a modern workplace"
@@ -398,7 +400,7 @@ export default function LandingPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-950/18 via-transparent to-transparent lg:bg-gradient-to-r lg:from-primary-50/25 lg:via-transparent lg:to-transparent" />
               </div>
               <div className="bg-primary-50/80 pt-3">
-                <div className="min-h-36 rounded-md border border-gray-200/80 bg-white/86 p-3 shadow-md shadow-primary-900/5 backdrop-blur">
+                <div className="rounded-md border border-gray-200/80 bg-white/86 p-3 shadow-md shadow-primary-900/5 backdrop-blur lg:min-h-36">
                   <p className="text-xs font-bold uppercase tracking-wide text-primary-700">Practical HRMS</p>
                   <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs leading-5 text-gray-700 lg:text-sm">
                     <span>Focused on</span>

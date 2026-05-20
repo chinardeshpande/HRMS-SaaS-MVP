@@ -672,18 +672,19 @@ export default function ModernAttendance() {
             </div>
 
             {/* Center: Tab Navigation */}
-            <div className="flex max-w-full items-center space-x-1 overflow-x-auto bg-gray-100 p-1 rounded-lg">
+            <div className="grid w-full max-w-full grid-cols-2 gap-1 bg-gray-100 p-1 rounded-lg sm:flex sm:w-auto sm:items-center sm:space-x-1 sm:gap-0 sm:overflow-x-auto">
               <button
                 onClick={() => {
                   setActiveView('my-attendance');
                   setStatusFilter('all');
                 }}
-                className={`shrink-0 px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 ${
+                className={`min-w-0 justify-center shrink-0 px-2 sm:px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 ${
                   activeView === 'my-attendance' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 <ClockIcon className="h-4 w-4" />
-                <span>My Attendance</span>
+                <span className="truncate sm:hidden">Mine</span>
+                <span className="hidden sm:inline">My Attendance</span>
               </button>
 
               {(['MANAGER', 'HR_ADMIN', 'SYSTEM_ADMIN'].includes(user?.role?.toString().toUpperCase() || '')) && (
@@ -693,7 +694,7 @@ export default function ModernAttendance() {
                       setActiveView('team');
                       setStatusFilter('all');
                     }}
-                    className={`shrink-0 px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 ${
+                    className={`min-w-0 justify-center shrink-0 px-2 sm:px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 ${
                       activeView === 'team' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
@@ -703,7 +704,7 @@ export default function ModernAttendance() {
 
                   <button
                     onClick={() => setActiveView('requests')}
-                    className={`shrink-0 px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 relative ${
+                    className={`min-w-0 justify-center shrink-0 px-2 sm:px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 relative ${
                       activeView === 'requests' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
@@ -719,7 +720,7 @@ export default function ModernAttendance() {
                   {isHROrAdmin && (
                     <button
                       onClick={() => setActiveView('reports')}
-                      className={`shrink-0 px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 ${
+                      className={`min-w-0 justify-center shrink-0 px-2 sm:px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 ${
                         activeView === 'reports' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                       }`}
                     >

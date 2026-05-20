@@ -57,7 +57,9 @@ const extractList = (response: any, nestedKey?: string): any[] => {
 
 export const DemoJourneyPanel = ({ currentPath, onNavigate }: DemoJourneyPanelProps) => {
   const [visitedSteps, setVisitedSteps] = useState<string[]>(() => readVisitedSteps());
-  const [expanded, setExpanded] = useState(() => currentPath === '/dashboard');
+  const [expanded, setExpanded] = useState(
+    () => currentPath === '/dashboard' && window.matchMedia('(min-width: 768px)').matches
+  );
   const [recordLinks, setRecordLinks] = useState<DemoRecordLinks>({});
 
   const activeStep = useMemo(
