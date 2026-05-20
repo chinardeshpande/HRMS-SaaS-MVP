@@ -271,7 +271,8 @@ export default function ModernEmployeeDetail() {
 
   // Convert professional history from API to UI format
   const convertProfessionalHistoryToEvents = (
-    history = professionalHistory
+    history = professionalHistory,
+    employeeContext = employee
   ): HistoryEvent[] => {
     if (!history) return [];
 
@@ -354,32 +355,33 @@ export default function ModernEmployeeDetail() {
       });
     });
 
+    const hasJoiningRecord = events.some((event) => event.type === 'joining');
+    if (!hasJoiningRecord && employeeContext?.dateOfJoining) {
+      events.push(createJoiningHistoryEvent(employeeContext));
+    }
+
     // Sort by date
     return events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
 
-  // Generate organizational history based on employee data (DEPRECATED - using real API data now)
+  const createJoiningHistoryEvent = (employeeData: any): HistoryEvent => ({
+    id: `joining-${employeeData.employeeId || 'employee'}`,
+    type: 'joining',
+    date: employeeData.dateOfJoining,
+    title: 'Joined Company',
+    description: `Started as ${getDesignationName(employeeData) || 'Employee'} in ${employeeData.department?.name || employeeData.departmentName || 'the company'}`,
+    source: 'system',
+    details: { to: getDesignationName(employeeData) || employeeData.positionTitle || 'Employee' },
+  });
+
+  // Generate organizational history based on employee data
   const generateOrganizationalHistory = (employee: any): HistoryEvent[] => {
     // If we have real professional history, use it
     if (professionalHistory) {
-      return convertProfessionalHistoryToEvents();
+      return convertProfessionalHistoryToEvents(professionalHistory, employee);
     }
 
-    // Fallback to basic joining event only if no history available
-    const history: HistoryEvent[] = [];
-
-    // Joining event
-    history.push({
-      id: '1',
-      type: 'joining',
-      date: employee.dateOfJoining,
-      title: 'Joined Company',
-      description: `Started as ${getDesignationName(employee) || 'Employee'} in ${employee.department?.name || 'the company'}`,
-      details: { to: getDesignationName(employee) || 'Employee' },
-    });
-
-    // No mock data - just return the joining event
-    return history;
+    return employee.dateOfJoining ? [createJoiningHistoryEvent(employee)] : [];
   };
 
   // Fetch employee data on mount
@@ -433,7 +435,7 @@ export default function ModernEmployeeDetail() {
         current
           ? {
               ...current,
-              organizationalHistory: convertProfessionalHistoryToEvents(historyData),
+              organizationalHistory: convertProfessionalHistoryToEvents(historyData, current),
             }
           : current
       );
