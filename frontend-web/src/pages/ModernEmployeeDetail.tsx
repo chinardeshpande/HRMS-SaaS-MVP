@@ -72,6 +72,7 @@ interface EmployeeDetail {
   };
   designation?: {
     designationId: string;
+    name?: string;
     title: string;
   };
   manager?: {
@@ -80,6 +81,79 @@ interface EmployeeDetail {
     lastName: string;
   };
 }
+
+const InfoItem = ({ label, value }: { label: string; value: string | number | undefined }) => (
+  <div>
+    <p className="text-xs font-semibold text-gray-500 mb-0.5">{label}</p>
+    <p className="text-sm font-semibold text-gray-900">{value || 'N/A'}</p>
+  </div>
+);
+
+const EditableField = ({
+  label,
+  value,
+  onChange,
+  type = 'text',
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: string;
+  placeholder?: string;
+}) => (
+  <div>
+    <label className="text-xs font-semibold text-gray-500 mb-1 block">{label}</label>
+    <input
+      type={type}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+    />
+  </div>
+);
+
+const EditableSelect = ({
+  label,
+  value,
+  onChange,
+  options,
+  disabled = false,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  disabled?: boolean;
+}) => (
+  <div>
+    <label className="text-xs font-semibold text-gray-500 mb-1 block">{label}</label>
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      disabled={disabled}
+      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <option value="">Select...</option>
+      {options.map((opt) => (
+        <option key={opt.value} value={opt.value}>
+          {opt.label}
+        </option>
+      ))}
+    </select>
+  </div>
+);
+
+const nullableText = (value: string) => {
+  const trimmed = value.trim();
+  return trimmed === '' ? null : trimmed;
+};
+
+const nullableSelect = (value: string) => (value === '' ? null : value);
+
+const getDesignationName = (employee: { designation?: { title?: string; name?: string } }) =>
+  employee.designation?.title || employee.designation?.name;
 
 export default function ModernEmployeeDetail() {
   const navigate = useNavigate();
@@ -216,8 +290,8 @@ export default function ModernEmployeeDetail() {
       type: 'joining',
       date: employee.dateOfJoining,
       title: 'Joined Company',
-      description: `Started as ${employee.designation?.title || 'Employee'} in ${employee.department?.name || 'the company'}`,
-      details: { to: employee.designation?.title || 'Employee' },
+      description: `Started as ${getDesignationName(employee) || 'Employee'} in ${employee.department?.name || 'the company'}`,
+      details: { to: getDesignationName(employee) || 'Employee' },
     });
 
     // No mock data - just return the joining event
@@ -239,8 +313,8 @@ export default function ModernEmployeeDetail() {
         // Map API data to component structure
         const mappedEmployee: EmployeeDetail = {
           ...data,
-          positionTitle: data.designation?.title,
-          jobTitle: data.designation?.title,
+          positionTitle: getDesignationName(data),
+          jobTitle: getDesignationName(data),
           departmentName: data.department?.name,
           reportsToEmployeeName: data.manager
             ? `${data.manager.firstName} ${data.manager.lastName}`
@@ -424,14 +498,26 @@ export default function ModernEmployeeDetail() {
 
     try {
       setSaving(true);
-      await employeeService.updateEmployee(id, personalForm);
+      await employeeService.updateEmployee(id, {
+        firstName: personalForm.firstName.trim(),
+        lastName: personalForm.lastName.trim(),
+        email: personalForm.email.trim(),
+        phone: nullableText(personalForm.phone),
+        dateOfBirth: nullableSelect(personalForm.dateOfBirth),
+        gender: nullableSelect(personalForm.gender),
+        maritalStatus: nullableSelect(personalForm.maritalStatus),
+        nationality: nullableText(personalForm.nationality),
+        address: nullableText(personalForm.address),
+        emergencyContact: nullableText(personalForm.emergencyContact),
+        emergencyPhone: nullableText(personalForm.emergencyPhone),
+      } as any);
 
       // Refresh employee data
       const data = await employeeService.getById(id);
       const mappedEmployee: EmployeeDetail = {
         ...data,
-        positionTitle: data.designation?.title,
-        jobTitle: data.designation?.title,
+        positionTitle: getDesignationName(data),
+        jobTitle: getDesignationName(data),
         departmentName: data.department?.name,
         reportsToEmployeeName: data.manager
           ? `${data.manager.firstName} ${data.manager.lastName}`
@@ -455,14 +541,22 @@ export default function ModernEmployeeDetail() {
 
     try {
       setSaving(true);
-      await employeeService.updateEmployee(id, professionalForm);
+      await employeeService.updateEmployee(id, {
+        departmentId: nullableSelect(professionalForm.departmentId),
+        designationId: nullableSelect(professionalForm.designationId),
+        managerId: nullableSelect(professionalForm.managerId),
+        employmentType: nullableSelect(professionalForm.employmentType),
+        workLocation: nullableText(professionalForm.workLocation),
+        dateOfJoining: nullableSelect(professionalForm.dateOfJoining),
+        probationEndDate: nullableSelect(professionalForm.probationEndDate),
+      } as any);
 
       // Refresh employee data
       const data = await employeeService.getById(id);
       const mappedEmployee: EmployeeDetail = {
         ...data,
-        positionTitle: data.designation?.title,
-        jobTitle: data.designation?.title,
+        positionTitle: getDesignationName(data),
+        jobTitle: getDesignationName(data),
         departmentName: data.department?.name,
         reportsToEmployeeName: data.manager
           ? `${data.manager.firstName} ${data.manager.lastName}`
@@ -527,69 +621,6 @@ export default function ModernEmployeeDetail() {
     if (totalMonths < 12) return `${totalMonths}m`;
     return `${Math.floor(totalMonths / 12)}y ${totalMonths % 12}m`;
   };
-
-  const InfoItem = ({ label, value }: { label: string; value: string | number | undefined }) => (
-    <div>
-      <p className="text-xs font-semibold text-gray-500 mb-0.5">{label}</p>
-      <p className="text-sm font-semibold text-gray-900">{value || 'N/A'}</p>
-    </div>
-  );
-
-  const EditableField = ({
-    label,
-    value,
-    onChange,
-    type = 'text',
-    placeholder,
-  }: {
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    type?: string;
-    placeholder?: string;
-  }) => (
-    <div>
-      <label className="text-xs font-semibold text-gray-500 mb-1 block">{label}</label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-      />
-    </div>
-  );
-
-  const EditableSelect = ({
-    label,
-    value,
-    onChange,
-    options,
-    disabled = false,
-  }: {
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    options: { value: string; label: string }[];
-    disabled?: boolean;
-  }) => (
-    <div>
-      <label className="text-xs font-semibold text-gray-500 mb-1 block">{label}</label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <option value="">Select...</option>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
 
   const getEventIcon = (type: string) => {
     switch (type) {

@@ -46,8 +46,20 @@ export class Employee {
   @Column({ type: 'varchar', length: 20, nullable: true })
   gender?: string;
 
+  @Column({ type: 'varchar', length: 30, nullable: true })
+  maritalStatus?: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  nationality?: string;
+
   @Column({ type: 'text', nullable: true })
   address?: string;
+
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  emergencyContact?: string;
+
+  @Column({ type: 'varchar', length: 30, nullable: true })
+  emergencyPhone?: string;
 
   // Job Information
   @Column({ type: 'uuid', nullable: true })
@@ -70,6 +82,9 @@ export class Employee {
 
   @Column({ type: 'varchar', length: 50, nullable: true })
   employmentType?: string;
+
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  workLocation?: string;
 
   @Column({
     type: 'varchar',

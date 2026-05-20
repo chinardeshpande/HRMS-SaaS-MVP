@@ -368,7 +368,18 @@ export const updateEmployee = async (req: Request, res: Response) => {
     });
 
     // Convert empty strings to null for other nullable fields
-    const nullableFields = ['phone', 'address', 'workLocation', 'managerId', 'departmentId', 'designationId'];
+    const nullableFields = [
+      'phone',
+      'address',
+      'workLocation',
+      'maritalStatus',
+      'nationality',
+      'emergencyContact',
+      'emergencyPhone',
+      'managerId',
+      'departmentId',
+      'designationId',
+    ];
     nullableFields.forEach(field => {
       if (cleanedData[field] === '') {
         cleanedData[field] = null;
