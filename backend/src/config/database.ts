@@ -43,6 +43,12 @@ import { DevelopmentActionItem } from '../models/DevelopmentActionItem';
 import { PositionHistory } from '../models/PositionHistory';
 import { CompensationHistory } from '../models/CompensationHistory';
 import { ManualEmploymentHistory } from '../models/ManualEmploymentHistory';
+import { SalaryStructure } from '../models/SalaryStructure';
+import { SalaryComponent } from '../models/SalaryComponent';
+import { Payslip } from '../models/Payslip';
+import { PayslipComponent } from '../models/PayslipComponent';
+import { PayslipAttachment } from '../models/PayslipAttachment';
+import { CompensationShareLog } from '../models/CompensationShareLog';
 // HR Connect entities
 import { HRConnectPost } from '../models/HRConnectPost';
 import { HRConnectComment } from '../models/HRConnectComment';
@@ -126,6 +132,12 @@ export const AppDataSource = new DataSource({
     PositionHistory,
     CompensationHistory,
     ManualEmploymentHistory,
+    SalaryStructure,
+    SalaryComponent,
+    Payslip,
+    PayslipComponent,
+    PayslipAttachment,
+    CompensationShareLog,
     // HR Connect
     HRConnectPost,
     HRConnectComment,

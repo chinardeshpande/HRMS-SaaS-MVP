@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ModernLayout } from '../components/layout/ModernLayout';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import employeeService from '../services/employeeService';
 import departmentService, { Department } from '../services/departmentService';
 import designationService, { Designation } from '../services/designationService';
+import CompensationTab from '../components/employees/CompensationTab';
+import { UserRole } from '../types';
 import {
   ArrowLeftIcon,
   PencilIcon,
@@ -211,7 +214,8 @@ export default function ModernEmployeeDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
-  const [activeTab, setActiveTab] = useState<'personal' | 'professional' | 'history'>('personal');
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<'personal' | 'professional' | 'history' | 'compensation'>('personal');
   const [employee, setEmployee] = useState<EmployeeDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -220,6 +224,10 @@ export default function ModernEmployeeDetail() {
   const [isEditingPersonal, setIsEditingPersonal] = useState(false);
   const [isEditingProfessional, setIsEditingProfessional] = useState(false);
   const [saving, setSaving] = useState(false);
+  const currentRole = String(user?.role || '').toLowerCase();
+  const canManageCompensation =
+    currentRole === String(UserRole.HR_ADMIN).toLowerCase() ||
+    currentRole === String(UserRole.SYSTEM_ADMIN).toLowerCase();
 
   // Dropdown data for professional form
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -953,6 +961,18 @@ export default function ModernEmployeeDetail() {
             <HistoryIcon className="h-4 w-4 mr-1.5" />
             History
           </button>
+          <button
+            onClick={() => setActiveTab('compensation')}
+            disabled={isEditingPersonal || isEditingProfessional}
+            className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+              activeTab === 'compensation'
+                ? 'bg-white text-primary-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <BanknotesIcon className="h-4 w-4 mr-1.5" />
+            Compensation
+          </button>
         </div>
 
         {/* Action Buttons */}
@@ -987,6 +1007,15 @@ export default function ModernEmployeeDetail() {
                   <PlusIcon className="h-4 w-4 mr-1.5" />
                   Manual Entry
                 </button>
+              ) : activeTab === 'compensation' ? (
+                <button
+                  onClick={() => setActiveTab('history')}
+                  className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium text-sm flex items-center"
+                  title="View full employment history"
+                >
+                  <HistoryIcon className="h-4 w-4 mr-1.5" />
+                  Full History
+                </button>
               ) : (
                 <button
                   onClick={handleEdit}
@@ -1002,7 +1031,7 @@ export default function ModernEmployeeDetail() {
               <button onClick={() => handleAction('transfer')} className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Transfer">
                 <ArrowsRightLeftIcon className="h-4 w-4" />
               </button>
-              <button onClick={() => handleAction('compensation')} className="p-2 text-gray-500 hover:text-success-600 hover:bg-success-50 rounded-lg transition-colors" title="Compensation">
+              <button onClick={() => setActiveTab('compensation')} className="p-2 text-gray-500 hover:text-success-600 hover:bg-success-50 rounded-lg transition-colors" title="Compensation">
                 <BanknotesIcon className="h-4 w-4" />
               </button>
               <button onClick={() => handleAction('performance')} className="p-2 text-gray-500 hover:text-warning-600 hover:bg-warning-50 rounded-lg transition-colors" title="Performance">
@@ -1461,6 +1490,10 @@ export default function ModernEmployeeDetail() {
                 </div>
               )}
             </div>
+          )}
+
+          {activeTab === 'compensation' && employee && (
+            <CompensationTab employee={employee} canManage={canManageCompensation} />
           )}
         </div>
       </div>

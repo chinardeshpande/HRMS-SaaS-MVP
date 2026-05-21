@@ -1,0 +1,165 @@
+{
+  "runId": "COMP-2026-05-21-1779364438489",
+  "generatedAt": "2026-05-21T11:54:04.549Z",
+  "target": "http://localhost:5186",
+  "api": "http://localhost:5000/api/v1",
+  "summary": {
+    "passed": 17,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "API-01",
+      "area": "Authorization",
+      "expected": "Compensation data rejects missing token",
+      "actual": "HTTP 401",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "API-02",
+      "area": "Read model",
+      "expected": "HR admin can read active salary structure, payslips and timeline",
+      "actual": "structures=3, payslips=6, timeline=15",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "API-03",
+      "area": "CRUD create",
+      "expected": "Manual salary transaction saves exact gross, deduction, net and components",
+      "actual": "net=51000.00, components=6",
+      "status": "passed",
+      "evidence": "de491fc6-d147-4361-8aca-2d3d94ae9f24",
+      "notes": ""
+    },
+    {
+      "id": "API-04",
+      "area": "Duplicate control",
+      "expected": "Same employee/month/year cannot be created twice",
+      "actual": "A payslip already exists for this employee and month",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "API-05",
+      "area": "Validation",
+      "expected": "Invalid month is rejected",
+      "actual": "A valid date is required",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "API-06",
+      "area": "Computation",
+      "expected": "Net pay must equal gross earnings minus deductions",
+      "actual": "Net pay should match gross earnings minus total deductions",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "API-07",
+      "area": "Validation",
+      "expected": "Negative salary values are rejected",
+      "actual": "Payslip values cannot be negative",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "API-08",
+      "area": "CRUD update",
+      "expected": "Updating transaction fields preserves component split",
+      "actual": "paidDays=29.00, components=6",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "API-09",
+      "area": "Monthly generation",
+      "expected": "Monthly generation copies active salary structure and computes net correctly",
+      "actual": "gross=60000.00, deductions=9000.00, net=51000.00, components=5",
+      "status": "passed",
+      "evidence": "0003502a-cfe1-4c8f-84c1-b5e562439e24",
+      "notes": ""
+    },
+    {
+      "id": "API-10",
+      "area": "Monthly generation",
+      "expected": "Generated monthly transaction cannot duplicate existing period",
+      "actual": "A payslip already exists for this employee and month",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "API-11",
+      "area": "Bulk import",
+      "expected": "Bulk import creates, updates, and reports invalid rows without aborting the whole file",
+      "actual": "created=1, updated=1, failed=1",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "API-12",
+      "area": "Data sync",
+      "expected": "Bulk upsert result appears in compensation read model and transaction timeline",
+      "actual": "net=45000.00, timelineHasMarch=true",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "UI-01",
+      "area": "Navigation",
+      "expected": "Login screen provides a clear route back to the public landing page",
+      "actual": "Landing page reached",
+      "status": "passed",
+      "evidence": "screenshots/login-home-route.png",
+      "notes": ""
+    },
+    {
+      "id": "UI-02",
+      "area": "Transaction UI",
+      "expected": "Transaction history exposes CRUD, monthly generation, bulk import, and salary columns",
+      "actual": "Buttons and Net Amount column found",
+      "status": "passed",
+      "evidence": "screenshots/transaction-history-table.png",
+      "notes": ""
+    },
+    {
+      "id": "UI-03",
+      "area": "Bulk import journey",
+      "expected": "Bulk import is guided with template, rules, and upload path",
+      "actual": "Guide modal rendered with template columns and rules",
+      "status": "passed",
+      "evidence": "screenshots/bulk-import-guide.png",
+      "notes": ""
+    },
+    {
+      "id": "UI-04",
+      "area": "Bulk import template",
+      "expected": "Downloaded template contains prescribed required fields and salary head examples",
+      "actual": "EMP0001-salary-transaction-import-template.csv",
+      "status": "passed",
+      "evidence": "docs/qa/compensation-transactions-2026-05-21/EMP0001-salary-transaction-import-template.csv",
+      "notes": ""
+    },
+    {
+      "id": "UI-05",
+      "area": "Responsive login",
+      "expected": "Mobile login still exposes AuroraHR Home without horizontal overflow",
+      "actual": "hasHome=true",
+      "status": "passed",
+      "evidence": "screenshots/mobile-login-home-route.png",
+      "notes": ""
+    }
+  ]
+}

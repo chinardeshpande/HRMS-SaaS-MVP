@@ -8,6 +8,7 @@ import {
   EyeSlashIcon,
   BriefcaseIcon,
   CheckCircleIcon,
+  HomeIcon,
   ShieldCheckIcon,
   UsersIcon,
   ChartBarIcon,
@@ -89,13 +90,18 @@ export default function ModernLogin() {
         <div className="relative z-10 flex flex-col justify-between w-full max-w-xl mx-auto">
           {/* Logo and tagline */}
           <div>
-            <div className="mb-8 bg-white/95 rounded-xl p-4 inline-block">
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="mb-8 bg-white/95 rounded-xl p-4 inline-block text-left transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white/70"
+              aria-label="Go to AuroraHR home page"
+            >
               <img
                 src="/images/AuroraHR_logo.svg?v=20260514b"
                 alt="AuroraHR - Illuminate The Journey | Grow Every Person"
                 className="h-14 w-auto"
               />
-            </div>
+            </button>
 
             <h2 className="text-4xl font-bold text-white mb-4 leading-tight">
               Illuminate The Journey.
@@ -148,6 +154,14 @@ export default function ModernLogin() {
 
           {/* Login card */}
           <div className="bg-white rounded-2xl shadow-xl p-8">
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="mb-6 inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-600 transition-colors hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700"
+            >
+              <HomeIcon className="h-4 w-4 mr-1.5" />
+              AuroraHR Home
+            </button>
             <div className="mb-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h2>
               <p className="text-gray-500">Sign in to access your dashboard</p>
