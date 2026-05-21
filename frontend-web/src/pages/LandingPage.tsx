@@ -328,7 +328,7 @@ export default function LandingPage() {
               <div className="inline-flex items-center rounded-full border border-primary-200 bg-white/75 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-primary-800 shadow-sm backdrop-blur sm:text-xs">
                 Built for serious adoption
               </div>
-              <h1 className="mt-3 max-w-3xl text-[2rem] font-bold leading-[1.04] text-gray-950 sm:text-5xl lg:text-[3.05rem] xl:text-[3.25rem]">
+              <h1 className="mt-3 max-w-3xl text-[1.95rem] font-bold leading-[1.12] text-gray-950 sm:text-5xl sm:leading-[1.12] lg:text-[3.05rem] xl:text-[3.25rem]">
                 A clean HR foundation for GCC launches, SMEs, and startup scale.
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-700 sm:text-base lg:text-base lg:leading-6">

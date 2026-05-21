@@ -151,7 +151,7 @@ export default function ModernPerformanceDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             {/* Left: Title with Icon */}
-            <div className="flex items-center space-x-3 flex-shrink-0">
+            <div className="flex min-w-0 items-center space-x-3">
               <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
                 <ChartBarIcon className="h-6 w-6 text-white" />
               </div>
@@ -168,10 +168,10 @@ export default function ModernPerformanceDashboard() {
             </div>
 
             {/* Center: Tab Navigation */}
-            <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg flex-shrink-0">
+            <div className="flex w-full max-w-full flex-wrap items-center gap-1 rounded-lg bg-gray-100 p-1 lg:w-auto">
               <button
                 onClick={() => setActiveView('all-reviews')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
+                className={`whitespace-nowrap px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
                   activeView === 'all-reviews'
                     ? 'bg-white text-blue-700 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
@@ -183,7 +183,7 @@ export default function ModernPerformanceDashboard() {
 
               <button
                 onClick={() => setActiveView('pending')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
+                className={`whitespace-nowrap px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
                   activeView === 'pending'
                     ? 'bg-white text-blue-700 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
@@ -195,7 +195,7 @@ export default function ModernPerformanceDashboard() {
 
               <button
                 onClick={() => setActiveView('due-reviews')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
+                className={`whitespace-nowrap px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center space-x-2 ${
                   activeView === 'due-reviews'
                     ? 'bg-white text-blue-700 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'

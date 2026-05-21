@@ -302,7 +302,7 @@ export default function ModernEmployees() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3 sm:flex-nowrap">
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="btn btn-secondary"
@@ -392,8 +392,8 @@ export default function ModernEmployees() {
                   className="p-6 hover:bg-gray-50 transition-colors cursor-pointer"
                   onClick={() => navigate(`/employees/${employee.employeeId}`)}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4 flex-1">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:space-x-4">
                       {/* Avatar */}
                       <div className="flex-shrink-0">
                         <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
@@ -405,8 +405,8 @@ export default function ModernEmployees() {
 
                       {/* Employee Info */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3">
-                          <p className="text-sm font-semibold text-gray-900">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="min-w-0 text-sm font-semibold text-gray-900">
                             {employee.firstName} {employee.lastName}
                           </p>
                           <span className="badge badge-gray text-xs">{employee.employeeCode}</span>
@@ -414,11 +414,11 @@ export default function ModernEmployees() {
                             {employee.status.toUpperCase()}
                           </span>
                         </div>
-                        <div className="flex items-center gap-4 mt-1">
-                          <p className="text-sm text-gray-600">{employee.email}</p>
-                          <span className="text-gray-300">•</span>
+                        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+                          <p className="min-w-0 break-all text-sm text-gray-600 sm:break-normal">{employee.email}</p>
+                          <span className="hidden text-gray-300 sm:inline">•</span>
                           <p className="text-sm text-gray-600">{employee.department?.name || 'No Department'}</p>
-                          <span className="text-gray-300">•</span>
+                          <span className="hidden text-gray-300 sm:inline">•</span>
                           <p className="text-sm text-gray-600">{getDesignationName(employee)}</p>
                         </div>
                       </div>
@@ -429,7 +429,7 @@ export default function ModernEmployees() {
                           e.stopPropagation();
                           navigate(`/employees/${employee.employeeId}`);
                         }}
-                        className="btn btn-sm btn-secondary"
+                        className="btn btn-sm btn-secondary self-start sm:self-auto"
                       >
                         <EyeIcon className="h-4 w-4 mr-1" />
                         View

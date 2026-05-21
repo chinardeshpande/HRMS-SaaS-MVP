@@ -354,12 +354,12 @@ export default function ModernDocuments() {
                 : 'Review document generation history and download prior output'}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex w-full items-center gap-3 sm:w-auto">
             {/* View Mode Toggle */}
-            <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1">
+            <div className="inline-flex w-full max-w-full flex-wrap rounded-lg border border-gray-300 bg-white p-1 sm:w-auto">
               <button
                 onClick={() => setViewMode('templates')}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                className={`inline-flex items-center gap-2 whitespace-nowrap px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   viewMode === 'templates'
                     ? 'bg-primary-600 text-white shadow-sm'
                     : 'text-gray-700 hover:bg-gray-100'
@@ -370,7 +370,7 @@ export default function ModernDocuments() {
               </button>
               <button
                 onClick={() => setViewMode('manager')}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                className={`inline-flex items-center gap-2 whitespace-nowrap px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   viewMode === 'manager'
                     ? 'bg-primary-600 text-white shadow-sm'
                     : 'text-gray-700 hover:bg-gray-100'
@@ -381,7 +381,7 @@ export default function ModernDocuments() {
               </button>
               <button
                 onClick={() => setViewMode('history')}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                className={`inline-flex items-center gap-2 whitespace-nowrap px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   viewMode === 'history'
                     ? 'bg-primary-600 text-white shadow-sm'
                     : 'text-gray-700 hover:bg-gray-100'

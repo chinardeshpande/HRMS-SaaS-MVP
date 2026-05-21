@@ -245,11 +245,11 @@ const MyHRDocuments: React.FC = () => {
           </div>
 
           {/* Category Filter Dropdown */}
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white min-w-[160px]"
+              className="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 sm:min-w-[160px]"
             >
               <option value="all">All Categories ({getCategoryCount('all')})</option>
               {dbCategories.map((cat) => (
@@ -263,7 +263,7 @@ const MyHRDocuments: React.FC = () => {
             <select
               value={selectedFormat}
               onChange={(e) => setSelectedFormat(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white min-w-[140px]"
+              className="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 sm:min-w-[140px]"
             >
               {fileFormats.map((format) => (
                 <option key={format.id} value={format.id}>
@@ -275,7 +275,7 @@ const MyHRDocuments: React.FC = () => {
             {/* Add Category Button */}
             <button
               onClick={() => setShowCategoryModal(true)}
-              className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
+              className="flex shrink-0 items-center gap-1 rounded-lg border border-blue-200 px-3 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-50"
               title="Add Category"
             >
               <PlusIcon className="w-4 h-4" />

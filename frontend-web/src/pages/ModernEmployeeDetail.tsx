@@ -115,9 +115,9 @@ interface EmployeeDetail {
 }
 
 const InfoItem = ({ label, value }: { label: string; value: string | number | undefined }) => (
-  <div>
+  <div className="min-w-0">
     <p className="text-xs font-semibold text-gray-500 mb-0.5">{label}</p>
-    <p className="text-sm font-semibold text-gray-900">{value || 'N/A'}</p>
+    <p className="break-words text-sm font-semibold text-gray-900">{value || 'N/A'}</p>
   </div>
 );
 
@@ -871,8 +871,8 @@ export default function ModernEmployeeDetail() {
 
       {/* Compact Header Card */}
       <div className="card mb-4 overflow-hidden">
-        <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-4">
-          <div className="flex items-center space-x-4">
+        <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-4 sm:px-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:space-x-4">
             <div className="h-16 w-16 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/50 flex items-center justify-center shadow-lg">
               {employee.photoUrl ? (
                 <img src={employee.photoUrl} alt={`${employee.firstName} ${employee.lastName}`} className="h-full w-full rounded-full object-cover" />
@@ -880,11 +880,11 @@ export default function ModernEmployeeDetail() {
                 <span className="text-xl font-bold text-white">{getInitials(employee.firstName, employee.lastName)}</span>
               )}
             </div>
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <h1 className="text-2xl font-bold text-white">{employee.firstName} {employee.lastName}</h1>
               <p className="text-white/90 text-sm font-medium">{employee.positionTitle} • {employee.departmentName}</p>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="badge bg-white/95 text-primary-700 font-semibold text-xs px-3 py-1">{employee.employeeCode}</span>
               <span className={`badge ${getStatusBadge(employee.status)} text-xs px-3 py-1`}>{employee.status.toUpperCase()}</span>
             </div>
@@ -892,7 +892,7 @@ export default function ModernEmployeeDetail() {
         </div>
 
         {/* Compact Stats Row */}
-        <div className="grid grid-cols-4 divide-x divide-gray-200 bg-gray-50">
+        <div className="grid grid-cols-2 divide-x divide-y divide-gray-200 bg-gray-50 sm:grid-cols-4 sm:divide-y-0">
           <div className="px-4 py-3 text-center">
             <p className="text-xs text-gray-600 font-semibold mb-1">TENURE</p>
             <p className="text-lg font-bold text-primary-600">{calculateTenure(employee.dateOfJoining)}</p>
@@ -923,8 +923,8 @@ export default function ModernEmployeeDetail() {
       )}
 
       {/* Tabs & Actions */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+      <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex w-full max-w-full flex-wrap gap-1 rounded-lg bg-gray-100 p-1 lg:w-auto">
           <button
             onClick={() => setActiveTab('personal')}
             disabled={isEditingPersonal || isEditingProfessional}
@@ -976,10 +976,10 @@ export default function ModernEmployeeDetail() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Show Save/Cancel buttons when editing */}
           {(isEditingPersonal || isEditingProfessional) ? (
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={isEditingPersonal ? handleSavePersonal : handleSaveProfessional}
                 disabled={saving}
@@ -1047,7 +1047,7 @@ export default function ModernEmployeeDetail() {
 
       {/* Main Content Card */}
       <div className="card">
-        <div className="card-body p-6">
+        <div className="card-body p-4 sm:p-6">
 
           {/* Personal Info Tab */}
           {activeTab === 'personal' && (
@@ -1059,7 +1059,7 @@ export default function ModernEmployeeDetail() {
                     <span className="w-6 h-6 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs mr-2">✏️</span>
                     Basic Information
                   </h3>
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <EditableField
                       label="First Name"
                       value={personalForm.firstName}
@@ -1089,7 +1089,7 @@ export default function ModernEmployeeDetail() {
                   <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mr-2">📧</span>
                   Contact Details
                 </h3>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   {isEditingPersonal ? (
                     <>
                       <EditableField
@@ -1129,7 +1129,7 @@ export default function ModernEmployeeDetail() {
                   <span className="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs mr-2">👤</span>
                   Personal Details
                 </h3>
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                   {isEditingPersonal ? (
                     <>
                       <EditableField
@@ -1184,7 +1184,7 @@ export default function ModernEmployeeDetail() {
                   <span className="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs mr-2">🆘</span>
                   Emergency Contact
                 </h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {isEditingPersonal ? (
                     <>
                       <EditableField
@@ -1221,7 +1221,7 @@ export default function ModernEmployeeDetail() {
                   <span className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs mr-2">🏢</span>
                   Position & Hierarchy
                 </h3>
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                   {isEditingProfessional ? (
                     <>
                       <EditableSelect
@@ -1276,7 +1276,7 @@ export default function ModernEmployeeDetail() {
                   <span className="w-6 h-6 rounded-full bg-cyan-600 text-white flex items-center justify-center text-xs mr-2">📋</span>
                   Employment Details
                 </h3>
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                   {isEditingProfessional ? (
                     <>
                       <EditableSelect
@@ -1314,7 +1314,7 @@ export default function ModernEmployeeDetail() {
                     </>
                   )}
                 </div>
-                <div className="grid grid-cols-4 gap-4 mt-4">
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                   <div>
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Status</p>
                     <span className={`badge ${getStatusBadge(employee.status)}`}>{employee.status.toUpperCase()}</span>
@@ -1544,7 +1544,7 @@ export default function ModernEmployeeDetail() {
               </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <EditableSelect
                 label="Event Type"
                 value={manualHistoryForm.eventType}
@@ -1578,7 +1578,7 @@ export default function ModernEmployeeDetail() {
                 onChange={(value) => setManualHistoryForm({ ...manualHistoryForm, toValue: value })}
                 placeholder="New role/location/value"
               />
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <EditableField
                   label="Amount"
                   type="number"
@@ -1595,7 +1595,7 @@ export default function ModernEmployeeDetail() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <label className="text-xs font-semibold text-gray-500 mb-1 block">Description</label>
                 <textarea

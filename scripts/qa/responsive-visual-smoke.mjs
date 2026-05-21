@@ -3,8 +3,10 @@ import path from 'node:path';
 
 const BASE_URL = process.env.QA_BASE_URL || 'http://127.0.0.1:5184';
 const SESSION_API_URL = process.env.QA_SESSION_API_URL || BASE_URL;
-const OUT_DIR = process.env.QA_OUT_DIR || 'docs/qa/responsive-polish-2026-05-19';
+const OUT_DIR = process.env.QA_OUT_DIR || 'docs/qa/responsive-visual-2026-05-21';
 const SCREENSHOT_DIR = path.join(OUT_DIR, 'screenshots');
+const QA_AUTH_EMAIL = process.env.QA_AUTH_EMAIL || 'anupama.bhat@acvsolutions.in';
+const QA_AUTH_PASSWORD = process.env.QA_AUTH_PASSWORD || 'pass@Manu1120';
 const PLAYWRIGHT_IMPORT_PATH =
   process.env.PLAYWRIGHT_IMPORT_PATH ||
   '/Users/chinar.deshpande06/Temp/Chin/2026/chinar-ined-portfolio-v3/node_modules/playwright/index.mjs';
@@ -15,9 +17,14 @@ const CHROMIUM_PATH =
 const { chromium } = await import(PLAYWRIGHT_IMPORT_PATH);
 
 const viewports = [
-  ['mobile', 390, 844],
-  ['tablet', 768, 1024],
-  ['desktop', 1440, 900],
+  ['mobile-360', 360, 800],
+  ['mobile-390', 390, 844],
+  ['mobile-414', 414, 896],
+  ['tablet-768', 768, 1024],
+  ['tablet-820', 820, 1180],
+  ['laptop-1366', 1366, 768],
+  ['desktop-1440', 1440, 900],
+  ['wide-1920', 1920, 1080],
 ];
 
 const publicRoutes = [
@@ -32,32 +39,54 @@ const authRoutes = [
   ['employees', '/employees'],
   ['attendance', '/attendance'],
   ['leave', '/leave'],
+  ['onboarding', '/onboarding'],
+  ['performance', '/performance'],
+  ['exit', '/exit'],
   ['hr-connect', '/hr-connect'],
   ['reports', '/reports'],
   ['documents', '/documents'],
+  ['my-hr-documents', '/my-hr-documents'],
   ['settings', '/settings'],
 ];
 
 await fs.mkdir(SCREENSHOT_DIR, { recursive: true });
 
 async function createDemoSession() {
-  const response = await fetch(`${SESSION_API_URL}/api/v1/demo/login`, {
+  const demoResponse = await fetch(`${SESSION_API_URL}/api/v1/demo/login`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ persona: 'hr' }),
   });
 
+  if (demoResponse.ok) {
+    const body = await demoResponse.json();
+    const session = body?.data || body;
+    if (!session?.user || !session?.tokens) {
+      throw new Error('Demo session response did not include user and tokens');
+    }
+    return { ...session, source: 'demo' };
+  }
+
+  const response = await fetch(`${SESSION_API_URL}/api/v1/auth/login`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ email: QA_AUTH_EMAIL, password: QA_AUTH_PASSWORD }),
+  });
+
   if (!response.ok) {
-    throw new Error(`Demo session request failed: ${response.status} ${response.statusText}`);
+    const demoText = await demoResponse.text().catch(() => '');
+    throw new Error(
+      `Demo session failed (${demoResponse.status}) and auth login failed (${response.status}). Demo response: ${demoText.slice(0, 240)}`
+    );
   }
 
   const body = await response.json();
   const session = body?.data || body;
   if (!session?.user || !session?.tokens) {
-    throw new Error('Demo session response did not include user and tokens');
+    throw new Error('Auth login response did not include user and tokens');
   }
 
-  return session;
+  return { ...session, source: 'auth' };
 }
 
 async function installDemoSession(page, session) {
@@ -65,12 +94,20 @@ async function installDemoSession(page, session) {
   await page.evaluate((demoSession) => {
     window.localStorage.setItem('user', JSON.stringify(demoSession.user));
     window.localStorage.setItem('tokens', JSON.stringify(demoSession.tokens));
-    window.localStorage.setItem(
-      'demoSession',
-      JSON.stringify({ persona: 'hr', startedAt: new Date().toISOString() })
-    );
+    window.localStorage.setItem('demoSession', JSON.stringify({ persona: 'hr', startedAt: new Date().toISOString() }));
     window.localStorage.removeItem('auroraDemoJourneyState');
   }, session);
+}
+
+async function apiGet(pathName, session) {
+  const response = await fetch(`${SESSION_API_URL}/api/v1${pathName}`, {
+    headers: {
+      authorization: `Bearer ${session.tokens.token}`,
+    },
+  });
+  if (!response.ok) return null;
+  const body = await response.json();
+  return body?.data || body;
 }
 
 const browser = await chromium.launch({
@@ -80,9 +117,26 @@ const browser = await chromium.launch({
 
 const results = [];
 const demoSession = await createDemoSession();
+const employeesResponse = await apiGet('/employees', demoSession);
+const firstEmployee =
+  (Array.isArray(employeesResponse) ? employeesResponse : employeesResponse?.employees || employeesResponse?.data?.employees || [])
+    .find((employee) => employee.employeeId || employee.id);
+
+if (firstEmployee) {
+  const employeeId = firstEmployee.employeeId || firstEmployee.id;
+  authRoutes.splice(2, 0, ['employee-detail', `/employees/${employeeId}`]);
+}
 
 async function capture(page, viewportName, routeName, routePath, kind, errors) {
-  await page.goto(`${BASE_URL}${routePath}`, { waitUntil: 'networkidle', timeout: 30000 });
+  const routeErrors = [...errors];
+  errors.length = 0;
+  try {
+    await page.goto(`${BASE_URL}${routePath}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForLoadState('load', { timeout: 15000 }).catch(() => undefined);
+    await page.waitForTimeout(750);
+  } catch (error) {
+    routeErrors.push(error.message);
+  }
   await page.screenshot({
     path: path.join(SCREENSHOT_DIR, `${viewportName}-${routeName}.png`),
     fullPage: false,
@@ -95,6 +149,45 @@ async function capture(page, viewportName, routeName, routePath, kind, errors) {
     const viewportWidth = window.innerWidth;
     const text = document.body.innerText.slice(0, 700);
     const fixedHeader = document.querySelector('nav,header')?.getBoundingClientRect();
+    const visibleText = document.body.innerText;
+    const oversizedElements = Array.from(document.querySelectorAll('body *'))
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          tag: element.tagName.toLowerCase(),
+          className: typeof element.className === 'string' ? element.className.slice(0, 120) : '',
+          text: element.textContent?.trim().replace(/\s+/g, ' ').slice(0, 90) || '',
+          x: Math.round(rect.x),
+          y: Math.round(rect.y),
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+        };
+      })
+      .filter((item) => item.width > window.innerWidth + 2 || item.x < -2 || item.x + item.width > window.innerWidth + 2)
+      .slice(0, 12);
+    const clippedTextElements = Array.from(document.querySelectorAll('button,a,th,td,label,h1,h2,h3,p,span'))
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        const className = typeof element.className === 'string' ? element.className : '';
+        return {
+          tag: element.tagName.toLowerCase(),
+          className,
+          text: element.textContent?.trim().replace(/\s+/g, ' ').slice(0, 90) || '',
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+          scrollWidth: element.scrollWidth,
+          clientWidth: element.clientWidth,
+          scrollHeight: element.scrollHeight,
+          clientHeight: element.clientHeight,
+        };
+      })
+      .filter((item) => {
+        if (!item.text) return false;
+        if (item.width <= 2 || item.height <= 2) return false;
+        if (/line-clamp|sr-only/.test(item.className)) return false;
+        return item.scrollWidth > item.clientWidth + 8 || item.scrollHeight > item.clientHeight + 8;
+      })
+      .slice(0, 12);
 
     return {
       title,
@@ -102,6 +195,10 @@ async function capture(page, viewportName, routeName, routePath, kind, errors) {
       scrollWidth,
       viewportWidth,
       hasHorizontalOverflow: scrollWidth > viewportWidth + 2,
+      hasMainContent: visibleText.trim().length > 80,
+      hasNotFound: /page not found|404/i.test(visibleText),
+      oversizedElements,
+      clippedTextElements,
       bodyExcerpt: text,
       header: fixedHeader
         ? {
@@ -119,11 +216,17 @@ async function capture(page, viewportName, routeName, routePath, kind, errors) {
     route: routeName,
     path: routePath,
     kind,
-    status: data.hasHorizontalOverflow || errors.length ? 'needs-review' : 'captured',
-    errors: [...errors],
+    status:
+      data.hasHorizontalOverflow ||
+      data.hasNotFound ||
+      !data.hasMainContent ||
+      data.clippedTextElements.length ||
+      routeErrors.length
+        ? 'needs-review'
+        : 'captured',
+    errors: routeErrors,
     ...data,
   });
-  errors.length = 0;
 }
 
 for (const [viewportName, width, height] of viewports) {
@@ -160,11 +263,18 @@ await fs.writeFile(path.join(OUT_DIR, 'results.json'), JSON.stringify(results, n
 
 const summary = {
   target: BASE_URL,
+  sessionSource: demoSession.source,
   count: results.length,
   needsReview: results.filter((result) => result.status === 'needs-review').length,
   horizontalOverflow: results
     .filter((result) => result.hasHorizontalOverflow)
     .map((result) => `${result.viewport}:${result.route}`),
+  oversizedElements: results
+    .filter((result) => result.oversizedElements.length)
+    .map((result) => ({ route: `${result.viewport}:${result.route}`, elements: result.oversizedElements })),
+  clippedTextElements: results
+    .filter((result) => result.clippedTextElements.length)
+    .map((result) => ({ route: `${result.viewport}:${result.route}`, elements: result.clippedTextElements })),
   consoleOrPageErrors: results
     .filter((result) => result.errors.length)
     .map((result) => ({ route: `${result.viewport}:${result.route}`, errors: result.errors })),
