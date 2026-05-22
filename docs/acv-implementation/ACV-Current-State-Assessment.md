@@ -1,0 +1,133 @@
+# ACV Current-State Assessment
+
+## Assessment Summary
+
+AuroraHR already has a strong HRMS spine. The main ACV Customer Zero gaps are not missing core modules; they are implementation-grade completeness gaps: tenant branding, tenant SMTP execution, company document governance, compensation hardening, audit coverage, dashboards, migration evidence, and UAT discipline.
+
+## Tenant Configuration and Subscription
+
+### Existing Implementation
+
+- `backend/src/models/Tenant.ts` stores company identity, subdomain, plan, status, logo/color fields, trial metadata, and onboarding status.
+- `backend/src/models/OrganizationSettings.ts` stores company profile, contacts, operational settings, branding JSON, SMTP config, and security settings.
+- `backend/src/models/Subscription.ts` and payment models support subscription records.
+- `backend/src/models/CompanyRegistration.ts` supports company signup.
+- `backend/src/routes/settingsRoutes.ts`, `registrationRoutes.ts`, and `onboardingWizardRoutes.ts` expose relevant setup APIs.
+
+### Current Gap
+
+Tenant configuration exists, but tenant identity is not consistently projected across app shell, emails, document templates, and generated documents.
+
+## Employee Master and Org Setup
+
+### Existing Implementation
+
+- `Employee`, `User`, `Department`, `Designation`, `Role`, `Permission`, and invitation models exist.
+- Employee CRUD, stats, bulk upload, department/designation setup, role management, and user invitation flows are present.
+- Reporting manager fields and professional history routes exist.
+- ACV pilot import scripts and templates already exist under `docs/pilots/acv-solutions-pvt-ltd/` and `backend/src/scripts/`.
+
+### Current Gap
+
+Employee master is usable but needs implementation-grade completeness checks: mandatory field coverage, manager hierarchy validation, role assignment validation, data import evidence, and clear exception reporting.
+
+## Documents
+
+### Existing Implementation
+
+- `DocumentTemplate` and `GeneratedDocument` support HR document generation.
+- `DigitalLibrary` and `DocumentCategory` support managed document resources.
+- `documentRoutes.ts`, `digitalLibraryRoutes.ts`, and `documentCategoryRoutes.ts` expose document-related APIs.
+- Frontend document screens include `ModernDocuments`, `MyHRDocuments`, template management, and document preview surfaces.
+
+### Current Gap
+
+Document capability exists, but ACV needs a sharper taxonomy:
+
+- employee documents
+- generated HR documents
+- compensation documents
+- company HR/compliance documents
+- HR Connect communication attachments
+
+Without this separation, the Digital Library can become too broad for production governance.
+
+## Compensation and Payslips
+
+### Existing Implementation
+
+- `SalaryStructure`, `SalaryComponent`, `Payslip`, `PayslipComponent`, `PayslipAttachment`, `CompensationHistory`, and `CompensationShareLog` exist.
+- `compensationRoutes.ts` supports salary structure CRUD, payslips, monthly generation, salary transaction import, attachments, and share logs.
+- `frontend-web/src/components/employees/CompensationTab.tsx` includes compensation ledger, payslip library, salary transaction history, bulk import template, and guided import flows.
+
+### Current Gap
+
+The base is strong. ACV still needs coverage dashboards, stronger audit logging, import validation evidence, payslip month/employee completeness checks, and clear distinction that AuroraHR tracks payroll outputs but does not process payroll.
+
+## HR Connect and Communication
+
+### Existing Implementation
+
+- `HRConnectPost`, `HRConnectComment`, groups, reactions, chat conversations, chat messages, calendar events, tickets, and notifications exist.
+- `hrConnectRoutes.ts`, `chatRoutes.ts`, `calendarRoutes.ts`, and `ticketRoutes.ts` expose communication APIs.
+
+### Current Gap
+
+Internal communication exists. External communication aggregation is not yet built. The immediate ACV requirement should be outbound HR event logging and tenant-aware email sending, not full inbound mailbox sync.
+
+## Email and SMTP
+
+### Existing Implementation
+
+- `OrganizationSettings.smtpConfig` exists.
+- `settingsRoutes.ts` supports SMTP settings.
+- `settingsService.ts` supports SMTP read/update from frontend.
+
+### Current Gap
+
+`backend/src/services/emailService.ts` currently uses global SMTP configuration. Tenant-specific SMTP resolution is not yet wired into runtime email sending.
+
+## Branding
+
+### Existing Implementation
+
+- Tenant and organization settings can store logo and color configuration.
+
+### Current Gap
+
+App shell, auth pages, landing/system pages, email templates, and generated documents do not yet consistently resolve tenant branding. Branding must be controlled and scoped, not a full theme-builder.
+
+## Audit Logs
+
+### Existing Implementation
+
+- `AuditLog` model exists.
+- FSM services for onboarding, probation, and exit already use audit-style status tracking.
+
+### Current Gap
+
+Audit logging is not systematic across employee changes, document operations, compensation operations, settings changes, imports, role changes, email sends/failures, and sensitive download/share actions.
+
+## Reports and Dashboards
+
+### Existing Implementation
+
+- `reportingRoutes.ts`, `analyticsRoutes.ts`, saved reports, dashboard pages, and analytics models exist.
+- Several visual QA reports and production-readiness reports already exist.
+
+### Current Gap
+
+ACV needs implementation-grade dashboards:
+
+- tenant readiness
+- employee data completeness
+- document completeness
+- compensation and payslip coverage
+- lifecycle health
+- HR operations status
+- leave/attendance operational health
+
+## Production Readiness Interpretation
+
+AuroraHR is materially beyond a basic MVP. ACV implementation should focus on hardening, governance, evidence, and tenant-specific operational readiness before deeper integrations.
+
