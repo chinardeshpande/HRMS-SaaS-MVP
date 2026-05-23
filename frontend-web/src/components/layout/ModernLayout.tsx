@@ -126,44 +126,6 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
   const isActive = (href: string) => location.pathname === href;
   const isParentActive = (item: NavItemConfig) =>
     item.children?.some((child) => isActive(child.href)) || isActive(item.href);
-  const renderTenantBrand = (variant: 'desktop' | 'mobile' = 'desktop') => {
-    const compact = variant === 'mobile';
-
-    return (
-      <button
-        type="button"
-        onClick={() => {
-          navigate('/dashboard');
-          if (compact) setSidebarOpen(false);
-        }}
-        className={`w-full rounded-xl border border-gray-200 bg-white text-left shadow-sm transition hover:border-primary-200 hover:shadow ${
-          compact ? 'px-3 py-3' : 'px-4 py-3'
-        }`}
-      >
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-gray-200">
-            {tenantBrand.logoUrl ? (
-              <img src={tenantBrand.logoUrl} alt={`${tenantBrand.companyName} logo`} className="h-10 w-10 object-contain" />
-            ) : (
-              <span className="text-sm font-bold text-primary-700">
-                {tenantBrand.companyName
-                  .split(' ')
-                  .filter(Boolean)
-                  .slice(0, 2)
-                  .map((word) => word.charAt(0))
-                  .join('')
-                  .toUpperCase() || 'AH'}
-              </span>
-            )}
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-gray-900">{tenantBrand.companyName}</p>
-            <p className="truncate text-xs text-gray-500">AuroraHR workspace</p>
-          </div>
-        </div>
-      </button>
-    );
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -171,16 +133,13 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
           {/* Logo */}
-          <div className="flex flex-col gap-3 px-5">
-            {renderTenantBrand('desktop')}
-            <div className="flex items-center gap-2 px-1">
-              <img
-                src={DEFAULT_PLATFORM_LOGO}
-                alt="AuroraHR"
-                className="h-6 w-auto"
-              />
-              <span className="text-xs font-medium text-gray-400">Platform</span>
-            </div>
+          <div className="flex items-center flex-shrink-0 px-6">
+            <img
+              src={DEFAULT_PLATFORM_LOGO}
+              alt="AuroraHR - Illuminate The Journey | Grow Every Person"
+              className="h-10 w-auto cursor-pointer"
+              onClick={() => navigate('/dashboard')}
+            />
           </div>
 
           {/* Navigation */}
@@ -325,7 +284,12 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
               {/* Mobile menu content - reuse desktop sidebar content */}
               <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
                 <div className="flex items-center flex-shrink-0 px-4">
-                  {renderTenantBrand('mobile')}
+                  <img
+                    src={DEFAULT_PLATFORM_LOGO}
+                    alt="AuroraHR - Illuminate The Journey | Grow Every Person"
+                    className="h-10 w-auto cursor-pointer"
+                    onClick={() => { navigate('/dashboard'); setSidebarOpen(false); }}
+                  />
                 </div>
                 <nav className="mt-5 px-2 space-y-1">
                   <button
@@ -401,7 +365,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
             </div>
             <div className="ml-2 flex shrink-0 items-center md:ml-6 space-x-2 sm:space-x-3">
               <div
-                className="hidden max-w-[220px] items-center gap-2 rounded-full border bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm sm:flex"
+                className="flex max-w-[150px] items-center gap-2 rounded-full border bg-white px-2 py-1.5 text-xs font-semibold text-gray-700 shadow-sm sm:max-w-[220px] sm:px-3"
                 style={{ borderColor: `${tenantBrand.primaryColor}33` }}
                 title={tenantBrand.companyName}
               >

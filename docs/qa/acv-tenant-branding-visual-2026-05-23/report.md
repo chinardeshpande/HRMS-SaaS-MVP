@@ -1,6 +1,6 @@
 # ACV Tenant Branding Visual QA
 
-Date: 2026-05-23
+Date: 2026-05-24
 
 ## Scope
 
@@ -12,7 +12,8 @@ This pass validates the first visible ACV identity slice inside the authenticate
 - Desktop dashboard render at 1440 x 900.
 - Mobile dashboard render at 390 x 844 with the mobile navigation opened.
 - Organization Settings render with tenant brand controls.
-- Tenant identity visibility in the sidebar and top bar.
+- Tenant identity visibility in the title bar near the user profile.
+- AuroraHR logo remains untouched in the desktop sidebar and mobile drawer.
 - ACV logo loading from tenant/organization settings.
 - AuroraHR platform identity retained as the underlying product brand.
 - Frontend and backend production builds.
@@ -23,11 +24,11 @@ Passed.
 
 | Check | Result |
 | --- | --- |
-| ACV Solutions visible in desktop app shell | Passed |
-| ACV logo visible in desktop app shell | Passed |
-| AuroraHR workspace label visible | Passed |
-| ACV Solutions visible in mobile navigation | Passed |
-| ACV logo visible in mobile navigation | Passed |
+| AuroraHR logo remains primary sidebar/drawer logo | Passed |
+| ACV Solutions visible in desktop title bar | Passed |
+| ACV logo visible in desktop title bar | Passed |
+| ACV Solutions visible in mobile title bar | Passed |
+| ACV logo visible in mobile title bar | Passed |
 | Organization Settings exposes brand color controls | Passed |
 | Backend build | Passed |
 | Frontend build | Passed |
