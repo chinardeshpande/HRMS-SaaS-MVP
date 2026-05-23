@@ -37,12 +37,14 @@ Employee master is usable but needs implementation-grade completeness checks: ma
 
 - `DocumentTemplate` and `GeneratedDocument` support HR document generation.
 - `DigitalLibrary` and `DocumentCategory` support managed document resources.
+- `CompanyDocument` now supports tenant-level company HR/compliance document memory.
 - `documentRoutes.ts`, `digitalLibraryRoutes.ts`, and `documentCategoryRoutes.ts` expose document-related APIs.
+- `companyDocumentRoutes.ts` exposes the company document vault APIs.
 - Frontend document screens include `ModernDocuments`, `MyHRDocuments`, template management, and document preview surfaces.
 
-### Current Gap
+### Current Status
 
-Document capability exists, but ACV needs a sharper taxonomy:
+Document capability exists and now has a clearer memory split:
 
 - employee documents
 - generated HR documents
@@ -50,7 +52,11 @@ Document capability exists, but ACV needs a sharper taxonomy:
 - company HR/compliance documents
 - HR Connect communication attachments
 
-Without this separation, the Digital Library can become too broad for production governance.
+The first durable company document vault slice is implemented with tenant isolation, HR/admin access, metadata, expiry fields, verification status, and audit logging for upload, update, verification, download, and archive.
+
+### Current Gap
+
+Employee document governance still needs equivalent taxonomy and completeness reporting. The legacy `/api/documents` controller still uses in-memory storage and should not be treated as the durable employee/company document memory path.
 
 ## Compensation and Payslips
 
@@ -103,10 +109,11 @@ App shell, auth pages, landing/system pages, email templates, and generated docu
 
 - `AuditLog` model exists.
 - FSM services for onboarding, probation, and exit already use audit-style status tracking.
+- Company document vault operations now create audit entries through `auditService`.
 
 ### Current Gap
 
-Audit logging is not systematic across employee changes, document operations, compensation operations, settings changes, imports, role changes, email sends/failures, and sensitive download/share actions.
+Audit logging is not yet systematic across employee changes, employee document operations, compensation operations, settings changes, imports, role changes, email sends/failures, and sensitive download/share actions outside the newly added company document vault.
 
 ## Reports and Dashboards
 
@@ -130,4 +137,3 @@ ACV needs implementation-grade dashboards:
 ## Production Readiness Interpretation
 
 AuroraHR is materially beyond a basic MVP. ACV implementation should focus on hardening, governance, evidence, and tenant-specific operational readiness before deeper integrations.
-

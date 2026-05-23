@@ -81,7 +81,12 @@ Primary responsibilities:
 - Employee views own document.
 - Employee cannot access another employee's private document.
 - HR generates an HR document from a template.
-- Company document vault supports company-level document storage once implemented.
+- Company document vault supports company-level document storage.
+- HR uploads a company document with category, expiry, issuing authority, and notes.
+- HR verifies a company document.
+- HR downloads a company document and audit log records the access.
+- HR archives a company document.
+- Manager/Employee cannot access company document vault APIs.
 - Download/share/delete actions are auditable.
 
 ### Track 5: Compensation
@@ -171,4 +176,3 @@ ACV implementation should not be considered ready until:
 - No document access leak is open.
 - Role-based access tests pass.
 - Production smoke test passes.
-

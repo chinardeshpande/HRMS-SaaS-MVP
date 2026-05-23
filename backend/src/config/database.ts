@@ -80,6 +80,7 @@ import { AnalyticsMetric } from '../models/AnalyticsMetric';
 // Digital Library entities
 import { DigitalLibrary } from '../models/DigitalLibrary';
 import { DocumentCategory } from '../models/DocumentCategory';
+import { CompanyDocument } from '../models/CompanyDocument';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -169,6 +170,7 @@ export const AppDataSource = new DataSource({
     // Digital Library
     DigitalLibrary,
     DocumentCategory,
+    CompanyDocument,
   ],
   migrations: ['dist/backend/src/migrations/*.js'],
   subscribers: [],

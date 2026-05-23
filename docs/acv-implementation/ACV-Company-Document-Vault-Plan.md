@@ -132,3 +132,34 @@ This vault should manage document evidence and governance. It should not perform
 
 Prefer extending document governance cleanly rather than overloading unrelated employee document fields. If existing `DigitalLibrary` and `DocumentCategory` can represent the taxonomy safely, extend them with explicit company-level ownership and access semantics. If not, introduce a focused company document model with clear tenant ownership.
 
+## Sprint 1 Implementation Status
+
+Implemented in `codex/acv-memory-foundation`:
+
+- `CompanyDocument` persistent model.
+- `company_documents` database migration.
+- `companyDocumentRoutes.ts` API surface.
+- `companyDocumentService.ts` with tenant-scoped list, upload, update, verify, download audit, archive, and stats.
+- `auditService.ts` reusable audit helper.
+- Documents page `Company Vault` tab.
+- Company document stats: total, active, needs review, expiring soon, by category.
+
+Initial access model:
+
+- HR Admin and System Admin can list, upload, update, verify, download, and archive company documents.
+- Employee and Manager access is intentionally excluded from this first memory foundation slice.
+
+Audit coverage added:
+
+- `company_document.upload`
+- `company_document.update`
+- `company_document.verify`
+- `company_document.download`
+- `company_document.archive`
+
+Remaining work:
+
+- Employee document memory should be moved away from the legacy in-memory `/api/documents` controller or clearly routed through a durable model.
+- Company document reminders are not yet scheduled.
+- Company document dashboard tiles exist only inside Documents; cross-module readiness dashboard is still pending.
+- Fine-grained document permissions beyond HR/Admin are deferred.

@@ -99,6 +99,11 @@ Validation:
 - Employee-linked documents map to the right employee.
 - Company documents do not appear as employee personal documents.
 
+Implementation note:
+
+- Company HR/compliance documents should use the durable Company Document Vault.
+- Employee document migration should wait until employee document memory is hardened away from the legacy in-memory `/api/documents` path or routed through an explicitly durable document model.
+
 ### Wave 5: Compensation History
 
 - Salary structures.
@@ -147,4 +152,3 @@ Evidence can include:
 - Do not run destructive import scripts without a dry run.
 - Do not import documents until document taxonomy is finalized.
 - Do not create payroll computation records.
-

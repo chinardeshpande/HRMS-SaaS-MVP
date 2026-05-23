@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import { DocumentWizard } from '../components/documents/DocumentWizard';
 import { TemplateManager } from '../components/documents/TemplateManager';
@@ -6,6 +6,14 @@ import { TemplateEditor } from '../components/documents/TemplateEditor';
 import { TemplatePreview } from '../components/documents/TemplatePreview';
 import documentService from '../services/documentService';
 import type { DocumentHistory } from '../services/documentService';
+import companyDocumentService from '../services/companyDocumentService';
+import type {
+  CompanyDocument,
+  CompanyDocumentCategory,
+  CompanyDocumentPayload,
+  CompanyDocumentStats,
+  CompanyDocumentVerificationStatus,
+} from '../services/companyDocumentService';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -26,6 +34,8 @@ import {
   ShieldCheckIcon,
   ArrowDownTrayIcon,
   TrashIcon,
+  BuildingOfficeIcon,
+  CloudArrowUpIcon,
 } from '@heroicons/react/24/outline';
 
 // Icon mapping for template categories
@@ -72,7 +82,7 @@ interface DocumentTemplate {
   variables: string[];
 }
 
-type ViewMode = 'templates' | 'manager' | 'history';
+type ViewMode = 'templates' | 'manager' | 'history' | 'companyVault';
 
 interface TemplateData {
   templateId: string;
@@ -88,6 +98,34 @@ interface TemplateData {
   updatedAt: string;
 }
 
+const COMPANY_DOCUMENT_CATEGORIES: Array<{ id: CompanyDocumentCategory | 'all'; name: string }> = [
+  { id: 'all', name: 'All company memory' },
+  { id: 'incorporation_identity', name: 'Incorporation & identity' },
+  { id: 'tax_registration', name: 'Tax registrations' },
+  { id: 'labor_hr_compliance', name: 'Labor & HR compliance' },
+  { id: 'hr_policy', name: 'HR policies' },
+  { id: 'insurance_benefits', name: 'Insurance & benefits' },
+  { id: 'statutory_return', name: 'Statutory returns' },
+  { id: 'board_governance', name: 'Board & governance' },
+  { id: 'hr_template', name: 'HR templates' },
+  { id: 'vendor_partner_agreement', name: 'Vendor/partner agreements' },
+  { id: 'other', name: 'Other' },
+];
+
+const DEFAULT_COMPANY_DOCUMENT_FORM: CompanyDocumentPayload = {
+  title: '',
+  category: 'incorporation_identity',
+  description: '',
+  documentNumber: '',
+  issuingAuthority: '',
+  issueDate: '',
+  expiryDate: '',
+  renewalOwner: '',
+  status: 'active',
+  verificationStatus: 'unverified',
+  notes: '',
+};
+
 export default function ModernDocuments() {
   const { user } = useAuth();
   const [viewMode, setViewMode] = useState<ViewMode>('templates');
@@ -99,6 +137,13 @@ export default function ModernDocuments() {
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState<DocumentHistory[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [companyDocuments, setCompanyDocuments] = useState<CompanyDocument[]>([]);
+  const [companyDocumentStats, setCompanyDocumentStats] = useState<CompanyDocumentStats | null>(null);
+  const [companyDocumentsLoading, setCompanyDocumentsLoading] = useState(false);
+  const [companyDocumentCategory, setCompanyDocumentCategory] = useState<CompanyDocumentCategory | 'all'>('all');
+  const [showCompanyUpload, setShowCompanyUpload] = useState(false);
+  const [companyDocumentForm, setCompanyDocumentForm] = useState<CompanyDocumentPayload>(DEFAULT_COMPANY_DOCUMENT_FORM);
+  const [companyDocumentFile, setCompanyDocumentFile] = useState<File | null>(null);
 
   // Template Manager States
   const [editingTemplate, setEditingTemplate] = useState<TemplateData | null>(null);
@@ -153,6 +198,12 @@ export default function ModernDocuments() {
     }
   }, [user, viewMode]);
 
+  useEffect(() => {
+    if (user && viewMode === 'companyVault') {
+      fetchCompanyDocuments();
+    }
+  }, [user, viewMode, companyDocumentCategory]);
+
   const fetchHistory = async () => {
     try {
       setHistoryLoading(true);
@@ -166,6 +217,26 @@ export default function ModernDocuments() {
       });
     } finally {
       setHistoryLoading(false);
+    }
+  };
+
+  const fetchCompanyDocuments = async () => {
+    try {
+      setCompanyDocumentsLoading(true);
+      const [documents, stats] = await Promise.all([
+        companyDocumentService.list({ category: companyDocumentCategory }),
+        companyDocumentService.stats(),
+      ]);
+      setCompanyDocuments(documents);
+      setCompanyDocumentStats(stats);
+    } catch (error) {
+      console.error('Error fetching company documents:', error);
+      setNotification({
+        type: 'error',
+        message: 'Failed to load company document vault.',
+      });
+    } finally {
+      setCompanyDocumentsLoading(false);
     }
   };
 
@@ -295,6 +366,63 @@ export default function ModernDocuments() {
     }
   };
 
+  const handleCompanyDocumentUpload = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!companyDocumentFile) {
+      setNotification({ type: 'error', message: 'Please select a company document file.' });
+      return;
+    }
+
+    try {
+      await companyDocumentService.upload(companyDocumentFile, companyDocumentForm);
+      setShowCompanyUpload(false);
+      setCompanyDocumentForm(DEFAULT_COMPANY_DOCUMENT_FORM);
+      setCompanyDocumentFile(null);
+      await fetchCompanyDocuments();
+      setNotification({ type: 'success', message: 'Company document added to the vault.' });
+    } catch (error: any) {
+      console.error('Error uploading company document:', error);
+      setNotification({
+        type: 'error',
+        message: error.response?.data?.error?.message || error.message || 'Failed to upload company document.',
+      });
+    }
+  };
+
+  const handleVerifyCompanyDocument = async (
+    document: CompanyDocument,
+    verificationStatus: CompanyDocumentVerificationStatus
+  ) => {
+    try {
+      await companyDocumentService.verify(document.documentId, verificationStatus);
+      await fetchCompanyDocuments();
+      setNotification({ type: 'success', message: 'Company document verification updated.' });
+    } catch (error) {
+      console.error('Error verifying company document:', error);
+      setNotification({ type: 'error', message: 'Failed to update verification status.' });
+    }
+  };
+
+  const handleDownloadCompanyDocument = async (document: CompanyDocument) => {
+    try {
+      await companyDocumentService.download(document);
+    } catch (error) {
+      console.error('Error downloading company document:', error);
+      setNotification({ type: 'error', message: 'Unable to download company document.' });
+    }
+  };
+
+  const handleArchiveCompanyDocument = async (document: CompanyDocument) => {
+    try {
+      await companyDocumentService.archive(document.documentId);
+      await fetchCompanyDocuments();
+      setNotification({ type: 'success', message: 'Company document archived.' });
+    } catch (error) {
+      console.error('Error archiving company document:', error);
+      setNotification({ type: 'error', message: 'Failed to archive company document.' });
+    }
+  };
+
   return (
     <ModernLayout>
       <div className="p-6 space-y-6 max-w-7xl mx-auto">
@@ -344,14 +472,18 @@ export default function ModernDocuments() {
                 ? 'Document Templates'
                 : viewMode === 'manager'
                 ? 'Template Manager'
-                : 'Generated Documents'}
+                : viewMode === 'history'
+                ? 'Generated Documents'
+                : 'Company Document Vault'}
             </h1>
             <p className="mt-2 text-sm text-gray-600">
               {viewMode === 'templates'
                 ? 'Generate professional HR documents with automated data filling'
                 : viewMode === 'manager'
                 ? 'View, edit, and customize document templates'
-                : 'Review document generation history and download prior output'}
+                : viewMode === 'history'
+                ? 'Review document generation history and download prior output'
+                : 'Manage tenant-level HR, statutory, policy, and compliance memory'}
             </p>
           </div>
           <div className="flex w-full items-center gap-3 sm:w-auto">
@@ -389,6 +521,17 @@ export default function ModernDocuments() {
               >
                 <ClockIcon className="h-4 w-4" />
                 History
+              </button>
+              <button
+                onClick={() => setViewMode('companyVault')}
+                className={`inline-flex items-center gap-2 whitespace-nowrap px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  viewMode === 'companyVault'
+                    ? 'bg-primary-600 text-white shadow-sm'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <BuildingOfficeIcon className="h-4 w-4" />
+                Company Vault
               </button>
             </div>
           </div>
@@ -548,6 +691,240 @@ export default function ModernDocuments() {
                 </table>
               </div>
             )}
+          </div>
+        )}
+
+        {viewMode === 'companyVault' && (
+          <div className="space-y-5">
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+              {[
+                { label: 'Total records', value: companyDocumentStats?.total || 0 },
+                { label: 'Active', value: companyDocumentStats?.active || 0 },
+                { label: 'Needs review', value: companyDocumentStats?.needsReview || 0 },
+                { label: 'Expiring in 60 days', value: companyDocumentStats?.expiringSoon || 0 },
+              ].map((item) => (
+                <div key={item.label} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{item.label}</p>
+                  <p className="mt-2 text-2xl font-bold text-gray-900">{item.value}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-wrap gap-2">
+                {COMPANY_DOCUMENT_CATEGORIES.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => setCompanyDocumentCategory(category.id)}
+                    className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                      companyDocumentCategory === category.id
+                        ? 'bg-primary-600 text-white'
+                        : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setShowCompanyUpload((value) => !value)}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700"
+              >
+                <CloudArrowUpIcon className="h-4 w-4" />
+                Add company document
+              </button>
+            </div>
+
+            {showCompanyUpload && (
+              <form onSubmit={handleCompanyDocumentUpload} className="rounded-lg border border-primary-100 bg-primary-50/40 p-4 shadow-sm">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  <label className="space-y-1 lg:col-span-2">
+                    <span className="text-xs font-semibold text-gray-700">Title</span>
+                    <input
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                      value={companyDocumentForm.title}
+                      onChange={(event) => setCompanyDocumentForm({ ...companyDocumentForm, title: event.target.value })}
+                      placeholder="Certificate of Incorporation"
+                      required
+                    />
+                  </label>
+                  <label className="space-y-1">
+                    <span className="text-xs font-semibold text-gray-700">Category</span>
+                    <select
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                      value={companyDocumentForm.category}
+                      onChange={(event) =>
+                        setCompanyDocumentForm({
+                          ...companyDocumentForm,
+                          category: event.target.value as CompanyDocumentCategory,
+                        })
+                      }
+                    >
+                      {COMPANY_DOCUMENT_CATEGORIES.filter((category) => category.id !== 'all').map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="space-y-1">
+                    <span className="text-xs font-semibold text-gray-700">File</span>
+                    <input
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm"
+                      type="file"
+                      onChange={(event) => setCompanyDocumentFile(event.target.files?.[0] || null)}
+                      required
+                    />
+                  </label>
+                  <label className="space-y-1">
+                    <span className="text-xs font-semibold text-gray-700">Document no.</span>
+                    <input
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                      value={companyDocumentForm.documentNumber || ''}
+                      onChange={(event) => setCompanyDocumentForm({ ...companyDocumentForm, documentNumber: event.target.value })}
+                    />
+                  </label>
+                  <label className="space-y-1">
+                    <span className="text-xs font-semibold text-gray-700">Authority</span>
+                    <input
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                      value={companyDocumentForm.issuingAuthority || ''}
+                      onChange={(event) => setCompanyDocumentForm({ ...companyDocumentForm, issuingAuthority: event.target.value })}
+                    />
+                  </label>
+                  <label className="space-y-1">
+                    <span className="text-xs font-semibold text-gray-700">Issue date</span>
+                    <input
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                      type="date"
+                      value={companyDocumentForm.issueDate || ''}
+                      onChange={(event) => setCompanyDocumentForm({ ...companyDocumentForm, issueDate: event.target.value })}
+                    />
+                  </label>
+                  <label className="space-y-1">
+                    <span className="text-xs font-semibold text-gray-700">Expiry date</span>
+                    <input
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                      type="date"
+                      value={companyDocumentForm.expiryDate || ''}
+                      onChange={(event) => setCompanyDocumentForm({ ...companyDocumentForm, expiryDate: event.target.value })}
+                    />
+                  </label>
+                  <label className="space-y-1 md:col-span-2 lg:col-span-4">
+                    <span className="text-xs font-semibold text-gray-700">Notes</span>
+                    <textarea
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                      rows={2}
+                      value={companyDocumentForm.notes || ''}
+                      onChange={(event) => setCompanyDocumentForm({ ...companyDocumentForm, notes: event.target.value })}
+                      placeholder="Migration source, renewal owner, or verification notes"
+                    />
+                  </label>
+                </div>
+                <div className="mt-4 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowCompanyUpload(false)}
+                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-white"
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700">
+                    Save to vault
+                  </button>
+                </div>
+              </form>
+            )}
+
+            <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+              {companyDocumentsLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600"></div>
+                </div>
+              ) : companyDocuments.length === 0 ? (
+                <div className="py-12 text-center">
+                  <BuildingOfficeIcon className="mx-auto h-12 w-12 text-gray-400" />
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">No company documents yet</h3>
+                  <p className="mt-1 text-sm text-gray-500">Company HR and compliance memory will appear here.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        {['Document', 'Category', 'Status', 'Expiry', 'Verification', 'Actions'].map((heading) => (
+                          <th key={heading} className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                            {heading}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {companyDocuments.map((document) => (
+                        <tr key={document.documentId} className="hover:bg-gray-50">
+                          <td className="px-6 py-4">
+                            <div className="text-sm font-semibold text-gray-900">{document.title}</div>
+                            <div className="text-xs text-gray-500">{document.originalFileName}</div>
+                            {document.documentNumber && (
+                              <div className="mt-1 text-xs text-gray-500">No. {document.documentNumber}</div>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-700">
+                            {COMPANY_DOCUMENT_CATEGORIES.find((category) => category.id === document.category)?.name || document.category}
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="inline-flex rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold capitalize text-blue-700">
+                              {document.status.replace('_', ' ')}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-700">
+                            {document.expiryDate ? new Date(document.expiryDate).toLocaleDateString() : 'No expiry'}
+                          </td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold capitalize ${
+                                document.verificationStatus === 'verified'
+                                  ? 'bg-green-50 text-green-700'
+                                  : document.verificationStatus === 'rejected'
+                                  ? 'bg-red-50 text-red-700'
+                                  : 'bg-amber-50 text-amber-700'
+                              }`}
+                            >
+                              {document.verificationStatus}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleDownloadCompanyDocument(document)}
+                                className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
+                                title="Download"
+                              >
+                                <ArrowDownTrayIcon className="h-5 w-5" />
+                              </button>
+                              <button
+                                onClick={() => handleVerifyCompanyDocument(document, 'verified')}
+                                className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg"
+                                title="Mark verified"
+                              >
+                                <CheckCircleIcon className="h-5 w-5" />
+                              </button>
+                              <button
+                                onClick={() => handleArchiveCompanyDocument(document)}
+                                className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                                title="Archive"
+                              >
+                                <TrashIcon className="h-5 w-5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
