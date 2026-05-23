@@ -97,6 +97,17 @@ router.get(
 );
 
 /**
+ * @route   GET /api/reports/memory-readiness
+ * @desc    Get tenant memory readiness report
+ * @access  Private (HR)
+ */
+router.get(
+  '/memory-readiness',
+  authorize(UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN),
+  reportingController.getMemoryReadiness.bind(reportingController)
+);
+
+/**
  * @route   GET /api/reports/saved
  * @desc    Get all saved reports
  * @access  Private (HR, Manager)

@@ -71,6 +71,7 @@ Validation:
 - Unique official email.
 - Manager references resolve.
 - Required fields complete.
+- Run the Memory Readiness report after import to capture missing employee master fields.
 
 ### Wave 3: User Access and Roles
 
@@ -98,6 +99,7 @@ Validation:
 - Access level is correct.
 - Employee-linked documents map to the right employee.
 - Company documents do not appear as employee personal documents.
+- Run the Memory Readiness report after document import to capture missing required employee documents and company document category gaps.
 
 Implementation note:
 
@@ -118,6 +120,7 @@ Validation:
 - Net amount matches source.
 - Payslip attachment maps to employee/month.
 - No statutory payroll calculations are created.
+- Run the Memory Readiness report after salary structure and payslip import to capture employee-level compensation memory gaps.
 
 ### Wave 6: Lifecycle History
 

@@ -121,6 +121,9 @@ Primary responsibilities:
 
 - Admin sees organization-level readiness dashboard.
 - HR sees employee/document/compensation coverage.
+- HR can run the Memory Readiness report from Reports & Analytics.
+- Memory Readiness report shows employee master gaps, missing required documents, recommended document gaps, company document coverage, salary structure status, and payslip status.
+- Memory Readiness report can be exported to CSV for implementation evidence.
 - Manager sees team workload.
 - Employee sees self-service dashboard.
 - Reports respect tenant and role boundaries.

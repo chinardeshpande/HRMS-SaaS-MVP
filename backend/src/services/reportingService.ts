@@ -9,6 +9,20 @@ import { ProbationCase } from '../models/ProbationCase';
 import { PerformanceReview } from '../models/PerformanceReview';
 import { ExitCase } from '../models/ExitCase';
 import { OnboardingDocument } from '../models/OnboardingDocument';
+import {
+  CompanyDocument,
+  CompanyDocumentCategory,
+  CompanyDocumentStatus,
+  CompanyDocumentVerificationStatus,
+} from '../models/CompanyDocument';
+import {
+  EmployeeDocument,
+  EmployeeDocumentCategory,
+  EmployeeDocumentStatus,
+  EmployeeDocumentVerificationStatus,
+} from '../models/EmployeeDocument';
+import { SalaryStructure, SalaryStructureStatus } from '../models/SalaryStructure';
+import { Payslip } from '../models/Payslip';
 import { SavedReport, ReportType } from '../models/SavedReport';
 import logger from '../utils/logger';
 
@@ -110,6 +124,46 @@ export interface MissingDocumentsData {
   criticality: 'high' | 'medium' | 'low';
 }
 
+export interface MemoryReadinessData {
+  employeeId: string;
+  employeeName: string;
+  employeeCode: string;
+  department: string;
+  designation: string;
+  missingMasterFields: string;
+  missingRequiredDocuments: string;
+  recommendedDocumentGaps: string;
+  unverifiedDocuments: number;
+  salaryStructureStatus: 'present' | 'missing';
+  payslipStatus: 'present' | 'missing';
+  readinessStatus: 'complete' | 'needs_review' | 'critical';
+}
+
+export interface MemoryReadinessReport {
+  summary: {
+    totalEmployees: number;
+    readinessScore: number;
+    completeEmployees: number;
+    needsReviewEmployees: number;
+    criticalEmployees: number;
+    employeesWithMissingMasterData: number;
+    employeesMissingRequiredDocuments: number;
+    unverifiedEmployeeDocuments: number;
+    companyDocuments: number;
+    unverifiedCompanyDocuments: number;
+    expiringCompanyDocuments60Days: number;
+    employeesWithoutSalaryStructure: number;
+    employeesWithoutPayslip: number;
+  };
+  results: MemoryReadinessData[];
+  companyDocumentFindings: Array<{
+    category: string;
+    status: 'present' | 'missing';
+    activeDocuments: number;
+    verifiedDocuments: number;
+  }>;
+}
+
 export class ReportingService {
   private employeeRepo: Repository<Employee>;
   private attendanceRepo: Repository<Attendance>;
@@ -120,6 +174,10 @@ export class ReportingService {
   private performanceReviewRepo: Repository<PerformanceReview>;
   private exitRepo: Repository<ExitCase>;
   private documentRepo: Repository<OnboardingDocument>;
+  private companyDocumentRepo: Repository<CompanyDocument>;
+  private employeeDocumentRepo: Repository<EmployeeDocument>;
+  private salaryStructureRepo: Repository<SalaryStructure>;
+  private payslipRepo: Repository<Payslip>;
   private savedReportRepo: Repository<SavedReport>;
 
   constructor() {
@@ -132,6 +190,10 @@ export class ReportingService {
     this.performanceReviewRepo = AppDataSource.getRepository(PerformanceReview);
     this.exitRepo = AppDataSource.getRepository(ExitCase);
     this.documentRepo = AppDataSource.getRepository(OnboardingDocument);
+    this.companyDocumentRepo = AppDataSource.getRepository(CompanyDocument);
+    this.employeeDocumentRepo = AppDataSource.getRepository(EmployeeDocument);
+    this.salaryStructureRepo = AppDataSource.getRepository(SalaryStructure);
+    this.payslipRepo = AppDataSource.getRepository(Payslip);
     this.savedReportRepo = AppDataSource.getRepository(SavedReport);
   }
 
@@ -540,6 +602,178 @@ export class ReportingService {
   }
 
   /**
+   * Report 9: Memory Readiness Report
+   *
+   * Implementation-grade readiness view for tenant memory: employee master data,
+   * employee documents, company HR/compliance records, and compensation history.
+   */
+  async getMemoryReadinessReport(tenantId: string): Promise<MemoryReadinessReport> {
+    const requiredEmployeeDocuments = [
+      EmployeeDocumentCategory.IDENTITY,
+      EmployeeDocumentCategory.EMPLOYMENT_LETTER,
+    ];
+
+    const recommendedEmployeeDocuments = [
+      EmployeeDocumentCategory.ADDRESS_PROOF,
+      EmployeeDocumentCategory.EDUCATION,
+      EmployeeDocumentCategory.COMPENSATION,
+    ];
+
+    const requiredCompanyDocuments = [
+      CompanyDocumentCategory.INCORPORATION_IDENTITY,
+      CompanyDocumentCategory.TAX_REGISTRATION,
+      CompanyDocumentCategory.LABOR_HR_COMPLIANCE,
+      CompanyDocumentCategory.HR_POLICY,
+    ];
+
+    const employees = await this.employeeRepo.find({
+      where: { tenantId },
+      relations: ['department', 'designation'],
+      order: { employeeCode: 'ASC' },
+    });
+
+    const [employeeDocuments, companyDocuments, salaryStructures, payslips] = await Promise.all([
+      this.employeeDocumentRepo.find({
+        where: { tenantId, status: EmployeeDocumentStatus.ACTIVE },
+      }),
+      this.companyDocumentRepo.find({
+        where: { tenantId },
+      }),
+      this.salaryStructureRepo.find({
+        where: {
+          tenantId,
+          status: In([SalaryStructureStatus.ACTIVE, SalaryStructureStatus.SUPERSEDED]),
+        },
+      }),
+      this.payslipRepo.find({
+        where: { tenantId },
+      }),
+    ]);
+
+    const documentsByEmployee = new Map<string, EmployeeDocument[]>();
+    for (const document of employeeDocuments) {
+      const existing = documentsByEmployee.get(document.employeeId) || [];
+      existing.push(document);
+      documentsByEmployee.set(document.employeeId, existing);
+    }
+
+    const employeesWithSalaryStructure = new Set(salaryStructures.map((structure) => structure.employeeId));
+    const employeesWithPayslip = new Set(payslips.map((payslip) => payslip.employeeId));
+
+    const companyActiveDocuments = companyDocuments.filter(
+      (document) => document.status !== CompanyDocumentStatus.ARCHIVED
+    );
+    const companyDocumentFindings = requiredCompanyDocuments.map((category) => {
+      const matchingDocuments = companyActiveDocuments.filter((document) => document.category === category);
+      const verifiedDocuments = matchingDocuments.filter(
+        (document) => document.verificationStatus === CompanyDocumentVerificationStatus.VERIFIED
+      );
+
+      return {
+        category,
+        status: matchingDocuments.length > 0 ? 'present' as const : 'missing' as const,
+        activeDocuments: matchingDocuments.length,
+        verifiedDocuments: verifiedDocuments.length,
+      };
+    });
+
+    const today = new Date();
+    const sixtyDaysFromNow = new Date(today);
+    sixtyDaysFromNow.setDate(today.getDate() + 60);
+
+    const results: MemoryReadinessData[] = employees.map((employee) => {
+      const employeeDocs = documentsByEmployee.get(employee.employeeId) || [];
+      const uploadedCategories = new Set(employeeDocs.map((document) => document.category));
+      const missingMasterFields = this.getEmployeeMissingMasterFields(employee);
+      const missingRequiredDocuments = requiredEmployeeDocuments.filter(
+        (category) => !uploadedCategories.has(category)
+      );
+      const recommendedDocumentGaps = recommendedEmployeeDocuments.filter(
+        (category) => !uploadedCategories.has(category)
+      );
+      const unverifiedDocuments = employeeDocs.filter(
+        (document) => document.verificationStatus !== EmployeeDocumentVerificationStatus.VERIFIED
+      ).length;
+
+      const hasSalaryStructure = employeesWithSalaryStructure.has(employee.employeeId);
+      const hasPayslip = employeesWithPayslip.has(employee.employeeId);
+
+      let readinessStatus: MemoryReadinessData['readinessStatus'] = 'complete';
+      if (
+        missingMasterFields.length > 0 ||
+        missingRequiredDocuments.length > 0 ||
+        !hasSalaryStructure ||
+        !hasPayslip
+      ) {
+        readinessStatus = missingRequiredDocuments.length > 0 || missingMasterFields.length >= 3
+          ? 'critical'
+          : 'needs_review';
+      } else if (recommendedDocumentGaps.length > 0 || unverifiedDocuments > 0) {
+        readinessStatus = 'needs_review';
+      }
+
+      return {
+        employeeId: employee.employeeId,
+        employeeName: employee.fullName,
+        employeeCode: employee.employeeCode,
+        department: employee.department?.name || 'Unassigned',
+        designation: employee.designation?.name || 'Unassigned',
+        missingMasterFields: missingMasterFields.join(', ') || 'None',
+        missingRequiredDocuments: missingRequiredDocuments.join(', ') || 'None',
+        recommendedDocumentGaps: recommendedDocumentGaps.join(', ') || 'None',
+        unverifiedDocuments,
+        salaryStructureStatus: hasSalaryStructure ? 'present' : 'missing',
+        payslipStatus: hasPayslip ? 'present' : 'missing',
+        readinessStatus,
+      };
+    });
+
+    const completeEmployees = results.filter((row) => row.readinessStatus === 'complete').length;
+    const needsReviewEmployees = results.filter((row) => row.readinessStatus === 'needs_review').length;
+    const criticalEmployees = results.filter((row) => row.readinessStatus === 'critical').length;
+    const totalReadinessChecks = employees.length * 4 + requiredCompanyDocuments.length;
+    const completedReadinessChecks =
+      results.reduce((sum, row) => {
+        return sum +
+          (row.missingMasterFields === 'None' ? 1 : 0) +
+          (row.missingRequiredDocuments === 'None' ? 1 : 0) +
+          (row.salaryStructureStatus === 'present' ? 1 : 0) +
+          (row.payslipStatus === 'present' ? 1 : 0);
+      }, 0) +
+      companyDocumentFindings.filter((finding) => finding.status === 'present').length;
+
+    return {
+      summary: {
+        totalEmployees: employees.length,
+        readinessScore: totalReadinessChecks > 0
+          ? Math.round((completedReadinessChecks / totalReadinessChecks) * 100)
+          : 0,
+        completeEmployees,
+        needsReviewEmployees,
+        criticalEmployees,
+        employeesWithMissingMasterData: results.filter((row) => row.missingMasterFields !== 'None').length,
+        employeesMissingRequiredDocuments: results.filter((row) => row.missingRequiredDocuments !== 'None').length,
+        unverifiedEmployeeDocuments: employeeDocuments.filter(
+          (document) => document.verificationStatus !== EmployeeDocumentVerificationStatus.VERIFIED
+        ).length,
+        companyDocuments: companyActiveDocuments.length,
+        unverifiedCompanyDocuments: companyActiveDocuments.filter(
+          (document) => document.verificationStatus !== CompanyDocumentVerificationStatus.VERIFIED
+        ).length,
+        expiringCompanyDocuments60Days: companyActiveDocuments.filter((document) => {
+          if (!document.expiryDate) return false;
+          const expiryDate = new Date(document.expiryDate);
+          return expiryDate >= today && expiryDate <= sixtyDaysFromNow;
+        }).length,
+        employeesWithoutSalaryStructure: results.filter((row) => row.salaryStructureStatus === 'missing').length,
+        employeesWithoutPayslip: results.filter((row) => row.payslipStatus === 'missing').length,
+      },
+      results,
+      companyDocumentFindings,
+    };
+  }
+
+  /**
    * Helper: Get headcount at a specific date
    */
   private async getHeadcountAtDate(tenantId: string, date: Date): Promise<number> {
@@ -555,6 +789,23 @@ export class ReportingService {
       .getCount();
 
     return count;
+  }
+
+  private getEmployeeMissingMasterFields(employee: Employee): string[] {
+    const missingFields: string[] = [];
+
+    if (!employee.employeeCode) missingFields.push('employeeCode');
+    if (!employee.firstName) missingFields.push('firstName');
+    if (!employee.lastName) missingFields.push('lastName');
+    if (!employee.email) missingFields.push('email');
+    if (!employee.dateOfJoining) missingFields.push('dateOfJoining');
+    if (!employee.departmentId) missingFields.push('department');
+    if (!employee.designationId) missingFields.push('designation');
+    if (!employee.employmentType) missingFields.push('employmentType');
+    if (!employee.workLocation) missingFields.push('workLocation');
+    if (!employee.managerId) missingFields.push('reportingManager');
+
+    return missingFields;
   }
 
   /**

@@ -93,6 +93,14 @@ const REPORT_CARDS: ReportCard[] = [
     endpoint: '/reports/missing-documents',
     color: 'pink',
   },
+  {
+    id: 'memory-readiness',
+    title: 'Memory Readiness',
+    description: 'Employee, document, company record, and compensation coverage for implementation readiness',
+    icon: DocumentTextIcon,
+    endpoint: '/reports/memory-readiness',
+    color: 'cyan',
+  },
 ];
 
 export default function ModernReports() {
@@ -118,6 +126,7 @@ export default function ModernReports() {
       red: { bg: 'bg-red-50', text: 'text-red-700', hover: 'hover:bg-red-100', border: 'border-red-200' },
       yellow: { bg: 'bg-yellow-50', text: 'text-yellow-700', hover: 'hover:bg-yellow-100', border: 'border-yellow-200' },
       pink: { bg: 'bg-pink-50', text: 'text-pink-700', hover: 'hover:bg-pink-100', border: 'border-pink-200' },
+      cyan: { bg: 'bg-cyan-50', text: 'text-cyan-700', hover: 'hover:bg-cyan-100', border: 'border-cyan-200' },
     };
     return colors[color] || colors.blue;
   };

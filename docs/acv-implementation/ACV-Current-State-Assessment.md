@@ -126,15 +126,15 @@ Audit logging is not yet systematic across employee master changes, compensation
 
 - `reportingRoutes.ts`, `analyticsRoutes.ts`, saved reports, dashboard pages, and analytics models exist.
 - Several visual QA reports and production-readiness reports already exist.
+- A Memory Readiness report now exists at `/api/reports/memory-readiness` and appears in `Reports & Analytics`.
+- The report combines employee master completeness, durable employee document categories, company document vault coverage, salary structure presence, and payslip presence.
+- It produces a tenant-level readiness score, employee-level readiness rows, and company document category findings.
 
 ### Current Gap
 
-ACV needs implementation-grade dashboards:
+The first implementation-readiness report is in place. ACV still needs broader operational dashboards:
 
 - tenant readiness
-- employee data completeness
-- document completeness
-- compensation and payslip coverage
 - lifecycle health
 - HR operations status
 - leave/attendance operational health

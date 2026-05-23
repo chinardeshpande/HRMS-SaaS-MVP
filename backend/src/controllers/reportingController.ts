@@ -354,6 +354,33 @@ export class ReportingController {
   }
 
   /**
+   * GET /api/reports/memory-readiness
+   */
+  async getMemoryReadiness(req: Request, res: Response) {
+    try {
+      const { tenantId } = req.user!;
+      const data = await reportingService.getMemoryReadinessReport(tenantId);
+
+      res.json({
+        success: true,
+        data: {
+          report: 'Memory Readiness Report',
+          summary: data.summary,
+          results: data.results,
+          companyDocumentFindings: data.companyDocumentFindings,
+          totalRecords: data.results.length,
+        },
+      });
+    } catch (error: any) {
+      logger.error('Error fetching memory readiness report:', error);
+      res.status(500).json({
+        success: false,
+        error: { message: error.message || 'Failed to fetch memory readiness report' },
+      });
+    }
+  }
+
+  /**
    * GET /api/reports/saved
    */
   async getSavedReports(req: Request, res: Response) {
