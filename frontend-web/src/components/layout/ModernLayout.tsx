@@ -365,13 +365,25 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
             </div>
             <div className="ml-2 flex shrink-0 items-center md:ml-6 space-x-2 sm:space-x-3">
               <div
-                className="flex max-w-[150px] items-center gap-2 rounded-full border bg-white px-2 py-1.5 text-xs font-semibold text-gray-700 shadow-sm sm:max-w-[220px] sm:px-3"
+                className="flex max-w-[180px] items-center gap-2.5 rounded-full border bg-white py-1 pl-1 pr-3 text-xs font-semibold text-gray-700 shadow-sm sm:max-w-[240px] sm:pr-4"
                 style={{ borderColor: `${tenantBrand.primaryColor}33` }}
                 title={tenantBrand.companyName}
               >
-                {tenantBrand.logoUrl && (
-                  <img src={tenantBrand.logoUrl} alt="" className="h-5 w-5 object-contain" />
-                )}
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-100 bg-white shadow-sm sm:h-10 sm:w-10">
+                  {tenantBrand.logoUrl ? (
+                    <img src={tenantBrand.logoUrl} alt={`${tenantBrand.companyName} logo`} className="h-7 w-7 object-contain sm:h-8 sm:w-8" />
+                  ) : (
+                    <span className="text-xs font-bold text-primary-700">
+                      {tenantBrand.companyName
+                        .split(' ')
+                        .filter(Boolean)
+                        .slice(0, 2)
+                        .map((word) => word.charAt(0))
+                        .join('')
+                        .toUpperCase() || 'AH'}
+                    </span>
+                  )}
+                </span>
                 <span className="truncate">{tenantBrand.companyName}</span>
               </div>
               {isDemoMode && (
