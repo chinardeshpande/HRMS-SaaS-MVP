@@ -1,0 +1,270 @@
+{
+  "runDate": "2026-05-23",
+  "runId": "ACV-MEM-2026-05-23-1779558265199",
+  "target": "http://localhost:5186",
+  "api": "http://localhost:5000/api/v1",
+  "results": [
+    {
+      "id": "AUTH-01",
+      "useCase": "ACV admin login",
+      "role": "admin",
+      "expected": "Admin can authenticate against local ACV tenant",
+      "actual": "anupama.bhat@acvsolutions.in / system_admin",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "AUTH-02",
+      "useCase": "Unauthenticated request protection",
+      "role": "public",
+      "expected": "Memory readiness rejects missing token",
+      "actual": "HTTP 401",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "REP-01",
+      "useCase": "Memory readiness report",
+      "role": "admin",
+      "expected": "Admin can run readiness report with summary and employee rows",
+      "actual": "score=25, rows=1",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "REP-02",
+      "useCase": "Missing documents report",
+      "role": "admin",
+      "expected": "Report uses durable employee document vault and returns tabular rows",
+      "actual": "rows=1",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "REP-03",
+      "useCase": "Employee report access boundary",
+      "role": "employee",
+      "expected": "Employee cannot run implementation readiness report",
+      "actual": "HTTP 403",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "REP-04",
+      "useCase": "Manager report access boundary",
+      "role": "manager",
+      "expected": "Manager cannot run implementation readiness report",
+      "actual": "HTTP 403",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "CDOC-01",
+      "useCase": "Company document invalid upload",
+      "role": "admin",
+      "expected": "Company vault rejects upload without file",
+      "actual": "HTTP 400",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "CDOC-02",
+      "useCase": "Company document upload",
+      "role": "admin",
+      "expected": "Admin uploads company HR policy document with metadata",
+      "actual": "documentId=40d4f249-f7e9-4a99-a624-56a63650cf8b",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "CDOC-03",
+      "useCase": "Company document search and filter",
+      "role": "admin",
+      "expected": "Uploaded company document can be filtered by category/search",
+      "actual": "found=true",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "CDOC-04",
+      "useCase": "Company document verify/download/archive",
+      "role": "admin",
+      "expected": "Verification, download, and archive paths work",
+      "actual": "verified=verified, bytes=42, status=archived",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "CDOC-05",
+      "useCase": "Company document role boundary",
+      "role": "employee",
+      "expected": "Employee cannot access company document vault",
+      "actual": "HTTP 403",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "EDOC-01",
+      "useCase": "Employee document invalid employee",
+      "role": "admin",
+      "expected": "Upload against non-existent employee fails safely",
+      "actual": "HTTP 404",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "EDOC-02",
+      "useCase": "Employee document upload",
+      "role": "admin",
+      "expected": "HR uploads employee identity document with metadata",
+      "actual": "documentId=a4ae18a1-5a01-4ead-a124-9bb93c90063d",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "EDOC-03",
+      "useCase": "Employee document self-service read",
+      "role": "employee",
+      "expected": "Employee can read own employee documents",
+      "actual": "found=true",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "EDOC-04",
+      "useCase": "Employee document cross-employee boundary",
+      "role": "employee",
+      "expected": "Employee cannot read another employee document area",
+      "actual": "HTTP 403",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "EDOC-05",
+      "useCase": "Employee document verify/download/archive",
+      "role": "admin/employee",
+      "expected": "Verify, employee download, and archive paths work",
+      "actual": "verified=verified, bytes=42, status=archived",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "EDOC-06",
+      "useCase": "Employee document manager write boundary",
+      "role": "manager",
+      "expected": "Manager cannot upload employee document",
+      "actual": "HTTP 403",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "STRESS-01",
+      "useCase": "Memory readiness repeated load",
+      "role": "admin",
+      "expected": "Readiness endpoint handles repeated concurrent reads",
+      "actual": "requests=25, durationMs=163",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "UI-01",
+      "useCase": "Reports navigation",
+      "role": "admin",
+      "expected": "Memory Readiness card is visible",
+      "actual": "Card visible on /reports",
+      "status": "passed",
+      "evidence": "/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/acv-memory-foundation-visual-2026-05-23/screenshots/desktop-reports-memory-card.png",
+      "notes": ""
+    },
+    {
+      "id": "UI-02",
+      "useCase": "Memory readiness visual report",
+      "role": "admin",
+      "expected": "Summary and table render after clicking card",
+      "actual": "Report rendered",
+      "status": "passed",
+      "evidence": "/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/acv-memory-foundation-visual-2026-05-23/screenshots/desktop-memory-readiness-report.png",
+      "notes": ""
+    },
+    {
+      "id": "UI-03",
+      "useCase": "Memory readiness CSV export",
+      "role": "admin",
+      "expected": "Export CSV creates downloadable evidence file",
+      "actual": "Memory_Readiness_Report_2026-05-23.csv",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "UI-04",
+      "useCase": "Back navigation",
+      "role": "admin",
+      "expected": "Back to Reports returns to report card grid",
+      "actual": "Report card grid visible",
+      "status": "passed",
+      "evidence": "",
+      "notes": ""
+    },
+    {
+      "id": "UI-05",
+      "useCase": "Mobile report navigation",
+      "role": "admin",
+      "expected": "Memory Readiness is reachable on mobile without major horizontal overflow",
+      "actual": "overflowPx=0",
+      "status": "passed",
+      "evidence": "/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/acv-memory-foundation-visual-2026-05-23/screenshots/mobile-reports-memory-card.png",
+      "notes": ""
+    },
+    {
+      "id": "UI-06",
+      "useCase": "Direct route permission check",
+      "role": "employee",
+      "expected": "Employee direct route to /reports is denied",
+      "actual": "Access denied page rendered",
+      "status": "passed",
+      "evidence": "/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/acv-memory-foundation-visual-2026-05-23/screenshots/employee-reports-denied.png",
+      "notes": ""
+    }
+  ],
+  "screenshots": [
+    {
+      "id": "UI-01",
+      "path": "/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/acv-memory-foundation-visual-2026-05-23/screenshots/desktop-reports-memory-card.png",
+      "caption": "Reports & Analytics shows Memory Readiness card."
+    },
+    {
+      "id": "UI-02",
+      "path": "/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/acv-memory-foundation-visual-2026-05-23/screenshots/desktop-memory-readiness-report.png",
+      "caption": "Memory Readiness report with summary and employee rows."
+    },
+    {
+      "id": "UI-05",
+      "path": "/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/acv-memory-foundation-visual-2026-05-23/screenshots/mobile-reports-memory-card.png",
+      "caption": "Mobile reports view with Memory Readiness card."
+    },
+    {
+      "id": "UI-06",
+      "path": "/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/acv-memory-foundation-visual-2026-05-23/screenshots/employee-reports-denied.png",
+      "caption": "Employee direct-route access to reports is denied."
+    }
+  ]
+}
