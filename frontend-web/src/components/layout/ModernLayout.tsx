@@ -1,8 +1,9 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import DemoJourneyPanel from '../demo/DemoJourneyPanel';
 import { filterNavItemsForRole, navigationItems, NavItemConfig } from '../../config/accessControl';
+import settingsService, { OrganizationSettings } from '../../services/settingsService';
 import {
   ArrowRightStartOnRectangleIcon,
   Bars3Icon,
@@ -16,6 +17,9 @@ interface ModernLayoutProps {
   children: ReactNode;
 }
 
+const DEFAULT_PLATFORM_LOGO = '/images/AuroraHR_logo.svg?v=20260514b';
+const DEFAULT_PLATFORM_NAME = 'AuroraHR';
+
 export const ModernLayout = ({ children }: ModernLayoutProps) => {
   const { user, logout, switchToDemo, exitDemo, isDemoMode } = useAuth();
   const navigate = useNavigate();
@@ -23,15 +27,74 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const [demoSwitching, setDemoSwitching] = useState(false);
+  const [organizationSettings, setOrganizationSettings] = useState<OrganizationSettings | null>(null);
 
   const navigation = filterNavItemsForRole(navigationItems, user?.role);
   const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
   const assetBaseUrl = apiBaseUrl.replace('/api/v1', '');
+  const resolveAssetUrl = (value?: string | null) => {
+    if (!value) return '';
+    if (value.startsWith('http') || value.startsWith('data:')) return value;
+    if (value.startsWith('/images')) return value;
+    if (value.startsWith('/')) return `${assetBaseUrl}${value}`;
+    return `${assetBaseUrl}/${value}`;
+  };
+
   const profilePhotoUrl = user?.profilePhotoUrl
     ? user.profilePhotoUrl.startsWith('http')
       ? user.profilePhotoUrl
       : `${assetBaseUrl}${user.profilePhotoUrl}`
     : '';
+  const tenantBrand = useMemo(() => {
+    const companyName =
+      organizationSettings?.companyName ||
+      user?.tenant?.companyName ||
+      DEFAULT_PLATFORM_NAME;
+    const logoUrl = resolveAssetUrl(
+      organizationSettings?.logo ||
+      organizationSettings?.branding?.logoUrl ||
+      user?.tenant?.logoUrl
+    );
+    const primaryColor =
+      organizationSettings?.branding?.primaryColor ||
+      user?.tenant?.primaryColor ||
+      '#2563eb';
+
+    return {
+      companyName,
+      logoUrl,
+      primaryColor,
+    };
+  }, [assetBaseUrl, organizationSettings, user?.tenant]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadTenantIdentity = async () => {
+      if (!user?.tenantId) {
+        setOrganizationSettings(null);
+        return;
+      }
+
+      try {
+        const settings = await settingsService.getOrganizationSettings();
+        if (!cancelled) {
+          setOrganizationSettings(settings);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setOrganizationSettings(null);
+        }
+        console.warn('Tenant organization settings unavailable; using platform defaults.', error);
+      }
+    };
+
+    loadTenantIdentity();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.tenantId]);
 
   const handleLogout = () => {
     logout();
@@ -63,6 +126,44 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
   const isActive = (href: string) => location.pathname === href;
   const isParentActive = (item: NavItemConfig) =>
     item.children?.some((child) => isActive(child.href)) || isActive(item.href);
+  const renderTenantBrand = (variant: 'desktop' | 'mobile' = 'desktop') => {
+    const compact = variant === 'mobile';
+
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          navigate('/dashboard');
+          if (compact) setSidebarOpen(false);
+        }}
+        className={`w-full rounded-xl border border-gray-200 bg-white text-left shadow-sm transition hover:border-primary-200 hover:shadow ${
+          compact ? 'px-3 py-3' : 'px-4 py-3'
+        }`}
+      >
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-gray-200">
+            {tenantBrand.logoUrl ? (
+              <img src={tenantBrand.logoUrl} alt={`${tenantBrand.companyName} logo`} className="h-10 w-10 object-contain" />
+            ) : (
+              <span className="text-sm font-bold text-primary-700">
+                {tenantBrand.companyName
+                  .split(' ')
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .map((word) => word.charAt(0))
+                  .join('')
+                  .toUpperCase() || 'AH'}
+              </span>
+            )}
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-gray-900">{tenantBrand.companyName}</p>
+            <p className="truncate text-xs text-gray-500">AuroraHR workspace</p>
+          </div>
+        </div>
+      </button>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -70,13 +171,16 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
           {/* Logo */}
-          <div className="flex items-center flex-shrink-0 px-6">
-            <img
-              src="/images/AuroraHR_logo.svg?v=20260514b"
-              alt="AuroraHR - Illuminate The Journey | Grow Every Person"
-              className="h-10 w-auto cursor-pointer"
-              onClick={() => navigate('/dashboard')}
-            />
+          <div className="flex flex-col gap-3 px-5">
+            {renderTenantBrand('desktop')}
+            <div className="flex items-center gap-2 px-1">
+              <img
+                src={DEFAULT_PLATFORM_LOGO}
+                alt="AuroraHR"
+                className="h-6 w-auto"
+              />
+              <span className="text-xs font-medium text-gray-400">Platform</span>
+            </div>
           </div>
 
           {/* Navigation */}
@@ -221,12 +325,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
               {/* Mobile menu content - reuse desktop sidebar content */}
               <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
                 <div className="flex items-center flex-shrink-0 px-4">
-                  <img
-                    src="/images/AuroraHR_logo.svg?v=20260514b"
-                    alt="AuroraHR - Illuminate The Journey | Grow Every Person"
-                    className="h-10 w-auto cursor-pointer"
-                    onClick={() => { navigate('/dashboard'); setSidebarOpen(false); }}
-                  />
+                  {renderTenantBrand('mobile')}
                 </div>
                 <nav className="mt-5 px-2 space-y-1">
                   <button
@@ -301,6 +400,16 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
               </form>
             </div>
             <div className="ml-2 flex shrink-0 items-center md:ml-6 space-x-2 sm:space-x-3">
+              <div
+                className="hidden max-w-[220px] items-center gap-2 rounded-full border bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm sm:flex"
+                style={{ borderColor: `${tenantBrand.primaryColor}33` }}
+                title={tenantBrand.companyName}
+              >
+                {tenantBrand.logoUrl && (
+                  <img src={tenantBrand.logoUrl} alt="" className="h-5 w-5 object-contain" />
+                )}
+                <span className="truncate">{tenantBrand.companyName}</span>
+              </div>
               {isDemoMode && (
                 <div className="hidden sm:flex items-center rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">
                   Demo Mode

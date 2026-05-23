@@ -33,6 +33,8 @@ export interface User {
   tenant?: {
     companyName: string;
     subdomain?: string;
+    logoUrl?: string;
+    primaryColor?: string;
   };
   isActive: boolean;
   lastLogin?: Date;

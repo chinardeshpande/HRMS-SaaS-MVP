@@ -16,6 +16,14 @@ const serializeUser = (user: User) => ({
   role: user.role,
   employeeId: user.employeeId,
   profilePhotoUrl: user.profilePhotoUrl,
+  tenant: user.tenant
+    ? {
+        companyName: user.tenant.companyName,
+        subdomain: user.tenant.subdomain,
+        logoUrl: user.tenant.logoUrl,
+        primaryColor: user.tenant.primaryColor,
+      }
+    : undefined,
   employee: user.employee
     ? {
         employeeId: user.employee.employeeId,
@@ -79,7 +87,7 @@ export const login = async (req: Request, res: Response) => {
     const userRepository = AppDataSource.getRepository(User);
     const matchingUsers = await userRepository.find({
       where: { email: email.toLowerCase() },
-      relations: ['employee', 'employee.department', 'employee.designation'],
+      relations: ['tenant', 'employee', 'employee.department', 'employee.designation'],
     });
     const user = matchingUsers[0];
 
@@ -207,7 +215,7 @@ export const getCurrentUser = async (req: Request, res: Response) => {
     const userRepository = AppDataSource.getRepository(User);
     const user = await userRepository.findOne({
       where: { userId },
-      relations: ['employee', 'employee.department', 'employee.designation'],
+      relations: ['tenant', 'employee', 'employee.department', 'employee.designation'],
     });
 
     if (!user) {

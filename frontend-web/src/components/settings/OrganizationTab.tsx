@@ -69,6 +69,16 @@ export default function OrganizationTab() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleBrandingChange = (field: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      branding: {
+        ...(prev.branding || {}),
+        [field]: value,
+      },
+    }));
+  };
+
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -334,7 +344,7 @@ export default function OrganizationTab() {
                     <img
                       src={formData.logo}
                       alt="Logo"
-                      className="h-20 w-20 rounded-lg object-cover border border-gray-300 shadow-sm"
+                      className="h-20 w-20 rounded-lg object-contain border border-gray-300 bg-white p-2 shadow-sm"
                     />
                   ) : (
                     <div className="h-20 w-20 rounded-lg bg-gray-100 flex items-center justify-center border border-gray-300">
@@ -367,6 +377,73 @@ export default function OrganizationTab() {
                       </p>
                     </div>
                   )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Primary Brand Color</label>
+                  {isEditing ? (
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={formData.branding?.primaryColor || '#2563eb'}
+                        onChange={(e) => handleBrandingChange('primaryColor', e.target.value)}
+                        className="h-10 w-12 rounded border border-gray-300 bg-white"
+                      />
+                      <input
+                        type="text"
+                        value={formData.branding?.primaryColor || ''}
+                        onChange={(e) => handleBrandingChange('primaryColor', e.target.value)}
+                        className="input w-full"
+                        placeholder="#2563eb"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5">
+                      <span
+                        className="h-5 w-5 rounded-full border border-gray-300"
+                        style={{ backgroundColor: formData.branding?.primaryColor || '#2563eb' }}
+                      />
+                      <span className="text-base text-gray-900">{formData.branding?.primaryColor || 'Default AuroraHR blue'}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Accent Brand Color</label>
+                  {isEditing ? (
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={formData.branding?.accentColor || '#0ea5e9'}
+                        onChange={(e) => handleBrandingChange('accentColor', e.target.value)}
+                        className="h-10 w-12 rounded border border-gray-300 bg-white"
+                      />
+                      <input
+                        type="text"
+                        value={formData.branding?.accentColor || ''}
+                        onChange={(e) => handleBrandingChange('accentColor', e.target.value)}
+                        className="input w-full"
+                        placeholder="#0ea5e9"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5">
+                      <span
+                        className="h-5 w-5 rounded-full border border-gray-300"
+                        style={{ backgroundColor: formData.branding?.accentColor || '#0ea5e9' }}
+                      />
+                      <span className="text-base text-gray-900">{formData.branding?.accentColor || 'Default accent'}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="rounded-lg border border-primary-100 bg-primary-50 px-4 py-3">
+                  <p className="text-sm font-semibold text-primary-900">Workspace identity</p>
+                  <p className="mt-1 text-xs text-primary-700">
+                    Logo and colors are used in tenant workspace surfaces. AuroraHR remains the platform brand.
+                  </p>
                 </div>
               </div>
             </div>

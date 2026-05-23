@@ -64,7 +64,13 @@ export interface OrganizationSettings {
   sessionTimeoutMinutes: number;
   ipWhitelistEnabled: boolean;
   allowedIpAddresses?: string[];
-  branding?: Record<string, any>;
+  branding?: {
+    primaryColor?: string;
+    secondaryColor?: string;
+    accentColor?: string;
+    logoUrl?: string;
+    faviconUrl?: string;
+  };
   customFields?: Record<string, any>;
 }
 
