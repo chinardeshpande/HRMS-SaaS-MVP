@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import { useAuth } from '../context/AuthContext';
@@ -6,6 +6,14 @@ import api from '../services/api';
 import employeeService from '../services/employeeService';
 import departmentService, { Department } from '../services/departmentService';
 import designationService, { Designation } from '../services/designationService';
+import employeeDocumentService from '../services/employeeDocumentService';
+import type {
+  EmployeeDocument,
+  EmployeeDocumentCategory,
+  EmployeeDocumentPayload,
+  EmployeeDocumentStats,
+  EmployeeDocumentVerificationStatus,
+} from '../services/employeeDocumentService';
 import CompensationTab from '../components/employees/CompensationTab';
 import { UserRole } from '../types';
 import {
@@ -25,6 +33,9 @@ import {
   XMarkIcon,
   PlusIcon,
   TrashIcon,
+  DocumentTextIcon,
+  CloudArrowUpIcon,
+  ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline';
 
 type ManualHistoryAction = 'create' | 'edit' | 'delete';
@@ -210,12 +221,39 @@ const manualHistoryTypeOptions: { value: ManualHistoryType; label: string }[] = 
   { value: 'other', label: 'Other' },
 ];
 
+const EMPLOYEE_DOCUMENT_CATEGORIES: Array<{ id: EmployeeDocumentCategory | 'all'; name: string }> = [
+  { id: 'all', name: 'All employee memory' },
+  { id: 'identity', name: 'Identity' },
+  { id: 'address_proof', name: 'Address proof' },
+  { id: 'education', name: 'Education' },
+  { id: 'experience', name: 'Experience' },
+  { id: 'employment_letter', name: 'Employment letters' },
+  { id: 'compensation', name: 'Compensation' },
+  { id: 'payslip', name: 'Payslips' },
+  { id: 'policy_acknowledgement', name: 'Policy acknowledgements' },
+  { id: 'performance', name: 'Performance' },
+  { id: 'exit', name: 'Exit' },
+  { id: 'other', name: 'Other' },
+];
+
+const DEFAULT_EMPLOYEE_DOCUMENT_FORM: EmployeeDocumentPayload = {
+  title: '',
+  category: 'identity',
+  description: '',
+  documentNumber: '',
+  issueDate: '',
+  expiryDate: '',
+  status: 'active',
+  verificationStatus: 'unverified',
+  notes: '',
+};
+
 export default function ModernEmployeeDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'personal' | 'professional' | 'history' | 'compensation'>('personal');
+  const [activeTab, setActiveTab] = useState<'personal' | 'professional' | 'history' | 'documents' | 'compensation'>('personal');
   const [employee, setEmployee] = useState<EmployeeDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -228,6 +266,7 @@ export default function ModernEmployeeDetail() {
   const canManageCompensation =
     currentRole === String(UserRole.HR_ADMIN).toLowerCase() ||
     currentRole === String(UserRole.SYSTEM_ADMIN).toLowerCase();
+  const canManageEmployeeDocuments = canManageCompensation;
 
   // Dropdown data for professional form
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -250,6 +289,13 @@ export default function ModernEmployeeDetail() {
   const [editingManualHistory, setEditingManualHistory] = useState<HistoryEvent | null>(null);
   const [manualHistoryForm, setManualHistoryForm] = useState(emptyManualHistoryForm);
   const [manualHistorySaving, setManualHistorySaving] = useState(false);
+  const [employeeDocuments, setEmployeeDocuments] = useState<EmployeeDocument[]>([]);
+  const [employeeDocumentStats, setEmployeeDocumentStats] = useState<EmployeeDocumentStats | null>(null);
+  const [employeeDocumentsLoading, setEmployeeDocumentsLoading] = useState(false);
+  const [employeeDocumentCategory, setEmployeeDocumentCategory] = useState<EmployeeDocumentCategory | 'all'>('all');
+  const [showEmployeeDocumentUpload, setShowEmployeeDocumentUpload] = useState(false);
+  const [employeeDocumentForm, setEmployeeDocumentForm] = useState<EmployeeDocumentPayload>(DEFAULT_EMPLOYEE_DOCUMENT_FORM);
+  const [employeeDocumentFile, setEmployeeDocumentFile] = useState<File | null>(null);
 
   // Form states for personal tab
   const [personalForm, setPersonalForm] = useState({
@@ -488,6 +534,12 @@ export default function ModernEmployeeDetail() {
       fetchProfessionalHistory();
     }
   }, [activeTab, id]);
+
+  useEffect(() => {
+    if (activeTab === 'documents' && id) {
+      fetchEmployeeDocuments();
+    }
+  }, [activeTab, id, employeeDocumentCategory]);
 
   // Update form states when employee data changes
   useEffect(() => {
@@ -777,6 +829,78 @@ export default function ModernEmployeeDetail() {
     }
   };
 
+  const fetchEmployeeDocuments = async () => {
+    if (!id) return;
+    try {
+      setEmployeeDocumentsLoading(true);
+      const [documents, stats] = await Promise.all([
+        employeeDocumentService.list(id, { category: employeeDocumentCategory }),
+        employeeDocumentService.stats(id),
+      ]);
+      setEmployeeDocuments(documents);
+      setEmployeeDocumentStats(stats);
+    } catch (err) {
+      console.error('Error fetching employee documents:', err);
+      setError('Failed to load employee documents');
+    } finally {
+      setEmployeeDocumentsLoading(false);
+    }
+  };
+
+  const handleEmployeeDocumentUpload = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!id || !employeeDocumentFile) {
+      setError('Please select an employee document file');
+      return;
+    }
+
+    try {
+      await employeeDocumentService.upload(id, employeeDocumentFile, employeeDocumentForm);
+      setShowEmployeeDocumentUpload(false);
+      setEmployeeDocumentForm(DEFAULT_EMPLOYEE_DOCUMENT_FORM);
+      setEmployeeDocumentFile(null);
+      await fetchEmployeeDocuments();
+      setError(null);
+    } catch (err: any) {
+      console.error('Error uploading employee document:', err);
+      setError(err.response?.data?.error?.message || err.message || 'Failed to upload employee document');
+    }
+  };
+
+  const handleVerifyEmployeeDocument = async (
+    document: EmployeeDocument,
+    verificationStatus: EmployeeDocumentVerificationStatus
+  ) => {
+    try {
+      await employeeDocumentService.verify(document.documentId, verificationStatus);
+      await fetchEmployeeDocuments();
+      setError(null);
+    } catch (err) {
+      console.error('Error verifying employee document:', err);
+      setError('Failed to update employee document verification');
+    }
+  };
+
+  const handleDownloadEmployeeDocument = async (document: EmployeeDocument) => {
+    try {
+      await employeeDocumentService.download(document);
+    } catch (err) {
+      console.error('Error downloading employee document:', err);
+      setError('Unable to download employee document');
+    }
+  };
+
+  const handleArchiveEmployeeDocument = async (document: EmployeeDocument) => {
+    try {
+      await employeeDocumentService.archive(document.documentId);
+      await fetchEmployeeDocuments();
+      setError(null);
+    } catch (err) {
+      console.error('Error archiving employee document:', err);
+      setError('Failed to archive employee document');
+    }
+  };
+
   const handleAction = (action: string) => {
     switch (action) {
       case 'promotion':
@@ -962,6 +1086,18 @@ export default function ModernEmployeeDetail() {
             History
           </button>
           <button
+            onClick={() => setActiveTab('documents')}
+            disabled={isEditingPersonal || isEditingProfessional}
+            className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+              activeTab === 'documents'
+                ? 'bg-white text-primary-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <DocumentTextIcon className="h-4 w-4 mr-1.5" />
+            Documents
+          </button>
+          <button
             onClick={() => setActiveTab('compensation')}
             disabled={isEditingPersonal || isEditingProfessional}
             className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
@@ -1006,6 +1142,15 @@ export default function ModernEmployeeDetail() {
                 >
                   <PlusIcon className="h-4 w-4 mr-1.5" />
                   Manual Entry
+                </button>
+              ) : activeTab === 'documents' && canManageEmployeeDocuments ? (
+                <button
+                  onClick={() => setShowEmployeeDocumentUpload((value) => !value)}
+                  className="px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm flex items-center"
+                  title="Add employee document"
+                >
+                  <CloudArrowUpIcon className="h-4 w-4 mr-1.5" />
+                  Add Document
                 </button>
               ) : activeTab === 'compensation' ? (
                 <button
@@ -1489,6 +1634,221 @@ export default function ModernEmployeeDetail() {
                   </button>
                 </div>
               )}
+            </div>
+          )}
+
+          {activeTab === 'documents' && (
+            <div className="space-y-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                {[
+                  { label: 'Total records', value: employeeDocumentStats?.total || 0 },
+                  { label: 'Active', value: employeeDocumentStats?.active || 0 },
+                  { label: 'Needs review', value: employeeDocumentStats?.needsReview || 0 },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{item.label}</p>
+                    <p className="mt-2 text-2xl font-bold text-gray-900">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-2 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                {EMPLOYEE_DOCUMENT_CATEGORIES.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => setEmployeeDocumentCategory(category.id)}
+                    className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                      employeeDocumentCategory === category.id
+                        ? 'bg-primary-600 text-white'
+                        : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+
+              {showEmployeeDocumentUpload && canManageEmployeeDocuments && (
+                <form onSubmit={handleEmployeeDocumentUpload} className="rounded-lg border border-primary-100 bg-primary-50/40 p-4 shadow-sm">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <label className="space-y-1 lg:col-span-2">
+                      <span className="text-xs font-semibold text-gray-700">Title</span>
+                      <input
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                        value={employeeDocumentForm.title}
+                        onChange={(event) => setEmployeeDocumentForm({ ...employeeDocumentForm, title: event.target.value })}
+                        placeholder="PAN Card"
+                        required
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-xs font-semibold text-gray-700">Category</span>
+                      <select
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                        value={employeeDocumentForm.category}
+                        onChange={(event) =>
+                          setEmployeeDocumentForm({
+                            ...employeeDocumentForm,
+                            category: event.target.value as EmployeeDocumentCategory,
+                          })
+                        }
+                      >
+                        {EMPLOYEE_DOCUMENT_CATEGORIES.filter((category) => category.id !== 'all').map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-xs font-semibold text-gray-700">File</span>
+                      <input
+                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm"
+                        type="file"
+                        onChange={(event) => setEmployeeDocumentFile(event.target.files?.[0] || null)}
+                        required
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-xs font-semibold text-gray-700">Document no.</span>
+                      <input
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                        value={employeeDocumentForm.documentNumber || ''}
+                        onChange={(event) => setEmployeeDocumentForm({ ...employeeDocumentForm, documentNumber: event.target.value })}
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-xs font-semibold text-gray-700">Issue date</span>
+                      <input
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                        type="date"
+                        value={employeeDocumentForm.issueDate || ''}
+                        onChange={(event) => setEmployeeDocumentForm({ ...employeeDocumentForm, issueDate: event.target.value })}
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-xs font-semibold text-gray-700">Expiry date</span>
+                      <input
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                        type="date"
+                        value={employeeDocumentForm.expiryDate || ''}
+                        onChange={(event) => setEmployeeDocumentForm({ ...employeeDocumentForm, expiryDate: event.target.value })}
+                      />
+                    </label>
+                    <label className="space-y-1 md:col-span-2 lg:col-span-4">
+                      <span className="text-xs font-semibold text-gray-700">Notes</span>
+                      <textarea
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                        rows={2}
+                        value={employeeDocumentForm.notes || ''}
+                        onChange={(event) => setEmployeeDocumentForm({ ...employeeDocumentForm, notes: event.target.value })}
+                        placeholder="Migration source, verification note, or missing-data context"
+                      />
+                    </label>
+                  </div>
+                  <div className="mt-4 flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowEmployeeDocumentUpload(false)}
+                      className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-white"
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700">
+                      Save document
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+                {employeeDocumentsLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600"></div>
+                  </div>
+                ) : employeeDocuments.length === 0 ? (
+                  <div className="py-12 text-center">
+                    <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-2 text-sm font-medium text-gray-900">No employee documents yet</h3>
+                    <p className="mt-1 text-sm text-gray-500">Employee identity, employment, compensation, and exit memory will appear here.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          {['Document', 'Category', 'Status', 'Verification', 'Actions'].map((heading) => (
+                            <th key={heading} className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                              {heading}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 bg-white">
+                        {employeeDocuments.map((document) => (
+                          <tr key={document.documentId} className="hover:bg-gray-50">
+                            <td className="px-6 py-4">
+                              <div className="text-sm font-semibold text-gray-900">{document.title}</div>
+                              <div className="text-xs text-gray-500">{document.originalFileName}</div>
+                              {document.documentNumber && <div className="mt-1 text-xs text-gray-500">No. {document.documentNumber}</div>}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-700">
+                              {EMPLOYEE_DOCUMENT_CATEGORIES.find((category) => category.id === document.category)?.name || document.category}
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="inline-flex rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold capitalize text-blue-700">
+                                {document.status.replace('_', ' ')}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span
+                                className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold capitalize ${
+                                  document.verificationStatus === 'verified'
+                                    ? 'bg-green-50 text-green-700'
+                                    : document.verificationStatus === 'rejected'
+                                    ? 'bg-red-50 text-red-700'
+                                    : 'bg-amber-50 text-amber-700'
+                                }`}
+                              >
+                                {document.verificationStatus}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => handleDownloadEmployeeDocument(document)}
+                                  className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
+                                  title="Download"
+                                >
+                                  <ArrowDownTrayIcon className="h-5 w-5" />
+                                </button>
+                                {canManageEmployeeDocuments && (
+                                  <>
+                                    <button
+                                      onClick={() => handleVerifyEmployeeDocument(document, 'verified')}
+                                      className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg"
+                                      title="Mark verified"
+                                    >
+                                      <CheckCircleIcon className="h-5 w-5" />
+                                    </button>
+                                    <button
+                                      onClick={() => handleArchiveEmployeeDocument(document)}
+                                      className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                                      title="Archive"
+                                    >
+                                      <TrashIcon className="h-5 w-5" />
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

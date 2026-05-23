@@ -159,7 +159,7 @@ Audit coverage added:
 
 Remaining work:
 
-- Employee document memory should be moved away from the legacy in-memory `/api/documents` controller or clearly routed through a durable model.
+- Employee document memory has now been moved into a durable `EmployeeDocument` model and route. The legacy in-memory `/api/documents` controller should still be avoided for ACV production memory.
 - Company document reminders are not yet scheduled.
 - Company document dashboard tiles exist only inside Documents; cross-module readiness dashboard is still pending.
 - Fine-grained document permissions beyond HR/Admin are deferred.

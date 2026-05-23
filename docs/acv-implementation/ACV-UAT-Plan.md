@@ -80,6 +80,8 @@ Primary responsibilities:
 - HR uploads employee document.
 - Employee views own document.
 - Employee cannot access another employee's private document.
+- HR verifies and archives employee documents.
+- Employee document download creates an audit log.
 - HR generates an HR document from a template.
 - Company document vault supports company-level document storage.
 - HR uploads a company document with category, expiry, issuing authority, and notes.

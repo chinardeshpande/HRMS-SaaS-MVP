@@ -102,7 +102,8 @@ Validation:
 Implementation note:
 
 - Company HR/compliance documents should use the durable Company Document Vault.
-- Employee document migration should wait until employee document memory is hardened away from the legacy in-memory `/api/documents` path or routed through an explicitly durable document model.
+- Employee documents should use the durable Employee Document Vault.
+- The legacy in-memory `/api/documents` path should not be used for ACV production memory.
 
 ### Wave 5: Compensation History
 

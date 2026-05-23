@@ -38,9 +38,12 @@ Employee master is usable but needs implementation-grade completeness checks: ma
 - `DocumentTemplate` and `GeneratedDocument` support HR document generation.
 - `DigitalLibrary` and `DocumentCategory` support managed document resources.
 - `CompanyDocument` now supports tenant-level company HR/compliance document memory.
+- `EmployeeDocument` now supports durable employee-level document memory.
 - `documentRoutes.ts`, `digitalLibraryRoutes.ts`, and `documentCategoryRoutes.ts` expose document-related APIs.
 - `companyDocumentRoutes.ts` exposes the company document vault APIs.
+- `employeeDocumentRoutes.ts` exposes employee document vault APIs.
 - Frontend document screens include `ModernDocuments`, `MyHRDocuments`, template management, and document preview surfaces.
+- Employee detail now includes an employee Documents tab backed by durable employee document storage.
 
 ### Current Status
 
@@ -54,9 +57,11 @@ Document capability exists and now has a clearer memory split:
 
 The first durable company document vault slice is implemented with tenant isolation, HR/admin access, metadata, expiry fields, verification status, and audit logging for upload, update, verification, download, and archive.
 
+The first durable employee document slice is implemented with tenant isolation, HR/admin upload and verification, employee self-read/download for own documents, metadata, expiry fields, verification status, and audit logging for upload, update, verification, download, and archive.
+
 ### Current Gap
 
-Employee document governance still needs equivalent taxonomy and completeness reporting. The legacy `/api/documents` controller still uses in-memory storage and should not be treated as the durable employee/company document memory path.
+Completeness reporting is still limited to per-employee stats. The legacy `/api/documents` controller still uses in-memory storage and should not be treated as the durable employee/company document memory path.
 
 ## Compensation and Payslips
 
@@ -113,7 +118,7 @@ App shell, auth pages, landing/system pages, email templates, and generated docu
 
 ### Current Gap
 
-Audit logging is not yet systematic across employee changes, employee document operations, compensation operations, settings changes, imports, role changes, email sends/failures, and sensitive download/share actions outside the newly added company document vault.
+Audit logging is not yet systematic across employee master changes, compensation operations, settings changes, imports, role changes, email sends/failures, and sensitive download/share actions outside the newly added company and employee document vaults.
 
 ## Reports and Dashboards
 
