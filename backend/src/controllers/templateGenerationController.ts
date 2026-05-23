@@ -3,6 +3,8 @@ import { Not } from 'typeorm';
 import { AppDataSource } from '../config/database';
 import { DocumentTemplate } from '../models/DocumentTemplate';
 import { Employee } from '../models/Employee';
+import { OrganizationSettings } from '../models/OrganizationSettings';
+import { Tenant } from '../models/Tenant';
 import { GeneratedDocument, GeneratedDocumentFormat, GeneratedDocumentStatus } from '../models/GeneratedDocument';
 import { DocumentType } from '../models/enums/DocumentEnums';
 import documentGenerationService from '../services/documentGenerationService';
@@ -59,6 +61,43 @@ async function ensureDefaultTemplates(tenantId: string): Promise<void> {
 
   await templateRepo.save(templates);
   logger.info(`Seeded ${templates.length} default document templates for tenant ${tenantId}`);
+}
+
+async function buildMergedDocumentData(tenantId: string, employeeId: string | undefined, variables: Record<string, any>) {
+  let employeeData: any = {};
+  if (employeeId) {
+    const employeeRepo = AppDataSource.getRepository(Employee);
+    const employee = await employeeRepo.findOne({
+      where: { employeeId, tenantId },
+      relations: ['department', 'designation'],
+    });
+
+    if (employee) {
+      employeeData = {
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        employeeCode: employee.employeeCode,
+        department: employee.department?.name,
+        departmentName: employee.department?.name,
+        designation: employee.designation?.name,
+        position: employee.designation?.name,
+        positionOffered: employee.designation?.name,
+      };
+    }
+  }
+
+  const [settings, tenant] = await Promise.all([
+    AppDataSource.getRepository(OrganizationSettings).findOne({ where: { tenantId } }),
+    AppDataSource.getRepository(Tenant).findOne({ where: { tenantId } }),
+  ]);
+
+  return {
+    ...employeeData,
+    ...variables,
+    companyName: variables.companyName || settings?.companyName || tenant?.companyName || 'Company',
+    generatedDate: variables.generatedDate || new Date().toLocaleDateString(),
+  };
 }
 
 /**
@@ -120,34 +159,7 @@ export const generateDocument = async (req: Request, res: Response) => {
       return sendError(res, { code: 'NOT_FOUND', message: 'Template not found' }, 404);
     }
 
-    // Get employee data if employeeId provided
-    let employeeData: any = {};
-    if (employeeId) {
-      const employeeRepo = AppDataSource.getRepository(Employee);
-      const employee = await employeeRepo.findOne({
-        where: { employeeId, tenantId },
-        relations: ['department', 'designation'],
-      });
-
-      if (employee) {
-        employeeData = {
-          firstName: employee.firstName,
-          lastName: employee.lastName,
-          email: employee.email,
-          employeeCode: employee.employeeCode,
-          department: employee.department?.name,
-          designation: employee.designation?.name,
-        };
-      }
-    }
-
-    // Merge employee data with provided variables
-    const mergedData = {
-      ...employeeData,
-      ...variables,
-      companyName: 'Aurora HR', // TODO: Get from tenant settings
-      generatedDate: new Date().toLocaleDateString(),
-    };
+    const mergedData = await buildMergedDocumentData(tenantId, employeeId, variables);
 
     // Generate PDF
     const pdfPath = await documentGenerationService.generateDocument(
@@ -181,10 +193,10 @@ export const generateDocument = async (req: Request, res: Response) => {
         fileSizeBytes: fileBuffer.length,
         metadata: {
           variables: mergedData,
-          issuedTo: employeeData.email
+          issuedTo: mergedData.email
             ? {
-                name: `${employeeData.firstName || ''} ${employeeData.lastName || ''}`.trim(),
-                email: employeeData.email,
+                name: `${mergedData.firstName || ''} ${mergedData.lastName || ''}`.trim(),
+                email: mergedData.email,
               }
             : undefined,
         },
@@ -201,6 +213,43 @@ export const generateDocument = async (req: Request, res: Response) => {
   } catch (error: any) {
     logger.error('Error generating document:', error);
     return sendError(res, { code: 'GENERATION_ERROR', message: error.message }, 500);
+  }
+};
+
+export const previewGeneratedDocument = async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.user!.tenantId;
+    const { templateId, employeeId, variables } = req.body;
+
+    if (!templateId || !variables) {
+      return sendError(
+        res,
+        { code: 'MISSING_FIELDS', message: 'Template ID and variables are required' },
+        400
+      );
+    }
+
+    const templateRepo = AppDataSource.getRepository(DocumentTemplate);
+    const template = await templateRepo.findOne({
+      where: { templateId, tenantId, isActive: true },
+    });
+
+    if (!template) {
+      return sendError(res, { code: 'NOT_FOUND', message: 'Template not found' }, 404);
+    }
+
+    const mergedData = await buildMergedDocumentData(tenantId, employeeId, variables);
+    const html = await documentGenerationService.generatePreviewHtml(template.templateName, mergedData, tenantId);
+
+    return sendSuccess(res, {
+      html,
+      documentName: template.displayName,
+      documentType: template.templateName,
+      variables: mergedData,
+    });
+  } catch (error: any) {
+    logger.error('Error previewing generated document:', error);
+    return sendError(res, { code: 'PREVIEW_ERROR', message: error.message }, 500);
   }
 };
 
@@ -415,6 +464,7 @@ export default {
   getHistory,
   downloadGeneratedDocument,
   deleteGeneratedDocument,
+  previewGeneratedDocument,
   getTemplateById,
   updateTemplate,
   previewTemplate,

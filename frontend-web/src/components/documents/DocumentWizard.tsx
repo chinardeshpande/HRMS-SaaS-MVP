@@ -2,6 +2,7 @@ import { useState, useEffect, Fragment } from 'react';
 import { XMarkIcon, MagnifyingGlassIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { Combobox, Transition } from '@headlessui/react';
 import api from '../../services/api';
+import documentService, { DocumentGenerationRequest } from '../../services/documentService';
 
 interface DocumentTemplate {
   id: string;
@@ -33,6 +34,9 @@ export const DocumentWizard = ({ template, onClose, onGenerate }: DocumentWizard
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState('');
+  const [previewHtml, setPreviewHtml] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
+  const [pendingGenerationData, setPendingGenerationData] = useState<DocumentGenerationRequest | null>(null);
 
   const totalSteps = 3;
 
@@ -151,15 +155,35 @@ export const DocumentWizard = ({ template, onClose, onGenerate }: DocumentWizard
     setFormData((prev) => ({ ...prev, [variable]: value }));
   };
 
-  const handleGenerate = async () => {
+  const buildGenerationData = (): DocumentGenerationRequest => ({
+    templateId: template.id,
+    employeeId: selectedEmployee?.employeeId,
+    variables: formData,
+    format: 'PDF',
+  });
+
+  const handlePreviewBeforeSave = async () => {
     setLoading(true);
     try {
-      await onGenerate({
-        templateId: template.id,
-        employeeId: selectedEmployee?.employeeId,
-        variables: formData,
-        format: 'PDF',
-      });
+      const generationData = buildGenerationData();
+      const preview = await documentService.previewGeneratedDocument(generationData);
+      setPendingGenerationData(generationData);
+      setPreviewHtml(preview.html);
+      setShowPreview(true);
+    } catch (error) {
+      console.error('Error previewing document:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleConfirmSave = async () => {
+    if (!pendingGenerationData) return;
+
+    setLoading(true);
+    try {
+      await onGenerate(pendingGenerationData);
+      setShowPreview(false);
       onClose();
     } catch (error) {
       console.error('Error generating document:', error);
@@ -441,7 +465,7 @@ export const DocumentWizard = ({ template, onClose, onGenerate }: DocumentWizard
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <h3 className="text-sm font-medium text-green-900 mb-2">Ready to Generate</h3>
                 <p className="text-sm text-green-700">
-                  Review the information below and click "Generate Document" to create your {template.name}.
+                  Review the information below, then preview the final document before saving.
                 </p>
               </div>
 
@@ -513,22 +537,70 @@ export const DocumentWizard = ({ template, onClose, onGenerate }: DocumentWizard
             </button>
           ) : (
             <button
-              onClick={handleGenerate}
+              onClick={handlePreviewBeforeSave}
               disabled={loading || !isStepValid()}
               className="btn-primary"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Generating...
+                  Preparing preview...
                 </span>
               ) : (
-                'Generate Document'
+                'Preview Document'
               )}
             </button>
           )}
         </div>
       </div>
+
+      {showPreview && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/70 p-4">
+          <div className="flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Review document before saving</h3>
+                <p className="text-sm text-gray-500">This is a view-only preview. Saving will generate the PDF and add it to history.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPreview(false)}
+                disabled={loading}
+                className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-auto bg-gray-100 p-4">
+              <iframe
+                title="Generated document preview"
+                srcDoc={previewHtml}
+                className="mx-auto h-[72vh] w-full max-w-[850px] rounded-lg border border-gray-300 bg-white shadow"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-gray-200 bg-white px-5 py-4">
+              <button
+                type="button"
+                onClick={() => setShowPreview(false)}
+                disabled={loading}
+                className="btn-secondary"
+              >
+                Back to Edit
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmSave}
+                disabled={loading}
+                className="btn-primary"
+              >
+                {loading ? 'Saving...' : 'Save & Download PDF'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

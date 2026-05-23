@@ -15,6 +15,13 @@ export interface DocumentGenerationResponse {
   generatedAt: string;
 }
 
+export interface DocumentPreviewResponse {
+  html: string;
+  documentName: string;
+  documentType: string;
+  variables: Record<string, string>;
+}
+
 export interface DocumentHistory {
   documentId: string;
   templateName: string;
@@ -73,6 +80,14 @@ class DocumentService {
 
       throw new Error(errorMessage);
     }
+  }
+
+  async previewGeneratedDocument(data: DocumentGenerationRequest): Promise<DocumentPreviewResponse> {
+    const response = await api.post<DocumentPreviewResponse>('/document-templates/generate/preview', data);
+    if (!response.success || !response.data) {
+      throw new Error(response.error?.message || 'Failed to preview document');
+    }
+    return response.data;
   }
 
   /**

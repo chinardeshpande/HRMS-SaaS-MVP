@@ -17,6 +17,18 @@ router.get(
 );
 
 /**
+ * @route   POST /api/v1/document-templates/generate/preview
+ * @desc    Preview a generated document before saving
+ * @access  Private (HR and above)
+ */
+router.post(
+  '/generate/preview',
+  authenticate,
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
+  templateGenerationController.previewGeneratedDocument
+);
+
+/**
  * @route   POST /api/v1/document-templates/generate
  * @desc    Generate a document from template
  * @access  Private (HR and above)
