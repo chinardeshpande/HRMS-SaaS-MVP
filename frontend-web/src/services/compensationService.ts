@@ -241,6 +241,30 @@ class CompensationService {
     return `${API_BASE_URL}/compensation/attachments/${attachmentId}/download`;
   }
 
+  async getAttachmentBlob(attachmentId: string): Promise<Blob> {
+    const tokens = localStorage.getItem('tokens');
+    const token = tokens ? JSON.parse(tokens).token : undefined;
+    const response = await fetch(this.getAttachmentDownloadUrl(attachmentId), {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+
+    if (!response.ok) {
+      throw new Error('Unable to load payslip attachment');
+    }
+
+    return response.blob();
+  }
+
+  async downloadAttachment(attachment: PayslipAttachment): Promise<void> {
+    const blob = await this.getAttachmentBlob(attachment.attachmentId);
+    const url = URL.createObjectURL(blob);
+    const link = window.document.createElement('a');
+    link.href = url;
+    link.download = attachment.fileName;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   async logPayslipShare(
     payslipId: string,
     employeeId: string,

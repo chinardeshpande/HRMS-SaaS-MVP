@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ModernLayout } from '../components/layout/ModernLayout';
+import DocumentViewerModal from '../components/common/DocumentViewerModal';
 import { digitalLibraryService, LibraryItem } from '../services/digitalLibraryService';
 import { documentCategoryService, DocumentCategory } from '../services/documentCategoryService';
 import {
@@ -14,6 +15,7 @@ import {
   FolderIcon,
   PlusIcon,
   XMarkIcon,
+  EyeIcon,
 } from '@heroicons/react/24/outline';
 
 const MyHRDocuments: React.FC = () => {
@@ -30,6 +32,7 @@ const MyHRDocuments: React.FC = () => {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newCategoryDescription, setNewCategoryDescription] = useState('');
+  const [viewingDocument, setViewingDocument] = useState<LibraryItem | null>(null);
 
   const fileFormats = [
     { id: 'all', label: 'All Formats' },
@@ -371,6 +374,13 @@ const MyHRDocuments: React.FC = () => {
                   {/* Actions */}
                   <div className="flex gap-2">
                     <button
+                      onClick={() => setViewingDocument(doc)}
+                      className="flex-1 px-3 py-1.5 bg-white border border-gray-200 text-gray-700 text-xs font-medium rounded-md hover:bg-gray-50 transition-colors inline-flex items-center justify-center gap-1"
+                    >
+                      <EyeIcon className="h-3.5 w-3.5" />
+                      View
+                    </button>
+                    <button
                       onClick={() => handleDownload(doc)}
                       className="flex-1 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 transition-colors"
                     >
@@ -455,6 +465,31 @@ const MyHRDocuments: React.FC = () => {
           </div>
         </div>
       )}
+
+      <DocumentViewerModal
+        document={
+          viewingDocument
+            ? {
+                title: viewingDocument.fileName,
+                fileName: viewingDocument.fileName,
+                fileType: viewingDocument.fileType,
+                fileSize: viewingDocument.fileSize,
+                uploadedAt: viewingDocument.createdAt,
+                category: viewingDocument.category || viewingDocument.resourceType,
+                status: viewingDocument.accessLevel,
+                description: viewingDocument.description,
+                metadata: [
+                  { label: 'Downloads', value: viewingDocument.downloadCount },
+                  { label: 'Views', value: viewingDocument.viewCount },
+                  { label: 'Source', value: viewingDocument.sourceType },
+                ],
+              }
+            : null
+        }
+        loadBlob={viewingDocument ? () => digitalLibraryService.getBlob(viewingDocument) : null}
+        onClose={() => setViewingDocument(null)}
+        onDownload={viewingDocument ? () => handleDownload(viewingDocument) : undefined}
+      />
     </ModernLayout>
   );
 };

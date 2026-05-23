@@ -103,7 +103,7 @@ class EmployeeDocumentService {
     return response.data;
   }
 
-  async download(document: EmployeeDocument): Promise<void> {
+  async getBlob(document: EmployeeDocument): Promise<Blob> {
     const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
     const tokens = localStorage.getItem('tokens');
     const headers: HeadersInit = {};
@@ -114,7 +114,11 @@ class EmployeeDocumentService {
     const response = await fetch(`${apiBase}/employee-documents/${document.documentId}/download`, { headers });
     if (!response.ok) throw new Error('Unable to download employee document');
 
-    const blob = await response.blob();
+    return response.blob();
+  }
+
+  async download(document: EmployeeDocument): Promise<void> {
+    const blob = await this.getBlob(document);
     const url = URL.createObjectURL(blob);
     const link = window.document.createElement('a');
     link.href = url;
@@ -126,4 +130,3 @@ class EmployeeDocumentService {
 
 export const employeeDocumentService = new EmployeeDocumentService();
 export default employeeDocumentService;
-

@@ -19,12 +19,14 @@ import compensationService, {
   BulkPayslipImportResult,
   CompensationProfile,
   Payslip,
+  PayslipAttachment,
   PayslipPayload,
   SalaryComponent,
   SalaryComponentType,
   SalaryStructure,
   SalaryStructurePayload,
 } from '../../services/compensationService';
+import DocumentViewerModal from '../common/DocumentViewerModal';
 
 interface CompensationTabProps {
   employee: {
@@ -186,6 +188,10 @@ export default function CompensationTab({ employee, canManage }: CompensationTab
   const [showBulkImportGuide, setShowBulkImportGuide] = useState(false);
   const [bulkImporting, setBulkImporting] = useState(false);
   const [bulkResult, setBulkResult] = useState<BulkPayslipImportResult | null>(null);
+  const [viewingPayslipAttachment, setViewingPayslipAttachment] = useState<{
+    payslip: Payslip;
+    attachment: PayslipAttachment;
+  } | null>(null);
   const bulkInputRef = useRef<HTMLInputElement | null>(null);
 
   const [structureForm, setStructureForm] = useState({
@@ -594,13 +600,22 @@ export default function CompensationTab({ employee, canManage }: CompensationTab
     window.print();
   };
 
-  const downloadAttachment = (payslip: Payslip) => {
+  const downloadAttachment = async (payslip: Payslip) => {
     const attachment = payslip.attachments?.find((item) => item.isPrimary) || payslip.attachments?.[0];
     if (!attachment) {
       alert('No payslip file has been uploaded yet.');
       return;
     }
-    window.open(compensationService.getAttachmentDownloadUrl(attachment.attachmentId), '_blank');
+    await compensationService.downloadAttachment(attachment);
+  };
+
+  const viewAttachment = (payslip: Payslip, attachment?: PayslipAttachment) => {
+    const target = attachment || payslip.attachments?.find((item) => item.isPrimary) || payslip.attachments?.[0];
+    if (!target) {
+      alert('No payslip file has been uploaded yet.');
+      return;
+    }
+    setViewingPayslipAttachment({ payslip, attachment: target });
   };
 
   const sharePayslip = async (payslip: Payslip, channel: 'email' | 'whatsapp' | 'hr_connect') => {
@@ -794,6 +809,12 @@ export default function CompensationTab({ employee, canManage }: CompensationTab
                     <EyeIcon className="h-3.5 w-3.5 mr-1" />
                     View
                   </button>
+                  {payslip.attachments?.length ? (
+                    <button onClick={() => viewAttachment(payslip)} className="px-3 py-1.5 rounded-lg bg-primary-50 border border-primary-100 text-xs font-bold text-primary-700 hover:bg-primary-100 inline-flex items-center">
+                      <DocumentTextIcon className="h-3.5 w-3.5 mr-1" />
+                      Preview File
+                    </button>
+                  ) : null}
                   <button onClick={() => downloadAttachment(payslip)} className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-100 inline-flex items-center">
                     <ArrowDownTrayIcon className="h-3.5 w-3.5 mr-1" />
                     Download
@@ -1192,7 +1213,10 @@ export default function CompensationTab({ employee, canManage }: CompensationTab
                         <p className="text-xs text-gray-500">Version {attachment.version} • {formatDate(attachment.uploadedOn)}</p>
                       </div>
                     </div>
-                    <button onClick={() => downloadAttachment(selectedPayslip)} className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-xs font-bold text-gray-700">Download</button>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <button onClick={() => viewAttachment(selectedPayslip, attachment)} className="px-3 py-1.5 rounded-lg bg-primary-50 border border-primary-100 text-xs font-bold text-primary-700">View</button>
+                      <button onClick={() => downloadAttachment(selectedPayslip)} className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-xs font-bold text-gray-700">Download</button>
+                    </div>
                   </div>
                 ))
               ) : <p className="text-sm text-gray-500">No physical payslip file uploaded.</p>}
@@ -1226,6 +1250,31 @@ export default function CompensationTab({ employee, canManage }: CompensationTab
           </div>
         </div>
       )}
+
+      <DocumentViewerModal
+        document={
+          viewingPayslipAttachment
+            ? {
+                title: `${monthNames[viewingPayslipAttachment.payslip.month - 1]} ${viewingPayslipAttachment.payslip.year} Payslip`,
+                fileName: viewingPayslipAttachment.attachment.fileName,
+                fileType: viewingPayslipAttachment.attachment.fileType,
+                fileSize: viewingPayslipAttachment.attachment.fileSize,
+                uploadedAt: viewingPayslipAttachment.attachment.uploadedOn,
+                category: 'Payslip',
+                status: viewingPayslipAttachment.payslip.status,
+                metadata: [
+                  { label: 'Net pay', value: formatMoney(viewingPayslipAttachment.payslip.netPay, currency) },
+                  { label: 'Gross earnings', value: formatMoney(viewingPayslipAttachment.payslip.grossEarnings, currency) },
+                  { label: 'Deductions', value: formatMoney(viewingPayslipAttachment.payslip.totalDeductions, currency) },
+                  { label: 'Version', value: viewingPayslipAttachment.attachment.version },
+                ],
+              }
+            : null
+        }
+        loadBlob={viewingPayslipAttachment ? () => compensationService.getAttachmentBlob(viewingPayslipAttachment.attachment.attachmentId) : null}
+        onClose={() => setViewingPayslipAttachment(null)}
+        onDownload={viewingPayslipAttachment ? () => compensationService.downloadAttachment(viewingPayslipAttachment.attachment) : undefined}
+      />
     </div>
   );
 }

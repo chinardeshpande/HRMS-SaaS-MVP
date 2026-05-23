@@ -15,6 +15,7 @@ import type {
   EmployeeDocumentVerificationStatus,
 } from '../services/employeeDocumentService';
 import CompensationTab from '../components/employees/CompensationTab';
+import DocumentViewerModal from '../components/common/DocumentViewerModal';
 import { UserRole } from '../types';
 import {
   ArrowLeftIcon,
@@ -36,6 +37,9 @@ import {
   DocumentTextIcon,
   CloudArrowUpIcon,
   ArrowDownTrayIcon,
+  EyeIcon,
+  ListBulletIcon,
+  Squares2X2Icon,
 } from '@heroicons/react/24/outline';
 
 type ManualHistoryAction = 'create' | 'edit' | 'delete';
@@ -268,6 +272,13 @@ export default function ModernEmployeeDetail() {
     currentRole === String(UserRole.SYSTEM_ADMIN).toLowerCase();
   const canManageEmployeeDocuments = canManageCompensation;
 
+  const formatFileSize = (bytes?: number | null) => {
+    if (!bytes) return 'Size unavailable';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
   // Dropdown data for professional form
   const [departments, setDepartments] = useState<Department[]>([]);
   const [designations, setDesignations] = useState<Designation[]>([]);
@@ -296,6 +307,8 @@ export default function ModernEmployeeDetail() {
   const [showEmployeeDocumentUpload, setShowEmployeeDocumentUpload] = useState(false);
   const [employeeDocumentForm, setEmployeeDocumentForm] = useState<EmployeeDocumentPayload>(DEFAULT_EMPLOYEE_DOCUMENT_FORM);
   const [employeeDocumentFile, setEmployeeDocumentFile] = useState<File | null>(null);
+  const [employeeDocumentDisplayMode, setEmployeeDocumentDisplayMode] = useState<'list' | 'cards'>('list');
+  const [viewingEmployeeDocument, setViewingEmployeeDocument] = useState<EmployeeDocument | null>(null);
 
   // Form states for personal tab
   const [personalForm, setPersonalForm] = useState({
@@ -1652,20 +1665,40 @@ export default function ModernEmployeeDetail() {
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-2 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-                {EMPLOYEE_DOCUMENT_CATEGORIES.map((category) => (
+              <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex flex-wrap gap-2">
+                  {EMPLOYEE_DOCUMENT_CATEGORIES.map((category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => setEmployeeDocumentCategory(category.id)}
+                      className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                        employeeDocumentCategory === category.id
+                          ? 'bg-primary-600 text-white'
+                          : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+                <div className="inline-flex self-start rounded-lg border border-gray-200 bg-white p-1 lg:self-auto">
                   <button
-                    key={category.id}
-                    onClick={() => setEmployeeDocumentCategory(category.id)}
-                    className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
-                      employeeDocumentCategory === category.id
-                        ? 'bg-primary-600 text-white'
-                        : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                    }`}
+                    type="button"
+                    onClick={() => setEmployeeDocumentDisplayMode('list')}
+                    className={`rounded-md px-3 py-1.5 text-xs font-bold ${employeeDocumentDisplayMode === 'list' ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
                   >
-                    {category.name}
+                    <ListBulletIcon className="mr-1 inline h-4 w-4" />
+                    List
                   </button>
-                ))}
+                  <button
+                    type="button"
+                    onClick={() => setEmployeeDocumentDisplayMode('cards')}
+                    className={`rounded-md px-3 py-1.5 text-xs font-bold ${employeeDocumentDisplayMode === 'cards' ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+                  >
+                    <Squares2X2Icon className="mr-1 inline h-4 w-4" />
+                    Cards
+                  </button>
+                </div>
               </div>
 
               {showEmployeeDocumentUpload && canManageEmployeeDocuments && (
@@ -1772,6 +1805,55 @@ export default function ModernEmployeeDetail() {
                     <h3 className="mt-2 text-sm font-medium text-gray-900">No employee documents yet</h3>
                     <p className="mt-1 text-sm text-gray-500">Employee identity, employment, compensation, and exit memory will appear here.</p>
                   </div>
+                ) : employeeDocumentDisplayMode === 'cards' ? (
+                  <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
+                    {employeeDocuments.map((document) => (
+                      <article key={document.documentId} className="rounded-xl border border-gray-200 bg-gray-50 p-4 transition hover:shadow-md">
+                        <div className="flex items-start gap-3">
+                          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                            <DocumentTextIcon className="h-7 w-7" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h4 className="truncate text-sm font-bold text-gray-900">{document.title}</h4>
+                            <p className="truncate text-xs text-gray-500">{document.originalFileName}</p>
+                            <p className="mt-1 text-xs text-gray-500">
+                              {EMPLOYEE_DOCUMENT_CATEGORIES.find((category) => category.id === document.category)?.name || document.category}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                          <span className="text-gray-500">Status</span>
+                          <span className="text-right font-semibold capitalize text-gray-800">{document.status.replace('_', ' ')}</span>
+                          <span className="text-gray-500">Verification</span>
+                          <span className="text-right font-semibold capitalize text-gray-800">{document.verificationStatus}</span>
+                          <span className="text-gray-500">Expiry</span>
+                          <span className="text-right font-semibold text-gray-800">{document.expiryDate ? new Date(document.expiryDate).toLocaleDateString() : 'No expiry'}</span>
+                          <span className="text-gray-500">Size</span>
+                          <span className="text-right font-semibold text-gray-800">{formatFileSize(document.fileSize)}</span>
+                        </div>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <button onClick={() => setViewingEmployeeDocument(document)} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-100">
+                            <EyeIcon className="mr-1 inline h-3.5 w-3.5" />
+                            View
+                          </button>
+                          <button onClick={() => handleDownloadEmployeeDocument(document)} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-100">
+                            <ArrowDownTrayIcon className="mr-1 inline h-3.5 w-3.5" />
+                            Download
+                          </button>
+                          {canManageEmployeeDocuments && (
+                            <>
+                              <button onClick={() => handleVerifyEmployeeDocument(document, 'verified')} className="rounded-lg border border-green-100 bg-white px-3 py-1.5 text-xs font-bold text-green-700 hover:bg-green-50">
+                                Verify
+                              </button>
+                              <button onClick={() => handleArchiveEmployeeDocument(document)} className="rounded-lg border border-red-100 bg-white px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-red-50">
+                                Archive
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
@@ -1815,6 +1897,13 @@ export default function ModernEmployeeDetail() {
                             </td>
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => setViewingEmployeeDocument(document)}
+                                  className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
+                                  title="View"
+                                >
+                                  <EyeIcon className="h-5 w-5" />
+                                </button>
                                 <button
                                   onClick={() => handleDownloadEmployeeDocument(document)}
                                   className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
@@ -1997,6 +2086,32 @@ export default function ModernEmployeeDetail() {
           </div>
         </div>
       )}
+
+      <DocumentViewerModal
+        document={
+          viewingEmployeeDocument
+            ? {
+                title: viewingEmployeeDocument.title,
+                fileName: viewingEmployeeDocument.originalFileName || viewingEmployeeDocument.fileName,
+                fileType: viewingEmployeeDocument.fileType,
+                fileSize: viewingEmployeeDocument.fileSize,
+                uploadedAt: viewingEmployeeDocument.createdAt,
+                category: EMPLOYEE_DOCUMENT_CATEGORIES.find((category) => category.id === viewingEmployeeDocument.category)?.name || viewingEmployeeDocument.category,
+                status: viewingEmployeeDocument.status.replace('_', ' '),
+                description: viewingEmployeeDocument.notes || viewingEmployeeDocument.description,
+                metadata: [
+                  { label: 'Document no.', value: viewingEmployeeDocument.documentNumber },
+                  { label: 'Issue date', value: viewingEmployeeDocument.issueDate ? new Date(viewingEmployeeDocument.issueDate).toLocaleDateString() : null },
+                  { label: 'Expiry date', value: viewingEmployeeDocument.expiryDate ? new Date(viewingEmployeeDocument.expiryDate).toLocaleDateString() : 'No expiry' },
+                  { label: 'Verification', value: viewingEmployeeDocument.verificationStatus },
+                ],
+              }
+            : null
+        }
+        loadBlob={viewingEmployeeDocument ? () => employeeDocumentService.getBlob(viewingEmployeeDocument) : null}
+        onClose={() => setViewingEmployeeDocument(null)}
+        onDownload={viewingEmployeeDocument ? () => handleDownloadEmployeeDocument(viewingEmployeeDocument) : undefined}
+      />
     </ModernLayout>
   );
 }

@@ -111,6 +111,16 @@ class DigitalLibraryService {
     return response.data;  // ApiClient already unwraps response.data
   }
 
+  async getBlob(item: LibraryItem): Promise<Blob> {
+    const download = await this.downloadFromLibrary(item.libraryId);
+    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+    const serverBase = apiBase.replace(/\/api\/v1\/?$/, '');
+    const url = download.fileUrl.startsWith('http') ? download.fileUrl : `${serverBase}${download.fileUrl}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Unable to load library document');
+    return response.blob();
+  }
+
   async updateLibraryItem(
     libraryId: string,
     updates: {

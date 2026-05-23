@@ -113,7 +113,7 @@ class CompanyDocumentService {
     return response.data;
   }
 
-  async download(document: CompanyDocument): Promise<void> {
+  async getBlob(document: CompanyDocument): Promise<Blob> {
     const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
     const tokens = localStorage.getItem('tokens');
     const headers: HeadersInit = {};
@@ -129,7 +129,11 @@ class CompanyDocumentService {
       throw new Error('Unable to download company document');
     }
 
-    const blob = await response.blob();
+    return response.blob();
+  }
+
+  async download(document: CompanyDocument): Promise<void> {
+    const blob = await this.getBlob(document);
     const url = URL.createObjectURL(blob);
     const link = window.document.createElement('a');
     link.href = url;
@@ -141,4 +145,3 @@ class CompanyDocumentService {
 
 export const companyDocumentService = new CompanyDocumentService();
 export default companyDocumentService;
-

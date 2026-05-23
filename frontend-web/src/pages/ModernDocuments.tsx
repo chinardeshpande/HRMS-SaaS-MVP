@@ -4,6 +4,7 @@ import { DocumentWizard } from '../components/documents/DocumentWizard';
 import { TemplateManager } from '../components/documents/TemplateManager';
 import { TemplateEditor } from '../components/documents/TemplateEditor';
 import { TemplatePreview } from '../components/documents/TemplatePreview';
+import DocumentViewerModal from '../components/common/DocumentViewerModal';
 import documentService from '../services/documentService';
 import type { DocumentHistory } from '../services/documentService';
 import companyDocumentService from '../services/companyDocumentService';
@@ -36,6 +37,8 @@ import {
   TrashIcon,
   BuildingOfficeIcon,
   CloudArrowUpIcon,
+  EyeIcon,
+  ListBulletIcon,
 } from '@heroicons/react/24/outline';
 
 // Icon mapping for template categories
@@ -83,6 +86,7 @@ interface DocumentTemplate {
 }
 
 type ViewMode = 'templates' | 'manager' | 'history' | 'companyVault';
+type DocumentDisplayMode = 'list' | 'cards';
 
 interface TemplateData {
   templateId: string;
@@ -144,6 +148,9 @@ export default function ModernDocuments() {
   const [showCompanyUpload, setShowCompanyUpload] = useState(false);
   const [companyDocumentForm, setCompanyDocumentForm] = useState<CompanyDocumentPayload>(DEFAULT_COMPANY_DOCUMENT_FORM);
   const [companyDocumentFile, setCompanyDocumentFile] = useState<File | null>(null);
+  const [documentDisplayMode, setDocumentDisplayMode] = useState<DocumentDisplayMode>('list');
+  const [viewingCompanyDocument, setViewingCompanyDocument] = useState<CompanyDocument | null>(null);
+  const [viewingGeneratedDocument, setViewingGeneratedDocument] = useState<DocumentHistory | null>(null);
 
   // Template Manager States
   const [editingTemplate, setEditingTemplate] = useState<TemplateData | null>(null);
@@ -347,6 +354,13 @@ export default function ModernDocuments() {
         message: 'Generated document file is not available for download.',
       });
     }
+  };
+
+  const formatFileSize = (bytes?: number | null) => {
+    if (!bytes) return 'Size unavailable';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   const handleDeleteHistory = async (doc: DocumentHistory) => {
@@ -628,6 +642,28 @@ export default function ModernDocuments() {
 
         {viewMode === 'history' && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
+              <div>
+                <h3 className="text-sm font-bold text-gray-900">Generated HR documents</h3>
+                <p className="text-xs text-gray-500">View, download, or remove generated documents from active history.</p>
+              </div>
+              <div className="inline-flex rounded-lg border border-gray-200 bg-white p-1">
+                <button
+                  onClick={() => setDocumentDisplayMode('list')}
+                  className={`rounded-md px-3 py-1.5 text-xs font-bold ${documentDisplayMode === 'list' ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+                >
+                  <ListBulletIcon className="mr-1 inline h-4 w-4" />
+                  List
+                </button>
+                <button
+                  onClick={() => setDocumentDisplayMode('cards')}
+                  className={`rounded-md px-3 py-1.5 text-xs font-bold ${documentDisplayMode === 'cards' ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+                >
+                  <Squares2X2Icon className="mr-1 inline h-4 w-4" />
+                  Cards
+                </button>
+              </div>
+            </div>
             {historyLoading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600"></div>
@@ -637,6 +673,40 @@ export default function ModernDocuments() {
                 <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-400" />
                 <h3 className="mt-2 text-sm font-medium text-gray-900">No generated documents yet</h3>
                 <p className="mt-1 text-sm text-gray-500">Generated HR documents will appear here.</p>
+              </div>
+            ) : documentDisplayMode === 'cards' ? (
+              <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
+                {history.map((doc) => (
+                  <article key={doc.documentId} className="rounded-xl border border-gray-200 bg-gray-50 p-4 transition hover:shadow-md">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                        <DocumentTextIcon className="h-6 w-6" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="truncate text-sm font-bold text-gray-900">{doc.templateName}</h4>
+                        <p className="truncate text-xs text-gray-500">{doc.fileName}</p>
+                        <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold text-gray-500">
+                          <span>{doc.format}</span>
+                          <span>{formatFileSize(doc.fileSizeBytes)}</span>
+                          <span>{new Date(doc.generatedAt).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <button onClick={() => setViewingGeneratedDocument(doc)} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-100">
+                        <EyeIcon className="mr-1 inline h-3.5 w-3.5" />
+                        View
+                      </button>
+                      <button onClick={() => handleDownloadHistory(doc)} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-100">
+                        <ArrowDownTrayIcon className="mr-1 inline h-3.5 w-3.5" />
+                        Download
+                      </button>
+                      <button onClick={() => handleDeleteHistory(doc)} className="rounded-lg border border-red-100 bg-white px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-red-50">
+                        Remove
+                      </button>
+                    </div>
+                  </article>
+                ))}
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -669,6 +739,13 @@ export default function ModernDocuments() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setViewingGeneratedDocument(doc)}
+                              className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
+                              title="View"
+                            >
+                              <EyeIcon className="h-5 w-5" />
+                            </button>
                             <button
                               onClick={() => handleDownloadHistory(doc)}
                               className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
@@ -726,13 +803,33 @@ export default function ModernDocuments() {
                   </button>
                 ))}
               </div>
-              <button
-                onClick={() => setShowCompanyUpload((value) => !value)}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700"
-              >
-                <CloudArrowUpIcon className="h-4 w-4" />
-                Add company document
-              </button>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex rounded-lg border border-gray-200 bg-white p-1">
+                  <button
+                    type="button"
+                    onClick={() => setDocumentDisplayMode('list')}
+                    className={`rounded-md px-3 py-1.5 text-xs font-bold ${documentDisplayMode === 'list' ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+                  >
+                    <ListBulletIcon className="mr-1 inline h-4 w-4" />
+                    List
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDocumentDisplayMode('cards')}
+                    className={`rounded-md px-3 py-1.5 text-xs font-bold ${documentDisplayMode === 'cards' ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+                  >
+                    <Squares2X2Icon className="mr-1 inline h-4 w-4" />
+                    Cards
+                  </button>
+                </div>
+                <button
+                  onClick={() => setShowCompanyUpload((value) => !value)}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700"
+                >
+                  <CloudArrowUpIcon className="h-4 w-4" />
+                  Add company document
+                </button>
+              </div>
             </div>
 
             {showCompanyUpload && (
@@ -847,6 +944,51 @@ export default function ModernDocuments() {
                   <h3 className="mt-2 text-sm font-medium text-gray-900">No company documents yet</h3>
                   <p className="mt-1 text-sm text-gray-500">Company HR and compliance memory will appear here.</p>
                 </div>
+              ) : documentDisplayMode === 'cards' ? (
+                <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
+                  {companyDocuments.map((document) => (
+                    <article key={document.documentId} className="rounded-xl border border-gray-200 bg-gray-50 p-4 transition hover:shadow-md">
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-700">
+                          <DocumentTextIcon className="h-7 w-7" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="truncate text-sm font-bold text-gray-900">{document.title}</h4>
+                          <p className="truncate text-xs text-gray-500">{document.originalFileName}</p>
+                          <p className="mt-1 text-xs text-gray-500">
+                            {COMPANY_DOCUMENT_CATEGORIES.find((category) => category.id === document.category)?.name || document.category}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                        <span className="text-gray-500">Status</span>
+                        <span className="text-right font-semibold capitalize text-gray-800">{document.status.replace('_', ' ')}</span>
+                        <span className="text-gray-500">Verification</span>
+                        <span className="text-right font-semibold capitalize text-gray-800">{document.verificationStatus}</span>
+                        <span className="text-gray-500">Expiry</span>
+                        <span className="text-right font-semibold text-gray-800">{document.expiryDate ? new Date(document.expiryDate).toLocaleDateString() : 'No expiry'}</span>
+                        <span className="text-gray-500">Size</span>
+                        <span className="text-right font-semibold text-gray-800">{formatFileSize(document.fileSize)}</span>
+                      </div>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <button onClick={() => setViewingCompanyDocument(document)} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-100">
+                          <EyeIcon className="mr-1 inline h-3.5 w-3.5" />
+                          View
+                        </button>
+                        <button onClick={() => handleDownloadCompanyDocument(document)} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-100">
+                          <ArrowDownTrayIcon className="mr-1 inline h-3.5 w-3.5" />
+                          Download
+                        </button>
+                        <button onClick={() => handleVerifyCompanyDocument(document, 'verified')} className="rounded-lg border border-green-100 bg-white px-3 py-1.5 text-xs font-bold text-green-700 hover:bg-green-50">
+                          Verify
+                        </button>
+                        <button onClick={() => handleArchiveCompanyDocument(document)} className="rounded-lg border border-red-100 bg-white px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-red-50">
+                          Archive
+                        </button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
@@ -895,6 +1037,13 @@ export default function ModernDocuments() {
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => setViewingCompanyDocument(document)}
+                                className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
+                                title="View"
+                              >
+                                <EyeIcon className="h-5 w-5" />
+                              </button>
                               <button
                                 onClick={() => handleDownloadCompanyDocument(document)}
                                 className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
@@ -962,6 +1111,56 @@ export default function ModernDocuments() {
             }}
           />
         )}
+
+        <DocumentViewerModal
+          document={
+            viewingGeneratedDocument
+              ? {
+                  title: viewingGeneratedDocument.templateName,
+                  fileName: viewingGeneratedDocument.fileName,
+                  fileType: viewingGeneratedDocument.format,
+                  fileSize: viewingGeneratedDocument.fileSizeBytes,
+                  uploadedAt: viewingGeneratedDocument.generatedAt,
+                  status: viewingGeneratedDocument.status || 'generated',
+                  metadata: [
+                    { label: 'Generated by', value: viewingGeneratedDocument.generatedBy },
+                    { label: 'Format', value: viewingGeneratedDocument.format },
+                    { label: 'Generated at', value: new Date(viewingGeneratedDocument.generatedAt).toLocaleString() },
+                  ],
+                }
+              : null
+          }
+          loadBlob={viewingGeneratedDocument ? () => documentService.downloadDocument(viewingGeneratedDocument.documentId) : null}
+          onClose={() => setViewingGeneratedDocument(null)}
+          onDownload={viewingGeneratedDocument ? () => handleDownloadHistory(viewingGeneratedDocument) : undefined}
+        />
+
+        <DocumentViewerModal
+          document={
+            viewingCompanyDocument
+              ? {
+                  title: viewingCompanyDocument.title,
+                  fileName: viewingCompanyDocument.originalFileName || viewingCompanyDocument.fileName,
+                  fileType: viewingCompanyDocument.fileType,
+                  fileSize: viewingCompanyDocument.fileSize,
+                  uploadedAt: viewingCompanyDocument.createdAt,
+                  category: COMPANY_DOCUMENT_CATEGORIES.find((category) => category.id === viewingCompanyDocument.category)?.name || viewingCompanyDocument.category,
+                  status: viewingCompanyDocument.status.replace('_', ' '),
+                  description: viewingCompanyDocument.notes || viewingCompanyDocument.description,
+                  metadata: [
+                    { label: 'Document no.', value: viewingCompanyDocument.documentNumber },
+                    { label: 'Authority', value: viewingCompanyDocument.issuingAuthority },
+                    { label: 'Issue date', value: viewingCompanyDocument.issueDate ? new Date(viewingCompanyDocument.issueDate).toLocaleDateString() : null },
+                    { label: 'Expiry date', value: viewingCompanyDocument.expiryDate ? new Date(viewingCompanyDocument.expiryDate).toLocaleDateString() : 'No expiry' },
+                    { label: 'Verification', value: viewingCompanyDocument.verificationStatus },
+                  ],
+                }
+              : null
+          }
+          loadBlob={viewingCompanyDocument ? () => companyDocumentService.getBlob(viewingCompanyDocument) : null}
+          onClose={() => setViewingCompanyDocument(null)}
+          onDownload={viewingCompanyDocument ? () => handleDownloadCompanyDocument(viewingCompanyDocument) : undefined}
+        />
       </div>
     </ModernLayout>
   );
