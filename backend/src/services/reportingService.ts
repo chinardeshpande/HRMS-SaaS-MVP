@@ -8,7 +8,6 @@ import { Department } from '../models/Department';
 import { ProbationCase } from '../models/ProbationCase';
 import { PerformanceReview } from '../models/PerformanceReview';
 import { ExitCase } from '../models/ExitCase';
-import { OnboardingDocument } from '../models/OnboardingDocument';
 import {
   CompanyDocument,
   CompanyDocumentCategory,
@@ -173,7 +172,6 @@ export class ReportingService {
   private probationRepo: Repository<ProbationCase>;
   private performanceReviewRepo: Repository<PerformanceReview>;
   private exitRepo: Repository<ExitCase>;
-  private documentRepo: Repository<OnboardingDocument>;
   private companyDocumentRepo: Repository<CompanyDocument>;
   private employeeDocumentRepo: Repository<EmployeeDocument>;
   private salaryStructureRepo: Repository<SalaryStructure>;
@@ -189,7 +187,6 @@ export class ReportingService {
     this.probationRepo = AppDataSource.getRepository(ProbationCase);
     this.performanceReviewRepo = AppDataSource.getRepository(PerformanceReview);
     this.exitRepo = AppDataSource.getRepository(ExitCase);
-    this.documentRepo = AppDataSource.getRepository(OnboardingDocument);
     this.companyDocumentRepo = AppDataSource.getRepository(CompanyDocument);
     this.employeeDocumentRepo = AppDataSource.getRepository(EmployeeDocument);
     this.salaryStructureRepo = AppDataSource.getRepository(SalaryStructure);
@@ -543,54 +540,51 @@ export class ReportingService {
   ): Promise<MissingDocumentsData[]> {
     // Define mandatory documents
     const mandatoryDocuments = [
-      'aadhar_card',
-      'pan_card',
-      'education_certificate',
-      'bank_details',
-      'photo',
+      EmployeeDocumentCategory.IDENTITY,
+      EmployeeDocumentCategory.ADDRESS_PROOF,
+      EmployeeDocumentCategory.EDUCATION,
+      EmployeeDocumentCategory.EMPLOYMENT_LETTER,
     ];
 
-    const employees = await this.employeeRepo
-      .createQueryBuilder('employee')
-      .leftJoin('employee.department', 'department')
-      .where('employee.tenantId = :tenantId', { tenantId })
-      .andWhere('employee.status = :status', { status: 'active' })
-      .select([
-        'employee.employeeId',
-        'employee.firstName',
-        'employee.lastName',
-        'employee.employeeCode',
-        'employee.email',
-        'department.name as departmentName',
-      ])
-      .getRawMany();
+    const employeeWhere: any = { tenantId, status: 'active' };
+    if (filters.departmentIds && filters.departmentIds.length > 0) {
+      employeeWhere.departmentId = In(filters.departmentIds);
+    }
+
+    const employees = await this.employeeRepo.find({
+      where: employeeWhere,
+      relations: ['department'],
+      order: { employeeCode: 'ASC' },
+    });
+
+    const employeeDocuments = await this.employeeDocumentRepo.find({
+      where: {
+        tenantId,
+        status: EmployeeDocumentStatus.ACTIVE,
+      },
+    });
+
+    const documentsByEmployee = new Map<string, EmployeeDocument[]>();
+    for (const document of employeeDocuments) {
+      const existing = documentsByEmployee.get(document.employeeId) || [];
+      existing.push(document);
+      documentsByEmployee.set(document.employeeId, existing);
+    }
 
     const results: MissingDocumentsData[] = [];
 
-    for (const emp of employees) {
-      // Get uploaded documents for this employee
-      const uploadedDocs = await this.documentRepo
-        .createQueryBuilder('doc')
-        .where('doc.tenantId = :tenantId', { tenantId })
-        .andWhere('doc."candidateId" IN (SELECT "candidateId" FROM candidates WHERE email = :email AND "tenantId" = :tenantId)', {
-          email: emp.employee_email,
-          tenantId,
-        })
-        .andWhere('doc.verificationStatus != :status', { status: 'missing' })
-        .select('doc.documentType')
-        .getRawMany();
-
-      const uploadedTypes = uploadedDocs.map((d) => d.documentType);
+    for (const employee of employees) {
+      const uploadedTypes = (documentsByEmployee.get(employee.employeeId) || []).map((document) => document.category);
       const missingDocuments = mandatoryDocuments.filter(
         (doc) => !uploadedTypes.includes(doc)
       );
 
       if (missingDocuments.length > 0) {
         results.push({
-          employeeId: emp.employee_employeeId,
-          employeeName: `${emp.employee_firstName} ${emp.employee_lastName}`,
-          employeeCode: emp.employee_employeeCode,
-          department: emp.departmentName || 'Unassigned',
+          employeeId: employee.employeeId,
+          employeeName: employee.fullName,
+          employeeCode: employee.employeeCode,
+          department: employee.department?.name || 'Unassigned',
           missingDocuments,
           documentCount: missingDocuments.length,
           criticality: missingDocuments.length >= 3 ? 'high' : missingDocuments.length >= 2 ? 'medium' : 'low',

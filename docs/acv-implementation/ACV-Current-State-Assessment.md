@@ -129,6 +129,7 @@ Audit logging is not yet systematic across employee master changes, compensation
 - A Memory Readiness report now exists at `/api/reports/memory-readiness` and appears in `Reports & Analytics`.
 - The report combines employee master completeness, durable employee document categories, company document vault coverage, salary structure presence, and payslip presence.
 - It produces a tenant-level readiness score, employee-level readiness rows, and company document category findings.
+- The Missing Documents report now uses the durable `EmployeeDocument` vault instead of onboarding-stage candidate documents.
 
 ### Current Gap
 
