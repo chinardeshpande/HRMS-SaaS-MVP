@@ -171,7 +171,7 @@ app.use('/uploads', (_req, res, next) => {
   res.header('Cross-Origin-Resource-Policy', 'cross-origin');
   next();
 });
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
 
 // Request logging
 app.use(requestLogger);

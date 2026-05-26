@@ -5,6 +5,7 @@ import fs from 'fs';
 import { authenticate, authorize } from '../middleware/auth';
 import { UserRole } from '../../../shared/types';
 import companyDocumentService from '../services/companyDocumentService';
+import { uploadDir } from '../utils/uploadPaths';
 import {
   CompanyDocumentCategory,
   CompanyDocumentStatus,
@@ -18,11 +19,11 @@ const hrOnly = authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN);
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
-    const uploadDir = path.join(__dirname, '../../uploads/company-documents');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    const targetDir = uploadDir('company-documents');
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
     }
-    cb(null, uploadDir);
+    cb(null, targetDir);
   },
   filename: (_req, file, cb) => {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
@@ -218,4 +219,3 @@ router.delete('/:documentId', hrOnly, async (req: Request, res: Response) => {
 });
 
 export default router;
-

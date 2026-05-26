@@ -10,6 +10,7 @@ import {
   EmployeeDocumentVerificationStatus,
 } from '../models/EmployeeDocument';
 import auditService from './auditService';
+import { resolveUploadUrl } from '../utils/uploadPaths';
 
 export interface EmployeeDocumentInput {
   title: string;
@@ -262,7 +263,7 @@ class EmployeeDocumentService {
   }
 
   resolveFilePath(fileUrl: string): string {
-    return path.join(__dirname, '../..', fileUrl);
+    return resolveUploadUrl(fileUrl);
   }
 
   fileExists(fileUrl: string): boolean {
@@ -320,4 +321,3 @@ class EmployeeDocumentService {
 
 export const employeeDocumentService = new EmployeeDocumentService();
 export default employeeDocumentService;
-

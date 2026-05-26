@@ -9,17 +9,18 @@ import { SalaryApprovalStatus, SalaryStructureStatus } from '../models/SalaryStr
 import { SalaryComponentType } from '../models/SalaryComponent';
 import { PayslipStatus } from '../models/Payslip';
 import { CompensationShareChannel } from '../models/CompensationShareLog';
+import { resolveUploadUrl, uploadDir } from '../utils/uploadPaths';
 
 const router = Router();
 router.use(authenticate);
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
-    const uploadDir = path.join(__dirname, '../../uploads/compensation');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    const targetDir = uploadDir('compensation');
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
     }
-    cb(null, uploadDir);
+    cb(null, targetDir);
   },
   filename: (_req, file, cb) => {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
@@ -326,7 +327,7 @@ router.get('/attachments/:attachmentId/download', async (req: Request, res: Resp
       return deny(res);
     }
 
-    const absolutePath = path.join(__dirname, '../..', attachment.fileUrl);
+    const absolutePath = resolveUploadUrl(attachment.fileUrl);
     if (!fs.existsSync(absolutePath)) {
       return res.status(404).json({ success: false, error: { code: 'FILE_NOT_FOUND', message: 'File not found on server' } });
     }

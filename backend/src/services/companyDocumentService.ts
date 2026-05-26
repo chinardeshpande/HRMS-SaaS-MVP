@@ -9,6 +9,7 @@ import {
   CompanyDocumentVerificationStatus,
 } from '../models/CompanyDocument';
 import auditService from './auditService';
+import { resolveUploadUrl } from '../utils/uploadPaths';
 
 export interface CompanyDocumentInput {
   title: string;
@@ -280,7 +281,7 @@ class CompanyDocumentService {
   }
 
   resolveFilePath(fileUrl: string): string {
-    return path.join(__dirname, '../..', fileUrl);
+    return resolveUploadUrl(fileUrl);
   }
 
   fileExists(fileUrl: string): boolean {
