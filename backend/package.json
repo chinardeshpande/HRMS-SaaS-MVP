@@ -5,7 +5,7 @@
   "main": "dist/backend/src/server.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/server.ts",
-    "build": "tsc",
+    "build": "tsc && tsc -p tsconfig.scripts.json",
     "start": "node dist/backend/src/server.js",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
@@ -25,7 +25,8 @@
     "sync:employees": "ts-node src/scripts/syncCandidatesToEmployees.ts",
     "audit:tenant-clean": "ts-node src/scripts/auditTenantCleanliness.ts",
     "import:pilot-org": "ts-node src/scripts/importPilotOrganization.ts",
-    "acv:customer-zero-cleanup": "ts-node src/scripts/applyAcvCustomerZeroCleanup.ts"
+    "acv:customer-zero-cleanup": "ts-node src/scripts/applyAcvCustomerZeroCleanup.ts",
+    "acv:customer-zero-cleanup:prod": "node dist/backend/src/scripts/applyAcvCustomerZeroCleanup.js"
   },
   "keywords": [
     "hrms",
