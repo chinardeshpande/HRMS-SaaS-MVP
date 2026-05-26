@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   ArrowDownTrayIcon,
+  ArrowTopRightOnSquareIcon,
   DocumentIcon,
   DocumentTextIcon,
   PhotoIcon,
@@ -47,6 +48,7 @@ export default function DocumentViewerModal({
   const [mimeType, setMimeType] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPdfFallback, setShowPdfFallback] = useState(false);
 
   const extension = useMemo(() => getExtension(document?.fileName || ''), [document?.fileName]);
   const isPdf = mimeType === 'application/pdf' || extension === 'pdf';
@@ -62,6 +64,7 @@ export default function DocumentViewerModal({
       try {
         setLoading(true);
         setError(null);
+        setShowPdfFallback(false);
         const blob = await loadBlob();
         if (!mounted) return;
         nextUrl = URL.createObjectURL(blob);
@@ -86,6 +89,19 @@ export default function DocumentViewerModal({
   }, [document, loadBlob]);
 
   useEffect(() => {
+    if (!objectUrl || !isPdf) {
+      setShowPdfFallback(false);
+      return;
+    }
+
+    const fallbackTimer = window.setTimeout(() => {
+      setShowPdfFallback(true);
+    }, 2500);
+
+    return () => window.clearTimeout(fallbackTimer);
+  }, [objectUrl, isPdf]);
+
+  useEffect(() => {
     if (!document) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
@@ -101,6 +117,11 @@ export default function DocumentViewerModal({
   if (!document) return null;
 
   const PreviewIcon = isImage ? PhotoIcon : isPdf ? DocumentTextIcon : DocumentIcon;
+  const openPreviewInNewTab = () => {
+    if (objectUrl) {
+      window.open(objectUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/75 p-4" onClick={onClose}>
@@ -131,6 +152,16 @@ export default function DocumentViewerModal({
                 <ArrowDownTrayIcon className="h-5 w-5" />
               </button>
             )}
+            {objectUrl && (
+              <button
+                type="button"
+                onClick={openPreviewInNewTab}
+                className="rounded-lg border border-gray-200 bg-white p-2 text-gray-600 hover:bg-gray-50 hover:text-primary-700"
+                title="Open preview"
+              >
+                <ArrowTopRightOnSquareIcon className="h-5 w-5" />
+              </button>
+            )}
             <button
               type="button"
               onClick={onClose}
@@ -159,7 +190,62 @@ export default function DocumentViewerModal({
                 <img src={objectUrl} alt={document.title} className="max-h-[72vh] max-w-full rounded-lg bg-white object-contain shadow" />
               </div>
             ) : objectUrl && isPdf ? (
-              <iframe src={objectUrl} title={document.title} className="h-[72vh] w-full rounded-lg border border-gray-200 bg-white shadow" />
+              <div className="space-y-3">
+                {showPdfFallback && (
+                  <div className="flex flex-col gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
+                    <span>
+                      If the PDF area stays blank, the embedded browser is blocking inline PDF rendering. Open or download the file.
+                    </span>
+                    <div className="flex shrink-0 gap-2">
+                      <button
+                        type="button"
+                        onClick={openPreviewInNewTab}
+                        className="rounded-md border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100"
+                      >
+                        Open
+                      </button>
+                      {onDownload && (
+                        <button
+                          type="button"
+                          onClick={onDownload}
+                          className="rounded-md bg-amber-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-800"
+                        >
+                          Download
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+                <object
+                  data={objectUrl}
+                  type="application/pdf"
+                  className="h-[72vh] w-full rounded-lg border border-gray-200 bg-white shadow"
+                >
+                  <div className="flex h-full min-h-[420px] flex-col items-center justify-center rounded-lg bg-white p-8 text-center text-gray-600">
+                    <DocumentTextIcon className="mb-4 h-16 w-16 text-gray-300" />
+                    <p className="font-semibold text-gray-900">Inline PDF preview is not available in this browser.</p>
+                    <p className="mt-1 max-w-md text-sm">Open or download the file to review it.</p>
+                    <div className="mt-4 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={openPreviewInNewTab}
+                        className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                      >
+                        Open
+                      </button>
+                      {onDownload && (
+                        <button
+                          type="button"
+                          onClick={onDownload}
+                          className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700"
+                        >
+                          Download
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </object>
+              </div>
             ) : (
               <div className="flex h-full min-h-[420px] flex-col items-center justify-center text-center text-gray-600">
                 <PreviewIcon className="mb-4 h-16 w-16 text-gray-300" />

@@ -201,6 +201,180 @@ export default function ModernReports() {
     document.body.removeChild(link);
   };
 
+  const getStatusBadgeClass = (status?: string) => {
+    switch (status) {
+      case 'complete':
+      case 'present':
+      case 'active':
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      case 'needs_review':
+      case 'inactive':
+      case 'missing_attachments':
+        return 'bg-amber-50 text-amber-700 border-amber-200';
+      case 'critical':
+      case 'missing':
+      case 'exited':
+        return 'bg-red-50 text-red-700 border-red-200';
+      default:
+        return 'bg-gray-50 text-gray-700 border-gray-200';
+    }
+  };
+
+  const renderBadge = (status?: string) => (
+    <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold capitalize ${getStatusBadgeClass(status)}`}>
+      {(status || 'unknown').replace(/_/g, ' ')}
+    </span>
+  );
+
+  const renderMemoryReadinessReport = () => {
+    const summary = reportData?.summary || {};
+    const results = reportData?.results || [];
+    const companyFindings = reportData?.companyDocumentFindings || [];
+    const summaryCards = [
+      { label: 'Readiness score', value: `${summary.readinessScore ?? 0}%`, tone: 'blue' },
+      { label: 'Employees', value: summary.totalEmployees ?? 0, tone: 'slate' },
+      { label: 'Active', value: summary.activeEmployees ?? 0, tone: 'green' },
+      { label: 'Inactive to classify', value: summary.inactiveEmployeesNeedingExitClassification ?? 0, tone: 'amber' },
+      { label: 'Missing master data', value: summary.employeesWithMissingMasterData ?? 0, tone: 'red' },
+      { label: 'Missing required docs', value: summary.employeesMissingRequiredDocuments ?? 0, tone: 'red' },
+      { label: 'No salary structure', value: summary.employeesWithoutSalaryStructure ?? 0, tone: 'amber' },
+      { label: 'No payslip records', value: summary.employeesWithoutPayslip ?? 0, tone: 'amber' },
+      { label: 'Payslips without files', value: summary.payslipRecordsMissingAttachments ?? 0, tone: 'red' },
+      { label: 'Company documents', value: summary.companyDocuments ?? 0, tone: 'blue' },
+      { label: 'Unverified company docs', value: summary.unverifiedCompanyDocuments ?? 0, tone: 'amber' },
+      { label: 'Expiring in 60 days', value: summary.expiringCompanyDocuments60Days ?? 0, tone: 'red' },
+    ];
+    const toneClasses: Record<string, string> = {
+      blue: 'from-blue-50 to-white border-blue-100 text-blue-800',
+      green: 'from-emerald-50 to-white border-emerald-100 text-emerald-800',
+      amber: 'from-amber-50 to-white border-amber-100 text-amber-800',
+      red: 'from-red-50 to-white border-red-100 text-red-800',
+      slate: 'from-slate-50 to-white border-slate-100 text-slate-800',
+    };
+
+    return (
+      <div className="space-y-6">
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-primary-700">Implementation readiness</p>
+              <h3 className="mt-1 text-xl font-semibold text-gray-900">{reportData.report}</h3>
+              <p className="mt-2 max-w-3xl text-sm text-gray-600">
+                This view checks whether tenant memory is usable: employee master completeness, documents,
+                company records, compensation records, payslip file coverage, and historical employee classification.
+              </p>
+            </div>
+            {results.length > 0 && (
+              <button onClick={exportToCSV} className="btn-secondary flex items-center gap-2 whitespace-nowrap">
+                <ArrowDownTrayIcon className="h-4 w-4" />
+                Export CSV
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {summaryCards.map((card) => (
+            <div key={card.label} className={`rounded-lg border bg-gradient-to-br p-4 ${toneClasses[card.tone]}`}>
+              <p className="text-xs font-bold uppercase tracking-wide opacity-75">{card.label}</p>
+              <p className="mt-2 text-2xl font-bold text-gray-950">{card.value}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          Historical employees imported as inactive are included in readiness coverage. They should be reviewed
+          and converted to exited only when the HR exit/FNF evidence is confirmed.
+        </div>
+
+        {companyFindings.length > 0 && (
+          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <h4 className="text-lg font-semibold text-gray-900">Company document vault coverage</h4>
+            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+              {companyFindings.map((finding: any) => (
+                <div key={finding.category} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <p className="text-xs font-bold uppercase tracking-wide text-gray-500">{String(finding.category).replace(/_/g, ' ')}</p>
+                  <div className="mt-3">{renderBadge(finding.status)}</div>
+                  <div className="mt-3 space-y-1 text-sm text-gray-700">
+                    <p className="flex justify-between"><span>Active</span><span className="font-semibold">{finding.activeDocuments}</span></p>
+                    <p className="flex justify-between"><span>Verified</span><span className="font-semibold">{finding.verifiedDocuments}</span></p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {results.length > 0 ? (
+          <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+            <div className="border-b border-gray-200 p-4">
+              <h4 className="text-lg font-semibold text-gray-900">Employee readiness details</h4>
+              <p className="mt-1 text-sm text-gray-500">Use this table as the cleanup queue for ACV data migration.</p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    {[
+                      'Employee',
+                      'Status',
+                      'Department',
+                      'Designation',
+                      'Master gaps',
+                      'Required docs',
+                      'Salary',
+                      'Payslips',
+                      'Files missing',
+                      'Readiness',
+                    ].map((heading) => (
+                      <th key={heading} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        {heading}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {results.map((row: any) => (
+                    <tr key={row.employeeId} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm">
+                        <p className="font-semibold text-gray-900">{row.employeeName}</p>
+                        <p className="text-xs text-gray-500">{row.employeeCode}</p>
+                      </td>
+                      <td className="px-4 py-3">{renderBadge(row.employeeStatus)}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{row.department}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{row.designation}</td>
+                      <td className="max-w-[220px] px-4 py-3 text-sm text-gray-700">{row.missingMasterFields}</td>
+                      <td className="max-w-[220px] px-4 py-3 text-sm text-gray-700">{row.missingRequiredDocuments}</td>
+                      <td className="px-4 py-3">{renderBadge(row.salaryStructureStatus)}</td>
+                      <td className="px-4 py-3">
+                        <div className="space-y-1">
+                          {renderBadge(row.payslipStatus)}
+                          <p className="text-xs text-gray-500">{row.payslipRecords || 0} records</p>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="space-y-1">
+                          {renderBadge(row.payslipAttachmentStatus)}
+                          <p className="text-xs text-gray-500">{row.payslipRecordsMissingAttachments || 0} missing</p>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">{renderBadge(row.readinessStatus)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-center">
+            <ChartBarIcon className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+            <h3 className="text-lg font-medium text-gray-900">No readiness data available</h3>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderReportData = () => {
     if (loading) {
       return (
@@ -230,6 +404,10 @@ export default function ModernReports() {
     }
 
     if (!reportData) return null;
+
+    if (selectedReport === 'memory-readiness') {
+      return renderMemoryReadinessReport();
+    }
 
     const hasResults = reportData.results && reportData.results.length > 0;
 

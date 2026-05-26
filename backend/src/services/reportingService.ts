@@ -135,12 +135,20 @@ export interface MemoryReadinessData {
   unverifiedDocuments: number;
   salaryStructureStatus: 'present' | 'missing';
   payslipStatus: 'present' | 'missing';
+  payslipRecords: number;
+  payslipRecordsMissingAttachments: number;
+  payslipAttachmentStatus: 'complete' | 'missing_attachments' | 'not_applicable';
+  employeeStatus: string;
   readinessStatus: 'complete' | 'needs_review' | 'critical';
 }
 
 export interface MemoryReadinessReport {
   summary: {
     totalEmployees: number;
+    activeEmployees: number;
+    inactiveEmployees: number;
+    exitedEmployees: number;
+    inactiveEmployeesNeedingExitClassification: number;
     readinessScore: number;
     completeEmployees: number;
     needsReviewEmployees: number;
@@ -153,6 +161,10 @@ export interface MemoryReadinessReport {
     expiringCompanyDocuments60Days: number;
     employeesWithoutSalaryStructure: number;
     employeesWithoutPayslip: number;
+    payslipRecords: number;
+    payslipRecordsWithAttachments: number;
+    payslipRecordsMissingAttachments: number;
+    employeesWithPayslipRecordsMissingAttachments: number;
   };
   results: MemoryReadinessData[];
   companyDocumentFindings: Array<{
@@ -641,6 +653,7 @@ export class ReportingService {
       }),
       this.payslipRepo.find({
         where: { tenantId },
+        relations: ['attachments'],
       }),
     ]);
 
@@ -653,6 +666,13 @@ export class ReportingService {
 
     const employeesWithSalaryStructure = new Set(salaryStructures.map((structure) => structure.employeeId));
     const employeesWithPayslip = new Set(payslips.map((payslip) => payslip.employeeId));
+    const payslipsByEmployee = new Map<string, Payslip[]>();
+    for (const payslip of payslips) {
+      const existing = payslipsByEmployee.get(payslip.employeeId) || [];
+      existing.push(payslip);
+      payslipsByEmployee.set(payslip.employeeId, existing);
+    }
+    const payslipsMissingAttachments = payslips.filter((payslip) => (payslip.attachments || []).length === 0);
 
     const companyActiveDocuments = companyDocuments.filter(
       (document) => document.status !== CompanyDocumentStatus.ARCHIVED
@@ -691,13 +711,23 @@ export class ReportingService {
 
       const hasSalaryStructure = employeesWithSalaryStructure.has(employee.employeeId);
       const hasPayslip = employeesWithPayslip.has(employee.employeeId);
+      const employeePayslips = payslipsByEmployee.get(employee.employeeId) || [];
+      const payslipRecordsMissingAttachments = employeePayslips.filter(
+        (payslip) => (payslip.attachments || []).length === 0
+      ).length;
+      const payslipAttachmentStatus = employeePayslips.length === 0
+        ? 'not_applicable'
+        : payslipRecordsMissingAttachments > 0
+          ? 'missing_attachments'
+          : 'complete';
 
       let readinessStatus: MemoryReadinessData['readinessStatus'] = 'complete';
       if (
         missingMasterFields.length > 0 ||
         missingRequiredDocuments.length > 0 ||
         !hasSalaryStructure ||
-        !hasPayslip
+        !hasPayslip ||
+        payslipRecordsMissingAttachments > 0
       ) {
         readinessStatus = missingRequiredDocuments.length > 0 || missingMasterFields.length >= 3
           ? 'critical'
@@ -718,6 +748,10 @@ export class ReportingService {
         unverifiedDocuments,
         salaryStructureStatus: hasSalaryStructure ? 'present' : 'missing',
         payslipStatus: hasPayslip ? 'present' : 'missing',
+        payslipRecords: employeePayslips.length,
+        payslipRecordsMissingAttachments,
+        payslipAttachmentStatus,
+        employeeStatus: employee.status,
         readinessStatus,
       };
     });
@@ -739,6 +773,10 @@ export class ReportingService {
     return {
       summary: {
         totalEmployees: employees.length,
+        activeEmployees: employees.filter((employee) => employee.status === 'active').length,
+        inactiveEmployees: employees.filter((employee) => employee.status === 'inactive').length,
+        exitedEmployees: employees.filter((employee) => employee.status === 'exited').length,
+        inactiveEmployeesNeedingExitClassification: employees.filter((employee) => employee.status === 'inactive').length,
         readinessScore: totalReadinessChecks > 0
           ? Math.round((completedReadinessChecks / totalReadinessChecks) * 100)
           : 0,
@@ -761,6 +799,12 @@ export class ReportingService {
         }).length,
         employeesWithoutSalaryStructure: results.filter((row) => row.salaryStructureStatus === 'missing').length,
         employeesWithoutPayslip: results.filter((row) => row.payslipStatus === 'missing').length,
+        payslipRecords: payslips.length,
+        payslipRecordsWithAttachments: payslips.length - payslipsMissingAttachments.length,
+        payslipRecordsMissingAttachments: payslipsMissingAttachments.length,
+        employeesWithPayslipRecordsMissingAttachments: results.filter(
+          (row) => row.payslipRecordsMissingAttachments > 0
+        ).length,
       },
       results,
       companyDocumentFindings,
