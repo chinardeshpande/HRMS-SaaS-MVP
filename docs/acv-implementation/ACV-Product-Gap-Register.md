@@ -15,10 +15,10 @@
 
 | ID | Area | Classification | Gap | Required Outcome | Priority |
 | --- | --- | --- | --- | --- | --- |
-| ACV-GAP-001 | Tenant branding | Configuration Gap | Branding fields exist but are not consistently applied across shell, emails, and documents. | App shell now resolves tenant logo/name/color from organization settings with AuroraHR fallbacks. Remaining: branded emails and generated document templates. | P1 |
-| ACV-GAP-002 | Email | Integration Gap | Tenant SMTP config exists but email service uses global SMTP. | Runtime email sender resolves tenant SMTP first, then platform fallback. | P1 |
+| ACV-GAP-001 | Tenant branding | Configuration Gap | Branding fields exist but are not consistently applied across shell, emails, and documents. | App shell title bar now resolves tenant logo/name/color from organization settings with AuroraHR fallbacks. Generated HR document preview and PDF output now use tenant logo/colors. Remaining: branded email templates and tenant-aware email sender identity. | P1 |
+| ACV-GAP-002 | Email | Integration Gap | Tenant SMTP config exists but email service uses global SMTP. | Pending. Runtime email sender must resolve tenant SMTP first, then platform fallback, and log outbound email events. | P1 |
 | ACV-GAP-003 | Documents | Data Model Gap | Company HR/compliance document vault was not explicit. | Company document vault with categories, ownership, access, expiry metadata, and audit. Initial reusable vault implemented in `codex/acv-memory-foundation`. | P1 |
-| ACV-GAP-004 | Documents | UX Gap | Employee/generated/company/compensation documents were not clearly separated for HR governance. | Company and employee document vaults now create clearer memory separation, and Missing Documents reporting now uses durable employee documents. Remaining: generated-document and payslip linkage into one cross-module memory view. | P1 |
+| ACV-GAP-004 | Documents | UX Gap | Employee/generated/company/compensation documents were not clearly separated for HR governance. | Company and employee document vaults now create clearer memory separation, Missing Documents reporting now uses durable employee documents, and key document surfaces now support view-in-modal plus list/card views. Remaining: generated-document and payslip linkage into one cross-module memory view. | P1 |
 | ACV-GAP-005 | Compensation | Reporting Gap | Payslip and salary transaction completeness was not visible at company level. | Initial readiness coverage now reports salary structure and payslip presence by employee. Remaining: employee/month matrix and missing payslip report. | P1 |
 | ACV-GAP-006 | Compensation | UX Gap | Share actions are logged but not yet fully connected to actual HR Connect/email delivery. | Share semantics clarified and eventually connected to outbound channels. | P2 |
 | ACV-GAP-007 | Audit | Configuration Gap | Audit model exists but sensitive operations are not systematically covered. | Company and employee document operations now audited. Remaining coverage needed for employee master, compensation, settings, role, import, and email operations. | P1 |
@@ -38,10 +38,12 @@
 
 2. `codex/acv-tenant-branding-settings`
    - Apply controlled tenant identity across app shell and tenant-generated surfaces.
+   - Current status: app shell tenant branding and generated HR document branding are implemented. Email branding remains pending.
 
 3. `codex/acv-tenant-smtp-zoho-mail`
    - Use existing tenant SMTP config in runtime email service.
    - Log outbound HR email events.
+   - Current status: not started.
 
 4. `codex/acv-company-document-vault`
    - Add explicit company HR/compliance document governance.

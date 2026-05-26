@@ -14,9 +14,13 @@ AuroraHR already has a strong HRMS spine. The main ACV Customer Zero gaps are no
 - `backend/src/models/CompanyRegistration.ts` supports company signup.
 - `backend/src/routes/settingsRoutes.ts`, `registrationRoutes.ts`, and `onboardingWizardRoutes.ts` expose relevant setup APIs.
 
+### Current Status
+
+Tenant configuration exists. Tenant identity is now projected in the authenticated app title bar near the user profile area, while the primary AuroraHR product logo remains unchanged. Generated HR document preview/PDF output now resolves tenant branding for logo, colors, letterhead, and footer.
+
 ### Current Gap
 
-Tenant configuration exists, but tenant identity is not consistently projected across app shell, emails, document templates, and generated documents.
+Tenant identity is not yet consistently projected into outbound emails because runtime email sending still uses global SMTP configuration.
 
 ## Employee Master and Org Setup
 
@@ -44,6 +48,7 @@ Employee master is usable but needs implementation-grade completeness checks: ma
 - `employeeDocumentRoutes.ts` exposes employee document vault APIs.
 - Frontend document screens include `ModernDocuments`, `MyHRDocuments`, template management, and document preview surfaces.
 - Employee detail now includes an employee Documents tab backed by durable employee document storage.
+- Uploaded/generated/payslip/library document surfaces now support view-in-modal behavior using authenticated blob loading where required.
 
 ### Current Status
 
@@ -58,6 +63,8 @@ Document capability exists and now has a clearer memory split:
 The first durable company document vault slice is implemented with tenant isolation, HR/admin access, metadata, expiry fields, verification status, and audit logging for upload, update, verification, download, and archive.
 
 The first durable employee document slice is implemented with tenant isolation, HR/admin upload and verification, employee self-read/download for own documents, metadata, expiry fields, verification status, and audit logging for upload, update, verification, download, and archive.
+
+Generated HR documents now show a tenant-branded view-only preview before save/download. Uploaded documents can be viewed in modal from the company vault, generated document history, employee document tab, My HR Documents/digital library, and payslip attachment surfaces.
 
 ### Current Gap
 
@@ -104,9 +111,13 @@ Internal communication exists. External communication aggregation is not yet bui
 
 - Tenant and organization settings can store logo and color configuration.
 
+### Current Status
+
+The authenticated app shell title bar resolves tenant branding separately from the AuroraHR product logo. Generated HR documents also resolve tenant branding during preview and PDF generation.
+
 ### Current Gap
 
-App shell, auth pages, landing/system pages, email templates, and generated documents do not yet consistently resolve tenant branding. Branding must be controlled and scoped, not a full theme-builder.
+Auth pages, landing/system pages, and email templates do not yet consistently resolve tenant branding. Branding must remain controlled and scoped, not a full theme-builder.
 
 ## Audit Logs
 
