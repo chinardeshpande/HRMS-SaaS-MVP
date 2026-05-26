@@ -1,53 +1,174 @@
 import nodemailer from 'nodemailer';
 import { config } from '../config/config';
+import { AppDataSource } from '../config/database';
+import { OrganizationSettings } from '../models/OrganizationSettings';
+import { OutboundEmailLog } from '../models/OutboundEmailLog';
+import logger from '../utils/logger';
 
 export interface EmailOptions {
   to: string;
   subject: string;
   html: string;
   text?: string;
+  tenantId?: string;
+  purpose?: string;
+  metadata?: Record<string, any>;
+}
+
+interface ResolvedSmtpConfig {
+  host: string;
+  port: number;
+  secure: boolean;
+  user: string;
+  password: string;
+  from: string;
+  provider: 'tenant' | 'platform';
 }
 
 class EmailService {
-  private transporter: nodemailer.Transporter;
-
-  constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: config.smtp.host,
-      port: config.smtp.port,
-      secure: config.smtp.port === 465, // true for 465, false for other ports
-      auth: {
-        user: config.smtp.user,
-        pass: config.smtp.password,
-      },
-    });
-  }
-
   isConfigured(): boolean {
     return Boolean(config.smtp.host && config.smtp.user && config.smtp.password && config.smtp.from);
+  }
+
+  async isConfiguredForTenant(tenantId?: string): Promise<boolean> {
+    try {
+      await this.resolveSmtpConfig(tenantId);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   /**
    * Send an email
    */
   async sendEmail(options: EmailOptions): Promise<void> {
-    try {
-      if (!this.isConfigured()) {
-        throw new Error('SMTP is not configured');
-      }
+    let resolvedConfig: ResolvedSmtpConfig | null = null;
 
-      const info = await this.transporter.sendMail({
-        from: config.smtp.from,
+    try {
+      resolvedConfig = await this.resolveSmtpConfig(options.tenantId);
+      const transporter = this.createTransporter(resolvedConfig);
+
+      const info = await transporter.sendMail({
+        from: resolvedConfig.from,
         to: options.to,
         subject: options.subject,
         text: options.text,
         html: options.html,
       });
 
-      console.log('✅ Email sent:', info.messageId);
+      await this.recordEmailEvent(options, resolvedConfig, 'sent', info.messageId);
+      logger.info(`Email sent via ${resolvedConfig.provider} SMTP: ${info.messageId}`);
     } catch (error) {
-      console.error('❌ Error sending email:', error);
+      await this.recordEmailEvent(
+        options,
+        resolvedConfig || this.getPlatformSmtpConfig(),
+        'failed',
+        undefined,
+        error instanceof Error ? error.message : 'Unknown email error'
+      );
+      logger.error('Error sending email:', error);
       throw new Error('Failed to send email');
+    }
+  }
+
+  private async resolveSmtpConfig(tenantId?: string): Promise<ResolvedSmtpConfig> {
+    const tenantConfig = await this.getTenantSmtpConfig(tenantId);
+    if (tenantConfig) {
+      return tenantConfig;
+    }
+
+    const platformConfig = this.getPlatformSmtpConfig();
+    if (this.isSmtpComplete(platformConfig)) {
+      return platformConfig;
+    }
+
+    throw new Error('SMTP is not configured');
+  }
+
+  private async getTenantSmtpConfig(tenantId?: string): Promise<ResolvedSmtpConfig | null> {
+    if (!tenantId || !AppDataSource.isInitialized) {
+      return null;
+    }
+
+    const settings = await AppDataSource.getRepository(OrganizationSettings).findOne({ where: { tenantId } });
+    const smtpConfig = settings?.smtpConfig;
+    if (!smtpConfig?.enabled) {
+      return null;
+    }
+
+    const resolved: ResolvedSmtpConfig = {
+      host: smtpConfig.host,
+      port: Number(smtpConfig.port || 587),
+      secure: Boolean(smtpConfig.secure),
+      user: smtpConfig.username,
+      password: smtpConfig.password,
+      from: smtpConfig.fromName
+        ? `"${smtpConfig.fromName}" <${smtpConfig.fromEmail}>`
+        : smtpConfig.fromEmail,
+      provider: 'tenant',
+    };
+
+    return this.isSmtpComplete(resolved) ? resolved : null;
+  }
+
+  private getPlatformSmtpConfig(): ResolvedSmtpConfig {
+    return {
+      host: config.smtp.host,
+      port: config.smtp.port,
+      secure: config.smtp.port === 465,
+      user: config.smtp.user,
+      password: config.smtp.password,
+      from: config.smtp.from,
+      provider: 'platform',
+    };
+  }
+
+  private isSmtpComplete(smtpConfig: ResolvedSmtpConfig): boolean {
+    return Boolean(smtpConfig.host && smtpConfig.port && smtpConfig.user && smtpConfig.password && smtpConfig.from);
+  }
+
+  private createTransporter(smtpConfig: ResolvedSmtpConfig): nodemailer.Transporter {
+    return nodemailer.createTransport({
+      host: smtpConfig.host,
+      port: smtpConfig.port,
+      secure: smtpConfig.secure,
+      auth: {
+        user: smtpConfig.user,
+        pass: smtpConfig.password,
+      },
+    });
+  }
+
+  private async recordEmailEvent(
+    options: EmailOptions,
+    smtpConfig: ResolvedSmtpConfig,
+    status: 'sent' | 'failed',
+    messageId?: string,
+    errorMessage?: string
+  ): Promise<void> {
+    if (!AppDataSource.isInitialized) {
+      return;
+    }
+
+    try {
+      const logRepo = AppDataSource.getRepository(OutboundEmailLog);
+      const log = logRepo.create({
+        tenantId: options.tenantId,
+        recipientEmail: options.to,
+        subject: options.subject,
+        purpose: options.purpose || 'general',
+        status,
+        provider: smtpConfig.provider,
+        fromEmail: smtpConfig.from,
+        messageId,
+        errorMessage,
+        metadata: options.metadata || {},
+      });
+
+      await logRepo.save(log);
+    } catch (logError) {
+      logger.warn('Failed to record outbound email event', logError);
     }
   }
 
@@ -61,6 +182,7 @@ class EmailService {
     companyName: string;
     token: string;
     role: string;
+    tenantId?: string;
   }): Promise<void> {
     const acceptUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/accept-invitation/${data.token}`;
 
@@ -234,6 +356,12 @@ If you didn't expect this invitation, you can safely ignore this email.
       subject: `You're invited to join ${data.companyName}`,
       html,
       text,
+      tenantId: data.tenantId,
+      purpose: 'user_invitation',
+      metadata: {
+        companyName: data.companyName,
+        role: data.role,
+      },
     });
   }
 
@@ -244,6 +372,7 @@ If you didn't expect this invitation, you can safely ignore this email.
     to: string;
     fullName: string;
     resetToken: string;
+    tenantId?: string;
   }): Promise<void> {
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${data.resetToken}`;
 
@@ -357,6 +486,8 @@ If you didn't expect this invitation, you can safely ignore this email.
       subject: 'Password Reset Request',
       html,
       text: `Hi ${data.fullName},\n\nWe received a request to reset your password. Visit this link to create a new password:\n${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, please ignore this email.`,
+      tenantId: data.tenantId,
+      purpose: 'password_reset',
     });
   }
 
@@ -371,6 +502,7 @@ If you didn't expect this invitation, you can safely ignore this email.
     salary: number;
     joinDate: string;
     companyName: string;
+    tenantId?: string;
   }): Promise<void> {
     const html = `
 <!DOCTYPE html>
@@ -483,6 +615,12 @@ If you didn't expect this invitation, you can safely ignore this email.
       subject: `Job Offer - ${data.position} at ${data.companyName}`,
       html,
       text: `Dear ${data.candidateName},\n\nCongratulations! We are delighted to extend an offer of employment to you for the position of ${data.position} with ${data.companyName}.\n\nPosition: ${data.position}\nDepartment: ${data.department}\nAnnual Salary: ₹${data.salary.toLocaleString()}\nExpected Join Date: ${data.joinDate}\n\nPlease review your formal offer letter through our HR portal.\n\nBest regards,\n${data.companyName} HR Team`,
+      tenantId: data.tenantId,
+      purpose: 'offer_letter',
+      metadata: {
+        position: data.position,
+        department: data.department,
+      },
     });
   }
 
@@ -491,7 +629,8 @@ If you didn't expect this invitation, you can safely ignore this email.
    */
   async verifyConnection(): Promise<boolean> {
     try {
-      await this.transporter.verify();
+      const smtpConfig = await this.resolveSmtpConfig();
+      await this.createTransporter(smtpConfig).verify();
       console.log('✅ Email service is ready');
       return true;
     } catch (error) {

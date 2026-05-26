@@ -53,8 +53,8 @@ It is not yet complete for full ACV daily operations. The remaining work is main
 
 ### P1
 
-- Tenant-specific SMTP/Zoho Mail runtime resolution.
-- Outbound HR email event logging.
+- ACV Zoho Mail SMTP credential configuration and live send verification.
+- Branded email templates and sender identity review.
 - Broader audit coverage for employee master, compensation, settings, roles, imports, and email actions.
 - Real ACV migration execution evidence and validation reports.
 
@@ -82,7 +82,7 @@ It is not yet complete for full ACV daily operations. The remaining work is main
 - No ACV-specific hardcoding.
 - No broad enterprise DMS expansion outside HR/company compliance memory.
 
-## Recommended Next Branch
+## Current Branch
 
 `codex/acv-tenant-smtp-zoho-mail`
 
@@ -93,6 +93,14 @@ Objective:
 - Add safe failure handling.
 - Log outbound HR email events.
 - Keep inbound sync, WorkDrive, Cliq, and Writer out of scope.
+
+Current status:
+
+- Backend email service resolves tenant SMTP first, then platform SMTP.
+- Invitations, password resets, and offer letters pass tenant context into the email service.
+- Outbound email events are recorded in `outbound_email_logs`.
+- Backend build passes.
+- Pending: ACV Zoho SMTP settings, live send test, and browser/UAT pass.
 
 ## Deployment Recommendation
 
@@ -106,4 +114,3 @@ Do not deploy this branch to production solely on build success. Before producti
 - Payslip library
 - Salary transaction history
 - Reports & Analytics memory readiness report
-

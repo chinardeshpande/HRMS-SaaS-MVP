@@ -16,7 +16,7 @@
 | ID | Area | Classification | Gap | Required Outcome | Priority |
 | --- | --- | --- | --- | --- | --- |
 | ACV-GAP-001 | Tenant branding | Configuration Gap | Branding fields exist but are not consistently applied across shell, emails, and documents. | App shell title bar now resolves tenant logo/name/color from organization settings with AuroraHR fallbacks. Generated HR document preview and PDF output now use tenant logo/colors. Remaining: branded email templates and tenant-aware email sender identity. | P1 |
-| ACV-GAP-002 | Email | Integration Gap | Tenant SMTP config exists but email service uses global SMTP. | Pending. Runtime email sender must resolve tenant SMTP first, then platform fallback, and log outbound email events. | P1 |
+| ACV-GAP-002 | Email | Integration Gap | Tenant SMTP config exists but email service used global SMTP. | Runtime email sender now resolves tenant SMTP first, falls back to platform SMTP, and records outbound email events for invitations, password resets, and offer letters. Remaining: configure/test ACV Zoho SMTP credentials and expand email branding/templates. | P1 |
 | ACV-GAP-003 | Documents | Data Model Gap | Company HR/compliance document vault was not explicit. | Company document vault with categories, ownership, access, expiry metadata, and audit. Initial reusable vault implemented in `codex/acv-memory-foundation`. | P1 |
 | ACV-GAP-004 | Documents | UX Gap | Employee/generated/company/compensation documents were not clearly separated for HR governance. | Company and employee document vaults now create clearer memory separation, Missing Documents reporting now uses durable employee documents, and key document surfaces now support view-in-modal plus list/card views. Remaining: generated-document and payslip linkage into one cross-module memory view. | P1 |
 | ACV-GAP-005 | Compensation | Reporting Gap | Payslip and salary transaction completeness was not visible at company level. | Initial readiness coverage now reports salary structure and payslip presence by employee. Remaining: employee/month matrix and missing payslip report. | P1 |
@@ -43,7 +43,7 @@
 3. `codex/acv-tenant-smtp-zoho-mail`
    - Use existing tenant SMTP config in runtime email service.
    - Log outbound HR email events.
-   - Current status: not started.
+   - Current status: backend implementation started; build passes. ACV Zoho credentials and browser/UAT verification remain pending.
 
 4. `codex/acv-company-document-vault`
    - Add explicit company HR/compliance document governance.

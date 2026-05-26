@@ -142,6 +142,7 @@ export class OnboardingService {
             })
           : 'To be confirmed',
         companyName: 'AuroraHR',
+        tenantId,
       });
       logger.info(`Offer letter email sent to: ${candidate.email}`);
     } catch (error: any) {

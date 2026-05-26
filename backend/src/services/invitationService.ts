@@ -119,6 +119,7 @@ export class InvitationService {
         companyName,
         token,
         role: this.getRoleDisplayName(data.role),
+        tenantId: data.tenantId,
       })
       .catch((emailError) => {
         console.error('Failed to send invitation email:', emailError);
@@ -375,6 +376,7 @@ export class InvitationService {
         companyName,
         token,
         role: this.getRoleDisplayName(invitation.role),
+        tenantId: invitation.tenantId,
       });
     } catch (emailError) {
       console.error('Failed to resend invitation email:', emailError);

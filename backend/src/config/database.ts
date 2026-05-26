@@ -82,6 +82,7 @@ import { DigitalLibrary } from '../models/DigitalLibrary';
 import { DocumentCategory } from '../models/DocumentCategory';
 import { CompanyDocument } from '../models/CompanyDocument';
 import { EmployeeDocument } from '../models/EmployeeDocument';
+import { OutboundEmailLog } from '../models/OutboundEmailLog';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -173,6 +174,7 @@ export const AppDataSource = new DataSource({
     DocumentCategory,
     CompanyDocument,
     EmployeeDocument,
+    OutboundEmailLog,
   ],
   migrations: ['dist/backend/src/migrations/*.js'],
   subscribers: [],

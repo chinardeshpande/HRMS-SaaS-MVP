@@ -475,7 +475,7 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
       { expiresIn: '1h' }
     );
 
-    if (!emailService.isConfigured()) {
+    if (!(await emailService.isConfiguredForTenant(user.tenantId))) {
       console.warn(`Password reset requested for ${user.email}, but SMTP is not configured.`);
 
       return res.status(config.nodeEnv === 'production' ? 503 : 200).json({
@@ -501,6 +501,7 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
       to: user.email,
       fullName: user.fullName,
       resetToken,
+      tenantId: user.tenantId,
     });
 
     return res.json({
