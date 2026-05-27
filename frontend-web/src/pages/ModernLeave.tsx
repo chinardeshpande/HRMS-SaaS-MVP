@@ -4,7 +4,11 @@ import { useAuth } from '../context/AuthContext';
 import { ApplyLeaveModal } from '../components/leave/ApplyLeaveModal';
 import { LeaveRequestDetailModal } from '../components/leave/LeaveRequestDetailModal';
 import { EmptyState } from '../components/common/EmptyState';
-import leaveService, { LeaveRequest as APILeaveRequest, LeaveBalance as APILeaveBalance } from '../services/leaveService';
+import leaveService, {
+  LeaveRequest as APILeaveRequest,
+  LeaveBalance as APILeaveBalance,
+  LeavePolicy as APILeavePolicy,
+} from '../services/leaveService';
 import {
   CalendarDaysIcon,
   CheckCircleIcon,
@@ -13,6 +17,7 @@ import {
   PlusIcon,
   UserGroupIcon,
   ArrowPathIcon,
+  DocumentTextIcon,
   BeakerIcon,
   HeartIcon,
   SunIcon,
@@ -40,6 +45,7 @@ export default function ModernLeave() {
   const [myLeaveRequests, setMyLeaveRequests] = useState<APILeaveRequest[]>([]);
   const [teamLeaveRequests, setTeamLeaveRequests] = useState<APILeaveRequest[]>([]);
   const [leaveBalances, setLeaveBalances] = useState<APILeaveBalance[]>([]);
+  const [leavePolicies, setLeavePolicies] = useState<APILeavePolicy[]>([]);
 
   // Stats state
   const [myStats, setMyStats] = useState<LeaveStats>({
@@ -64,6 +70,8 @@ export default function ModernLeave() {
   const [showApplyLeaveModal, setShowApplyLeaveModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<APILeaveRequest | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showPoliciesModal, setShowPoliciesModal] = useState(false);
+  const [initializingBalance, setInitializingBalance] = useState(false);
 
   // Notification state
   const [notification, setNotification] = useState<{
@@ -139,13 +147,39 @@ export default function ModernLeave() {
       setMyStats(myStatsData);
 
       // Fetch my leave balance
-      const balances = await leaveService.getMyBalance();
+      const [balances, policies] = await Promise.all([
+        leaveService.getMyBalance(),
+        leaveService.getPolicies(),
+      ]);
       console.log('✅ My leave balances:', balances);
       setLeaveBalances(balances);
+      setLeavePolicies(policies);
 
     } catch (err: any) {
       console.error('❌ Error fetching my leave data:', err);
       throw err;
+    }
+  };
+
+  /**
+   * Initialize current user's leave balance from active leave policies
+   */
+  const handleInitializeMyBalance = async () => {
+    if (!user?.employeeId) {
+      showNotification('Employee profile is required before leave balance can be initialized', 'error');
+      return;
+    }
+
+    setInitializingBalance(true);
+    try {
+      await leaveService.initializeBalance(user.employeeId, new Date().getFullYear());
+      await fetchMyLeaveData();
+      showNotification('Leave balance initialized from active policies', 'success');
+    } catch (err: any) {
+      console.error('❌ Error initializing leave balance:', err);
+      showNotification(err.response?.data?.error || err.message || 'Failed to initialize leave balance', 'error');
+    } finally {
+      setInitializingBalance(false);
     }
   };
 
@@ -447,11 +481,24 @@ export default function ModernLeave() {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
                 <EmptyState
                   icon={<CalendarDaysIcon className="h-16 w-16 text-gray-400" />}
-                  title="No Leave Balance Configured"
-                  description="You don't have any leave balances set up yet. Contact your HR administrator to configure your leave policies and balances."
+                  title={leavePolicies.length > 0 ? "Leave Balance Not Initialized" : "No Leave Policies Configured"}
+                  description={
+                    leavePolicies.length > 0
+                      ? "Leave policies exist for this company, but your yearly leave balance has not been initialized yet."
+                      : "No active leave policies are available for this company. HR must create leave policies before balances can be initialized."
+                  }
+                  primaryAction={
+                    canApprove && leavePolicies.length > 0
+                      ? {
+                          label: initializingBalance ? "Initializing..." : "Initialize My Balance",
+                          onClick: handleInitializeMyBalance,
+                          icon: <ArrowPathIcon className={`h-5 w-5 mr-2 ${initializingBalance ? 'animate-spin' : ''}`} />,
+                        }
+                      : undefined
+                  }
                   secondaryAction={{
                     label: "View Leave Policies",
-                    onClick: () => console.log('Navigate to leave policies'),
+                    onClick: () => setShowPoliciesModal(true),
                   }}
                 />
               </div>
@@ -1087,6 +1134,97 @@ export default function ModernLeave() {
           onApprove={(comments) => handleApproveReject(selectedRequest.leaveId, 'approved', comments)}
           onReject={(comments) => handleApproveReject(selectedRequest.leaveId, 'rejected', comments)}
         />
+      )}
+
+      {/* Leave Policies Modal */}
+      {showPoliciesModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-center justify-center p-4">
+            <button
+              type="button"
+              aria-label="Close leave policies"
+              className="fixed inset-0 bg-gray-900/70"
+              onClick={() => setShowPoliciesModal(false)}
+            />
+            <div className="relative w-full max-w-3xl overflow-hidden rounded-xl bg-white shadow-2xl">
+              <div className="flex items-start justify-between gap-4 border-b border-gray-200 px-5 py-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100">
+                    <DocumentTextIcon className="h-5 w-5 text-purple-700" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-gray-900">Active Leave Policies</h2>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Policies define entitlement rules. Employee balances are separate yearly records created from these policies.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowPoliciesModal(false)}
+                  className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                  aria-label="Close"
+                >
+                  <XCircleIcon className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="max-h-[70vh] overflow-y-auto p-5">
+                {leavePolicies.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-gray-300 p-8 text-center">
+                    <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-300" />
+                    <h3 className="mt-3 text-base font-semibold text-gray-900">No active policies found</h3>
+                    <p className="mt-1 text-sm text-gray-500">
+                      HR must create active leave policies before employee balances can be initialized.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    {leavePolicies.map((policy) => {
+                      const { icon: Icon, color } = getLeaveTypeIcon(policy.leaveType);
+                      return (
+                        <div key={policy.policyId} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${color}`}>
+                                <Icon className="h-5 w-5 text-white" />
+                              </div>
+                              <div>
+                                <h3 className="text-sm font-semibold text-gray-900">{policy.policyName}</h3>
+                                <p className="text-xs capitalize text-gray-500">{policy.leaveType} leave</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xl font-bold text-gray-900">{policy.totalLeaves}</p>
+                              <p className="text-xs text-gray-500">days/year</p>
+                            </div>
+                          </div>
+                          <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+                            <div className="rounded-lg bg-gray-50 p-2">
+                              <p className="text-gray-500">Approval</p>
+                              <p className="font-semibold text-gray-900">{policy.requiresApproval ? 'Required' : 'Not required'}</p>
+                            </div>
+                            <div className="rounded-lg bg-gray-50 p-2">
+                              <p className="text-gray-500">Carry fwd</p>
+                              <p className="font-semibold text-gray-900">{policy.carryForward ? policy.maxCarryForward : 0}</p>
+                            </div>
+                            <div className="rounded-lg bg-gray-50 p-2">
+                              <p className="text-gray-500">Notice</p>
+                              <p className="font-semibold text-gray-900">{policy.minNoticeDays || 0}d</p>
+                            </div>
+                          </div>
+                          {policy.description && (
+                            <p className="mt-3 text-xs leading-5 text-gray-500">{policy.description}</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </ModernLayout>
   );

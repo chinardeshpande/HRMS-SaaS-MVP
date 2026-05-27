@@ -275,6 +275,33 @@ export class LeaveController {
 
   /**
    * @swagger
+   * /leave/policies:
+   *   get:
+   *     summary: Get active leave policies for current tenant
+   *     tags: [Leave]
+   *     responses:
+   *       200:
+   *         description: Active leave policies retrieved
+   */
+  async getPolicies(req: Request, res: Response) {
+    try {
+      const tenantId = (req as any).user.tenantId;
+      const policies = await leaveService.getActiveLeavePolicies(tenantId);
+
+      res.json({
+        success: true,
+        data: policies,
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * @swagger
    * /leave/pending-approvals:
    *   get:
    *     summary: Get pending leave approvals for my team

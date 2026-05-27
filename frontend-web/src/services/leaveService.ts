@@ -61,6 +61,26 @@ export interface LeaveBalance {
   updatedAt: string;
 }
 
+export interface LeavePolicy {
+  policyId: string;
+  tenantId: string;
+  policyName: string;
+  leaveType: string;
+  totalLeaves: number;
+  maxConsecutiveDays: number;
+  carryForward: boolean;
+  maxCarryForward: number;
+  encashable: boolean;
+  minNoticeDays: number;
+  requiresApproval: boolean;
+  probationPeriod: number;
+  applicableGender?: string;
+  isActive: boolean;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface LeaveStatistics {
   totalRequests: number;
   pendingRequests: number;
@@ -116,6 +136,14 @@ class LeaveService {
   async getMyBalance(year?: number): Promise<LeaveBalance[]> {
     const params = year ? `?year=${year}` : '';
     const response = await api.get(`/leave/my-balance${params}`);
+    return response.data || [];
+  }
+
+  /**
+   * Employee: Get active tenant leave policies
+   */
+  async getPolicies(): Promise<LeavePolicy[]> {
+    const response = await api.get('/leave/policies');
     return response.data || [];
   }
 
