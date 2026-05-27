@@ -582,7 +582,7 @@ export default function ModernLeave() {
 
             {/* Filters - Single Row - Compact */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <div className="flex-1">
                   <input
                     type="text"
@@ -592,7 +592,7 @@ export default function ModernLeave() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
-                <div className="w-48">
+                <div className="w-full sm:w-48">
                   <select
                     value={selectedLeaveType}
                     onChange={(e) => setSelectedLeaveType(e.target.value)}
@@ -639,7 +639,86 @@ export default function ModernLeave() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="md:hidden divide-y divide-gray-100">
+                {loading ? (
+                  <div className="px-4 py-8 text-center text-sm text-gray-500">
+                    <ArrowPathIcon className="h-6 w-6 animate-spin mx-auto mb-2 text-purple-600" />
+                    Loading...
+                  </div>
+                ) : filteredRequests.length === 0 ? (
+                  <div className="px-4">
+                    <EmptyState
+                      icon={<CalendarDaysIcon className="h-16 w-16 text-gray-400" />}
+                      title={myLeaveRequests.length === 0 ? "No Leave Requests Yet" : "No Matching Requests"}
+                      description={
+                        myLeaveRequests.length === 0
+                          ? "You haven't applied for any leave yet. Tap Apply Leave to submit your first request."
+                          : "Try adjusting your filters."
+                      }
+                      primaryAction={
+                        myLeaveRequests.length === 0
+                          ? {
+                              label: "Apply Leave",
+                              onClick: () => setShowApplyLeaveModal(true),
+                              icon: <PlusIcon className="h-5 w-5 mr-2" />,
+                            }
+                          : undefined
+                      }
+                    />
+                  </div>
+                ) : (
+                  filteredRequests.map((request) => (
+                    <button
+                      key={request.leaveId}
+                      onClick={() => {
+                        setSelectedRequest(request);
+                        setShowDetailModal(true);
+                      }}
+                      className="block w-full p-4 text-left hover:bg-purple-50"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900 capitalize">{request.leaveType}</p>
+                          <p className="mt-1 text-xs text-gray-500">
+                            {new Date(request.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            {' - '}
+                            {new Date(request.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </p>
+                        </div>
+                        <span
+                          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                            request.status === 'approved'
+                              ? 'bg-green-100 text-green-800'
+                              : request.status === 'rejected'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-orange-100 text-orange-800'
+                          }`}
+                        >
+                          {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                        </span>
+                      </div>
+                      <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+                        <div className="rounded-lg bg-gray-50 p-2">
+                          <p className="text-gray-500">Days</p>
+                          <p className="font-semibold text-gray-900">{request.numberOfDays}</p>
+                        </div>
+                        <div className="rounded-lg bg-gray-50 p-2">
+                          <p className="text-gray-500">Applied</p>
+                          <p className="font-semibold text-gray-900">
+                            {new Date(request.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </p>
+                        </div>
+                        <div className="rounded-lg bg-gray-50 p-2">
+                          <p className="text-gray-500">Action</p>
+                          <p className="font-semibold text-purple-700">View</p>
+                        </div>
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+
+              <div className="hidden md:block overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>

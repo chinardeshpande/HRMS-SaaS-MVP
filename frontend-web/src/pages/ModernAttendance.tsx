@@ -825,12 +825,12 @@ export default function ModernAttendance() {
             {/* Clock In/Out Card - Compact */}
             <div className="card border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50">
               <div className="card-body p-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center space-x-3 min-w-0">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
                       <ClockIcon className="h-6 w-6 text-white" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-xs font-bold text-blue-700 mb-0.5">TODAY'S ATTENDANCE</p>
                       <p className="text-base font-bold text-gray-900">
                         {clockedIn ? `Clocked In at ${todayCheckIn}` : 'Not Clocked In Yet'}
@@ -838,14 +838,14 @@ export default function ModernAttendance() {
                       <p className="text-xs text-gray-600 mt-0.5">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 sm:justify-end">
                     {!clockedIn ? (
-                      <button onClick={handleClockIn} className="btn btn-primary">
+                      <button onClick={handleClockIn} className="btn btn-primary w-full sm:w-auto justify-center">
                         <ClockIcon className="h-4 w-4 mr-1.5" />
                         Clock In
                       </button>
                     ) : (
-                      <button onClick={handleClockOut} className="btn btn-danger">
+                      <button onClick={handleClockOut} className="btn btn-danger w-full sm:w-auto justify-center">
                         <ClockIcon className="h-4 w-4 mr-1.5" />
                         Clock Out
                       </button>
@@ -944,7 +944,71 @@ export default function ModernAttendance() {
                 <div className="p-3 border-b border-gray-200">
                   <h3 className="text-sm font-bold text-gray-900">My Attendance History - {new Date(selectedMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h3>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="md:hidden divide-y divide-gray-100">
+                  {myAttendance.length === 0 ? (
+                    <div className="px-4 py-10">
+                      <EmptyState
+                        icon={<ClockIcon className="h-16 w-16 text-gray-400" />}
+                        title="No Attendance Records"
+                        description="Start tracking your attendance by clocking in above. Your attendance history will appear here."
+                        primaryAction={{
+                          label: "Clock In Now",
+                          onClick: handleClockIn,
+                          icon: <ClockIcon className="h-5 w-5 mr-2" />,
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    myAttendance
+                      .filter(record => {
+                        if (statusFilter === 'all') return true;
+                        if (statusFilter === 'late') return record.isLate;
+                        return record.status === statusFilter;
+                      })
+                      .map((record) => {
+                        const recordDate = typeof record.date === 'string' ? record.date : new Date(record.date).toISOString().split('T')[0];
+                        const checkInTime = record.checkIn ? new Date(record.checkIn).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '-';
+                        const checkOutTime = record.checkOut ? new Date(record.checkOut).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '-';
+
+                        return (
+                          <div key={record.attendanceId} className="p-4">
+                            <div className="flex items-start justify-between gap-3">
+                              <div>
+                                <p className="text-sm font-semibold text-gray-900">
+                                  {new Date(recordDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                                </p>
+                                <p className="mt-1 text-xs text-gray-500">
+                                  {checkInTime} - {checkOutTime}
+                                </p>
+                              </div>
+                              <span className={`badge ${getStatusBadge(record.status)} text-xs`}>
+                                {getStatusLabel(record.status)}
+                              </span>
+                            </div>
+                            <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+                              <div className="rounded-lg bg-gray-50 p-2">
+                                <p className="text-gray-500">Hours</p>
+                                <p className="font-semibold text-gray-900">
+                                  {record.workMinutes && record.workMinutes > 0 ? formatDuration(record.workMinutes) : '-'}
+                                </p>
+                              </div>
+                              <div className="rounded-lg bg-gray-50 p-2">
+                                <p className="text-gray-500">Late</p>
+                                <p className={record.isLate ? 'font-semibold text-danger-600' : 'font-semibold text-gray-900'}>
+                                  {record.isLate ? `+${record.lateMinutes}m` : '-'}
+                                </p>
+                              </div>
+                              <div className="rounded-lg bg-gray-50 p-2">
+                                <p className="text-gray-500">Source</p>
+                                <p className="font-semibold text-gray-900">{record.isManualOverride ? 'HR edit' : 'Self'}</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                  )}
+                </div>
+                <div className="hidden md:block overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>

@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import { ArrowLeftIcon, CheckCircleIcon, XCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import attendanceService from '../services/attendanceService';
 
 interface AttendanceRecord {
   id: string;
   date: string;
   checkIn: string | null;
   checkOut: string | null;
-  status: 'present' | 'absent' | 'on-leave' | 'weekend';
+  status: 'present' | 'absent' | 'half_day' | 'on_leave' | 'holiday' | 'weekend';
   workMinutes: number;
   isLate: boolean;
   lateMinutes: number;
@@ -42,70 +43,34 @@ export default function ModernEmployeeAttendance() {
     try {
       setLoading(true);
 
-      // Generate mock data
       const [year, month] = selectedMonth.split('-').map(Number);
-      const daysInMonth = new Date(year, month, 0).getDate();
-      const records: AttendanceRecord[] = [];
+      const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+      const endDate = new Date(year, month, 0).toISOString().split('T')[0];
+      const attendance = await attendanceService.getCompanyWide(startDate, endDate);
+      const records: AttendanceRecord[] = attendance
+        .filter((record) => record.employeeId === employee.employeeId)
+        .map((record) => ({
+          id: record.attendanceId,
+          date: String(record.date).split('T')[0],
+          checkIn: record.checkIn ? new Date(record.checkIn).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : null,
+          checkOut: record.checkOut ? new Date(record.checkOut).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : null,
+          status: record.status,
+          workMinutes: Number(record.workMinutes || 0),
+          isLate: Boolean(record.isLate),
+          lateMinutes: Number(record.lateMinutes || 0),
+        }));
 
-      let presentCount = 0;
-      let absentCount = 0;
-      let lateCount = 0;
-      let totalWorkMinutes = 0;
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(year, month - 1, day);
-        const dayOfWeek = date.getDay();
-
-        let status: AttendanceRecord['status'] = 'present';
-        let checkIn: string | null = null;
-        let checkOut: string | null = null;
-        let workMinutes = 0;
-        let isLate = false;
-        let lateMinutes = 0;
-
-        if (dayOfWeek === 0 || dayOfWeek === 6) {
-          status = 'weekend';
-        } else if (Math.random() < 0.05) {
-          status = 'on-leave';
-        } else if (Math.random() < 0.02) {
-          status = 'absent';
-          absentCount++;
-        } else {
-          presentCount++;
-          const checkInMin = Math.floor(Math.random() * 90);
-          checkIn = `${String(8 + Math.floor(checkInMin / 60)).padStart(2, '0')}:${String(checkInMin % 60).padStart(2, '0')}`;
-
-          if (checkInMin > 60) {
-            isLate = true;
-            lateMinutes = checkInMin - 60;
-            lateCount++;
-          }
-
-          workMinutes = 420 + Math.floor(Math.random() * 120);
-          totalWorkMinutes += workMinutes;
-
-          const checkOutTotalMinutes = (8 * 60 + checkInMin + workMinutes);
-          checkOut = `${String(Math.floor(checkOutTotalMinutes / 60)).padStart(2, '0')}:${String(checkOutTotalMinutes % 60).padStart(2, '0')}`;
-        }
-
-        records.push({
-          id: `${employee.employeeId}-${date.toISOString().split('T')[0]}`,
-          date: date.toISOString().split('T')[0],
-          checkIn,
-          checkOut,
-          status,
-          workMinutes,
-          isLate,
-          lateMinutes,
-        });
-      }
+      const presentCount = records.filter((record) => record.status === 'present').length;
+      const absentCount = records.filter((record) => record.status === 'absent').length;
+      const lateCount = records.filter((record) => record.isLate).length;
+      const totalWorkMinutes = records.reduce((sum, record) => sum + record.workMinutes, 0);
 
       setAttendanceRecords(records);
       setStats({
         totalPresent: presentCount,
         totalAbsent: absentCount,
         totalLate: lateCount,
-        avgWorkHours: presentCount > 0 ? totalWorkMinutes / presentCount / 60 : 0,
+        avgWorkHours: records.length > 0 ? totalWorkMinutes / records.length / 60 : 0,
       });
     } catch (err) {
       console.error('Error fetching attendance:', err);
@@ -118,7 +83,9 @@ export default function ModernEmployeeAttendance() {
     const badges = {
       present: 'badge-success',
       absent: 'badge-danger',
-      'on-leave': 'badge-warning',
+      half_day: 'badge-warning',
+      on_leave: 'badge-warning',
+      holiday: 'badge-gray',
       weekend: 'badge-gray',
     };
     return badges[status] || 'badge-gray';
@@ -244,7 +211,7 @@ export default function ModernEmployeeAttendance() {
                         </td>
                         <td className="px-4 py-3">
                           <span className={`badge ${getStatusBadge(record.status)} text-xs`}>
-                            {record.status.toUpperCase().replace('-', ' ')}
+                            {record.status.toUpperCase().replace('_', ' ')}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-900">{record.checkIn || '-'}</td>

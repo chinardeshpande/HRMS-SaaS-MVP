@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { XMarkIcon, CalendarIcon } from '@heroicons/react/24/outline';
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
+import leaveService from '../../services/leaveService';
 
 interface ApplyLeaveModalProps {
   isOpen: boolean;
@@ -35,30 +33,13 @@ export const ApplyLeaveModal = ({ isOpen, onClose, onSuccess }: ApplyLeaveModalP
     try {
       setLoading(true);
 
-      const tokensStr = localStorage.getItem('tokens');
-      if (!tokensStr) {
-        setError('Not authenticated. Please login again.');
-        return;
-      }
-
-      const tokens = JSON.parse(tokensStr);
-      const token = tokens.token;
-
-      await axios.post(
-        `${API_BASE_URL}/leave/apply`,
-        {
-          leaveType: formData.leaveType,
-          startDate: formData.startDate,
-          endDate: formData.endDate,
-          reason: formData.reason,
-          emergencyContact: formData.emergencyContact || undefined,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await leaveService.applyLeave({
+        leaveType: formData.leaveType,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        reason: formData.reason,
+        emergencyContact: formData.emergencyContact || undefined,
+      });
 
       // Reset form
       setFormData({
@@ -73,7 +54,7 @@ export const ApplyLeaveModal = ({ isOpen, onClose, onSuccess }: ApplyLeaveModalP
       onClose();
     } catch (err: any) {
       console.error('Error applying for leave:', err);
-      setError(err.response?.data?.error || 'Failed to submit leave request');
+      setError(err.response?.data?.error || err.response?.data?.message || err.message || 'Failed to submit leave request');
     } finally {
       setLoading(false);
     }
@@ -116,7 +97,7 @@ export const ApplyLeaveModal = ({ isOpen, onClose, onSuccess }: ApplyLeaveModalP
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
               {error}
@@ -146,7 +127,7 @@ export const ApplyLeaveModal = ({ isOpen, onClose, onSuccess }: ApplyLeaveModalP
           </div>
 
           {/* Date Range */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Start Date <span className="text-red-500">*</span>
@@ -208,19 +189,19 @@ export const ApplyLeaveModal = ({ isOpen, onClose, onSuccess }: ApplyLeaveModalP
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end space-x-3 pt-4">
+          <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:items-center sm:justify-end sm:space-x-3 sm:gap-0">
             <button
               type="button"
               onClick={handleClose}
               disabled={loading}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 sm:w-auto"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              className="w-full justify-center px-6 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 sm:w-auto"
             >
               {loading ? (
                 <>
