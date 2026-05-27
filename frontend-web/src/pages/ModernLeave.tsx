@@ -1155,7 +1155,7 @@ export default function ModernLeave() {
                   <div>
                     <h2 className="text-lg font-bold text-gray-900">Active Leave Policies</h2>
                     <p className="mt-1 text-sm text-gray-500">
-                      Policies define entitlement rules. Employee balances are separate yearly records created from these policies.
+                      Active company-wide policies define entitlement rules. Employee balances are separate yearly records created from these policies.
                     </p>
                   </div>
                 </div>
@@ -1191,7 +1191,7 @@ export default function ModernLeave() {
                               </div>
                               <div>
                                 <h3 className="text-sm font-semibold text-gray-900">{policy.policyName}</h3>
-                                <p className="text-xs capitalize text-gray-500">{policy.leaveType} leave</p>
+                                <p className="text-xs capitalize text-gray-500">{policy.leaveType} leave · Company-wide</p>
                               </div>
                             </div>
                             <div className="text-right">

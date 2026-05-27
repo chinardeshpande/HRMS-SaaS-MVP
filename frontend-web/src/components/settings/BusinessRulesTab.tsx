@@ -68,7 +68,7 @@ export default function BusinessRulesTab() {
     requiresApproval: true,
     probationPeriod: 0,
     applicableGender: 'all',
-    isActive: true,
+    isActive: false,
     description: '',
   };
   const [policyFormData, setPolicyFormData] = useState<Partial<LeavePolicy>>(defaultPolicyFormData);
@@ -264,8 +264,10 @@ export default function BusinessRulesTab() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Business Rules</h3>
-          <p className="text-sm text-gray-500 mt-1">Configure HR policies and automated workflows</p>
+          <h3 className="text-lg font-semibold text-gray-900">Policies and Business Rules</h3>
+          <p className="text-sm text-gray-500 mt-1">
+            Configure operational leave entitlements separately from workflow rules.
+          </p>
         </div>
         <button
           onClick={() => {
@@ -276,7 +278,7 @@ export default function BusinessRulesTab() {
           className="btn btn-primary flex items-center space-x-2"
         >
           <PlusIcon className="h-5 w-5" />
-          <span>Create Rule</span>
+          <span>Create Workflow Rule</span>
         </button>
       </div>
 
@@ -284,9 +286,12 @@ export default function BusinessRulesTab() {
       <div className="rounded-xl border border-purple-200 bg-purple-50/60 p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h4 className="text-base font-semibold text-gray-900">Leave Policies Used by Leave Management</h4>
+            <h4 className="text-base font-semibold text-gray-900">Operational Leave Policies</h4>
             <p className="mt-1 text-sm text-gray-600">
-              These policies create employee leave balances. Generic business rules below are notes/workflow rules and do not allocate employee leave by themselves.
+              Active policies here are company-wide by default and create employee leave balances. Keep only the policies you actually want employees to receive as active.
+            </p>
+            <p className="mt-1 text-xs font-medium text-purple-800">
+              Current scope model: company-wide tenant policy. Location, department, business-unit, and grade-specific policies are intentionally out of scope for this simple version.
             </p>
           </div>
           <button onClick={openCreatePolicy} className="btn btn-primary shrink-0">
@@ -308,6 +313,9 @@ export default function BusinessRulesTab() {
                     <div className="flex items-center gap-2">
                       <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-semibold capitalize text-purple-700">
                         {policy.leaveType}
+                      </span>
+                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                        Company-wide
                       </span>
                       {policy.isActive ? (
                         <CheckCircleIcon className="h-4 w-4 text-green-500" title="Active" />
@@ -336,6 +344,11 @@ export default function BusinessRulesTab() {
                     <p className="font-semibold">{policy.minNoticeDays || 0}d</p>
                   </div>
                 </div>
+                <p className="mt-3 text-xs text-gray-500">
+                  {policy.isActive
+                    ? 'Applicable when balances are initialized for employees.'
+                    : 'Inactive: retained for reference and not used for new balance initialization.'}
+                </p>
                 <div className="mt-3 flex items-center justify-end gap-2">
                   <button onClick={() => openEditPolicy(policy)} className="text-xs font-semibold text-purple-700 hover:text-purple-900">
                     Edit
@@ -352,6 +365,13 @@ export default function BusinessRulesTab() {
             ))
           )}
         </div>
+      </div>
+
+      <div className="rounded-lg border border-gray-200 bg-white p-4">
+        <h4 className="text-base font-semibold text-gray-900">Workflow Business Rules</h4>
+        <p className="mt-1 text-sm text-gray-500">
+          Use these for approval behavior, reminders, exceptions, and implementation notes. They do not allocate leave balances.
+        </p>
       </div>
 
       {/* Filter */}
@@ -507,6 +527,26 @@ export default function BusinessRulesTab() {
                       min="0"
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Policy Status</label>
+                    <select
+                      value={policyFormData.isActive ? 'active' : 'inactive'}
+                      onChange={(e) => setPolicyFormData({ ...policyFormData, isActive: e.target.value === 'active' })}
+                      className="input w-full"
+                    >
+                      <option value="inactive">Inactive draft</option>
+                      <option value="active">Active company-wide</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Applicability</label>
+                    <input
+                      type="text"
+                      value="Company-wide"
+                      readOnly
+                      className="input w-full bg-gray-50 text-gray-500"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -551,7 +591,7 @@ export default function BusinessRulesTab() {
                 </div>
 
                 <div className="rounded-lg bg-blue-50 p-3 text-sm text-blue-900">
-                  Saving a policy defines the rule. Existing employees need leave balances initialized for the selected year before it appears on their Leave Management page.
+                  Simple model: active policies apply company-wide. Existing employees need leave balances initialized for the selected year before a policy appears on their Leave Management page.
                 </div>
 
                 <div className="flex items-center justify-end space-x-3 pt-2">
@@ -599,7 +639,7 @@ export default function BusinessRulesTab() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Status
+                      Rule Status
                     </label>
                     <select
                       value={ruleFormData.isActive ? 'active' : 'inactive'}
@@ -641,7 +681,10 @@ export default function BusinessRulesTab() {
                 {/* Category-specific configuration */}
                 {ruleFormData.category === 'leave' && (
                   <div className="border border-gray-200 rounded-lg p-4">
-                    <h4 className="font-medium text-gray-900 mb-3">Leave Policy Settings</h4>
+                    <h4 className="font-medium text-gray-900 mb-1">Leave Workflow Rule Settings</h4>
+                    <p className="mb-3 text-xs text-gray-500">
+                      These values are advisory workflow settings. Employee entitlements come from Operational Leave Policies above.
+                    </p>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">Annual Leave Quota</label>

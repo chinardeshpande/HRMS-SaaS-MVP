@@ -32,6 +32,7 @@ Creating a generic leave business rule does not create employee leave balances, 
 | API access | Employees had no simple authenticated endpoint to view active policies. | Added `GET /leave/policies` for active tenant policies. |
 | Settings journey | Settings > Business Rules created generic rules, not operational leave policies. | Added a real "Leave Policies Used by Leave Management" panel with Add/Edit/Deactivate controls. |
 | Admin clarity | Users could reasonably assume generic business rules allocate leave. | Added explanatory text that balances are separate yearly records initialized from policies. |
+| Product concept clarity | Users could not tell which policy was actually applicable. | Renamed the section to "Operational Leave Policies", marked policies as company-wide, defaulted new policies to inactive draft, and separated "Workflow Business Rules" from entitlement policies. |
 
 ## Test Outcomes
 
@@ -43,6 +44,8 @@ Creating a generic leave business rule does not create employee leave balances, 
 | LM-POL-004 | Reopen Leave landing after initialization | Leave balance cards remain visible. | Balance cards visible on landing. | Passed | `screenshots/leave-balance-cards-visible.png` |
 | LM-POL-005 | Open Settings > Business Rules | Real Leave Policy management is visible. | Leave policy panel visible above generic business rules. | Passed | `screenshots/settings-leave-policy-panel.png` |
 | LM-POL-006 | Click Add Leave Policy | Form opens for operational leave policy data. | Add Leave Policy modal opened. | Passed | `screenshots/settings-add-leave-policy-modal.png` |
+| LM-POL-007 | Review simplified policy model in Settings | User can see operational policies are company-wide and workflow rules are separate. | Operational Leave Policies, company-wide scope, and Workflow Business Rules were visible. | Passed | `screenshots/settings-policy-simplified-model.png` |
+| LM-POL-008 | Add policy modal status/scope clarity | New policy defaults to inactive draft and displays company-wide applicability. | Status and scope controls were visible and verified. | Passed | `screenshots/settings-policy-status-scope-modal.png` |
 
 ## API Proof
 
@@ -63,6 +66,10 @@ Creating a generic leave business rule does not create employee leave balances, 
 ![Settings leave policy panel](screenshots/settings-leave-policy-panel.png)
 
 ![Settings add leave policy modal](screenshots/settings-add-leave-policy-modal.png)
+
+![Settings simplified policy model](screenshots/settings-policy-simplified-model.png)
+
+![Settings policy status and scope modal](screenshots/settings-policy-status-scope-modal.png)
 
 ## Residual Risks
 

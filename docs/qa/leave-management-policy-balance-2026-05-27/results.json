@@ -72,5 +72,37 @@
       "details": "[]"
     }
   ],
-  "apiFailures": []
+  "apiFailures": [],
+  "policySimplificationChecks": [
+    {
+      "name": "Operational Leave Policies heading visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Company-wide scope visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Workflow Business Rules heading visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Policy status defaults inactive",
+      "passed": true,
+      "details": "value=inactive"
+    },
+    {
+      "name": "Company-wide applicability field visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "No API failures in simplification smoke",
+      "passed": true,
+      "details": "[]"
+    }
+  ]
 }
