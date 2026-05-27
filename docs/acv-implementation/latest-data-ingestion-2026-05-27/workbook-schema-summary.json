@@ -1,0 +1,7822 @@
+{
+  "generatedAt": "2026-05-27",
+  "schemas": [
+    {
+      "relativePath": "ACV-AuroraHR-Missing-Data-and-Documents-Workbook-2026-05-26.xlsx",
+      "category": "migration_gap_workbook",
+      "sheets": [
+        {
+          "name": "Instructions",
+          "maxRow": 15,
+          "maxColumn": 2,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "ACV AuroraHR Missing Data & Documents Workbook",
+                ""
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 2,
+              "values": [
+                "Purpose",
+                "Collect the missing data and documents needed to make ACV's AuroraHR implementation acc..."
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 2,
+              "values": [
+                "How to use",
+                "Each working tab has ACV Response, Document/File Link, Assigned To, Target Date, and Up..."
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 2,
+              "values": [
+                "Do not guess",
+                "If evidence is unavailable, write Not Available or Needs Discussion. Do not invent date..."
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 2,
+              "values": [
+                "Priority",
+                "Required items should be handled first. Recommended items improve completeness but can ..."
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 2,
+              "values": [
+                "Source",
+                "Generated from AuroraHR local ACV implementation readiness audit on 2026-05-26."
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 2,
+              "values": [
+                "Current readiness score",
+                "39%"
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 2,
+              "values": [
+                "Total employees",
+                "21"
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 2,
+              "values": [
+                "Active employees",
+                "6"
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 2,
+              "values": [
+                "Exited employees",
+                "3"
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 2,
+              "values": [
+                "Inactive employees needing classification",
+                "12"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Employee Master Gaps",
+          "maxRow": 29,
+          "maxColumn": 13,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Master Gaps",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 1,
+              "values": [
+                "Fill the correct values for missing employee master and lifecycle fields.",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 13,
+              "values": [
+                "Employee Code",
+                "Employee Name",
+                "Area",
+                "Missing Item",
+                "Priority",
+                "Current Evidence",
+                "Manual Action Needed",
+                "ACV Response / Correct Value",
+                "Document / File Link",
+                "Assigned To",
+                "Target Date",
+                "Update Status",
+                "Notes"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prakash Salvi",
+                "Employee master",
+                "Reporting manager",
+                "Medium",
+                "Not populated in AuroraHR",
+                "Provide Reporting manager",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prakash Salvi",
+                "Exit lifecycle",
+                "Verified exit date / last working date",
+                "Medium",
+                "Status set to exited based on explicit evidence, date not confirmed",
+                "Provide LWD/exit date and final settlement date if available",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0011",
+                "Soni Gupta",
+                "Employee master",
+                "Reporting manager",
+                "Medium",
+                "Not populated in AuroraHR",
+                "Provide Reporting manager",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0011",
+                "Soni Gupta",
+                "Exit lifecycle",
+                "Verified exit date / last working date",
+                "Medium",
+                "Status set to exited based on explicit evidence, date not confirmed",
+                "Provide LWD/exit date and final settlement date if available",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0010",
+                "David Vishwakarma",
+                "Employee master",
+                "Reporting manager",
+                "Medium",
+                "Not populated in AuroraHR",
+                "Provide Reporting manager",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0010",
+                "David Vishwakarma",
+                "Exit lifecycle",
+                "Verified exit date / last working date",
+                "Medium",
+                "Status set to exited based on explicit evidence, date not confirmed",
+                "Provide LWD/exit date and final settlement date if available",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0015",
+                "Sayali Deshpande",
+                "Employee master",
+                "Reporting manager",
+                "Medium",
+                "Not populated in AuroraHR",
+                "Provide Reporting manager",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0021",
+                "Ritika Sachan",
+                "Employee master",
+                "Reporting manager",
+                "Medium",
+                "Not populated in AuroraHR",
+                "Provide Reporting manager",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Personal Details- AB",
+          "maxRow": 27,
+          "maxColumn": 18,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "David , Latika and ankush detials not proper in system hence not added",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 16,
+              "values": [
+                "Sr No",
+                "Branch",
+                "Employee Code",
+                "First Name",
+                "Last Name",
+                "Gender",
+                "Department",
+                "Designation",
+                "D.O.J",
+                "Mobile No",
+                "Adhar Card",
+                "Marital Status",
+                "Blood Group",
+                "Date Of Confirmation",
+                "D.O.E",
+                "Reporting Manager",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 16,
+              "values": [
+                "1",
+                "Bhuvneshwar",
+                "ACV/Contract/0001",
+                "Biswa",
+                "Jeet",
+                "Male",
+                "IT",
+                "UI",
+                "2022-05-15 00:00:00",
+                "8745003887",
+                "87450 03887",
+                "Married",
+                "B+",
+                "2022-11-15 00:00:00",
+                "2022-11-15 00:00:00",
+                "Chinar D",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 16,
+              "values": [
+                "2",
+                "Dubai",
+                "ACV/Contract/0002",
+                "Ruchi",
+                "M",
+                "female",
+                "IT",
+                "PHP Dev",
+                "2022-05-15 00:00:00",
+                "9834572061",
+                "93404 97354",
+                "Unmarried",
+                "NA",
+                "2022-11-15 00:00:00",
+                "2022-11-15 00:00:00",
+                "Rambharat saroj",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 16,
+              "values": [
+                "3",
+                "Mumbai",
+                "ACV/EMP/0001",
+                "Rambharat",
+                "Saroj",
+                "Male",
+                "Management",
+                "Head - Product Development",
+                "2022-05-01 00:00:00",
+                "9324714602",
+                "9324714602",
+                "Married",
+                "NA",
+                "2022-11-01 00:00:00",
+                "2025-09-30 00:00:00",
+                "Chinar D",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 16,
+              "values": [
+                "4",
+                "Mumbai",
+                "ACV/EMP/0002",
+                "Surekha",
+                "Kamat",
+                "female",
+                "IT",
+                "Software Developer",
+                "2022-06-28 00:00:00",
+                "9164459695",
+                "8308 2260 3134",
+                "Married",
+                "O+",
+                "2022-12-28 00:00:00",
+                "Active",
+                "Aniket Dalvi",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 16,
+              "values": [
+                "5",
+                "Mumbai",
+                "ACV/EMP/0003",
+                "Chintan",
+                "Davda",
+                "Male",
+                "IT",
+                "Senior Front-end Developer",
+                "2023-01-23 00:00:00",
+                "8655191255",
+                "8655191255",
+                "Unmarried",
+                "NA",
+                "2023-07-23 00:00:00",
+                "2024-09-13 00:00:00",
+                "Rambharat saroj",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 16,
+              "values": [
+                "6",
+                "Mumbai",
+                "ACV/EMP/0005",
+                "Ankush",
+                "Singh",
+                "Male",
+                "IT",
+                "Software Developer",
+                "2023-05-22 00:00:00",
+                "9892615578",
+                "9892615578",
+                "Unmarried",
+                "NA",
+                "2023-11-22 00:00:00",
+                "2024-12-26 00:00:00",
+                "Rambharat saroj",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 16,
+              "values": [
+                "7",
+                "Mumbai",
+                "ACV/EMP/0007",
+                "Abhijith",
+                "Ellikkal",
+                "Male",
+                "IT",
+                "Sr.Mobile Developer",
+                "2024-04-01 00:00:00",
+                "9594213459",
+                "9594213459",
+                "Unmarried",
+                "NA",
+                "2024-10-01 00:00:00",
+                "2024-11-15 00:00:00",
+                "Rambharat saroj",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 16,
+              "values": [
+                "8",
+                "Mumbai",
+                "ACV/EMP/0008",
+                "Aniket",
+                "Dalvi",
+                "Male",
+                "IT",
+                "Senior Software Developer",
+                "2024-08-26 00:00:00",
+                "8850389492",
+                "302032034369",
+                "Married",
+                "A+",
+                "2025-02-26 00:00:00",
+                "Active",
+                "Chinar D",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 16,
+              "values": [
+                "9",
+                "Mumbai",
+                "ACV/EMP/0009",
+                "Sanket",
+                "Saroj",
+                "Male",
+                "IT",
+                "Tester",
+                "2024-11-04 00:00:00",
+                "9137767192",
+                "7997 2374 6737",
+                "Unmarried",
+                "NA",
+                "2025-05-04 00:00:00",
+                "2025-08-29 00:00:00",
+                "Aniket Dalvi",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 16,
+              "values": [
+                "10",
+                "Mumbai",
+                "ACV/EMP/0011",
+                "soni",
+                "gupta",
+                "female",
+                "IT",
+                "Software Developer",
+                "2025-04-24 00:00:00",
+                "8657152747",
+                "556392989189",
+                "Unmarried",
+                "NA",
+                "2025-10-24 00:00:00",
+                "2025-04-30 00:00:00",
+                "Aniket Dalvi",
+                "",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Data Accuracy Risks",
+          "maxRow": 51,
+          "maxColumn": 11,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Data Accuracy Risks",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 1,
+              "values": [
+                "Review placeholder emails, migration notes, and uncertain lifecycle classifications.",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 11,
+              "values": [
+                "Employee Code",
+                "Employee Name",
+                "Area",
+                "Issue",
+                "Current Value",
+                "Manual Action Needed",
+                "ACV Response / Correct Value",
+                "Evidence Link",
+                "Assigned To",
+                "Update Status",
+                "Notes"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prakash Salvi",
+                "Employee master",
+                "Placeholder/migration email is still used",
+                "migration+acv-emp-0004-latika-prakash-salvi@acvsolutions.in",
+                "Provide correct ACV/current/personal email or confirm placeholder is acceptable for his...",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prakash Salvi",
+                "Employee master",
+                "Migration/review note present in work location",
+                "ACV migration: review manually",
+                "Replace with correct work location or move note to implementation notes",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0011",
+                "Soni Gupta",
+                "Employee master",
+                "Placeholder/migration email is still used",
+                "migration+acv-emp-0011-ms-soni-gupta@acvsolutions.in",
+                "Provide correct ACV/current/personal email or confirm placeholder is acceptable for his...",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0011",
+                "Soni Gupta",
+                "Employee master",
+                "Migration/review note present in work location",
+                "ACV migration: review manually",
+                "Replace with correct work location or move note to implementation notes",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0010",
+                "David Vishwakarma",
+                "Employee master",
+                "Placeholder/migration email is still used",
+                "migration+acv-emp-0010-mr-david-vishwakarma@acvsolutions.in",
+                "Provide correct ACV/current/personal email or confirm placeholder is acceptable for his...",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0010",
+                "David Vishwakarma",
+                "Employee master",
+                "Migration/review note present in work location",
+                "ACV migration: review manually",
+                "Replace with correct work location or move note to implementation notes",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0015",
+                "Sayali Deshpande",
+                "Employee master",
+                "Placeholder/migration email is still used",
+                "migration+acv-emp-0015-sayali@acvsolutions.in",
+                "Provide correct ACV/current/personal email or confirm placeholder is acceptable for his...",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0015",
+                "Sayali Deshpande",
+                "Employee master",
+                "Migration/review note present in work location",
+                "ACV migration: historical record; verify exit details manually",
+                "Replace with correct work location or move note to implementation notes",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Employee Documents Needed",
+          "maxRow": 124,
+          "maxColumn": 12,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Documents Needed",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 1,
+              "values": [
+                "Upload or verify employee documents. Mark Not Available when historical evidence does n...",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 12,
+              "values": [
+                "Employee Code",
+                "Employee Name",
+                "Document Type",
+                "Category",
+                "Priority",
+                "Current Status",
+                "Manual Action Needed",
+                "ACV Response",
+                "Document / File Link",
+                "Assigned To",
+                "Update Status",
+                "Notes"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prakash Salvi",
+                "Identity document",
+                "Identity",
+                "Required",
+                "Missing",
+                "Upload Identity document",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prakash Salvi",
+                "Offer/appointment/employment letter",
+                "Employment Letter",
+                "Required",
+                "Missing",
+                "Upload Offer/appointment/employment letter",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prakash Salvi",
+                "Address proof",
+                "Address Proof",
+                "Recommended",
+                "Missing",
+                "Upload Address proof if available",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prakash Salvi",
+                "Education/resume/qualification evidence",
+                "Education",
+                "Recommended",
+                "Missing",
+                "Upload Education/resume/qualification evidence if available",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prakash Salvi",
+                "Compensation letter/revision evidence",
+                "Compensation",
+                "Recommended",
+                "Missing",
+                "Upload Compensation letter/revision evidence if available",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0011",
+                "Soni Gupta",
+                "Identity document",
+                "Identity",
+                "Required",
+                "Missing",
+                "Upload Identity document",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0011",
+                "Soni Gupta",
+                "Offer/appointment/employment letter",
+                "Employment Letter",
+                "Required",
+                "Missing",
+                "Upload Offer/appointment/employment letter",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0011",
+                "Soni Gupta",
+                "Address proof",
+                "Address Proof",
+                "Recommended",
+                "Missing",
+                "Upload Address proof if available",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Exit Status and Dates",
+          "maxRow": 98,
+          "maxColumn": 12,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Exit Status and Dates",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 1,
+              "values": [
+                "Confirm inactive/exited classification and last working dates.",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 12,
+              "values": [
+                "Employee Code",
+                "Employee Name",
+                "Gap / Issue",
+                "Current Evidence / Value",
+                "Required ACV Input",
+                "Confirmed Status",
+                "Last Working Date",
+                "FNF Date",
+                "Evidence Link",
+                "Assigned To",
+                "Update Status",
+                "Notes"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prakash Salvi",
+                "Verified exit date / last working date",
+                "Status set to exited based on explicit evidence, date not confirmed",
+                "Provide LWD/exit date and final settlement date if available",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0011",
+                "Soni Gupta",
+                "Verified exit date / last working date",
+                "Status set to exited based on explicit evidence, date not confirmed",
+                "Provide LWD/exit date and final settlement date if available",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0010",
+                "David Vishwakarma",
+                "Verified exit date / last working date",
+                "Status set to exited based on explicit evidence, date not confirmed",
+                "Provide LWD/exit date and final settlement date if available",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0015",
+                "Sayali Deshpande",
+                "Inactive historical employee not yet classified as exited",
+                "inactive",
+                "Provide exit/FNF/experience/resignation evidence or confirm status should remain inactive",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0021",
+                "Ritika Sachan",
+                "Inactive historical employee not yet classified as exited",
+                "inactive",
+                "Provide exit/FNF/experience/resignation evidence or confirm status should remain inactive",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0020",
+                "Pranali Bedre",
+                "Inactive historical employee not yet classified as exited",
+                "inactive",
+                "Provide exit/FNF/experience/resignation evidence or confirm status should remain inactive",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0019",
+                "Praful Rane",
+                "Inactive historical employee not yet classified as exited",
+                "inactive",
+                "Provide exit/FNF/experience/resignation evidence or confirm status should remain inactive",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0018",
+                "Pankaj Sohanlal Suthar",
+                "Inactive historical employee not yet classified as exited",
+                "inactive",
+                "Provide exit/FNF/experience/resignation evidence or confirm status should remain inactive",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Compensation and Payslips",
+          "maxRow": 31,
+          "maxColumn": 12,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Compensation and Payslips",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 1,
+              "values": [
+                "Provide salary structures, salary transaction evidence, and physical payslip files wher...",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 12,
+              "values": [
+                "Employee Code",
+                "Employee Name",
+                "Item",
+                "Current Status",
+                "Records",
+                "Gap",
+                "Manual Action Needed",
+                "ACV Response",
+                "Document / File Link",
+                "Assigned To",
+                "Update Status",
+                "Notes"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prakash Salvi",
+                "Payslip physical files",
+                "Partial",
+                "3",
+                "3 salary records do not have attached payslip files",
+                "Upload monthly payslip PDFs/images where available",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0011",
+                "Soni Gupta",
+                "Payslip physical files",
+                "Partial",
+                "11",
+                "11 salary records do not have attached payslip files",
+                "Upload monthly payslip PDFs/images where available",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0010",
+                "David Vishwakarma",
+                "Payslip physical files",
+                "Partial",
+                "6",
+                "6 salary records do not have attached payslip files",
+                "Upload monthly payslip PDFs/images where available",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0021",
+                "Ritika Sachan",
+                "Salary structure",
+                "Missing",
+                "0",
+                "No salary structure stored",
+                "Provide current/historical salary structure if applicable",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0021",
+                "Ritika Sachan",
+                "Salary transaction history",
+                "Missing",
+                "0",
+                "No payslip/salary transaction records stored",
+                "Provide payroll output or confirm no salary data is required",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0020",
+                "Pranali Bedre",
+                "Salary structure",
+                "Missing",
+                "0",
+                "No salary structure stored",
+                "Provide current/historical salary structure if applicable",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0020",
+                "Pranali Bedre",
+                "Salary transaction history",
+                "Missing",
+                "0",
+                "No payslip/salary transaction records stored",
+                "Provide payroll output or confirm no salary data is required",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 8,
+              "values": [
+                "ACV/EMP/0019",
+                "Praful Rane",
+                "Salary structure",
+                "Missing",
+                "0",
+                "No salary structure stored",
+                "Provide current/historical salary structure if applicable",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Company Documents",
+          "maxRow": 8,
+          "maxColumn": 11,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Company Documents",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 1,
+              "values": [
+                "Verify company-level HR, incorporation, tax, and compliance documents.",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 11,
+              "values": [
+                "Category",
+                "Current Status",
+                "Active Documents",
+                "Verified Documents",
+                "Gap",
+                "Manual Action Needed",
+                "ACV Response",
+                "Document / File Link",
+                "Assigned To",
+                "Update Status",
+                "Notes"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 7,
+              "values": [
+                "Incorporation Identity",
+                "Present",
+                "2",
+                "0",
+                "One or more company documents unverified",
+                "Verify company document",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 7,
+              "values": [
+                "Tax Registration",
+                "Present",
+                "1",
+                "0",
+                "One or more company documents unverified",
+                "Verify company document",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 7,
+              "values": [
+                "Labor Hr Compliance",
+                "Present",
+                "2",
+                "1",
+                "One or more company documents unverified",
+                "Verify company document",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 7,
+              "values": [
+                "Hr Policy",
+                "Present",
+                "3",
+                "0",
+                "One or more company documents unverified",
+                "Verify company document",
+                "",
+                "",
+                "",
+                "Open",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Action Queue",
+          "maxRow": 25,
+          "maxColumn": 10,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Action Queue",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 1,
+              "values": [
+                "Use this tab as the high-level implementation cleanup tracker.",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 10,
+              "values": [
+                "Employee Code",
+                "Employee Name",
+                "Priority",
+                "Action Type",
+                "Reason",
+                "Suggested Action",
+                "Owner",
+                "Update Status",
+                "Target Date",
+                "Notes"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prakash Salvi",
+                "High",
+                "Readiness cleanup",
+                "Readiness status: critical",
+                "Resolve master/document/compensation gaps listed in audit CSVs",
+                "",
+                "Open",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0011",
+                "Soni Gupta",
+                "High",
+                "Readiness cleanup",
+                "Readiness status: critical",
+                "Resolve master/document/compensation gaps listed in audit CSVs",
+                "",
+                "Open",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0010",
+                "David Vishwakarma",
+                "High",
+                "Readiness cleanup",
+                "Readiness status: critical",
+                "Resolve master/document/compensation gaps listed in audit CSVs",
+                "",
+                "Open",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0015",
+                "Sayali Deshpande",
+                "High",
+                "Readiness cleanup",
+                "Readiness status: critical",
+                "Resolve master/document/compensation gaps listed in audit CSVs",
+                "",
+                "Open",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0021",
+                "Ritika Sachan",
+                "High",
+                "Readiness cleanup",
+                "Readiness status: critical",
+                "Resolve master/document/compensation gaps listed in audit CSVs",
+                "",
+                "Open",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0020",
+                "Pranali Bedre",
+                "High",
+                "Readiness cleanup",
+                "Readiness status: critical",
+                "Resolve master/document/compensation gaps listed in audit CSVs",
+                "",
+                "Open",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0019",
+                "Praful Rane",
+                "High",
+                "Readiness cleanup",
+                "Readiness status: critical",
+                "Resolve master/document/compensation gaps listed in audit CSVs",
+                "",
+                "Open",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 7,
+              "values": [
+                "ACV/EMP/0018",
+                "Pankaj Sohanlal Suthar",
+                "High",
+                "Readiness cleanup",
+                "Readiness status: critical",
+                "Resolve master/document/compensation gaps listed in audit CSVs",
+                "",
+                "Open",
+                "",
+                ""
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Leave_Management_2026.xlsx",
+      "category": "leave_balance_source",
+      "sheets": [
+        {
+          "name": "Surekha Kamat",
+          "maxRow": 15,
+          "maxColumn": 35,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 4,
+              "values": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "2025-01-01 00:00:00",
+                "",
+                "2025-02-01 00:00:00",
+                "",
+                "2025-03-01 00:00:00",
+                "",
+                "2025-04-01 00:00:00"
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 9,
+              "values": [
+                "",
+                "HR Record(Only filled by HR)",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Balance",
+                "PL",
+                "CL",
+                "PL",
+                "CL",
+                "PL",
+                "CL",
+                "PL"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 10,
+              "values": [
+                "Month",
+                "Total CL",
+                "Taken",
+                "Balance CL",
+                "Total PL",
+                "Taken",
+                "Balance PL",
+                "Status (Active / Left)",
+                "LOP",
+                "Remarks",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 10,
+              "values": [
+                "Jan",
+                "0.7",
+                "0.5",
+                "0.19999999999999996",
+                "17.5",
+                "0",
+                "17.5",
+                "",
+                "",
+                "",
+                "16",
+                "1.5",
+                "0.7",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 9,
+              "values": [
+                "Feb",
+                "0.8999999999999999",
+                "0",
+                "0.8999999999999999",
+                "19",
+                "0",
+                "19",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "1.5",
+                "0.7",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 9,
+              "values": [
+                "Mar",
+                "1.5999999999999999",
+                "1.5",
+                "0.09999999999999987",
+                "20.5",
+                "1",
+                "19.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "1.5",
+                "0.7",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 8,
+              "values": [
+                "Apr",
+                "0.7999999999999998",
+                "0",
+                "0.7999999999999998",
+                "21",
+                "1",
+                "20",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "1.5"
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 7,
+              "values": [
+                "May",
+                "1.4999999999999998",
+                "0",
+                "1.4999999999999998",
+                "21.5",
+                "0",
+                "21.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 5,
+              "values": [
+                "Jun",
+                "2.1999999999999997",
+                "",
+                "2.1999999999999997",
+                "23",
+                "",
+                "23",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 5,
+              "values": [
+                "Jul",
+                "2.8999999999999995",
+                "",
+                "2.8999999999999995",
+                "24.5",
+                "",
+                "24.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 5,
+              "values": [
+                "Aug",
+                "3.5999999999999996",
+                "",
+                "3.5999999999999996",
+                "26",
+                "",
+                "26",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 5,
+              "values": [
+                "Sep",
+                "4.3",
+                "",
+                "4.3",
+                "27.5",
+                "",
+                "27.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Aniket Dalvi",
+          "maxRow": 15,
+          "maxColumn": 35,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 4,
+              "values": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "2025-01-01 00:00:00",
+                "",
+                "2025-02-01 00:00:00",
+                "",
+                "2025-03-01 00:00:00",
+                "",
+                "2025-04-01 00:00:00"
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 9,
+              "values": [
+                "",
+                "HR Record(Only filled by HR)",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Balance",
+                "PL",
+                "CL",
+                "PL",
+                "CL",
+                "PL",
+                "CL",
+                "PL"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 10,
+              "values": [
+                "Month",
+                "Total CL",
+                "Taken",
+                "Balance CL",
+                "Total PL",
+                "Taken",
+                "Balance PL",
+                "Status (Active / Left)",
+                "LOP",
+                "Remarks",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 10,
+              "values": [
+                "Jan",
+                "0.7",
+                "0",
+                "0.7",
+                "25.5",
+                "4",
+                "21.5",
+                "",
+                "",
+                "",
+                "24",
+                "1.5",
+                "0.7",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 9,
+              "values": [
+                "Feb",
+                "1.4",
+                "0",
+                "1.4",
+                "23",
+                "0",
+                "23",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "1.5",
+                "0.7",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 9,
+              "values": [
+                "Mar",
+                "2.0999999999999996",
+                "1",
+                "1.0999999999999996",
+                "24.5",
+                "0",
+                "24.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "1.5",
+                "0.7",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 8,
+              "values": [
+                "Apr",
+                "1.7999999999999996",
+                "1",
+                "0.7999999999999996",
+                "26",
+                "0",
+                "26",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "1.5"
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 7,
+              "values": [
+                "May",
+                "1.4999999999999996",
+                "1",
+                "0.49999999999999956",
+                "27.5",
+                "0",
+                "27.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 5,
+              "values": [
+                "Jun",
+                "1.1999999999999995",
+                "",
+                "1.1999999999999995",
+                "29",
+                "",
+                "29",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 5,
+              "values": [
+                "Jul",
+                "1.8999999999999995",
+                "",
+                "1.8999999999999995",
+                "30.5",
+                "",
+                "30.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 5,
+              "values": [
+                "Aug",
+                "2.5999999999999996",
+                "",
+                "2.5999999999999996",
+                "32",
+                "",
+                "32",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 5,
+              "values": [
+                "Sep",
+                "3.3",
+                "",
+                "3.3",
+                "33.5",
+                "",
+                "33.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Soni Gupta",
+          "maxRow": 15,
+          "maxColumn": 35,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 4,
+              "values": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "2025-01-01 00:00:00",
+                "",
+                "2025-02-01 00:00:00",
+                "",
+                "2025-03-01 00:00:00",
+                "",
+                "2025-04-01 00:00:00"
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 9,
+              "values": [
+                "",
+                "HR Record(Only filled by HR)",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Balance",
+                "PL",
+                "CL",
+                "PL",
+                "CL",
+                "PL",
+                "CL",
+                "PL"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 10,
+              "values": [
+                "Month",
+                "Total CL",
+                "Taken",
+                "Balance CL",
+                "Total PL",
+                "Taken",
+                "Balance PL",
+                "Status (Active / Left)",
+                "LOP",
+                "Remarks",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 10,
+              "values": [
+                "Jan",
+                "0.7",
+                "0",
+                "0.7",
+                "15",
+                "1",
+                "14",
+                "",
+                "",
+                "",
+                "13.5",
+                "1.5",
+                "0.7",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 9,
+              "values": [
+                "Feb",
+                "1.4",
+                "0",
+                "1.4",
+                "15.5",
+                "5",
+                "10.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "1.5",
+                "0.7",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 9,
+              "values": [
+                "Mar",
+                "2.0999999999999996",
+                "0.5",
+                "1.5999999999999996",
+                "12",
+                "0",
+                "12",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "1.5",
+                "0.7",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 8,
+              "values": [
+                "Apr",
+                "2.3",
+                "1",
+                "1.2999999999999998",
+                "13.5",
+                "0",
+                "13.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "1.5"
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 5,
+              "values": [
+                "May",
+                "1.9999999999999998",
+                "",
+                "1.9999999999999998",
+                "15",
+                "",
+                "15",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 5,
+              "values": [
+                "Jun",
+                "2.6999999999999997",
+                "",
+                "2.6999999999999997",
+                "16.5",
+                "",
+                "16.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 5,
+              "values": [
+                "Jul",
+                "3.3999999999999995",
+                "",
+                "3.3999999999999995",
+                "18",
+                "",
+                "18",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 5,
+              "values": [
+                "Aug",
+                "4.1",
+                "",
+                "4.1",
+                "19.5",
+                "",
+                "19.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 5,
+              "values": [
+                "Sep",
+                "4.8",
+                "",
+                "4.8",
+                "21",
+                "",
+                "21",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Pooja Guad",
+          "maxRow": 15,
+          "maxColumn": 35,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 4,
+              "values": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "2025-01-01 00:00:00",
+                "",
+                "2025-02-01 00:00:00",
+                "",
+                "2025-03-01 00:00:00",
+                "",
+                "2025-04-01 00:00:00"
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 9,
+              "values": [
+                "",
+                "HR Record(Only filled by HR)",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Balance",
+                "PL",
+                "CL",
+                "PL",
+                "CL",
+                "PL",
+                "CL",
+                "PL"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 10,
+              "values": [
+                "Month",
+                "Total CL",
+                "Taken",
+                "Balance CL",
+                "Total PL",
+                "Taken",
+                "Balance PL",
+                "Status (Active / Left)",
+                "LOP",
+                "Remarks",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 10,
+              "values": [
+                "Jan",
+                "0.7",
+                "0",
+                "0.7",
+                "2.5",
+                "0",
+                "2.5",
+                "",
+                "",
+                "",
+                "1",
+                "1.5",
+                "0.7",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 9,
+              "values": [
+                "Feb",
+                "1.4",
+                "0",
+                "1.4",
+                "4",
+                "0",
+                "4",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "1.5",
+                "0.7",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 9,
+              "values": [
+                "Mar",
+                "2.0999999999999996",
+                "0",
+                "2.0999999999999996",
+                "5.5",
+                "0",
+                "5.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "1.5",
+                "0.7",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 8,
+              "values": [
+                "Apr",
+                "2.8",
+                "0",
+                "2.8",
+                "7",
+                "0",
+                "7",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "1.5"
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 7,
+              "values": [
+                "May",
+                "3.5",
+                "2",
+                "1.5",
+                "8.5",
+                "0",
+                "8.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 5,
+              "values": [
+                "Jun",
+                "2.2",
+                "",
+                "2.2",
+                "10",
+                "",
+                "10",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 5,
+              "values": [
+                "Jul",
+                "2.9000000000000004",
+                "",
+                "2.9000000000000004",
+                "11.5",
+                "",
+                "11.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 5,
+              "values": [
+                "Aug",
+                "3.6000000000000005",
+                "",
+                "3.6000000000000005",
+                "13",
+                "",
+                "13",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 5,
+              "values": [
+                "Sep",
+                "4.300000000000001",
+                "",
+                "4.300000000000001",
+                "14.5",
+                "",
+                "14.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Suraj Shivgavan",
+          "maxRow": 15,
+          "maxColumn": 35,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 4,
+              "values": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "2025-01-01 00:00:00",
+                "",
+                "2025-02-01 00:00:00",
+                "",
+                "2025-03-01 00:00:00",
+                "",
+                "2025-04-01 00:00:00"
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 9,
+              "values": [
+                "",
+                "HR Record(Only filled by HR)",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Balance",
+                "PL",
+                "CL",
+                "PL",
+                "CL",
+                "PL",
+                "CL",
+                "PL"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 10,
+              "values": [
+                "Month",
+                "Total CL",
+                "Taken",
+                "Balance CL",
+                "Total PL",
+                "Taken",
+                "Balance PL",
+                "Status (Active / Left)",
+                "LOP",
+                "Remarks",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 8,
+              "values": [
+                "Apr",
+                "0",
+                "0",
+                "0",
+                "1",
+                "0",
+                "1",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "1"
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 7,
+              "values": [
+                "May",
+                "0.7",
+                "0.5",
+                "0.19999999999999996",
+                "2.5",
+                "0",
+                "2.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 5,
+              "values": [
+                "Jun",
+                "0.8999999999999999",
+                "",
+                "0.8999999999999999",
+                "4",
+                "",
+                "4",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 5,
+              "values": [
+                "Jul",
+                "1.5999999999999999",
+                "",
+                "1.5999999999999999",
+                "5.5",
+                "",
+                "5.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 5,
+              "values": [
+                "Aug",
+                "2.3",
+                "",
+                "2.3",
+                "7",
+                "",
+                "7",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 5,
+              "values": [
+                "Sep",
+                "3",
+                "",
+                "3",
+                "8.5",
+                "",
+                "8.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Lopamudra Behera",
+          "maxRow": 15,
+          "maxColumn": 35,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 4,
+              "values": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "2025-01-01 00:00:00",
+                "",
+                "2025-02-01 00:00:00",
+                "",
+                "2025-03-01 00:00:00",
+                "",
+                "2025-04-01 00:00:00"
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 9,
+              "values": [
+                "",
+                "HR Record(Only filled by HR)",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Balance",
+                "PL",
+                "CL",
+                "PL",
+                "CL",
+                "PL",
+                "CL",
+                "PL"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 10,
+              "values": [
+                "Month",
+                "Total CL",
+                "Taken",
+                "Balance CL",
+                "Total PL",
+                "Taken",
+                "Balance PL",
+                "Status (Active / Left)",
+                "LOP",
+                "Remarks",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 8,
+              "values": [
+                "Apr",
+                "0",
+                "0",
+                "0",
+                "0.5",
+                "0",
+                "0.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "0.5"
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 7,
+              "values": [
+                "May",
+                "0.7",
+                "0.5",
+                "0.19999999999999996",
+                "2",
+                "0",
+                "2",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 7,
+              "values": [
+                "Jun",
+                "0.8999999999999999",
+                "0.5",
+                "0.3999999999999999",
+                "3.5",
+                "0",
+                "3.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 5,
+              "values": [
+                "Jul",
+                "1.0999999999999999",
+                "",
+                "1.0999999999999999",
+                "5",
+                "",
+                "5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 5,
+              "values": [
+                "Aug",
+                "1.7999999999999998",
+                "",
+                "1.7999999999999998",
+                "6.5",
+                "",
+                "6.5",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 5,
+              "values": [
+                "Sep",
+                "2.5",
+                "",
+                "2.5",
+                "8",
+                "",
+                "8",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Monthly attendance/Aniket 0008 Attendance sheet month ACV 2024.xlsx",
+      "category": "monthly_attendance_source",
+      "sheets": [
+        {
+          "name": "2024",
+          "maxRow": 80,
+          "maxColumn": 52,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Month",
+                "Employee Code",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 4,
+              "values": [
+                "1",
+                "Aniket Dalvi",
+                "JANUARY",
+                "0008",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 2,
+              "values": [
+                "2",
+                "",
+                "FEBRUARY",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 2,
+              "values": [
+                "3",
+                "",
+                "MARCH",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 2,
+              "values": [
+                "4",
+                "",
+                "APRIL",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 2,
+              "values": [
+                "5",
+                "",
+                "MAY",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 2,
+              "values": [
+                "6",
+                "",
+                "JUNE",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 2,
+              "values": [
+                "7",
+                "",
+                "JULY",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 2,
+              "values": [
+                "8",
+                "",
+                "AUGUST",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 16,
+              "values": [
+                "9",
+                "",
+                "SEPTEMBER",
+                "",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "CL",
+                "WO",
+                "WO",
+                "CL",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO"
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 16,
+              "values": [
+                "10",
+                "",
+                "OCTOBER",
+                "",
+                "P",
+                "PH",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "2025",
+          "maxRow": 80,
+          "maxColumn": 52,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Month",
+                "Employee Code",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 18,
+              "values": [
+                "1",
+                "Aniket Dalvi",
+                "JANUARY",
+                "0008",
+                "PH",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 16,
+              "values": [
+                "2",
+                "",
+                "FEBRUARY",
+                "",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 16,
+              "values": [
+                "3",
+                "",
+                "MARCH",
+                "",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "PH"
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 16,
+              "values": [
+                "4",
+                "",
+                "APRIL",
+                "",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "PH"
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 16,
+              "values": [
+                "5",
+                "",
+                "MAY",
+                "",
+                "PH",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 16,
+              "values": [
+                "6",
+                "",
+                "JUNE",
+                "",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO"
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 16,
+              "values": [
+                "7",
+                "",
+                "JULY",
+                "",
+                "P",
+                "P",
+                "P",
+                "CL",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P"
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 16,
+              "values": [
+                "8",
+                "",
+                "AUGUST",
+                "",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 16,
+              "values": [
+                "9",
+                "",
+                "SEPTEMBER",
+                "",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO"
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 16,
+              "values": [
+                "10",
+                "",
+                "OCTOBER",
+                "",
+                "P",
+                "PH",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "2026",
+          "maxRow": 15,
+          "maxColumn": 52,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Month",
+                "Employee Code",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 18,
+              "values": [
+                "1",
+                "Aniket Dalvi",
+                "JANUARY",
+                "0008",
+                "PH",
+                "PH",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 16,
+              "values": [
+                "2",
+                "",
+                "FEBRUARY",
+                "",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 16,
+              "values": [
+                "3",
+                "",
+                "MARCH",
+                "",
+                "WO",
+                "P",
+                "PH",
+                "P",
+                "P",
+                "PL",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO"
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 16,
+              "values": [
+                "4",
+                "",
+                "APRIL",
+                "",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "PH"
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 16,
+              "values": [
+                "5",
+                "",
+                "MAY",
+                "",
+                "PH",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 2,
+              "values": [
+                "6",
+                "",
+                "JUNE",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 2,
+              "values": [
+                "7",
+                "",
+                "JULY",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 2,
+              "values": [
+                "8",
+                "",
+                "AUGUST",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 2,
+              "values": [
+                "9",
+                "",
+                "SEPTEMBER",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 2,
+              "values": [
+                "10",
+                "",
+                "OCTOBER",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Monthly attendance/Attendance sheet May_2026.xlsx",
+      "category": "monthly_attendance_source",
+      "sheets": [
+        {
+          "name": "2025",
+          "maxRow": 14,
+          "maxColumn": 52,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Month",
+                "Employee Code",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 2,
+              "values": [
+                "1",
+                "",
+                "JANUARY",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 2,
+              "values": [
+                "2",
+                "",
+                "FEBRUARY",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 2,
+              "values": [
+                "3",
+                "",
+                "MARCH",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 2,
+              "values": [
+                "4",
+                "",
+                "APRIL",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 2,
+              "values": [
+                "5",
+                "",
+                "MAY",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 2,
+              "values": [
+                "6",
+                "",
+                "JUNE",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 2,
+              "values": [
+                "7",
+                "",
+                "JULY",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 2,
+              "values": [
+                "8",
+                "",
+                "AUGUST",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 2,
+              "values": [
+                "9",
+                "",
+                "SEPTEMBER",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 2,
+              "values": [
+                "10",
+                "",
+                "OCTOBER",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "2026",
+          "maxRow": 14,
+          "maxColumn": 52,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Month",
+                "Employee Code",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 18,
+              "values": [
+                "1",
+                "Pooja Gaud",
+                "JANUARY",
+                "ACV/EMP/0012",
+                "PH",
+                "PH",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 18,
+              "values": [
+                "2",
+                "Pooja Gaud",
+                "FEBRUARY",
+                "ACV/EMP/0012",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 18,
+              "values": [
+                "3",
+                "Pooja Gaud",
+                "MARCH",
+                "ACV/EMP/0012",
+                "WO",
+                "P",
+                "PH",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO"
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 18,
+              "values": [
+                "4",
+                "Pooja Gaud",
+                "APRIL",
+                "ACV/EMP/0012",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "PH"
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 18,
+              "values": [
+                "5",
+                "Pooja Gaud",
+                "MAY",
+                "ACV/EMP/0012",
+                "PH",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 8,
+              "values": [
+                "6",
+                "Pooja Gaud",
+                "JUNE",
+                "ACV/EMP/0012",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "WO",
+                "WO",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "WO",
+                "WO"
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 8,
+              "values": [
+                "7",
+                "Pooja Gaud",
+                "JULY",
+                "ACV/EMP/0012",
+                "",
+                "",
+                "",
+                "WO",
+                "WO",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "WO",
+                "WO",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 4,
+              "values": [
+                "8",
+                "Pooja Gaud",
+                "AUGUST",
+                "ACV/EMP/0012",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 4,
+              "values": [
+                "9",
+                "Pooja Gaud",
+                "SEPTEMBER",
+                "ACV/EMP/0012",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 4,
+              "values": [
+                "10",
+                "Pooja Gaud",
+                "OCTOBER",
+                "ACV/EMP/0012",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Monthly attendance/Lopamudra_Monthly_Attendance_Sheet.xlsx",
+      "category": "monthly_attendance_source",
+      "sheets": [
+        {
+          "name": "2026",
+          "maxRow": 80,
+          "maxColumn": 52,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Month",
+                "Employee Code",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 1,
+              "values": [
+                "",
+                "",
+                "JANUARY",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 2,
+              "values": [
+                "2",
+                "",
+                "FEBRUARY",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 2,
+              "values": [
+                "3",
+                "",
+                "MARCH",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 4,
+              "values": [
+                "4",
+                "Lopamudra",
+                "APRIL",
+                "00014",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 3,
+              "values": [
+                "5",
+                "Lopamudra",
+                "MAY",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 3,
+              "values": [
+                "6",
+                "Lopamudra",
+                "JUNE",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 3,
+              "values": [
+                "7",
+                "Lopamudra",
+                "JULY",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 3,
+              "values": [
+                "8",
+                "Lopamudra",
+                "AUGUST",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 3,
+              "values": [
+                "9",
+                "Lopamudra",
+                "SEPTEMBER",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 3,
+              "values": [
+                "10",
+                "Lopamudra",
+                "OCTOBER",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Monthly attendance/Monthly_Attendance_Sheet.xlsx",
+      "category": "monthly_attendance_source",
+      "sheets": [
+        {
+          "name": "Sheet1",
+          "maxRow": 14,
+          "maxColumn": 52,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Month",
+                "Employee Code",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 4,
+              "values": [
+                "1",
+                "Suraj Shigavan",
+                "JANUARY",
+                "ACV/EMP/0013",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 4,
+              "values": [
+                "2",
+                "Suraj Shigavan",
+                "FEBRUARY",
+                "ACV/EMP/0013",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 4,
+              "values": [
+                "3",
+                "Suraj Shigavan",
+                "MARCH",
+                "ACV/EMP/0013",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 6,
+              "values": [
+                "4",
+                "Suraj Shigavan",
+                "APRIL",
+                "ACV/EMP/0013",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "P",
+                "PH"
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 18,
+              "values": [
+                "5",
+                "Suraj Shigavan",
+                "MAY",
+                "ACV/EMP/0013",
+                "PH",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 4,
+              "values": [
+                "6",
+                "Suraj Shigavan",
+                "JUNE",
+                "ACV/EMP/0013",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 4,
+              "values": [
+                "7",
+                "Suraj Shigavan",
+                "JULY",
+                "ACV/EMP/0013",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 4,
+              "values": [
+                "8",
+                "Suraj Shigavan",
+                "AUGUST",
+                "ACV/EMP/0013",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 4,
+              "values": [
+                "9",
+                "Suraj Shigavan",
+                "SEPTEMBER",
+                "ACV/EMP/0013",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 4,
+              "values": [
+                "10",
+                "Suraj Shigavan",
+                "OCTOBER",
+                "ACV/EMP/0013",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Monthly attendance/Surekha_attendance sheet month format_ACV 2024-2026.xlsx",
+      "category": "monthly_attendance_source",
+      "sheets": [
+        {
+          "name": "2024",
+          "maxRow": 80,
+          "maxColumn": 52,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Month",
+                "Employee Code",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 18,
+              "values": [
+                "1",
+                "Surekha Abhijit Kamat",
+                "JANUARY",
+                "ACV/EMP/0002",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO"
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 16,
+              "values": [
+                "2",
+                "",
+                "FEBRUARY",
+                "",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "CL",
+                "P"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 16,
+              "values": [
+                "3",
+                "",
+                "MARCH",
+                "",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 16,
+              "values": [
+                "4",
+                "",
+                "APRIL",
+                "",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "PL",
+                "PH",
+                "PL",
+                "PL",
+                "PL",
+                "PL",
+                "PL"
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 16,
+              "values": [
+                "5",
+                "",
+                "MAY",
+                "",
+                "PH",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 16,
+              "values": [
+                "6",
+                "",
+                "JUNE",
+                "",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 16,
+              "values": [
+                "7",
+                "",
+                "JULY",
+                "",
+                "CL",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO"
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 16,
+              "values": [
+                "8",
+                "",
+                "AUGUST",
+                "",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 16,
+              "values": [
+                "9",
+                "",
+                "SEPTEMBER",
+                "",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO"
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 16,
+              "values": [
+                "10",
+                "",
+                "OCTOBER",
+                "",
+                "P",
+                "PH",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "2025",
+          "maxRow": 80,
+          "maxColumn": 52,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Month",
+                "Employee Code",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 18,
+              "values": [
+                "1",
+                "Surekha Abhijit Kamat",
+                "JANUARY",
+                "ACV/EMP/0002",
+                "PH",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 17,
+              "values": [
+                "2",
+                "",
+                "FEBRUARY",
+                "ACV/EMP/0002",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 17,
+              "values": [
+                "3",
+                "",
+                "MARCH",
+                "ACV/EMP/0002",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "PH"
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 17,
+              "values": [
+                "4",
+                "",
+                "APRIL",
+                "ACV/EMP/0002",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "PL",
+                "PL",
+                "WO",
+                "WO",
+                "PH"
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 17,
+              "values": [
+                "5",
+                "",
+                "May",
+                "ACV/EMP/0002",
+                "PH",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "CL",
+                "P"
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 17,
+              "values": [
+                "6",
+                "",
+                "June",
+                "ACV/EMP/0002",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO"
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 17,
+              "values": [
+                "7",
+                "",
+                "July",
+                "ACV/EMP/0002",
+                "CL",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P"
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 17,
+              "values": [
+                "8",
+                "",
+                "August",
+                "ACV/EMP/0002",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 17,
+              "values": [
+                "9",
+                "",
+                "September",
+                "ACV/EMP/0002",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO"
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 17,
+              "values": [
+                "10",
+                "",
+                "October",
+                "ACV/EMP/0002",
+                "P",
+                "PH",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "CL",
+                "P"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "2026",
+          "maxRow": 80,
+          "maxColumn": 52,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Month",
+                "Employee Code",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 18,
+              "values": [
+                "1",
+                "Surekha Abhijit Kamat",
+                "JANUARY",
+                "ACV/EMP/0002",
+                "PH",
+                "PH",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P"
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 17,
+              "values": [
+                "2",
+                "",
+                "FEBRUARY",
+                "ACV/EMP/0003",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 17,
+              "values": [
+                "3",
+                "",
+                "MARCH",
+                "ACV/EMP/0003",
+                "WO",
+                "P",
+                "PH",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/ACV Solutions Salary Tax Calculation April 2024 (2).xlsx",
+      "category": "salary_transaction_source",
+      "sheets": [
+        {
+          "name": "Salary Details",
+          "maxRow": 38,
+          "maxColumn": 9,
+          "candidateRows": [
+            {
+              "row": 2,
+              "nonEmpty": 1,
+              "values": [
+                "ACV Solutions Private Limited",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 1,
+              "values": [
+                "Salary with effect from April 2024 for FY 2024-25",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 6,
+              "values": [
+                "Sr. No.",
+                "Name",
+                "Gross Salary per month",
+                "TDS per month",
+                "Professional Tax",
+                "Net Salary to be transferred in the account per month",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0002",
+                "Surekha Kamat",
+                "30000",
+                "0",
+                "200",
+                "29800",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0003",
+                "Chintan Naresh Davda",
+                "33000",
+                "0",
+                "200",
+                "32800",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prasad Salvi",
+                "62500",
+                "0",
+                "200",
+                "62300",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0005",
+                "Ankush Singh",
+                "37500",
+                "0",
+                "200",
+                "37300",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0007",
+                "Abhijith Ellikkal",
+                "91667",
+                "5850",
+                "200",
+                "85617",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "TDS Calculation",
+          "maxRow": 232,
+          "maxColumn": 7,
+          "candidateRows": [
+            {
+              "row": 2,
+              "nonEmpty": 1,
+              "values": [
+                "",
+                "TDS Calculation for the year 2024-2025",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 2,
+              "values": [
+                "1",
+                "Abhijit Ellikkal",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 2,
+              "values": [
+                "",
+                "Salary for 12 Months (April 2024 to March 2025)",
+                "1100004",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 2,
+              "values": [
+                "",
+                "Less: Standard Deduction",
+                "-50000",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 1,
+              "values": [
+                "",
+                "",
+                "1050004",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 2,
+              "values": [
+                "",
+                "Tax Payable",
+                "Amount in Rs.",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 2,
+              "values": [
+                "",
+                "Upto Rs.3 Lakhs",
+                "0",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 2,
+              "values": [
+                "",
+                "Between Rs.3 Lakhs to Rs.6 lakhs -5%",
+                "15000",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/ACV Solutions Salary Tax Calculation April 2024.xlsx",
+      "category": "salary_transaction_source",
+      "sheets": [
+        {
+          "name": "Salary Details",
+          "maxRow": 38,
+          "maxColumn": 9,
+          "candidateRows": [
+            {
+              "row": 2,
+              "nonEmpty": 1,
+              "values": [
+                "ACV Solutions Private Limited",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 1,
+              "values": [
+                "Salary with effect from April 2024 for FY 2024-25",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 6,
+              "values": [
+                "Sr. No.",
+                "Name",
+                "Gross Salary per month",
+                "TDS per month",
+                "Professional Tax",
+                "Net Salary to be transferred in the account per month",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0002",
+                "Surekha Kamat",
+                "30000",
+                "0",
+                "200",
+                "29800",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0003",
+                "Chintan Naresh Davda",
+                "33000",
+                "0",
+                "200",
+                "32800",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0004",
+                "Latika Prasad Salvi",
+                "62500",
+                "0",
+                "200",
+                "62300",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0005",
+                "Ankush Singh",
+                "37500",
+                "0",
+                "200",
+                "37300",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 6,
+              "values": [
+                "ACV/EMP/0007",
+                "Abhijith Ellikkal",
+                "91667",
+                "5850",
+                "200",
+                "85617",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "TDS Calculation",
+          "maxRow": 232,
+          "maxColumn": 7,
+          "candidateRows": [
+            {
+              "row": 2,
+              "nonEmpty": 1,
+              "values": [
+                "",
+                "TDS Calculation for the year 2024-2025",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 2,
+              "values": [
+                "1",
+                "Abhijit Ellikkal",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 2,
+              "values": [
+                "",
+                "Salary for 12 Months (April 2024 to March 2025)",
+                "1100004",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 2,
+              "values": [
+                "",
+                "Less: Standard Deduction",
+                "-50000",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 1,
+              "values": [
+                "",
+                "",
+                "1050004",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 2,
+              "values": [
+                "",
+                "Tax Payable",
+                "Amount in Rs.",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 2,
+              "values": [
+                "",
+                "Upto Rs.3 Lakhs",
+                "0",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 2,
+              "values": [
+                "",
+                "Between Rs.3 Lakhs to Rs.6 lakhs -5%",
+                "15000",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/FNF_Latika (2).xlsx",
+      "category": "exit_fnf_document",
+      "sheets": [
+        {
+          "name": "format",
+          "maxRow": 64,
+          "maxColumn": 9,
+          "candidateRows": [
+            {
+              "row": 3,
+              "nonEmpty": 1,
+              "values": [
+                "",
+                "ACV Solutions Pvt Ltd",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 1,
+              "values": [
+                "",
+                "Statement For Full & Final Settlement",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 1,
+              "values": [
+                "",
+                "Employee Details :",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 4,
+              "values": [
+                "",
+                "Code",
+                "ACV/EMP/0004",
+                "Location",
+                "Mumbai",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 5,
+              "values": [
+                "",
+                "Name of Employee",
+                "Latika Prakash Salvi",
+                "Date of Leaving",
+                "2024-06-14 00:00:00",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 4,
+              "values": [
+                "",
+                "Designation",
+                "Software Developer",
+                "Reason for Resignation",
+                "Personal",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 5,
+              "values": [
+                "",
+                "Date of Joining",
+                "2023-05-08 00:00:00",
+                "Length of Service(in days)",
+                "403",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 3,
+              "values": [
+                "",
+                "Monthly Gross Salary (in Rs)",
+                "62500",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 1,
+              "values": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Sheet2",
+          "maxRow": 1,
+          "maxColumn": 1,
+          "candidateRows": []
+        },
+        {
+          "name": "Sheet3",
+          "maxRow": 1,
+          "maxColumn": 1,
+          "candidateRows": []
+        }
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/FNF_Latika.xlsx",
+      "category": "exit_fnf_document",
+      "sheets": [
+        {
+          "name": "format",
+          "maxRow": 64,
+          "maxColumn": 9,
+          "candidateRows": [
+            {
+              "row": 3,
+              "nonEmpty": 1,
+              "values": [
+                "",
+                "ACV Solutions Pvt Ltd",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 1,
+              "values": [
+                "",
+                "Statement For Full & Final Settlement",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 1,
+              "values": [
+                "",
+                "Employee Details :",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 4,
+              "values": [
+                "",
+                "Code",
+                "ACV/EMP/0004",
+                "Location",
+                "Mumbai",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 5,
+              "values": [
+                "",
+                "Name of Employee",
+                "Latika Prakash Salvi",
+                "Date of Leaving",
+                "2024-06-14 00:00:00",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 4,
+              "values": [
+                "",
+                "Designation",
+                "Software Developer",
+                "Reason for Resignation",
+                "Personal",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 5,
+              "values": [
+                "",
+                "Date of Joining",
+                "2023-05-08 00:00:00",
+                "Length of Service(in days)",
+                "403",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 3,
+              "values": [
+                "",
+                "Monthly Gross Salary (in Rs)",
+                "62500",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 1,
+              "values": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Sheet2",
+          "maxRow": 1,
+          "maxColumn": 1,
+          "candidateRows": []
+        },
+        {
+          "name": "Sheet3",
+          "maxRow": 1,
+          "maxColumn": 1,
+          "candidateRows": []
+        }
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/August 2025/Timesheet-August-2025.xlsx",
+      "category": "unclassified",
+      "sheets": [
+        {
+          "name": "Sheet1",
+          "maxRow": 15,
+          "maxColumn": 8,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 8,
+              "values": [
+                "Sr. No.",
+                "Developer Name",
+                "Task Name",
+                "Description",
+                "Date Opened",
+                "Date Closed",
+                "Project",
+                "Effort in (Days)"
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 8,
+              "values": [
+                "1.0",
+                "Surekha",
+                "Vendor Changes",
+                "1. Contact Information Editing /  / Implemented robust validation for editing contact i...",
+                "2025-08-01 00:00:00",
+                "2025-08-11 00:00:00",
+                "Vendor",
+                "5.0"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 7,
+              "values": [
+                "2.0",
+                "",
+                "STRIPE ACH",
+                "1. Backend Enhancements /  / Implemented backend changes to support adding both credit ...",
+                "2025-08-06 00:00:00",
+                "2025-08-20 00:00:00",
+                "Navigate MVC",
+                "7.0"
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 7,
+              "values": [
+                "3.0",
+                "",
+                "VehicleServicesCredentials Notification",
+                "1. VehicleServiceCredentialsCreated Event Investigation & Resolution /  / Investigated ...",
+                "2025-08-12 00:00:00",
+                "2025-08-22 00:00:00",
+                "Common",
+                "5.0"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 7,
+              "values": [
+                "4.0",
+                "",
+                "Membershipwizard",
+                "1. Membership Wizard /  / Created new pages for all tab and separated from old one in S...",
+                "2025-08-20 00:00:00",
+                "2025-08-29 00:00:00",
+                "Safeguard",
+                "4.0"
+              ]
+            },
+            {
+              "row": 6,
+              "nonEmpty": 8,
+              "values": [
+                "5.0",
+                "Soni",
+                "Permitbook",
+                "1. Email Service Changes in Permitbook /  / Removed the SendGrid functionality from the...",
+                "2025-08-01 00:00:00",
+                "2025-08-08 00:00:00",
+                "Permitbook",
+                "4.0"
+              ]
+            },
+            {
+              "row": 7,
+              "nonEmpty": 7,
+              "values": [
+                "6.0",
+                "",
+                "link sql server connection",
+                "1. Linked Server Setup /  / Conducted R&D and successfully set up a Linked Server from ...",
+                "2025-08-07 00:00:00",
+                "2025-08-18 00:00:00",
+                "Vendor",
+                "5.0"
+              ]
+            },
+            {
+              "row": 8,
+              "nonEmpty": 7,
+              "values": [
+                "7.0",
+                "",
+                "FUEL tax pop up card",
+                "1.Popup Enhancements for Fuel Tax & HVUT Graphs /  / Implemented popups on clicking Fue...",
+                "2025-08-18 00:00:00",
+                "2025-08-29 00:00:00",
+                "Safeguard",
+                "5.0"
+              ]
+            },
+            {
+              "row": 9,
+              "nonEmpty": 7,
+              "values": [
+                "8.0",
+                "",
+                "ADHOC notification management",
+                "1. Notification Manager Setup /  / Downloaded the NotificationManager project from GitH...",
+                "2025-08-12 00:00:00",
+                "2025-08-27 00:00:00",
+                "Safeguard",
+                "7.0"
+              ]
+            },
+            {
+              "row": 10,
+              "nonEmpty": 8,
+              "values": [
+                "9.0",
+                "Aniket",
+                "Common",
+                "1. Debugging & Fixes /  / Completed debugging on Trucking Solution changes. / Completed...",
+                "2025-08-01 00:00:00",
+                "2025-08-29 00:00:00",
+                "Common",
+                "5.0"
+              ]
+            },
+            {
+              "row": 11,
+              "nonEmpty": 7,
+              "values": [
+                "10.0",
+                "",
+                "ClientNavigateUser Notification",
+                "1. Event Implementation \u2013 NavigateUserCreated /  / Added controller function to trigger...",
+                "2025-08-11 00:00:00",
+                "2025-08-20 00:00:00",
+                "Notification Service",
+                "7.0"
+              ]
+            },
+            {
+              "row": 12,
+              "nonEmpty": 7,
+              "values": [
+                "11.0",
+                "",
+                "Webhook Api",
+                "1. Event Handling Enhancements /  / Made the necessary changes to the charge.pending me...",
+                "2025-08-08 00:00:00",
+                "2025-08-14 00:00:00",
+                "Notification Service",
+                "4.0"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Attendance/Feb 2024/ATTENDANCE SHEET CHINTAN (2).xlsx",
+      "category": "monthly_attendance_source",
+      "sheets": [
+        {
+          "name": "January 2024",
+          "maxRow": 81,
+          "maxColumn": 47,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Month",
+                "Employee Code",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 17,
+              "values": [
+                "1",
+                "Chintan Davda",
+                "January",
+                "",
+                "HOLIDAY",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO"
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 17,
+              "values": [
+                "2",
+                "Chintan Davda",
+                "February",
+                "",
+                "L",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Attendance/Feb 2024/ATTENDANCE SHEET CHINTAN.xlsx",
+      "category": "monthly_attendance_source",
+      "sheets": [
+        {
+          "name": "January 2024",
+          "maxRow": 81,
+          "maxColumn": 47,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Month",
+                "Employee Code",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 17,
+              "values": [
+                "1",
+                "Chintan Davda",
+                "January",
+                "",
+                "HOLIDAY",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO"
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 17,
+              "values": [
+                "2",
+                "Chintan Davda",
+                "February",
+                "",
+                "L",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Attendance/Feb 2024/Attendance sheet month format (2).xlsx",
+      "category": "monthly_attendance_source",
+      "sheets": [
+        {
+          "name": "February 2024",
+          "maxRow": 80,
+          "maxColumn": 46,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Employee Code",
+                "2024-02-01 00:00:00",
+                "2024-02-02 00:00:00",
+                "2024-02-03 00:00:00",
+                "2024-02-04 00:00:00",
+                "2024-02-05 00:00:00",
+                "2024-02-06 00:00:00",
+                "2024-02-07 00:00:00",
+                "2024-02-08 00:00:00",
+                "2024-02-09 00:00:00",
+                "2024-02-10 00:00:00",
+                "2024-02-11 00:00:00",
+                "2024-02-12 00:00:00",
+                "2024-02-13 00:00:00",
+                "2024-02-14 00:00:00",
+                "2024-02-15 00:00:00"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 18,
+              "values": [
+                "1",
+                "Ankush Singh",
+                "0005",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "Leave",
+                "WO",
+                "WO",
+                "Leave",
+                "Leave",
+                "Leave",
+                "Leave"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Attendance/Feb 2024/Attendance sheet month format.xlsx",
+      "category": "monthly_attendance_source",
+      "sheets": [
+        {
+          "name": "February 2024",
+          "maxRow": 80,
+          "maxColumn": 46,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Employee Code",
+                "2024-02-01 00:00:00",
+                "2024-02-02 00:00:00",
+                "2024-02-03 00:00:00",
+                "2024-02-04 00:00:00",
+                "2024-02-05 00:00:00",
+                "2024-02-06 00:00:00",
+                "2024-02-07 00:00:00",
+                "2024-02-08 00:00:00",
+                "2024-02-09 00:00:00",
+                "2024-02-10 00:00:00",
+                "2024-02-11 00:00:00",
+                "2024-02-12 00:00:00",
+                "2024-02-13 00:00:00",
+                "2024-02-14 00:00:00",
+                "2024-02-15 00:00:00"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 18,
+              "values": [
+                "1",
+                "Ankush Singh",
+                "0005",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "Leave",
+                "WO",
+                "WO",
+                "Leave",
+                "Leave",
+                "Leave",
+                "Leave"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Attendance/Feb 2024/Attendance+sheet+month+format (2).xlsx",
+      "category": "monthly_attendance_source",
+      "sheets": [
+        {
+          "name": "January 2024",
+          "maxRow": 81,
+          "maxColumn": 47,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Employee Code",
+                "Month",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 16,
+              "values": [
+                "Example",
+                "Asish Thakur",
+                "",
+                "",
+                "P",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO"
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 18,
+              "values": [
+                "1",
+                "Atish dussa",
+                "ACV/EMP/0006",
+                "Jan",
+                "HOLIDAY",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WFH",
+                "WO"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 16,
+              "values": [
+                "2",
+                "",
+                "",
+                "Feb",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Attendance/Feb 2024/Attendance+sheet+month+format.xlsx",
+      "category": "monthly_attendance_source",
+      "sheets": [
+        {
+          "name": "January 2024",
+          "maxRow": 81,
+          "maxColumn": 47,
+          "candidateRows": [
+            {
+              "row": 1,
+              "nonEmpty": 1,
+              "values": [
+                "Employee Record",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "row": 2,
+              "nonEmpty": 18,
+              "values": [
+                "Sr No",
+                "Employee Name",
+                "Employee Code",
+                "Month",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14"
+              ]
+            },
+            {
+              "row": 3,
+              "nonEmpty": 16,
+              "values": [
+                "Example",
+                "Asish Thakur",
+                "",
+                "",
+                "P",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO"
+              ]
+            },
+            {
+              "row": 4,
+              "nonEmpty": 18,
+              "values": [
+                "1",
+                "Atish dussa",
+                "ACV/EMP/0006",
+                "Jan",
+                "HOLIDAY",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WFH",
+                "WO"
+              ]
+            },
+            {
+              "row": 5,
+              "nonEmpty": 16,
+              "values": [
+                "2",
+                "",
+                "",
+                "Feb",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P",
+                "P",
+                "P",
+                "WO",
+                "WO",
+                "P",
+                "P",
+                "P"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

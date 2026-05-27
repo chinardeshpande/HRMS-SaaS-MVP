@@ -1,14 +1,56 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { XMarkIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import leaveService from '../../services/leaveService';
+import type { LeaveBalance, LeavePolicy } from '../../services/leaveService';
 
 interface ApplyLeaveModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  leaveBalances?: LeaveBalance[];
+  leavePolicies?: LeavePolicy[];
 }
 
-export const ApplyLeaveModal = ({ isOpen, onClose, onSuccess }: ApplyLeaveModalProps) => {
+const defaultLeaveTypes = [
+  { value: 'casual', label: 'Casual Leave' },
+  { value: 'sick', label: 'Sick Leave' },
+  { value: 'earned', label: 'Annual Leave' },
+  { value: 'maternity', label: 'Maternity Leave' },
+  { value: 'paternity', label: 'Paternity Leave' },
+  { value: 'unpaid', label: 'Unpaid Leave' },
+  { value: 'compensatory', label: 'Compensatory Off' },
+];
+
+const toTitle = (value: string) =>
+  value
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+
+const calculateWorkingDays = (startDate: string, endDate: string) => {
+  if (!startDate || !endDate) return 0;
+
+  const start = new Date(`${startDate}T00:00:00`);
+  const end = new Date(`${endDate}T00:00:00`);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end < start) return 0;
+
+  let days = 0;
+  const current = new Date(start);
+  while (current <= end) {
+    const day = current.getDay();
+    if (day !== 0 && day !== 6) days += 1;
+    current.setDate(current.getDate() + 1);
+  }
+  return days;
+};
+
+export const ApplyLeaveModal = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  leaveBalances = [],
+  leavePolicies = [],
+}: ApplyLeaveModalProps) => {
   const [formData, setFormData] = useState({
     leaveType: 'casual',
     startDate: '',
@@ -19,6 +61,55 @@ export const ApplyLeaveModal = ({ isOpen, onClose, onSuccess }: ApplyLeaveModalP
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const leaveTypeOptions = useMemo(() => {
+    const policiesByType = new Map(leavePolicies.map((policy) => [policy.leaveType, policy]));
+    const balancesByType = new Map(leaveBalances.map((balance) => [balance.leaveType, balance]));
+    const sourceTypes = new Set([
+      ...leavePolicies.map((policy) => policy.leaveType),
+      ...leaveBalances.map((balance) => balance.leaveType),
+    ]);
+
+    const base = sourceTypes.size > 0
+      ? Array.from(sourceTypes).map((value) => ({
+          value,
+          label: policiesByType.get(value)?.policyName || `${toTitle(value)} Leave`,
+        }))
+      : defaultLeaveTypes;
+
+    return base.map((option) => {
+      const balance = balancesByType.get(option.value);
+      const totalAllocated = Number(balance?.totalAllocated) || 0;
+      const available =
+        balance?.available !== undefined
+          ? Number(balance.available)
+          : totalAllocated + (Number(balance?.carriedForward) || 0) - (Number(balance?.used) || 0) - (Number(balance?.pending) || 0);
+
+      return {
+        ...option,
+        available,
+        hasBalance: Boolean(balance),
+        isPolicyActive: policiesByType.has(option.value),
+      };
+    });
+  }, [leaveBalances, leavePolicies]);
+
+  const selectedOption = leaveTypeOptions.find((option) => option.value === formData.leaveType);
+  const requestedDays = calculateWorkingDays(formData.startDate, formData.endDate);
+  const hasConfiguredLeave = leaveTypeOptions.length > 0 && leavePolicies.length > 0;
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const preferredOption =
+      leaveTypeOptions.find((option) => option.hasBalance && option.available > 0) ||
+      leaveTypeOptions.find((option) => option.hasBalance) ||
+      leaveTypeOptions[0];
+
+    if (preferredOption && preferredOption.value !== formData.leaveType) {
+      setFormData((current) => ({ ...current, leaveType: preferredOption.value }));
+    }
+  }, [isOpen, leaveTypeOptions, formData.leaveType]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,6 +118,21 @@ export const ApplyLeaveModal = ({ isOpen, onClose, onSuccess }: ApplyLeaveModalP
 
     if (!formData.startDate || !formData.endDate || !formData.reason.trim()) {
       setError('Please fill in all required fields');
+      return;
+    }
+
+    if (!hasConfiguredLeave || !selectedOption?.hasBalance) {
+      setError('Your leave balance is not initialized for this leave type. Please contact HR.');
+      return;
+    }
+
+    if (requestedDays <= 0) {
+      setError('The selected date range must include at least one working day.');
+      return;
+    }
+
+    if (selectedOption.available < requestedDays) {
+      setError(`Insufficient balance. Available: ${selectedOption.available}, requested: ${requestedDays}.`);
       return;
     }
 
@@ -116,14 +222,16 @@ export const ApplyLeaveModal = ({ isOpen, onClose, onSuccess }: ApplyLeaveModalP
               disabled={loading}
               required
             >
-              <option value="casual">Casual Leave</option>
-              <option value="sick">Sick Leave</option>
-              <option value="earned">Annual Leave</option>
-              <option value="maternity">Maternity Leave</option>
-              <option value="paternity">Paternity Leave</option>
-              <option value="unpaid">Unpaid Leave</option>
-              <option value="compensatory">Compensatory Off</option>
+              {leaveTypeOptions.map((option) => (
+                <option key={option.value} value={option.value} disabled={!option.hasBalance}>
+                  {option.label}
+                  {option.hasBalance ? ` · ${option.available} days available` : ' · balance not initialized'}
+                </option>
+              ))}
             </select>
+            <p className="mt-2 text-xs text-gray-500">
+              Only active policies with initialized employee balances can be used for leave applications.
+            </p>
           </div>
 
           {/* Date Range */}
@@ -154,6 +262,25 @@ export const ApplyLeaveModal = ({ isOpen, onClose, onSuccess }: ApplyLeaveModalP
                 disabled={loading}
                 required
               />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-purple-100 bg-purple-50 p-3">
+            <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-purple-700">Available</p>
+                <p className="mt-1 font-bold text-gray-900">
+                  {selectedOption?.hasBalance ? `${selectedOption.available} days` : 'Not initialized'}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-purple-700">Requested</p>
+                <p className="mt-1 font-bold text-gray-900">{requestedDays || '-'} working day{requestedDays === 1 ? '' : 's'}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-purple-700">Policy</p>
+                <p className="mt-1 font-bold text-gray-900">{selectedOption?.isPolicyActive ? 'Active' : 'Not active'}</p>
+              </div>
             </div>
           </div>
 

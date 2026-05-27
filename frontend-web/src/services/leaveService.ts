@@ -94,6 +94,19 @@ export interface LeaveStatistics {
   }[];
 }
 
+export interface CompanyLeaveBalanceReportRow {
+  employeeId: string;
+  employeeName: string;
+  employeeCode: string;
+  department?: string;
+  leaveType: string;
+  totalEntitlement: number;
+  used: number;
+  pending: number;
+  available: number;
+  carriedForward: number;
+}
+
 class LeaveService {
   /**
    * Employee: Apply for leave
@@ -199,6 +212,14 @@ class LeaveService {
 
     const response = await api.get(`/leave/statistics?${params.toString()}`);
     return response.data!;
+  }
+
+  /**
+   * HR/Manager: Get company leave balance report
+   */
+  async getCompanyLeaveBalanceReport(): Promise<CompanyLeaveBalanceReportRow[]> {
+    const response: any = await api.get('/reports/leave-balance');
+    return response?.data?.results || response?.data?.data?.results || response?.results || [];
   }
 
   /**

@@ -3,6 +3,11 @@
   "compilerOptions": {
     "noEmit": false
   },
-  "include": ["src/scripts/applyAcvCustomerZeroCleanup.ts"],
+  "include": [
+    "src/scripts/applyAcvCustomerZeroCleanup.ts",
+    "src/scripts/importAcvCompanyDocuments.ts",
+    "src/scripts/importAcvLeaveBalances.ts",
+    "src/scripts/importAcvMonthlyAttendance.ts"
+  ],
   "exclude": ["node_modules", "dist", "tests"]
 }

@@ -1,0 +1,168 @@
+{
+  "mode": "dry-run",
+  "generatedAt": "2026-05-27T16:18:59.521Z",
+  "tenant": {
+    "tenantId": "f5ed3bd0-d89f-4762-b212-c3b41d358fe8",
+    "companyName": "ACV Solutions",
+    "subdomain": null
+  },
+  "actor": {
+    "userId": "cd24150b-ecdd-40dd-82a2-e1b81a64549a",
+    "email": "anupama.bhat@acvsolutions.in",
+    "role": "system_admin"
+  },
+  "options": {
+    "companyName": "ACV Solutions",
+    "actorEmail": "anupama.bhat@acvsolutions.in",
+    "normalizedFile": "/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/acv-implementation/latest-data-ingestion-2026-05-27/normalized/acv-latest-normalized.json",
+    "outputDir": "../docs/acv-implementation/latest-data-ingestion-2026-05-27/leave-balances-dry-run",
+    "execute": false,
+    "force": false,
+    "includeExited": false
+  },
+  "sourceGeneratedAt": "2026-05-27T16:17:56.358666Z",
+  "sourceDir": "/Users/chinar.deshpande06/Temp/CL-ACV/ACV-India/HRMS-MVP/ACV Implementation Data/01-source-files/Latest Data",
+  "summary": {
+    "create": 10,
+    "skip_exited_employee": 2
+  },
+  "planned": [
+    {
+      "employeeName": "Surekha Kamat",
+      "matchedEmployeeCode": "ACV/EMP/0002",
+      "matchedEmployeeId": "d4f5f396-0f5c-4f16-b6c7-d16b35f89468",
+      "leaveType": "casual",
+      "year": 2026,
+      "sourceAvailable": 6.4,
+      "sourceUsed": 2,
+      "sourceTotalAllocated": 8.4,
+      "action": "create"
+    },
+    {
+      "employeeName": "Surekha Kamat",
+      "matchedEmployeeCode": "ACV/EMP/0002",
+      "matchedEmployeeId": "d4f5f396-0f5c-4f16-b6c7-d16b35f89468",
+      "leaveType": "earned",
+      "year": 2026,
+      "sourceAvailable": 32,
+      "sourceUsed": 2,
+      "sourceTotalAllocated": 34,
+      "action": "create"
+    },
+    {
+      "employeeName": "Aniket Dalvi",
+      "matchedEmployeeCode": "ACV/EMP/0008",
+      "matchedEmployeeId": "d06f1a05-52ba-45cb-85cb-e7d8240dddd4",
+      "leaveType": "casual",
+      "year": 2026,
+      "sourceAvailable": 5.4,
+      "sourceUsed": 3,
+      "sourceTotalAllocated": 8.4,
+      "action": "create"
+    },
+    {
+      "employeeName": "Aniket Dalvi",
+      "matchedEmployeeCode": "ACV/EMP/0008",
+      "matchedEmployeeId": "d06f1a05-52ba-45cb-85cb-e7d8240dddd4",
+      "leaveType": "earned",
+      "year": 2026,
+      "sourceAvailable": 38,
+      "sourceUsed": 4,
+      "sourceTotalAllocated": 42,
+      "action": "create"
+    },
+    {
+      "employeeName": "Soni Gupta",
+      "matchedEmployeeCode": "ACV/EMP/0011",
+      "matchedEmployeeId": "2de6a5ab-2ee6-4363-a70d-2d12204e099c",
+      "leaveType": "casual",
+      "year": 2026,
+      "sourceAvailable": 6.9,
+      "sourceUsed": 1.5,
+      "sourceTotalAllocated": 8.4,
+      "action": "skip_exited_employee",
+      "warning": "Employee is not active; pass --include-exited to import historical balances for exited employees"
+    },
+    {
+      "employeeName": "Soni Gupta",
+      "matchedEmployeeCode": "ACV/EMP/0011",
+      "matchedEmployeeId": "2de6a5ab-2ee6-4363-a70d-2d12204e099c",
+      "leaveType": "earned",
+      "year": 2026,
+      "sourceAvailable": 25.5,
+      "sourceUsed": 6,
+      "sourceTotalAllocated": 31.5,
+      "action": "skip_exited_employee",
+      "warning": "Employee is not active; pass --include-exited to import historical balances for exited employees"
+    },
+    {
+      "employeeName": "Pooja Guad",
+      "matchedEmployeeCode": "ACV/EMP/0012",
+      "matchedEmployeeId": "b846c717-8d91-4b98-8f6a-f7bd1c521d65",
+      "leaveType": "casual",
+      "year": 2026,
+      "sourceAvailable": 6.4,
+      "sourceUsed": 2,
+      "sourceTotalAllocated": 8.4,
+      "action": "create"
+    },
+    {
+      "employeeName": "Pooja Guad",
+      "matchedEmployeeCode": "ACV/EMP/0012",
+      "matchedEmployeeId": "b846c717-8d91-4b98-8f6a-f7bd1c521d65",
+      "leaveType": "earned",
+      "year": 2026,
+      "sourceAvailable": 19,
+      "sourceUsed": 0,
+      "sourceTotalAllocated": 19,
+      "action": "create"
+    },
+    {
+      "employeeName": "Suraj Shivgavan",
+      "matchedEmployeeCode": "ACV/EMP/0013",
+      "matchedEmployeeId": "2a7e7449-c050-4cb7-891b-22c06bccbd60",
+      "leaveType": "casual",
+      "year": 2026,
+      "sourceAvailable": 5.1,
+      "sourceUsed": 0.5,
+      "sourceTotalAllocated": 5.6,
+      "action": "create"
+    },
+    {
+      "employeeName": "Suraj Shivgavan",
+      "matchedEmployeeCode": "ACV/EMP/0013",
+      "matchedEmployeeId": "2a7e7449-c050-4cb7-891b-22c06bccbd60",
+      "leaveType": "earned",
+      "year": 2026,
+      "sourceAvailable": 13,
+      "sourceUsed": 0,
+      "sourceTotalAllocated": 13,
+      "action": "create"
+    },
+    {
+      "employeeName": "Lopamudra Behera",
+      "matchedEmployeeCode": "ACV/EMP/0014",
+      "matchedEmployeeId": "08c46d12-b931-4a63-b2ca-9745ad0ac30e",
+      "leaveType": "casual",
+      "year": 2026,
+      "sourceAvailable": 4.6,
+      "sourceUsed": 1,
+      "sourceTotalAllocated": 5.6,
+      "action": "create"
+    },
+    {
+      "employeeName": "Lopamudra Behera",
+      "matchedEmployeeCode": "ACV/EMP/0014",
+      "matchedEmployeeId": "08c46d12-b931-4a63-b2ca-9745ad0ac30e",
+      "leaveType": "earned",
+      "year": 2026,
+      "sourceAvailable": 12.5,
+      "sourceUsed": 0,
+      "sourceTotalAllocated": 12.5,
+      "action": "create"
+    }
+  ],
+  "applied": [],
+  "lopEvidence": [],
+  "sourceWarnings": []
+}
