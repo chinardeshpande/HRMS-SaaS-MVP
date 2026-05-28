@@ -53,7 +53,7 @@ const standardPolicies: StandardPolicy[] = [
   {
     policyName: 'Earned Leave',
     leaveType: LeaveType.EARNED,
-    totalLeaves: 15,
+    totalLeaves: 21,
     maxConsecutiveDays: 15,
     carryForward: true,
     maxCarryForward: 15,
