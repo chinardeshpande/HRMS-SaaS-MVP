@@ -11,6 +11,56 @@ export class LeaveService {
   private leavePolicyRepository = AppDataSource.getRepository(LeavePolicy);
   private employeeRepository = AppDataSource.getRepository(Employee);
 
+  private normalizeGender(gender?: string | null): string | undefined {
+    const normalized = gender?.trim().toLowerCase();
+    if (!normalized) return undefined;
+    if (['m', 'male'].includes(normalized)) return 'male';
+    if (['f', 'female'].includes(normalized)) return 'female';
+    return normalized;
+  }
+
+  private getRequiredGenderForLeaveType(leaveType: LeaveType): 'male' | 'female' | undefined {
+    if (leaveType === LeaveType.MATERNITY) return 'female';
+    if (leaveType === LeaveType.PATERNITY) return 'male';
+    return undefined;
+  }
+
+  private isGenderEligibleForLeaveType(leaveType: LeaveType, employee: Employee): boolean {
+    const requiredGender = this.getRequiredGenderForLeaveType(leaveType);
+    if (!requiredGender) return true;
+    return this.normalizeGender(employee.gender) === requiredGender;
+  }
+
+  private getGenderEligibilityMessage(leaveType: LeaveType): string {
+    if (leaveType === LeaveType.MATERNITY) {
+      return 'Maternity leave is only applicable to female employees';
+    }
+    if (leaveType === LeaveType.PATERNITY) {
+      return 'Paternity leave is only applicable to male employees';
+    }
+    return 'Employee is not eligible for this leave type';
+  }
+
+  private toEffectiveLeaveBalance(balance: LeaveBalance, employee: Employee) {
+    const genderEligible = this.isGenderEligibleForLeaveType(balance.leaveType, employee);
+    const totalAllocated = genderEligible ? Number(balance.totalAllocated) || 0 : 0;
+    const carriedForward = genderEligible ? Number(balance.carriedForward) || 0 : 0;
+    const used = Number(balance.used) || 0;
+    const pending = Number(balance.pending) || 0;
+    const available = Math.max(0, totalAllocated + carriedForward - used - pending);
+
+    return {
+      ...balance,
+      totalAllocated,
+      carriedForward,
+      used,
+      pending,
+      encashed: Number(balance.encashed) || 0,
+      available,
+      genderEligible,
+    };
+  }
+
   /**
    * Employee: Apply for leave
    */
@@ -46,6 +96,10 @@ export class LeaveService {
 
     if (!employee) {
       throw new Error('Employee not found');
+    }
+
+    if (!this.isGenderEligibleForLeaveType(leaveType, employee)) {
+      throw new Error(this.getGenderEligibilityMessage(leaveType));
     }
 
     // Calculate number of days (excluding weekends)
@@ -288,27 +342,76 @@ export class LeaveService {
 
     const currentYear = year || new Date().getFullYear();
 
-    return await this.leaveBalanceRepository.find({
-      where: {
-        employeeId,
-        tenantId,
-        year: currentYear,
-      },
-      relations: ['policy'],
-    });
+    const [employee, balances] = await Promise.all([
+      this.employeeRepository.findOne({
+        where: {
+          employeeId,
+          tenantId,
+        },
+      }),
+      this.leaveBalanceRepository.find({
+        where: {
+          employeeId,
+          tenantId,
+          year: currentYear,
+        },
+        relations: ['policy'],
+      }),
+    ]);
+
+    if (!employee) {
+      return [];
+    }
+
+    return balances.map((balance) => this.toEffectiveLeaveBalance(balance, employee));
   }
 
   /**
    * Employee/Manager/HR: Get active tenant leave policies
    */
   async getActiveLeavePolicies(tenantId: string) {
-    return await this.leavePolicyRepository.find({
+    const policies = await this.leavePolicyRepository.find({
       where: {
         tenantId,
         isActive: true,
       },
       order: { leaveType: 'ASC', createdAt: 'DESC' },
     });
+
+    return policies.map((policy) => ({
+      ...policy,
+      applicableGender:
+        policy.applicableGender ||
+        this.getRequiredGenderForLeaveType(policy.leaveType) ||
+        'all',
+    }));
+  }
+
+  private async normalizeExistingGenderRestrictedBalance(
+    balance: LeaveBalance,
+    employee: Employee
+  ): Promise<LeaveBalance> {
+    if (this.isGenderEligibleForLeaveType(balance.leaveType, employee)) {
+      return balance;
+    }
+
+    const shouldUpdate =
+      Number(balance.totalAllocated) !== 0 ||
+      Number(balance.carriedForward) !== 0;
+
+    if (!shouldUpdate) {
+      return balance;
+    }
+
+    balance.totalAllocated = 0;
+    balance.carriedForward = 0;
+    return await this.leaveBalanceRepository.save(balance);
+  }
+
+  private getPolicyEntitlementForEmployee(policy: LeavePolicy, employee: Employee): number {
+    return this.isGenderEligibleForLeaveType(policy.leaveType, employee)
+      ? Number(policy.totalLeaves) || 0
+      : 0;
   }
 
   /**
@@ -449,21 +552,25 @@ export class LeaveService {
         },
       });
 
-      if (!existing) {
+      if (existing) {
+        const normalized = await this.normalizeExistingGenderRestrictedBalance(existing, employee);
+        balances.push(this.toEffectiveLeaveBalance(normalized, employee));
+      } else {
         const balance = this.leaveBalanceRepository.create({
           employeeId,
           tenantId: employee.tenantId,
           policyId: policy.policyId,
           leaveType: policy.leaveType,
           year,
-          totalAllocated: policy.totalLeaves,
+          totalAllocated: this.getPolicyEntitlementForEmployee(policy, employee),
           used: 0,
           pending: 0,
           carriedForward: 0,
           encashed: 0,
         });
 
-        balances.push(await this.leaveBalanceRepository.save(balance));
+        const saved = await this.leaveBalanceRepository.save(balance);
+        balances.push(this.toEffectiveLeaveBalance(saved, employee));
       }
     }
 

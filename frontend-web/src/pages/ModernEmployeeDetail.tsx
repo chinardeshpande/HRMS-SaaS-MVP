@@ -303,7 +303,6 @@ export default function ModernEmployeeDetail() {
   const [employeeDocuments, setEmployeeDocuments] = useState<EmployeeDocument[]>([]);
   const [employeeDocumentStats, setEmployeeDocumentStats] = useState<EmployeeDocumentStats | null>(null);
   const [employeeDocumentsLoading, setEmployeeDocumentsLoading] = useState(false);
-  const [employeeDocumentCategory, setEmployeeDocumentCategory] = useState<EmployeeDocumentCategory | 'all'>('all');
   const [showEmployeeDocumentUpload, setShowEmployeeDocumentUpload] = useState(false);
   const [employeeDocumentForm, setEmployeeDocumentForm] = useState<EmployeeDocumentPayload>(DEFAULT_EMPLOYEE_DOCUMENT_FORM);
   const [employeeDocumentFile, setEmployeeDocumentFile] = useState<File | null>(null);
@@ -552,7 +551,7 @@ export default function ModernEmployeeDetail() {
     if (activeTab === 'documents' && id) {
       fetchEmployeeDocuments();
     }
-  }, [activeTab, id, employeeDocumentCategory]);
+  }, [activeTab, id]);
 
   // Update form states when employee data changes
   useEffect(() => {
@@ -847,7 +846,7 @@ export default function ModernEmployeeDetail() {
     try {
       setEmployeeDocumentsLoading(true);
       const [documents, stats] = await Promise.all([
-        employeeDocumentService.list(id, { category: employeeDocumentCategory }),
+        employeeDocumentService.list(id),
         employeeDocumentService.stats(id),
       ]);
       setEmployeeDocuments(documents);
@@ -1652,35 +1651,7 @@ export default function ModernEmployeeDetail() {
 
           {activeTab === 'documents' && (
             <div className="space-y-5">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                {[
-                  { label: 'Total records', value: employeeDocumentStats?.total || 0 },
-                  { label: 'Active', value: employeeDocumentStats?.active || 0 },
-                  { label: 'Needs review', value: employeeDocumentStats?.needsReview || 0 },
-                ].map((item) => (
-                  <div key={item.label} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{item.label}</p>
-                    <p className="mt-2 text-2xl font-bold text-gray-900">{item.value}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex flex-wrap gap-2">
-                  {EMPLOYEE_DOCUMENT_CATEGORIES.map((category) => (
-                    <button
-                      key={category.id}
-                      onClick={() => setEmployeeDocumentCategory(category.id)}
-                      className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
-                        employeeDocumentCategory === category.id
-                          ? 'bg-primary-600 text-white'
-                          : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      {category.name}
-                    </button>
-                  ))}
-                </div>
+              <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-end">
                 <div className="inline-flex self-start rounded-lg border border-gray-200 bg-white p-1 lg:self-auto">
                   <button
                     type="button"

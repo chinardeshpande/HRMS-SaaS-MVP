@@ -29,6 +29,8 @@
     "acv:company-documents:prod": "node dist/backend/src/scripts/importAcvCompanyDocuments.js",
     "acv:leave-balances": "ts-node src/scripts/importAcvLeaveBalances.ts",
     "acv:leave-balances:prod": "node dist/backend/src/scripts/importAcvLeaveBalances.js",
+    "acv:leave-policies": "ts-node src/scripts/ensureStandardLeavePolicies.ts",
+    "acv:leave-policies:prod": "node dist/backend/src/scripts/ensureStandardLeavePolicies.js",
     "acv:attendance": "ts-node src/scripts/importAcvMonthlyAttendance.ts",
     "acv:attendance:prod": "node dist/backend/src/scripts/importAcvMonthlyAttendance.js",
     "acv:customer-zero-cleanup": "ts-node src/scripts/applyAcvCustomerZeroCleanup.ts",
