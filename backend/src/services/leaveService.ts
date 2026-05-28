@@ -318,7 +318,6 @@ export class LeaveService {
     if (!managerId) {
       return [];
     }
-
     // Get all reportees
     const reportees = await this.employeeRepository.find({
       where: { managerId, tenantId },

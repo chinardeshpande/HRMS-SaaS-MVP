@@ -28,4 +28,7 @@ router.delete('/:libraryId', digitalLibraryController.deleteLibraryItem);
 // Get library stats
 router.get('/stats', digitalLibraryController.getLibraryStats);
 
+// View from library (stream binary)
+router.get('/:libraryId/view', digitalLibraryController.viewLibraryFile);
+
 export default router;

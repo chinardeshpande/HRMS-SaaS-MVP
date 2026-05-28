@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { digitalLibraryService } from '../services/digitalLibraryService';
 import { ResourceType } from '../models/DigitalLibrary';
+import path from 'path';
+import fs from 'fs';
 
 export const checkDownloadPermission = async (req: Request, res: Response) => {
   try {
@@ -266,6 +268,72 @@ export const getLibraryStats = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error('Error getting library stats:', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: error.message,
+      },
+    });
+  }
+};
+
+export const viewLibraryFile = async (req: Request, res: Response) => {
+  try {
+    const { tenantId, user } = req as any;
+    const { libraryId } = req.params;
+
+    const result = await digitalLibraryService.downloadFromLibrary(
+      libraryId,
+      tenantId,
+      user.employeeId
+    );
+
+    if (!result.allowed || !result.fileUrl) {
+      return res.status(403).json({
+        success: false,
+        error: {
+          code: 'PERMISSION_DENIED',
+          message: result.reason || 'Access denied',
+        },
+      });
+    }
+
+    // Resolve the absolute file path on the server
+    // e.g. result.fileUrl is "/uploads/payslip_may_2026.pdf" or "/uploads/documents/..."
+    const cleanPath = result.fileUrl.replace(/^\/uploads\//, '');
+    const absolutePath = path.join(__dirname, '../../uploads', cleanPath);
+
+    if (!fs.existsSync(absolutePath)) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'FILE_NOT_FOUND',
+          message: 'The requested secure document file was not found on the server.',
+        },
+      });
+    }
+
+    // Set correct headers and stream the file
+    // Determine content type based on extension
+    const ext = path.extname(absolutePath).toLowerCase();
+    let contentType = 'application/octet-stream';
+    if (ext === '.pdf') {
+      contentType = 'application/pdf';
+    } else if (ext === '.jpg' || ext === '.jpeg') {
+      contentType = 'image/jpeg';
+    } else if (ext === '.png') {
+      contentType = 'image/png';
+    }
+
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `inline; filename="${path.basename(absolutePath)}"`);
+    res.setHeader('Content-Length', fs.statSync(absolutePath).size.toString());
+
+    const fileStream = fs.createReadStream(absolutePath);
+    fileStream.pipe(res);
+  } catch (error: any) {
+    console.error('Error viewing file from library:', error);
     res.status(500).json({
       success: false,
       error: {

@@ -40,14 +40,19 @@ export const authenticate = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    // Get token from header
+    // Get token from header or query parameters
+    let token = '';
     const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new AppError('No authentication token provided', 401, 'UNAUTHORIZED');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    } else if (req.query && req.query.token) {
+      token = req.query.token as string;
     }
 
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    if (!token) {
+      throw new AppError('No authentication token provided', 401, 'UNAUTHORIZED');
+    }
 
     // Verify token
     const decoded = jwt.verify(token, config.jwt.secret) as JWTPayload;

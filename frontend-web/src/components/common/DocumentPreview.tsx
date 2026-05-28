@@ -29,6 +29,25 @@ export default function DocumentPreview({ documents, onDownload, onDelete, showD
   const [previewDocument, setPreviewDocument] = useState<Document | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
+  const getAuthenticatedUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('data:')) return url;
+    
+    try {
+      const tokensStr = localStorage.getItem('tokens');
+      if (tokensStr) {
+        const { token } = JSON.parse(tokensStr);
+        if (token) {
+          const separator = url.includes('?') ? '&' : '?';
+          return `${url}${separator}token=${encodeURIComponent(token)}`;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to parse tokens for authenticated URL:', e);
+    }
+    return url;
+  };
+
   // Handle escape key to close modal
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -97,7 +116,7 @@ export default function DocumentPreview({ documents, onDownload, onDelete, showD
     } else {
       // Default download behavior
       const link = window.document.createElement('a');
-      link.href = document.fileUrl;
+      link.href = getAuthenticatedUrl(document.fileUrl);
       link.download = document.fileName;
       link.click();
     }
@@ -121,7 +140,7 @@ export default function DocumentPreview({ documents, onDownload, onDelete, showD
               <div className={`aspect-square flex items-center justify-center ${colorClass}`}>
                 {isImage(doc.fileName) ? (
                   <img
-                    src={doc.fileUrl}
+                    src={getAuthenticatedUrl(doc.fileUrl)}
                     alt={doc.fileName}
                     className="w-full h-full object-cover"
                   />
@@ -215,14 +234,14 @@ export default function DocumentPreview({ documents, onDownload, onDelete, showD
               {isImage(previewDocument.fileName) ? (
                 <div className="flex items-center justify-center min-h-full">
                   <img
-                    src={previewDocument.fileUrl}
+                    src={getAuthenticatedUrl(previewDocument.fileUrl)}
                     alt={previewDocument.fileName}
                     className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
                   />
                 </div>
               ) : isPDF(previewDocument.fileName) ? (
                 <iframe
-                  src={previewDocument.fileUrl}
+                  src={getAuthenticatedUrl(previewDocument.fileUrl)}
                   className="w-full h-full min-h-[600px] rounded-lg shadow-lg"
                   title={previewDocument.fileName}
                 />

@@ -66,7 +66,7 @@ export const uploadDocument = async (req: Request, res: Response) => {
       document: {
         ...document,
         filePath: undefined, // Don't expose file system path
-        fileUrl: `/api/documents/${document.documentId}/download`,
+        fileUrl: `/api/v1/documents/${document.documentId}/download`,
       },
     });
   } catch (error: any) {
@@ -110,7 +110,7 @@ export const uploadMultipleDocuments = async (req: Request, res: Response) => {
       return {
         ...document,
         filePath: undefined,
-        fileUrl: `/api/documents/${document.documentId}/download`,
+        fileUrl: `/api/v1/documents/${document.documentId}/download`,
       };
     });
 
@@ -138,7 +138,7 @@ export const getDocument = async (req: Request, res: Response) => {
       document: {
         ...document,
         filePath: undefined,
-        fileUrl: `/api/documents/${document.documentId}/download`,
+        fileUrl: `/api/v1/documents/${document.documentId}/download`,
       },
     });
   } catch (error: any) {
@@ -192,7 +192,7 @@ export const getEntityDocuments = async (req: Request, res: Response) => {
       documents: entityDocuments.map((doc) => ({
         ...doc,
         filePath: undefined,
-        fileUrl: `/api/documents/${doc.documentId}/download`,
+        fileUrl: `/api/v1/documents/${doc.documentId}/download`,
         size: `${(doc.fileSize / 1024).toFixed(2)} KB`,
       })),
     });
@@ -228,7 +228,7 @@ export const updateDocument = async (req: Request, res: Response) => {
       document: {
         ...documents[docIndex],
         filePath: undefined,
-        fileUrl: `/api/documents/${documents[docIndex].documentId}/download`,
+        fileUrl: `/api/v1/documents/${documents[docIndex].documentId}/download`,
       },
     });
   } catch (error: any) {
@@ -261,7 +261,7 @@ export const verifyDocument = async (req: Request, res: Response) => {
       document: {
         ...documents[docIndex],
         filePath: undefined,
-        fileUrl: `/api/documents/${documents[docIndex].documentId}/download`,
+        fileUrl: `/api/v1/documents/${documents[docIndex].documentId}/download`,
       },
     });
   } catch (error: any) {
@@ -299,7 +299,7 @@ export const rejectDocument = async (req: Request, res: Response) => {
       document: {
         ...documents[docIndex],
         filePath: undefined,
-        fileUrl: `/api/documents/${documents[docIndex].documentId}/download`,
+        fileUrl: `/api/v1/documents/${documents[docIndex].documentId}/download`,
       },
     });
   } catch (error: any) {
