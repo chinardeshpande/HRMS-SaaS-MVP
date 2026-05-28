@@ -25,6 +25,12 @@
     "sync:employees": "ts-node src/scripts/syncCandidatesToEmployees.ts",
     "audit:tenant-clean": "ts-node src/scripts/auditTenantCleanliness.ts",
     "import:pilot-org": "ts-node src/scripts/importPilotOrganization.ts",
+    "acv:company-documents": "ts-node src/scripts/importAcvCompanyDocuments.ts",
+    "acv:company-documents:prod": "node dist/backend/src/scripts/importAcvCompanyDocuments.js",
+    "acv:leave-balances": "ts-node src/scripts/importAcvLeaveBalances.ts",
+    "acv:leave-balances:prod": "node dist/backend/src/scripts/importAcvLeaveBalances.js",
+    "acv:attendance": "ts-node src/scripts/importAcvMonthlyAttendance.ts",
+    "acv:attendance:prod": "node dist/backend/src/scripts/importAcvMonthlyAttendance.js",
     "acv:customer-zero-cleanup": "ts-node src/scripts/applyAcvCustomerZeroCleanup.ts",
     "acv:customer-zero-cleanup:prod": "node dist/backend/src/scripts/applyAcvCustomerZeroCleanup.js"
   },

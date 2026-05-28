@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import settingsService, { BusinessRule } from '../../services/settingsService';
+import settingsService, { BusinessRule, LeavePolicy } from '../../services/settingsService';
 import {
   DocumentTextIcon,
   PlusIcon,
@@ -11,10 +11,13 @@ import {
 
 export default function BusinessRulesTab() {
   const [rules, setRules] = useState<BusinessRule[]>([]);
+  const [leavePolicies, setLeavePolicies] = useState<LeavePolicy[]>([]);
   const [loading, setLoading] = useState(true);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [showRuleModal, setShowRuleModal] = useState(false);
+  const [showPolicyModal, setShowPolicyModal] = useState(false);
   const [selectedRule, setSelectedRule] = useState<BusinessRule | null>(null);
+  const [selectedPolicy, setSelectedPolicy] = useState<LeavePolicy | null>(null);
   type RuleFormData = {
     category: 'leave' | 'attendance' | 'payroll' | 'performance' | 'onboarding' | 'exit' | 'general';
     ruleName: string;
@@ -53,6 +56,22 @@ export default function BusinessRulesTab() {
   };
 
   const [ruleFormData, setRuleFormData] = useState<RuleFormData>(defaultFormData);
+  const defaultPolicyFormData: Partial<LeavePolicy> = {
+    policyName: '',
+    leaveType: 'casual',
+    totalLeaves: 12,
+    maxConsecutiveDays: 0,
+    carryForward: true,
+    maxCarryForward: 0,
+    encashable: false,
+    minNoticeDays: 0,
+    requiresApproval: true,
+    probationPeriod: 0,
+    applicableGender: 'all',
+    isActive: false,
+    description: '',
+  };
+  const [policyFormData, setPolicyFormData] = useState<Partial<LeavePolicy>>(defaultPolicyFormData);
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
@@ -62,10 +81,12 @@ export default function BusinessRulesTab() {
   const loadRules = async () => {
     setLoading(true);
     try {
-      const data = await settingsService.getAllBusinessRules(
-        categoryFilter === 'all' ? undefined : categoryFilter
-      );
+      const [data, policies] = await Promise.all([
+        settingsService.getAllBusinessRules(categoryFilter === 'all' ? undefined : categoryFilter),
+        settingsService.getLeavePolicies(),
+      ]);
       setRules(data);
+      setLeavePolicies(policies);
     } catch (error) {
       console.error('Error loading rules:', error);
     } finally {
@@ -143,6 +164,70 @@ export default function BusinessRulesTab() {
     setShowRuleModal(true);
   };
 
+  const openCreatePolicy = () => {
+    setSelectedPolicy(null);
+    setPolicyFormData(defaultPolicyFormData);
+    setShowPolicyModal(true);
+  };
+
+  const openEditPolicy = (policy: LeavePolicy) => {
+    setSelectedPolicy(policy);
+    setPolicyFormData(policy);
+    setShowPolicyModal(true);
+  };
+
+  const handleSavePolicy = async () => {
+    if (!policyFormData.policyName || !policyFormData.leaveType) {
+      alert('Policy name and leave type are required');
+      return;
+    }
+
+    setActionLoading(true);
+    try {
+      const payload = {
+        ...policyFormData,
+        totalLeaves: Number(policyFormData.totalLeaves || 0),
+        maxConsecutiveDays: Number(policyFormData.maxConsecutiveDays || 0),
+        maxCarryForward: Number(policyFormData.maxCarryForward || 0),
+        minNoticeDays: Number(policyFormData.minNoticeDays || 0),
+        probationPeriod: Number(policyFormData.probationPeriod || 0),
+      };
+
+      if (selectedPolicy) {
+        await settingsService.updateLeavePolicy(selectedPolicy.policyId, payload);
+      } else {
+        await settingsService.createLeavePolicy(payload);
+      }
+
+      await loadRules();
+      setShowPolicyModal(false);
+      setSelectedPolicy(null);
+      setPolicyFormData(defaultPolicyFormData);
+      alert(`Leave policy ${selectedPolicy ? 'updated' : 'created'} successfully`);
+    } catch (error: any) {
+      console.error('Error saving leave policy:', error);
+      alert(error.response?.data?.error?.message || error.response?.data?.error || error.message || 'Failed to save leave policy');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeletePolicy = async (policy: LeavePolicy) => {
+    if (!confirm(`Deactivate "${policy.policyName}"? Existing employee balances will not be deleted.`)) return;
+
+    setActionLoading(true);
+    try {
+      await settingsService.deleteLeavePolicy(policy.policyId);
+      await loadRules();
+      alert('Leave policy deactivated successfully');
+    } catch (error: any) {
+      console.error('Error deleting leave policy:', error);
+      alert(error.response?.data?.error?.message || error.response?.data?.error || error.message || 'Failed to deactivate leave policy');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const categories = [
     { value: 'leave', label: 'Leave Management' },
     { value: 'attendance', label: 'Attendance' },
@@ -179,8 +264,10 @@ export default function BusinessRulesTab() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Business Rules</h3>
-          <p className="text-sm text-gray-500 mt-1">Configure HR policies and automated workflows</p>
+          <h3 className="text-lg font-semibold text-gray-900">Policies and Business Rules</h3>
+          <p className="text-sm text-gray-500 mt-1">
+            Configure operational leave entitlements separately from workflow rules.
+          </p>
         </div>
         <button
           onClick={() => {
@@ -191,8 +278,100 @@ export default function BusinessRulesTab() {
           className="btn btn-primary flex items-center space-x-2"
         >
           <PlusIcon className="h-5 w-5" />
-          <span>Create Rule</span>
+          <span>Create Workflow Rule</span>
         </button>
+      </div>
+
+      {/* Operational Leave Policies */}
+      <div className="rounded-xl border border-purple-200 bg-purple-50/60 p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h4 className="text-base font-semibold text-gray-900">Operational Leave Policies</h4>
+            <p className="mt-1 text-sm text-gray-600">
+              Active policies here are company-wide by default and create employee leave balances. Keep only the policies you actually want employees to receive as active.
+            </p>
+            <p className="mt-1 text-xs font-medium text-purple-800">
+              Current scope model: company-wide tenant policy. Location, department, business-unit, and grade-specific policies are intentionally out of scope for this simple version.
+            </p>
+          </div>
+          <button onClick={openCreatePolicy} className="btn btn-primary shrink-0">
+            <PlusIcon className="h-4 w-4 mr-2" />
+            Add Leave Policy
+          </button>
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+          {leavePolicies.length === 0 ? (
+            <div className="md:col-span-3 rounded-lg border border-dashed border-purple-300 bg-white p-5 text-center text-sm text-gray-500">
+              No leave policies configured yet.
+            </div>
+          ) : (
+            leavePolicies.map((policy) => (
+              <div key={policy.policyId} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-semibold capitalize text-purple-700">
+                        {policy.leaveType}
+                      </span>
+                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                        Company-wide
+                      </span>
+                      {policy.isActive ? (
+                        <CheckCircleIcon className="h-4 w-4 text-green-500" title="Active" />
+                      ) : (
+                        <XCircleIcon className="h-4 w-4 text-gray-400" title="Inactive" />
+                      )}
+                    </div>
+                    <h5 className="mt-2 text-sm font-semibold text-gray-900">{policy.policyName}</h5>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xl font-bold text-gray-900">{policy.totalLeaves}</p>
+                    <p className="text-xs text-gray-500">days/year</p>
+                  </div>
+                </div>
+                <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+                  <div className="rounded bg-gray-50 p-2">
+                    <p className="text-gray-500">Approval</p>
+                    <p className="font-semibold">{policy.requiresApproval ? 'Yes' : 'No'}</p>
+                  </div>
+                  <div className="rounded bg-gray-50 p-2">
+                    <p className="text-gray-500">Carry fwd</p>
+                    <p className="font-semibold">{policy.carryForward ? policy.maxCarryForward : 0}</p>
+                  </div>
+                  <div className="rounded bg-gray-50 p-2">
+                    <p className="text-gray-500">Notice</p>
+                    <p className="font-semibold">{policy.minNoticeDays || 0}d</p>
+                  </div>
+                </div>
+                <p className="mt-3 text-xs text-gray-500">
+                  {policy.isActive
+                    ? 'Applicable when balances are initialized for employees.'
+                    : 'Inactive: retained for reference and not used for new balance initialization.'}
+                </p>
+                <div className="mt-3 flex items-center justify-end gap-2">
+                  <button onClick={() => openEditPolicy(policy)} className="text-xs font-semibold text-purple-700 hover:text-purple-900">
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeletePolicy(policy)}
+                    disabled={actionLoading || !policy.isActive}
+                    className="text-xs font-semibold text-red-600 hover:text-red-800 disabled:cursor-not-allowed disabled:text-gray-400"
+                  >
+                    Deactivate
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-gray-200 bg-white p-4">
+        <h4 className="text-base font-semibold text-gray-900">Workflow Business Rules</h4>
+        <p className="mt-1 text-sm text-gray-500">
+          Use these for approval behavior, reminders, exceptions, and implementation notes. They do not allocate leave balances.
+        </p>
       </div>
 
       {/* Filter */}
@@ -269,6 +448,166 @@ export default function BusinessRulesTab() {
         )}
       </div>
 
+      {/* Create/Edit Leave Policy Modal */}
+      {showPolicyModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-center justify-center p-4">
+            <div className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" onClick={() => setShowPolicyModal(false)} />
+            <div className="relative w-full max-w-2xl transform overflow-hidden rounded-xl bg-white shadow-2xl transition-all">
+              <div className="border-b border-gray-200 bg-gradient-to-r from-purple-600 to-indigo-700 px-6 py-4">
+                <h2 className="text-xl font-bold text-white">
+                  {selectedPolicy ? 'Edit Leave Policy' : 'Add Leave Policy'}
+                </h2>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Policy Name *</label>
+                    <input
+                      type="text"
+                      value={policyFormData.policyName || ''}
+                      onChange={(e) => setPolicyFormData({ ...policyFormData, policyName: e.target.value })}
+                      className="input w-full"
+                      placeholder="e.g., Casual Leave"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Leave Type *</label>
+                    <select
+                      value={policyFormData.leaveType || 'casual'}
+                      onChange={(e) => setPolicyFormData({ ...policyFormData, leaveType: e.target.value as LeavePolicy['leaveType'] })}
+                      className="input w-full"
+                    >
+                      <option value="casual">Casual</option>
+                      <option value="sick">Sick</option>
+                      <option value="earned">Earned</option>
+                      <option value="maternity">Maternity</option>
+                      <option value="paternity">Paternity</option>
+                      <option value="unpaid">Unpaid</option>
+                      <option value="compensatory">Compensatory</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Days Per Year</label>
+                    <input
+                      type="number"
+                      value={policyFormData.totalLeaves ?? 0}
+                      onChange={(e) => setPolicyFormData({ ...policyFormData, totalLeaves: Number(e.target.value) })}
+                      className="input w-full"
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Consecutive Days</label>
+                    <input
+                      type="number"
+                      value={policyFormData.maxConsecutiveDays ?? 0}
+                      onChange={(e) => setPolicyFormData({ ...policyFormData, maxConsecutiveDays: Number(e.target.value) })}
+                      className="input w-full"
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Max Carry Forward</label>
+                    <input
+                      type="number"
+                      value={policyFormData.maxCarryForward ?? 0}
+                      onChange={(e) => setPolicyFormData({ ...policyFormData, maxCarryForward: Number(e.target.value) })}
+                      className="input w-full"
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Notice Days</label>
+                    <input
+                      type="number"
+                      value={policyFormData.minNoticeDays ?? 0}
+                      onChange={(e) => setPolicyFormData({ ...policyFormData, minNoticeDays: Number(e.target.value) })}
+                      className="input w-full"
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Policy Status</label>
+                    <select
+                      value={policyFormData.isActive ? 'active' : 'inactive'}
+                      onChange={(e) => setPolicyFormData({ ...policyFormData, isActive: e.target.value === 'active' })}
+                      className="input w-full"
+                    >
+                      <option value="inactive">Inactive draft</option>
+                      <option value="active">Active company-wide</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Applicability</label>
+                    <input
+                      type="text"
+                      value="Company-wide"
+                      readOnly
+                      className="input w-full bg-gray-50 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <textarea
+                    value={policyFormData.description || ''}
+                    onChange={(e) => setPolicyFormData({ ...policyFormData, description: e.target.value })}
+                    rows={3}
+                    className="input w-full"
+                    placeholder="Explain applicability or policy notes..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 rounded-lg border border-gray-200 p-4 sm:grid-cols-3">
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={policyFormData.requiresApproval !== false}
+                      onChange={(e) => setPolicyFormData({ ...policyFormData, requiresApproval: e.target.checked })}
+                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    />
+                    <span className="text-sm text-gray-700">Requires approval</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={policyFormData.carryForward !== false}
+                      onChange={(e) => setPolicyFormData({ ...policyFormData, carryForward: e.target.checked })}
+                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    />
+                    <span className="text-sm text-gray-700">Carry forward</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={policyFormData.encashable === true}
+                      onChange={(e) => setPolicyFormData({ ...policyFormData, encashable: e.target.checked })}
+                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    />
+                    <span className="text-sm text-gray-700">Encashable</span>
+                  </label>
+                </div>
+
+                <div className="rounded-lg bg-blue-50 p-3 text-sm text-blue-900">
+                  Simple model: active policies apply company-wide. Existing employees need leave balances initialized for the selected year before a policy appears on their Leave Management page.
+                </div>
+
+                <div className="flex items-center justify-end space-x-3 pt-2">
+                  <button onClick={() => setShowPolicyModal(false)} className="btn btn-secondary">
+                    Cancel
+                  </button>
+                  <button onClick={handleSavePolicy} disabled={actionLoading} className="btn btn-primary">
+                    {actionLoading ? 'Saving...' : selectedPolicy ? 'Update Policy' : 'Create Policy'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Create/Edit Rule Modal */}
       {showRuleModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -300,7 +639,7 @@ export default function BusinessRulesTab() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Status
+                      Rule Status
                     </label>
                     <select
                       value={ruleFormData.isActive ? 'active' : 'inactive'}
@@ -342,7 +681,10 @@ export default function BusinessRulesTab() {
                 {/* Category-specific configuration */}
                 {ruleFormData.category === 'leave' && (
                   <div className="border border-gray-200 rounded-lg p-4">
-                    <h4 className="font-medium text-gray-900 mb-3">Leave Policy Settings</h4>
+                    <h4 className="font-medium text-gray-900 mb-1">Leave Workflow Rule Settings</h4>
+                    <p className="mb-3 text-xs text-gray-500">
+                      These values are advisory workflow settings. Employee entitlements come from Operational Leave Policies above.
+                    </p>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">Annual Leave Quota</label>

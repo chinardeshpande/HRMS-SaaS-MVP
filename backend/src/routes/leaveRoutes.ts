@@ -10,6 +10,7 @@ router.post('/apply', authenticate, leaveController.applyLeave);
 router.put('/:leaveId/cancel', authenticate, leaveController.cancelLeave);
 router.get('/my-requests', authenticate, leaveController.getMyRequests);
 router.get('/my-balance', authenticate, leaveController.getMyBalance);
+router.get('/policies', authenticate, leaveController.getPolicies);
 
 // Manager routes - For approving team leave requests
 router.get(

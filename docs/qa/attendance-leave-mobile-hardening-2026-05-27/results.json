@@ -1,0 +1,37 @@
+{
+  "runDate": "2026-05-27T06:28:39.722Z",
+  "target": "http://localhost:5173",
+  "api": "http://localhost:3000/api/v1",
+  "persona": "anupama.bhat@acvsolutions.in",
+  "apiFailures": [],
+  "results": [
+    {
+      "route": "/attendance",
+      "screenshot": "/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/attendance-leave-mobile-hardening-2026-05-27/screenshots/mobile-attendance-my.png",
+      "status": "passed",
+      "facts": [
+        "Attendance page title is visible",
+        "Daily clock-in/out surface is visible",
+        "My attendance history is visible"
+      ]
+    },
+    {
+      "route": "/leave",
+      "screenshot": "/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/attendance-leave-mobile-hardening-2026-05-27/screenshots/mobile-leave-my.png",
+      "status": "passed",
+      "facts": [
+        "Leave page title is visible",
+        "Employee self-service tab is visible",
+        "Apply Leave action is visible"
+      ]
+    },
+    {
+      "route": "/leave",
+      "screenshot": "/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/qa/attendance-leave-mobile-hardening-2026-05-27/screenshots/mobile-leave-apply-modal.png",
+      "status": "passed",
+      "facts": [
+        "Apply Leave modal opens and submit action is visible on mobile"
+      ]
+    }
+  ]
+}

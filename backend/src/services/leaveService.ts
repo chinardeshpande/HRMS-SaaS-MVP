@@ -299,6 +299,19 @@ export class LeaveService {
   }
 
   /**
+   * Employee/Manager/HR: Get active tenant leave policies
+   */
+  async getActiveLeavePolicies(tenantId: string) {
+    return await this.leavePolicyRepository.find({
+      where: {
+        tenantId,
+        isActive: true,
+      },
+      order: { leaveType: 'ASC', createdAt: 'DESC' },
+    });
+  }
+
+  /**
    * Manager: Get pending leave approvals for reportees
    */
   async getPendingApprovals(managerId: string, tenantId: string) {

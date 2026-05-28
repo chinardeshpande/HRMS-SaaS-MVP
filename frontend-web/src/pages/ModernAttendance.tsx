@@ -5,7 +5,7 @@ import { ModernLayout } from '../components/layout/ModernLayout';
 import { ApplyLeaveModal } from '../components/leave/ApplyLeaveModal';
 import { EmptyState } from '../components/common/EmptyState';
 import attendanceService, { Attendance, AttendanceStatistics, DepartmentAttendance, TimeEntryEdit, TimeEntryEditStatus } from '../services/attendanceService';
-import leaveService, { LeaveRequest as APILeaveRequest } from '../services/leaveService';
+import leaveService from '../services/leaveService';
 import employeeService from '../services/employeeService';
 import {
   ClockIcon,
@@ -27,15 +27,33 @@ import {
 
 export default function ModernAttendance() {
   const { user } = useAuth();
-  const [activeView, setActiveView] = useState<'my-attendance' | 'team' | 'company' | 'requests' | 'reports'>('my-attendance');
+  const [activeView, setActiveView] = useState<'my-attendance' | 'team' | 'requests' | 'reports'>('my-attendance');
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [myDatePreset, setMyDatePreset] = useState<'today' | 'week' | 'month' | 'custom'>('month');
+  const [myRangeStart, setMyRangeStart] = useState(`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-01`);
+  const [myRangeEnd, setMyRangeEnd] = useState(new Date().toISOString().split('T')[0]);
+  const [workingFrom, setWorkingFrom] = useState<'Office' | 'WFH' | 'Off-site'>('Office');
+  const [timerNow, setTimerNow] = useState(new Date());
+  const [companyViewMode, setCompanyViewMode] = useState<'day' | 'range'>('day');
+  const [companyRangeStart, setCompanyRangeStart] = useState(`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-01`);
+  const [companyRangeEnd, setCompanyRangeEnd] = useState(new Date().toISOString().split('T')[0]);
   const [statusFilter, setStatusFilter] = useState<string>('all'); // Filter for attendance status
 
   // Employee state
   const [myAttendance, setMyAttendance] = useState<Attendance[]>([]);
-  const [myStats, setMyStats] = useState({ present: 0, absent: 0, late: 0, avgHours: 0 });
+  const [myStats, setMyStats] = useState({
+    total: 0,
+    present: 0,
+    absent: 0,
+    late: 0,
+    onLeave: 0,
+    weekend: 0,
+    holiday: 0,
+    halfDay: 0,
+    avgHours: 0,
+  });
   const [clockedIn, setClockedIn] = useState(false);
   const [todayCheckIn, setTodayCheckIn] = useState<string | null>(null);
 
@@ -46,7 +64,6 @@ export default function ModernAttendance() {
   const [companyStats, setCompanyStats] = useState({ total: 0, present: 0, absent: 0, late: 0, onLeave: 0 });
 
   // Requests state
-  const [leaveRequests, setLeaveRequests] = useState<APILeaveRequest[]>([]);
   const [regularizationRequests, setRegularizationRequests] = useState<TimeEntryEdit[]>([]);
 
   // Leave application modal (unified component)
@@ -121,11 +138,16 @@ export default function ModernAttendance() {
   useEffect(() => {
     fetchData();
     fetchEmployees();
-  }, [user, selectedDate, selectedMonth, activeView, reportStartDate, reportEndDate]);
+  }, [user, selectedDate, selectedMonth, activeView, reportStartDate, reportEndDate, myDatePreset, myRangeStart, myRangeEnd, companyViewMode, companyRangeStart, companyRangeEnd]);
 
   // Set initial view only on mount
   useEffect(() => {
     setActiveView('my-attendance');
+  }, []);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => setTimerNow(new Date()), 30000);
+    return () => window.clearInterval(interval);
   }, []);
 
   const fetchEmployees = async () => {
@@ -134,8 +156,10 @@ export default function ModernAttendance() {
         return; // Only HR/Admin need employee list for mass updates
       }
 
-      const response = await employeeService.getEmployees();
-      const employeeList = response.data.employees.map((emp: any) => ({
+      const response = await employeeService.getEmployees({ status: 'active' });
+      const employeeList = response.data.employees
+      .filter((emp: any) => (emp.status || '').toLowerCase() === 'active')
+      .map((emp: any) => ({
         id: emp.employeeId,
         code: emp.employeeCode,
         name: `${emp.firstName} ${emp.lastName}`,
@@ -149,6 +173,9 @@ export default function ModernAttendance() {
   };
 
   const isHROrAdmin = ['HR_ADMIN', 'SYSTEM_ADMIN'].includes(user?.role?.toString().toUpperCase() || '');
+  const isManager = user?.role?.toString().toUpperCase() === 'MANAGER';
+  const canApproveAttendance = isHROrAdmin || isManager;
+  const peopleViewLabel = isHROrAdmin ? 'Company' : isManager ? 'Team' : 'Team';
 
   const getNormalizedStatus = (status: string) => status.replace('-', '_');
 
@@ -160,6 +187,39 @@ export default function ModernAttendance() {
     return new Date(`${date}T${normalizedTime}`).toISOString();
   };
 
+  const toISODate = (date: Date) => date.toISOString().split('T')[0];
+
+  const getMyDateRange = () => {
+    const today = new Date();
+    const todayIso = toISODate(today);
+
+    if (myDatePreset === 'today') {
+      return { start: todayIso, end: todayIso };
+    }
+
+    if (myDatePreset === 'week') {
+      const start = new Date(today);
+      const day = start.getDay();
+      const daysFromMonday = day === 0 ? 6 : day - 1;
+      start.setDate(start.getDate() - daysFromMonday);
+      return { start: toISODate(start), end: todayIso };
+    }
+
+    if (myDatePreset === 'custom') {
+      return { start: myRangeStart, end: myRangeEnd };
+    }
+
+    const monthStart = new Date(`${selectedMonth}-01T00:00:00`);
+    const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
+    return { start: toISODate(monthStart), end: toISODate(monthEnd) };
+  };
+
+  const getCompanyDateRange = () => (
+    companyViewMode === 'day'
+      ? { start: selectedDate, end: selectedDate }
+      : { start: companyRangeStart, end: companyRangeEnd }
+  );
+
   const getSelectedMassUpdateEmployees = () => {
     return massUpdateFormData.applyToAll ? employees : employees.filter((employee) => selectedEmployees.includes(employee.id));
   };
@@ -170,24 +230,27 @@ export default function ModernAttendance() {
     setLoading(true);
     try {
       // Calculate date ranges
-      const monthStart = new Date(selectedMonth + '-01');
-      const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
-      const dayStart = new Date(selectedDate);
-      const dayEnd = new Date(selectedDate);
+      const myRange = getMyDateRange();
+      const companyRange = getCompanyDateRange();
 
       // Fetch My Attendance (always fetch for employee view)
       if (activeView === 'my-attendance') {
         const myAttendanceData = await attendanceService.getMyAttendance(
-          monthStart.toISOString().split('T')[0],
-          monthEnd.toISOString().split('T')[0]
+          myRange.start,
+          myRange.end
         );
         setMyAttendance(myAttendanceData);
 
         // Calculate stats
         setMyStats({
+          total: myAttendanceData.length,
           present: myAttendanceData.filter(a => a.status === 'present').length,
           absent: myAttendanceData.filter(a => a.status === 'absent').length,
           late: myAttendanceData.filter(a => a.isLate).length,
+          onLeave: myAttendanceData.filter(a => getNormalizedStatus(a.status) === 'on_leave').length,
+          weekend: myAttendanceData.filter(a => getNormalizedStatus(a.status) === 'weekend').length,
+          holiday: myAttendanceData.filter(a => getNormalizedStatus(a.status) === 'holiday').length,
+          halfDay: myAttendanceData.filter(a => getNormalizedStatus(a.status) === 'half_day').length,
           avgHours: myAttendanceData.length > 0
             ? myAttendanceData.reduce((sum, a) => sum + (a.workMinutes || 0), 0) / myAttendanceData.length / 60
             : 0,
@@ -222,8 +285,8 @@ export default function ModernAttendance() {
         if (isHRorAdmin) {
           // HR/Admin: Get company-wide attendance (backend filters by role)
           const companyData = await attendanceService.getCompanyWide(
-            dayStart.toISOString().split('T')[0],
-            dayEnd.toISOString().split('T')[0]
+            companyRange.start,
+            companyRange.end
           );
 
           // CRITICAL: Filter out current user from company view
@@ -250,8 +313,8 @@ export default function ModernAttendance() {
         } else if (user.role?.toString().toUpperCase() === 'MANAGER') {
           // Manager: Get team attendance (backend filters by reporting hierarchy)
           const teamData = await attendanceService.getTeamAttendance(
-            dayStart.toISOString().split('T')[0],
-            dayEnd.toISOString().split('T')[0]
+            companyRange.start,
+            companyRange.end
           );
           setTeamAttendance(teamData);
 
@@ -281,15 +344,9 @@ export default function ModernAttendance() {
         }
       }
 
-      // Fetch Pending Requests
+      // Fetch Pending Attendance Regularization Requests
       if (activeView === 'requests') {
         if (['HR_ADMIN', 'SYSTEM_ADMIN', 'MANAGER'].includes(user.role?.toString().toUpperCase() || '')) {
-          // Fetch pending leave requests
-          const allLeaveRequests = await leaveService.getPendingApprovals();
-          // CRITICAL: Filter out current user's own leave requests
-          const filteredLeaveRequests = allLeaveRequests.filter(r => r.employeeId !== user.employeeId);
-          setLeaveRequests(filteredLeaveRequests);
-
           // Fetch pending regularization requests
           const regularizations = await attendanceService.getPendingRegularizations();
           // CRITICAL: Filter out current user's own regularization requests
@@ -307,7 +364,7 @@ export default function ModernAttendance() {
 
   const handleClockIn = async () => {
     try {
-      const attendance = await attendanceService.clockIn();
+      const attendance = await attendanceService.clockIn(workingFrom);
       const checkInDate = new Date(attendance.checkIn!);
       const time = checkInDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
       setTodayCheckIn(time);
@@ -361,28 +418,6 @@ export default function ModernAttendance() {
       }
     } catch (error: any) {
       showNotification(error.message || 'Failed to submit regularization request', 'error');
-    }
-  };
-
-  const handleApproveLeave = async (leaveId: string) => {
-    try {
-      await leaveService.approveOrReject(leaveId, 'approved');
-      showNotification('Leave request approved', 'success');
-      // Refresh data
-      await fetchData();
-    } catch (error: any) {
-      showNotification(error.message || 'Failed to approve leave request', 'error');
-    }
-  };
-
-  const handleRejectLeave = async (leaveId: string) => {
-    try {
-      await leaveService.approveOrReject(leaveId, 'rejected', 'Rejected from attendance module');
-      showNotification('Leave request rejected', 'success');
-      // Refresh data
-      await fetchData();
-    } catch (error: any) {
-      showNotification(error.message || 'Failed to reject leave request', 'error');
     }
   };
 
@@ -578,6 +613,77 @@ export default function ModernAttendance() {
     showNotification('Attendance data exported successfully', 'success');
   };
 
+  const downloadCsv = (filename: string, headers: string[], rows: Array<Array<string | number>>) => {
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')),
+    ].join('\n');
+
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    window.URL.revokeObjectURL(url);
+    showNotification('Attendance data downloaded successfully', 'success');
+  };
+
+  const handleDownloadMyAttendance = () => {
+    downloadCsv(
+      `my_attendance_${mySelectedRange.start}_to_${mySelectedRange.end}.csv`,
+      ['Date', 'Present / Absent', 'Working From', 'In Time', 'Out Time', 'Hours Worked'],
+      myAttendanceRows.map(({ date, record }) => {
+        const isPresent = record && ['present', 'half_day'].includes(getNormalizedStatus(record.status));
+        return [
+          date,
+          record ? getPresentAbsentLabel(record.status) : 'Absent',
+          isPresent ? formatWorkLocation(record.location || 'Office') : '-',
+          record ? formatTime(record.checkIn) : '-',
+          record ? formatTime(record.checkOut) : '-',
+          record?.workMinutes ? formatDuration(record.workMinutes) : '-',
+        ];
+      })
+    );
+  };
+
+  const handleDownloadCompanyAttendance = () => {
+    if (companyViewMode === 'range') {
+      downloadCsv(
+        `${peopleViewLabel.toLowerCase()}_attendance_${companyRangeStart}_to_${companyRangeEnd}.csv`,
+        ['Employee', 'Employee Code', ...companyGridDays],
+        companyGridEmployees.map((employee) => [
+          employee.name,
+          employee.code || '-',
+          ...companyGridDays.map((date) => {
+            const record = attendanceByEmployeeAndDate.get(`${employee.id}:${date}`);
+            const isPresent = record && ['present', 'half_day'].includes(getNormalizedStatus(record.status));
+            return isPresent ? `P - ${formatWorkLocation(record.location || 'Office')}` : 'A';
+          }),
+        ])
+      );
+      return;
+    }
+
+    downloadCsv(
+      `${peopleViewLabel.toLowerCase()}_attendance_${selectedDate}.csv`,
+      ['Employee', 'Employee Code', 'Present / Absent', 'Working From', 'In Time', 'Out Time', 'Hours Worked'],
+      companyGridEmployees.map((employee) => {
+        const record = attendanceByEmployeeAndDate.get(`${employee.id}:${selectedDate}`);
+        const isPresent = record && ['present', 'half_day'].includes(getNormalizedStatus(record.status));
+        return [
+          employee.name,
+          employee.code || '-',
+          record ? getPresentAbsentLabel(record.status) : 'Absent',
+          isPresent ? formatWorkLocation(record.location || 'Office') : '-',
+          record ? formatTime(record.checkIn) : '-',
+          record ? formatTime(record.checkOut) : '-',
+          record?.workMinutes ? formatDuration(record.workMinutes) : '-',
+        ];
+      })
+    );
+  };
+
   const handleExportReportCSV = () => {
     const attendanceRows = [
       ['Attendance Summary', 'Value'],
@@ -641,6 +747,87 @@ export default function ModernAttendance() {
     return `${hours}h ${mins}m`;
   };
 
+  const formatTime = (value?: Date | string) =>
+    value ? new Date(value).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '-';
+
+  const formatWorkLocation = (value?: string) => {
+    if (!value) return '-';
+    const normalized = value.toLowerCase();
+    if (normalized.includes('wfh') || normalized.includes('home')) return 'WFH';
+    if (normalized.includes('off')) return 'Off-site';
+    if (normalized.includes('office')) return 'Office';
+    return value;
+  };
+
+  const getPresentAbsentLabel = (status: string) => {
+    const normalized = getNormalizedStatus(status);
+    if (normalized === 'present' || normalized === 'half_day') return 'Present';
+    if (normalized === 'on_leave') return 'On Leave';
+    if (normalized === 'weekend') return 'Weekend';
+    if (normalized === 'holiday') return 'Holiday';
+    return 'Absent';
+  };
+
+  const getLiveTimer = () => {
+    if (!clockedIn || !todayCheckIn) return '00h 00m';
+    const today = new Date().toISOString().split('T')[0];
+    const started = new Date(`${today} ${todayCheckIn}`);
+    if (Number.isNaN(started.getTime())) return '00h 00m';
+    const elapsedMinutes = Math.max(0, Math.floor((timerNow.getTime() - started.getTime()) / 60000));
+    return formatDuration(elapsedMinutes);
+  };
+
+  const getDateRangeDays = (start: string, end: string) => {
+    const days: string[] = [];
+    const current = new Date(`${start}T00:00:00`);
+    const final = new Date(`${end}T00:00:00`);
+    if (Number.isNaN(current.getTime()) || Number.isNaN(final.getTime()) || final < current) return days;
+
+    while (current <= final && days.length < 62) {
+      days.push(toISODate(current));
+      current.setDate(current.getDate() + 1);
+    }
+    return days;
+  };
+
+  const getRecordDateKey = (record: Attendance) =>
+    typeof record.date === 'string' ? record.date.slice(0, 10) : toISODate(new Date(record.date));
+
+  const filterAttendanceRecords = (records: Attendance[]) =>
+    records.filter(record => {
+      if (statusFilter === 'all') return true;
+      if (statusFilter === 'late') return record.isLate;
+      return getNormalizedStatus(record.status) === statusFilter;
+    });
+
+  const filteredMyAttendance = filterAttendanceRecords(myAttendance);
+  const myAttendanceByDate = new Map(myAttendance.map((record) => [getRecordDateKey(record), record]));
+  const mySelectedRange = getMyDateRange();
+  const myAttendanceRows = getDateRangeDays(mySelectedRange.start, mySelectedRange.end).map((date) => ({
+    date,
+    record: myAttendanceByDate.get(date),
+  }));
+  const filteredPeopleAttendance = filterAttendanceRecords(teamAttendance);
+  const attendanceByEmployeeAndDate = new Map(
+    teamAttendance.map((record) => [`${record.employeeId}:${getRecordDateKey(record)}`, record])
+  );
+  const companyGridDays = getDateRangeDays(companyRangeStart, companyRangeEnd);
+  const activeEmployeeIds = new Set(employees.map((employee) => employee.id));
+  const activeTeamAttendance = isHROrAdmin && activeEmployeeIds.size > 0
+    ? teamAttendance.filter((record) => activeEmployeeIds.has(record.employeeId))
+    : teamAttendance;
+  const companyGridEmployees = isHROrAdmin && employees.length > 0
+    ? employees
+    : Array.from(new Map(activeTeamAttendance.map((record) => [
+        record.employeeId,
+        {
+          id: record.employeeId,
+          code: record.employee?.employeeCode || '-',
+          name: `${record.employee?.firstName || ''} ${record.employee?.lastName || ''}`.trim() || 'Employee',
+          department: record.employee?.department?.name || 'N/A',
+        },
+      ])).values());
+
   return (
     <ModernLayout>
       {/* Notification */}
@@ -665,8 +852,8 @@ export default function ModernAttendance() {
                 <h1 className="text-lg font-bold text-gray-900">Attendance</h1>
                 <p className="text-xs text-gray-500">
                   {activeView === 'my-attendance' ? 'My records' :
-                   activeView === 'team' ? 'Team overview' :
-                   activeView === 'reports' ? 'Monthly reports' : 'Pending requests'}
+                   activeView === 'team' ? `${peopleViewLabel} overview` :
+                   activeView === 'requests' ? 'Attendance regularisation approvals' : 'Attendance workspace'}
                 </p>
               </div>
             </div>
@@ -699,78 +886,33 @@ export default function ModernAttendance() {
                     }`}
                   >
                     <UsersIcon className="h-4 w-4" />
-                    <span>Company</span>
+                    <span>{peopleViewLabel}</span>
                   </button>
 
                   <button
-                    onClick={() => setActiveView('requests')}
-                    className={`min-w-0 justify-center shrink-0 px-2 sm:px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 relative ${
+                    onClick={() => {
+                      setActiveView('requests');
+                      setStatusFilter('all');
+                    }}
+                    className={`relative min-w-0 justify-center shrink-0 px-2 sm:px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 ${
                       activeView === 'requests' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
-                    <ExclamationCircleIcon className="h-4 w-4" />
-                    <span>Requests</span>
-                    {(leaveRequests.filter(r => r.status === 'pending').length + regularizationRequests.filter(r => r.status === 'pending').length) > 0 && (
-                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
-                        {leaveRequests.filter(r => r.status === 'pending').length + regularizationRequests.filter(r => r.status === 'pending').length}
+                    <CheckCircleIcon className="h-4 w-4" />
+                    <span className="truncate sm:hidden">Approvals</span>
+                    <span className="hidden sm:inline">Team Approvals</span>
+                    {regularizationRequests.filter(r => r.status === TimeEntryEditStatus.PENDING).length > 0 && (
+                      <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
+                        {regularizationRequests.filter(r => r.status === TimeEntryEditStatus.PENDING).length}
                       </span>
                     )}
                   </button>
-
-                  {isHROrAdmin && (
-                    <button
-                      onClick={() => setActiveView('reports')}
-                      className={`min-w-0 justify-center shrink-0 px-2 sm:px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center space-x-1.5 ${
-                        activeView === 'reports' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
-                      }`}
-                    >
-                      <ChartBarIcon className="h-4 w-4" />
-                      <span>Reports</span>
-                    </button>
-                  )}
                 </>
               )}
             </div>
 
-            {/* Right: Date Selector + Actions Dropdown */}
+            {/* Right: Actions */}
             <div className="flex flex-wrap items-center gap-2">
-              {/* Date Selector */}
-              {activeView === 'my-attendance' && (
-                <input
-                  type="month"
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="min-w-0 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              )}
-
-              {activeView === 'team' && (
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="min-w-0 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              )}
-
-              {activeView === 'reports' && (
-                <div className="flex items-center gap-2">
-                  <input
-                    type="date"
-                    value={reportStartDate}
-                    onChange={(e) => setReportStartDate(e.target.value)}
-                    className="min-w-0 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                  <span className="text-xs text-gray-500">to</span>
-                  <input
-                    type="date"
-                    value={reportEndDate}
-                    onChange={(e) => setReportEndDate(e.target.value)}
-                    className="min-w-0 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                </div>
-              )}
-
               {/* Compact Actions */}
               {activeView === 'team' && (['HR_ADMIN', 'SYSTEM_ADMIN'].includes(user?.role?.toString().toUpperCase() || '')) && (
                 <div className="flex items-center space-x-1.5">
@@ -792,60 +934,66 @@ export default function ModernAttendance() {
                   </button>
                 </div>
               )}
-
-              {/* Export */}
-              {(activeView === 'my-attendance' || activeView === 'team') && (
-                <button
-                  onClick={handleExportCSV}
-                  className="px-2.5 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center space-x-1 text-xs font-medium"
-                  title="Export to CSV"
-                >
-                  <ArrowDownTrayIcon className="h-4 w-4" />
-                  <span>Export</span>
-                </button>
-              )}
-
-              {activeView === 'reports' && (
-                <button
-                  onClick={handleExportReportCSV}
-                  className="px-2.5 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center space-x-1 text-xs font-medium"
-                  title="Export report to CSV"
-                >
-                  <ArrowDownTrayIcon className="h-4 w-4" />
-                  <span>Export Report</span>
-                </button>
-              )}
             </div>
           </div>
         </div>
 
-        {/* MY ATTENDANCE VIEW (Employee) */}
+        {/* MY ATTENDANCE VIEW */}
         {activeView === 'my-attendance' && (
           <div className="space-y-4">
-            {/* Clock In/Out Card - Compact */}
-            <div className="card border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50">
-              <div className="card-body p-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                      <ClockIcon className="h-6 w-6 text-white" />
+            <div className="card border border-blue-100 bg-gradient-to-r from-blue-50 to-cyan-50">
+              <div className="card-body p-4">
+                <div className="grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <label className="block">
+                      <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-blue-800">Working from</span>
+                      <select
+                        value={workingFrom}
+                        onChange={(event) => setWorkingFrom(event.target.value as 'Office' | 'WFH' | 'Off-site')}
+                        className="w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                      >
+                        <option value="Office">Office</option>
+                        <option value="WFH">WFH</option>
+                        <option value="Off-site">Off-site</option>
+                      </select>
+                    </label>
+                    <div className="rounded-lg border border-blue-100 bg-white px-3 py-2">
+                      <span className="block text-xs font-semibold uppercase tracking-wide text-blue-800">Today</span>
+                      <span className="mt-1 block text-sm font-semibold text-gray-900">
+                        {clockedIn ? `Clocked in at ${todayCheckIn}` : 'Not clocked in'}
+                      </span>
                     </div>
-                    <div>
-                      <p className="text-xs font-bold text-blue-700 mb-0.5">TODAY'S ATTENDANCE</p>
-                      <p className="text-base font-bold text-gray-900">
-                        {clockedIn ? `Clocked In at ${todayCheckIn}` : 'Not Clocked In Yet'}
-                      </p>
-                      <p className="text-xs text-gray-600 mt-0.5">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    <div className="rounded-lg border border-blue-100 bg-white px-3 py-2">
+                      <span className="block text-xs font-semibold uppercase tracking-wide text-blue-800">Live timer</span>
+                      <span className="mt-1 block text-lg font-bold text-gray-900">{getLiveTimer()}</span>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
+
+                  <div className="grid gap-2 sm:flex sm:justify-end">
+                    <button
+                      onClick={() => {
+                        setRegularizationFormData((current) => ({
+                          ...current,
+                          date: new Date().toISOString().split('T')[0],
+                        }));
+                        setShowRegularizationModal(true);
+                      }}
+                      className="btn btn-secondary justify-center"
+                    >
+                      <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />
+                      Regularize
+                    </button>
+                    <button onClick={() => setShowApplyLeaveModal(true)} className="btn btn-secondary justify-center">
+                      <CalendarIcon className="h-4 w-4 mr-1.5" />
+                      Apply Leave
+                    </button>
                     {!clockedIn ? (
-                      <button onClick={handleClockIn} className="btn btn-primary">
+                      <button onClick={handleClockIn} className="btn btn-primary justify-center">
                         <ClockIcon className="h-4 w-4 mr-1.5" />
                         Clock In
                       </button>
                     ) : (
-                      <button onClick={handleClockOut} className="btn btn-danger">
+                      <button onClick={handleClockOut} className="btn btn-danger justify-center">
                         <ClockIcon className="h-4 w-4 mr-1.5" />
                         Clock Out
                       </button>
@@ -855,160 +1003,150 @@ export default function ModernAttendance() {
               </div>
             </div>
 
-            {/* Stats - Clickable for Filtering - Compact */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div
-                onClick={() => setStatusFilter('present')}
-                className={`bg-white rounded-xl shadow-sm border-2 p-3 cursor-pointer transition-all hover:shadow-md ${
-                  statusFilter === 'present' ? 'border-success-400 ring-2 ring-success-200' : 'border-gray-200'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-xs font-medium text-gray-600 mb-1">Present</p>
-                    <p className="text-2xl font-bold text-success-600">{myStats.present}</p>
-                    {statusFilter === 'present' && (
-                      <p className="text-xs text-success-600 mt-1">● Filtering</p>
+            <div className="card">
+              <div className="card-body p-4">
+                <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { key: 'today', label: 'Today' },
+                      { key: 'week', label: 'This Week' },
+                      { key: 'month', label: 'This Month' },
+                      { key: 'custom', label: 'Date Range' },
+                    ].map((preset) => (
+                      <button
+                        key={preset.key}
+                        onClick={() => setMyDatePreset(preset.key as 'today' | 'week' | 'month' | 'custom')}
+                        className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                          myDatePreset === preset.key
+                            ? 'bg-blue-600 text-white shadow-sm'
+                            : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="grid gap-2 sm:flex sm:items-center">
+                    {myDatePreset === 'month' && (
+                      <input
+                        type="month"
+                        value={selectedMonth}
+                        onChange={(event) => setSelectedMonth(event.target.value)}
+                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                      />
                     )}
-                  </div>
-                  <div className="bg-success-100 rounded-xl p-2">
-                    <CheckCircleIcon className="h-5 w-5 text-success-600" />
-                  </div>
-                </div>
-              </div>
-
-              <div
-                onClick={() => setStatusFilter('absent')}
-                className={`bg-white rounded-xl shadow-sm border-2 p-3 cursor-pointer transition-all hover:shadow-md ${
-                  statusFilter === 'absent' ? 'border-danger-400 ring-2 ring-danger-200' : 'border-gray-200'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-xs font-medium text-gray-600 mb-1">Absent</p>
-                    <p className="text-2xl font-bold text-danger-600">{myStats.absent}</p>
-                    {statusFilter === 'absent' && (
-                      <p className="text-xs text-danger-600 mt-1">● Filtering</p>
+                    {myDatePreset === 'custom' && (
+                      <>
+                        <input
+                          type="date"
+                          value={myRangeStart}
+                          onChange={(event) => setMyRangeStart(event.target.value)}
+                          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                        />
+                        <span className="hidden text-xs text-gray-500 sm:inline">to</span>
+                        <input
+                          type="date"
+                          value={myRangeEnd}
+                          onChange={(event) => setMyRangeEnd(event.target.value)}
+                          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                        />
+                      </>
                     )}
-                  </div>
-                  <div className="bg-danger-100 rounded-xl p-2">
-                    <XCircleIcon className="h-5 w-5 text-danger-600" />
-                  </div>
-                </div>
-              </div>
-
-              <div
-                onClick={() => setStatusFilter('late')}
-                className={`bg-white rounded-xl shadow-sm border-2 p-3 cursor-pointer transition-all hover:shadow-md ${
-                  statusFilter === 'late' ? 'border-warning-400 ring-2 ring-warning-200' : 'border-gray-200'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-xs font-medium text-gray-600 mb-1">Late</p>
-                    <p className="text-2xl font-bold text-warning-600">{myStats.late}</p>
-                    {statusFilter === 'late' && (
-                      <p className="text-xs text-warning-600 mt-1">● Filtering</p>
-                    )}
-                  </div>
-                  <div className="bg-warning-100 rounded-xl p-2">
-                    <ClockIcon className="h-5 w-5 text-warning-600" />
-                  </div>
-                </div>
-              </div>
-
-              <div
-                onClick={() => setStatusFilter('all')}
-                className={`bg-white rounded-xl shadow-sm border-2 p-3 cursor-pointer transition-all hover:shadow-md ${
-                  statusFilter === 'all' ? 'border-primary-400 ring-2 ring-primary-200' : 'border-gray-200'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-xs font-medium text-gray-600 mb-1">Avg Hours</p>
-                    <p className="text-2xl font-bold text-primary-600">{myStats.avgHours.toFixed(1)}</p>
-                    {statusFilter === 'all' && (
-                      <p className="text-xs text-primary-600 mt-1">● View all</p>
-                    )}
-                  </div>
-                  <div className="bg-primary-100 rounded-xl p-2">
-                    <ChartBarIcon className="h-5 w-5 text-primary-600" />
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* My Attendance Records - Compact */}
             <div className="card">
               <div className="card-body p-0">
-                <div className="p-3 border-b border-gray-200">
-                  <h3 className="text-sm font-bold text-gray-900">My Attendance History - {new Date(selectedMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h3>
+                <div className="flex flex-col gap-2 border-b border-gray-200 p-3 sm:flex-row sm:items-center sm:justify-between">
+                  <h3 className="text-sm font-bold text-gray-900">Attendance Records</h3>
+                  <button
+                    onClick={handleDownloadMyAttendance}
+                    className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50"
+                    title="Download my attendance list"
+                  >
+                    <ArrowDownTrayIcon className="mr-1.5 h-4 w-4" />
+                    Download
+                  </button>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="md:hidden divide-y divide-gray-100">
+                  {myAttendanceRows.length === 0 ? (
+                    <div className="p-8 text-center text-sm text-gray-500">Select a valid date range.</div>
+                  ) : (
+                    myAttendanceRows.map(({ date, record }) => {
+                      const isPresent = record && ['present', 'half_day'].includes(getNormalizedStatus(record.status));
+                      return (
+                        <div key={date} className="p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="text-sm font-semibold text-gray-900">
+                                {new Date(`${date}T00:00:00`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                              </p>
+                              <p className="mt-1 text-xs text-gray-500">{isPresent ? formatWorkLocation(record.location || 'Office') : '-'}</p>
+                            </div>
+                            <span className={`badge ${record ? getStatusBadge(record.status) : 'badge-danger'} text-xs`}>
+                              {record ? getPresentAbsentLabel(record.status) : 'Absent'}
+                            </span>
+                          </div>
+                          <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+                            <div className="rounded-lg bg-gray-50 p-2">
+                              <p className="text-gray-500">In</p>
+                              <p className="font-semibold text-gray-900">{record ? formatTime(record.checkIn) : '-'}</p>
+                            </div>
+                            <div className="rounded-lg bg-gray-50 p-2">
+                              <p className="text-gray-500">Out</p>
+                              <p className="font-semibold text-gray-900">{record ? formatTime(record.checkOut) : '-'}</p>
+                            </div>
+                            <div className="rounded-lg bg-gray-50 p-2">
+                              <p className="text-gray-500">Hours</p>
+                              <p className="font-semibold text-gray-900">{record?.workMinutes ? formatDuration(record.workMinutes) : '-'}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+                <div className="hidden overflow-x-auto md:block">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Date</th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Check In</th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Check Out</th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Work Hours</th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Status</th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Late</th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Present / Absent</th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Working From</th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">In Time</th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Out Time</th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Hours Worked</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {myAttendance.length === 0 ? (
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {myAttendanceRows.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="px-4 py-12">
-                            <EmptyState
-                              icon={<ClockIcon className="h-16 w-16 text-gray-400" />}
-                              title="No Attendance Records"
-                              description="Start tracking your attendance by clocking in above. Your attendance history will appear here."
-                              primaryAction={{
-                                label: "Clock In Now",
-                                onClick: handleClockIn,
-                                icon: <ClockIcon className="h-5 w-5 mr-2" />,
-                              }}
-                            />
+                          <td colSpan={6} className="px-3 py-8 text-center text-sm text-gray-500">
+                            Select a valid date range.
                           </td>
                         </tr>
                       ) : (
-                        myAttendance
-                          .filter(record => {
-                            if (statusFilter === 'all') return true;
-                            if (statusFilter === 'late') return record.isLate;
-                            return record.status === statusFilter;
-                          })
-                          .map((record) => {
-                            const recordDate = typeof record.date === 'string' ? record.date : new Date(record.date).toISOString().split('T')[0];
-                            const checkInTime = record.checkIn ? new Date(record.checkIn).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '-';
-                            const checkOutTime = record.checkOut ? new Date(record.checkOut).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '-';
-
-                            return (
-                              <tr key={record.attendanceId} className="hover:bg-purple-50 cursor-pointer transition-colors">
-                                <td className="px-3 py-2 text-sm text-gray-900">
-                                  {new Date(recordDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                </td>
-                                <td className="px-3 py-2 text-sm text-gray-900">{checkInTime}</td>
-                                <td className="px-3 py-2 text-sm text-gray-900">{checkOutTime}</td>
-                                <td className="px-3 py-2 text-sm text-gray-900">
-                                  {record.workMinutes && record.workMinutes > 0 ? formatDuration(record.workMinutes) : '-'}
-                                </td>
-                                <td className="px-3 py-2">
-                                  <span className={`badge ${getStatusBadge(record.status)} text-xs`}>
-                                    {getStatusLabel(record.status)}
-                                  </span>
-                                </td>
-                                <td className="px-3 py-2 text-sm">
-                                  {record.isLate ? (
-                                    <span className="text-danger-600 font-medium">+{record.lateMinutes}m</span>
-                                  ) : (
-                                    <span className="text-gray-400">-</span>
-                                  )}
-                                </td>
-                              </tr>
-                            );
-                          })
+                        myAttendanceRows.map(({ date, record }) => {
+                          const isPresent = record && ['present', 'half_day'].includes(getNormalizedStatus(record.status));
+                          return (
+                            <tr key={date} className="hover:bg-blue-50">
+                              <td className="px-3 py-2 text-sm font-medium text-gray-900">
+                                {new Date(`${date}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              </td>
+                              <td className="px-3 py-2">
+                                <span className={`badge ${record ? getStatusBadge(record.status) : 'badge-danger'} text-xs`}>
+                                  {record ? getPresentAbsentLabel(record.status) : 'Absent'}
+                                </span>
+                              </td>
+                              <td className="px-3 py-2 text-sm text-gray-900">{isPresent ? formatWorkLocation(record.location || 'Office') : '-'}</td>
+                              <td className="px-3 py-2 text-sm text-gray-900">{record ? formatTime(record.checkIn) : '-'}</td>
+                              <td className="px-3 py-2 text-sm text-gray-900">{record ? formatTime(record.checkOut) : '-'}</td>
+                              <td className="px-3 py-2 text-sm text-gray-900">{record?.workMinutes ? formatDuration(record.workMinutes) : '-'}</td>
+                            </tr>
+                          );
+                        })
                       )}
                     </tbody>
                   </table>
@@ -1018,11 +1156,225 @@ export default function ModernAttendance() {
           </div>
         )}
 
-        {/* TEAM ATTENDANCE VIEW (Manager) */}
+        {/* COMPANY / TEAM ATTENDANCE VIEW */}
         {activeView === 'team' && (
           <div className="space-y-4">
+            <div className="card">
+              <div className="card-body p-4">
+                <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-900">{peopleViewLabel} Attendance</h3>
+                    <p className="mt-1 text-xs text-gray-500">
+                      {companyViewMode === 'day'
+                        ? new Date(`${selectedDate}T00:00:00`).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+                        : `${new Date(`${companyRangeStart}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} to ${new Date(`${companyRangeEnd}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`}
+                    </p>
+                  </div>
+                  <div className="grid gap-2 md:flex md:items-center md:justify-end">
+                    <div className="grid grid-cols-2 rounded-lg bg-gray-100 p-1">
+                      <button
+                        onClick={() => setCompanyViewMode('day')}
+                        className={`rounded-md px-3 py-2 text-sm font-semibold transition ${
+                          companyViewMode === 'day' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                      >
+                        Day view
+                      </button>
+                      <button
+                        onClick={() => setCompanyViewMode('range')}
+                        className={`rounded-md px-3 py-2 text-sm font-semibold transition ${
+                          companyViewMode === 'range' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                      >
+                        Date range
+                      </button>
+                    </div>
+                    {companyViewMode === 'day' ? (
+                      <input
+                        type="date"
+                        value={selectedDate}
+                        onChange={(event) => setSelectedDate(event.target.value)}
+                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                      />
+                    ) : (
+                      <div className="grid gap-2 sm:flex sm:items-center">
+                        <input
+                          type="date"
+                          value={companyRangeStart}
+                          onChange={(event) => setCompanyRangeStart(event.target.value)}
+                          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                        />
+                        <span className="hidden text-xs text-gray-500 sm:inline">to</span>
+                        <input
+                          type="date"
+                          value={companyRangeEnd}
+                          onChange={(event) => setCompanyRangeEnd(event.target.value)}
+                          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {companyViewMode === 'day' ? (
+              <div className="card">
+                <div className="card-body p-0">
+                  <div className="flex flex-col gap-2 border-b border-gray-200 p-3 sm:flex-row sm:items-center sm:justify-between">
+                    <h3 className="text-sm font-bold text-gray-900">{peopleViewLabel} Day List</h3>
+                    <button
+                      onClick={handleDownloadCompanyAttendance}
+                      className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50"
+                      title={`Download ${peopleViewLabel.toLowerCase()} attendance`}
+                    >
+                      <ArrowDownTrayIcon className="mr-1.5 h-4 w-4" />
+                      Download
+                    </button>
+                  </div>
+                  <div className="md:hidden divide-y divide-gray-100">
+                    {companyGridEmployees.map((employee) => {
+                      const record = attendanceByEmployeeAndDate.get(`${employee.id}:${selectedDate}`);
+                      const isPresent = record && ['present', 'half_day'].includes(getNormalizedStatus(record.status));
+                      return (
+                        <div key={employee.id} className="p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="text-sm font-semibold text-gray-900">{employee.name}</p>
+                              <p className="mt-1 text-xs text-gray-500">{employee.code || '-'} · {employee.department || 'No department'}</p>
+                            </div>
+                            <span className={`badge ${record ? getStatusBadge(record.status) : 'badge-danger'} text-xs`}>
+                              {record ? getPresentAbsentLabel(record.status) : 'Absent'}
+                            </span>
+                          </div>
+                          <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+                            <div className="rounded-lg bg-gray-50 p-2">
+                              <p className="text-gray-500">From</p>
+                              <p className="font-semibold text-gray-900">{isPresent ? formatWorkLocation(record.location || 'Office') : '-'}</p>
+                            </div>
+                            <div className="rounded-lg bg-gray-50 p-2">
+                              <p className="text-gray-500">In / Out</p>
+                              <p className="font-semibold text-gray-900">{record ? `${formatTime(record.checkIn)} - ${formatTime(record.checkOut)}` : '-'}</p>
+                            </div>
+                            <div className="rounded-lg bg-gray-50 p-2">
+                              <p className="text-gray-500">Hours</p>
+                              <p className="font-semibold text-gray-900">{record?.workMinutes ? formatDuration(record.workMinutes) : '-'}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="hidden overflow-x-auto md:block">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Employee</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Present / Absent</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Working From</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">In Time</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Out Time</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700">Hours Worked</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 bg-white">
+                        {companyGridEmployees.map((employee) => {
+                          const record = attendanceByEmployeeAndDate.get(`${employee.id}:${selectedDate}`);
+                          const isPresent = record && ['present', 'half_day'].includes(getNormalizedStatus(record.status));
+                          return (
+                            <tr key={employee.id} className="hover:bg-purple-50">
+                              <td className="px-3 py-2">
+                                <p className="text-sm font-semibold text-gray-900">{employee.name}</p>
+                                <p className="text-xs text-gray-500">{employee.code || '-'} · {employee.department || 'No department'}</p>
+                              </td>
+                              <td className="px-3 py-2">
+                                <span className={`badge ${record ? getStatusBadge(record.status) : 'badge-danger'} text-xs`}>
+                                  {record ? getPresentAbsentLabel(record.status) : 'Absent'}
+                                </span>
+                              </td>
+                              <td className="px-3 py-2 text-sm text-gray-900">{isPresent ? formatWorkLocation(record.location || 'Office') : '-'}</td>
+                              <td className="px-3 py-2 text-sm text-gray-900">{record ? formatTime(record.checkIn) : '-'}</td>
+                              <td className="px-3 py-2 text-sm text-gray-900">{record ? formatTime(record.checkOut) : '-'}</td>
+                              <td className="px-3 py-2 text-sm text-gray-900">{record?.workMinutes ? formatDuration(record.workMinutes) : '-'}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="card">
+                <div className="card-body p-0">
+                  <div className="flex flex-col gap-2 border-b border-gray-200 p-3 sm:flex-row sm:items-center sm:justify-between">
+                    <h3 className="text-sm font-bold text-gray-900">{peopleViewLabel} Date Range Grid</h3>
+                    <button
+                      onClick={handleDownloadCompanyAttendance}
+                      className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50"
+                      title={`Download ${peopleViewLabel.toLowerCase()} attendance`}
+                    >
+                      <ArrowDownTrayIcon className="mr-1.5 h-4 w-4" />
+                      Download
+                    </button>
+                  </div>
+                  <div className="max-h-[620px] overflow-auto">
+                    <table className="min-w-max divide-y divide-gray-200">
+                      <thead className="sticky top-0 z-10 bg-gray-50">
+                        <tr>
+                          <th className="sticky left-0 z-20 min-w-[220px] bg-gray-50 px-3 py-2 text-left text-xs font-semibold text-gray-700">
+                            Employee
+                          </th>
+                          {companyGridDays.map((date) => (
+                            <th key={date} className="min-w-[92px] px-3 py-2 text-center text-xs font-semibold text-gray-700">
+                              <span className="block">{new Date(`${date}T00:00:00`).toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                              <span className="block text-gray-500">{new Date(`${date}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 bg-white">
+                        {companyGridEmployees.map((employee) => (
+                          <tr key={employee.id}>
+                            <td className="sticky left-0 z-10 min-w-[220px] bg-white px-3 py-2 shadow-[1px_0_0_#e5e7eb]">
+                              <p className="text-sm font-semibold text-gray-900">{employee.name}</p>
+                              <p className="text-xs text-gray-500">{employee.code || '-'} · {employee.department || 'No department'}</p>
+                            </td>
+                            {companyGridDays.map((date) => {
+                              const record = attendanceByEmployeeAndDate.get(`${employee.id}:${date}`);
+                              const isPresent = record && ['present', 'half_day'].includes(getNormalizedStatus(record.status));
+                              return (
+                                <td key={date} className="px-2 py-2 text-center">
+                                  <div className={`mx-auto min-h-[52px] rounded-lg border px-2 py-1 ${
+                                    isPresent ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-100 bg-red-50 text-red-700'
+                                  }`}>
+                                    <span className="block text-sm font-bold">{isPresent ? 'P' : 'A'}</span>
+                                    {isPresent && (
+                                      <span className="mt-0.5 block text-[11px] font-semibold">{formatWorkLocation(record.location || 'Office')}</span>
+                                    )}
+                                  </div>
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {companyGridDays.length === 0 && (
+                      <div className="p-8 text-center text-sm text-gray-500">Select a valid date range.</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* LEGACY TEAM ATTENDANCE VIEW (disabled) */}
+        {false && activeView === 'team' && (
+          <div className="space-y-4">
             {/* Team Stats - Clickable - Compact */}
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
               <div
                 onClick={() => setStatusFilter('all')}
                 className={`bg-white rounded-xl shadow-sm border-2 p-3 cursor-pointer transition-all hover:shadow-md ${
@@ -1031,7 +1383,7 @@ export default function ModernAttendance() {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <p className="text-xs font-medium text-gray-600 mb-1">Team Size</p>
+                    <p className="text-xs font-medium text-gray-600 mb-1">{peopleViewLabel} Size</p>
                     <p className="text-2xl font-bold text-primary-600">{teamStats.total}</p>
                     {statusFilter === 'all' && (
                       <p className="text-xs text-primary-600 mt-1">● View all</p>
@@ -1124,13 +1476,54 @@ export default function ModernAttendance() {
               </div>
             </div>
 
-            {/* Team Attendance Table - Compact */}
+            {/* Team/Company Attendance Table - Compact */}
             <div className="card">
               <div className="card-body p-0">
                 <div className="p-3 border-b border-gray-200">
-                  <h3 className="text-sm font-bold text-gray-900">Team Attendance - {new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</h3>
+                  <h3 className="text-sm font-bold text-gray-900">{peopleViewLabel} Attendance - {new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</h3>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="md:hidden divide-y divide-gray-100">
+                  {filteredPeopleAttendance.map((record) => {
+                      const checkInTime = record.checkIn ? new Date(record.checkIn).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '-';
+                      const checkOutTime = record.checkOut ? new Date(record.checkOut).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '-';
+
+                      return (
+                        <div key={record.attendanceId} className="p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="text-sm font-semibold text-gray-900">
+                                {record.employee?.firstName} {record.employee?.lastName}
+                              </p>
+                              <p className="mt-1 text-xs text-gray-500">{record.employee?.employeeCode || '-'} · {record.employee?.department?.name || 'No department'}</p>
+                            </div>
+                            <span className={`badge ${getStatusBadge(record.status)} text-xs`}>
+                              {getStatusLabel(record.status)}
+                            </span>
+                          </div>
+                          <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+                            <div className="rounded-lg bg-gray-50 p-2">
+                              <p className="text-gray-500">In</p>
+                              <p className="font-semibold text-gray-900">{checkInTime}</p>
+                            </div>
+                            <div className="rounded-lg bg-gray-50 p-2">
+                              <p className="text-gray-500">Out</p>
+                              <p className="font-semibold text-gray-900">{checkOutTime}</p>
+                            </div>
+                            <div className="rounded-lg bg-gray-50 p-2">
+                              <p className="text-gray-500">Hours</p>
+                              <p className="font-semibold text-gray-900">
+                                {record.workMinutes && record.workMinutes > 0 ? formatDuration(record.workMinutes) : '-'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  {filteredPeopleAttendance.length === 0 && (
+                    <div className="p-8 text-center text-sm text-gray-500">No attendance records match this filter.</div>
+                  )}
+                </div>
+                <div className="hidden overflow-x-auto md:block">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
@@ -1143,13 +1536,14 @@ export default function ModernAttendance() {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {teamAttendance
-                        .filter(record => {
-                          if (statusFilter === 'all') return true;
-                          if (statusFilter === 'late') return record.isLate;
-                          return record.status === statusFilter;
-                        })
-                        .map((record) => {
+                      {filteredPeopleAttendance.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="px-3 py-8 text-center text-sm text-gray-500">
+                            No attendance records match this filter.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredPeopleAttendance.map((record) => {
                           const checkInTime = record.checkIn ? new Date(record.checkIn).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '-';
                           const checkOutTime = record.checkOut ? new Date(record.checkOut).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '-';
 
@@ -1174,7 +1568,8 @@ export default function ModernAttendance() {
                               </td>
                             </tr>
                           );
-                        })}
+                        })
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -1184,7 +1579,7 @@ export default function ModernAttendance() {
         )}
 
         {/* COMPANY ATTENDANCE VIEW (HR Admin) */}
-        {activeView === 'company' && (
+        {false && (
           <div className="space-y-4">
             {/* Company Stats - Clickable - Compact */}
             <div className="grid grid-cols-5 gap-3">
@@ -1466,78 +1861,30 @@ export default function ModernAttendance() {
           </div>
         )}
 
-        {/* PENDING REQUESTS VIEW (Manager/HR) */}
-        {activeView === 'requests' && (
+        {/* TEAM APPROVALS VIEW (Manager/HR) */}
+        {activeView === 'requests' && canApproveAttendance && (
           <div className="space-y-4">
-            {/* Leave Requests */}
-            <div className="card">
-              <div className="card-body p-0">
-                <div className="p-4 border-b border-gray-200">
-                  <h3 className="text-sm font-bold text-gray-900 flex items-center">
-                    <span className="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center mr-2">
-                      <CalendarIcon className="h-4 w-4" />
-                    </span>
-                    Pending Leave Requests
-                  </h3>
-                </div>
-                <div className="p-4 space-y-3">
-                  {leaveRequests.filter(r => r.status === 'pending').length === 0 ? (
-                    <p className="text-sm text-gray-500 text-center py-8">No pending leave requests</p>
-                  ) : (
-                    leaveRequests.filter(r => r.status === 'pending').map((request) => (
-                      <div key={request.leaveId} className="card border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50">
-                        <div className="card-body p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-2 mb-2">
-                                <p className="font-bold text-gray-900">
-                                  {request.employee?.firstName} {request.employee?.lastName}
-                                </p>
-                                <span className="badge badge-gray text-xs">{request.employee?.email}</span>
-                              </div>
-                              <div className="grid grid-cols-2 gap-2 text-sm mb-3">
-                                <div>
-                                  <p className="text-xs text-gray-600 font-semibold">Leave Type</p>
-                                  <p className="text-gray-900 capitalize">{request.leaveType}</p>
-                                </div>
-                                <div>
-                                  <p className="text-xs text-gray-600 font-semibold">Duration</p>
-                                  <p className="text-gray-900">
-                                    {new Date(request.startDate).toLocaleDateString()} - {new Date(request.endDate).toLocaleDateString()} ({request.numberOfDays} days)
-                                  </p>
-                                </div>
-                                <div className="col-span-2">
-                                  <p className="text-xs text-gray-600 font-semibold">Reason</p>
-                                  <p className="text-gray-900">{request.reason}</p>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-2 ml-4">
-                              <button
-                                onClick={() => handleApproveLeave(request.leaveId)}
-                                className="btn btn-sm btn-success"
-                              >
-                                <CheckIcon className="h-4 w-4 mr-1" />
-                                Approve
-                              </button>
-                              <button
-                                onClick={() => handleRejectLeave(request.leaveId)}
-                                className="btn btn-sm btn-danger"
-                              >
-                                <XMarkIcon className="h-4 w-4 mr-1" />
-                                Reject
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
+            <div className="card border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50">
+              <div className="card-body p-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h2 className="text-base font-bold text-gray-900">Team Approvals</h2>
+                    <p className="mt-1 text-sm text-gray-600">
+                      Review attendance regularisation requests raised by team members for missing punch, late arrival, or early departure corrections.
+                    </p>
+                  </div>
+                  <button
+                    onClick={fetchData}
+                    disabled={loading}
+                    className="inline-flex items-center justify-center rounded-lg border border-orange-200 bg-white px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-50 disabled:opacity-50"
+                  >
+                    <ClockIcon className="mr-1.5 h-4 w-4" />
+                    Refresh
+                  </button>
                 </div>
               </div>
             </div>
 
-            {/* Regularization Requests */}
             <div className="card">
               <div className="card-body p-0">
                 <div className="p-4 border-b border-gray-200">
@@ -1545,12 +1892,12 @@ export default function ModernAttendance() {
                     <span className="w-6 h-6 rounded-full bg-orange-600 text-white flex items-center justify-center mr-2">
                       <ExclamationCircleIcon className="h-4 w-4" />
                     </span>
-                    Pending Regularization Requests
+                    Pending Attendance Regularisation
                   </h3>
                 </div>
                 <div className="p-4 space-y-3">
                   {regularizationRequests.filter(r => r.status === TimeEntryEditStatus.PENDING).length === 0 ? (
-                    <p className="text-sm text-gray-500 text-center py-8">No pending regularization requests</p>
+                    <p className="text-sm text-gray-500 text-center py-8">No pending attendance regularisation requests</p>
                   ) : (
                     regularizationRequests.filter(r => r.status === TimeEntryEditStatus.PENDING).map((request) => {
                       const requestDate = typeof request.attendance?.date === 'string'
@@ -1570,22 +1917,29 @@ export default function ModernAttendance() {
                       return (
                         <div key={request.editId} className="card border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-yellow-50">
                           <div className="card-body p-4">
-                            <div className="flex items-start justify-between">
+                            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                               <div className="flex-1">
-                                <div className="flex items-center space-x-2 mb-2">
+                                <div className="mb-3 flex flex-wrap items-center gap-2">
                                   <p className="font-bold text-gray-900">
                                     {request.employee?.firstName} {request.employee?.lastName}
                                   </p>
                                   <span className="badge badge-gray text-xs">{request.employee?.email}</span>
+                                  {request.employee?.department?.name && (
+                                    <span className="badge badge-blue text-xs">{request.employee.department.name}</span>
+                                  )}
                                 </div>
-                                <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+                                <div className="grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
                                   <div>
                                     <p className="text-xs text-gray-600 font-semibold">Date</p>
                                     <p className="text-gray-900">{requestDate ? new Date(requestDate).toLocaleDateString() : 'N/A'}</p>
                                   </div>
                                   <div>
-                                    <p className="text-xs text-gray-600 font-semibold">Status</p>
-                                    <p className="text-gray-900 capitalize">{request.status}</p>
+                                    <p className="text-xs text-gray-600 font-semibold">Original Check In</p>
+                                    <p className="text-gray-900">{request.originalCheckIn ? formatTime(request.originalCheckIn) : '-'}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-gray-600 font-semibold">Original Check Out</p>
+                                    <p className="text-gray-900">{request.originalCheckOut ? formatTime(request.originalCheckOut) : '-'}</p>
                                   </div>
                                   {requestedCheckInTime && (
                                     <div>
@@ -1599,13 +1953,13 @@ export default function ModernAttendance() {
                                       <p className="text-gray-900">{requestedCheckOutTime}</p>
                                     </div>
                                   )}
-                                  <div className="col-span-2">
+                                  <div className="sm:col-span-2 lg:col-span-4">
                                     <p className="text-xs text-gray-600 font-semibold">Reason</p>
                                     <p className="text-gray-900">{request.reason}</p>
                                   </div>
                                 </div>
                               </div>
-                              <div className="flex items-center space-x-2 ml-4">
+                              <div className="flex shrink-0 items-center gap-2 lg:ml-4">
                                 <button
                                   onClick={() => handleApproveRegularization(request.editId)}
                                   className="btn btn-sm btn-success"

@@ -1,0 +1,3188 @@
+{
+  "root": "/Users/chinar.deshpande06/Temp/CL-ACV/ACV-India/HRMS-MVP/ACV Implementation Data/01-source-files/Latest Data",
+  "generatedAt": "2026-05-27",
+  "fileCount": 230,
+  "extensionCounts": {
+    ".pdf": 55,
+    ".xlsx": 18,
+    ".zip": 3,
+    ".xls": 95,
+    ".docx": 59
+  },
+  "categoryCounts": {
+    "company_document": 9,
+    "migration_gap_workbook": 1,
+    "leave_balance_source": 1,
+    "monthly_attendance_source": 11,
+    "source_archive": 3,
+    "salary_transaction_source": 84,
+    "payslip_document_or_template": 95,
+    "exit_fnf_document": 2,
+    "unclassified": 1,
+    "employee_compensation_document": 19,
+    "biometric_attendance_source": 4
+  },
+  "duplicateHashGroups": [
+    [
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF - May 2023 (2).xls",
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF - May 2023.xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF - May 2023.xls"
+    ],
+    [
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -August 2023 (2).xls",
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -August 2023.xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -August 2023 (2).xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -August 2023.xls"
+    ],
+    [
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Dec 2023 (2).xls",
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Dec 2023.xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -Dec 2023 (2).xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -Dec 2023.xls"
+    ],
+    [
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -July 2023 (2).xls",
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -July 2023.xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -July 2023 (2).xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -July 2023.xls"
+    ],
+    [
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -June 2023 (2).xls",
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -June 2023.xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -June 2023 (2).xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -June 2023.xls"
+    ],
+    [
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Nov 2023 (2).xls",
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Nov 2023.xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -Nov 2023 (2).xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -Nov 2023.xls"
+    ],
+    [
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -October 2023 (2).xls",
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -October 2023.xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -October 2023 (2).xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -October 2023.xls"
+    ],
+    [
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -September 2023 (2).xls",
+      "Payroll_ACV/2023/SALARY FOR THE MONTH OF -September 2023.xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -September 2023.xls"
+    ],
+    [
+      "Payroll_ACV/2024/ABHIJITH ELLIKKAL_April 2024 salary slip (2).pdf",
+      "Payroll_ACV/2024/ABHIJITH ELLIKKAL_April 2024 salary slip.pdf"
+    ],
+    [
+      "Payroll_ACV/2024/ACV Solutions Salary Tax Calculation April 2024 (2).xlsx",
+      "Payroll_ACV/2024/ACV Solutions Salary Tax Calculation April 2024.xlsx"
+    ],
+    [
+      "Payroll_ACV/2024/FNF_Latika (2).xlsx",
+      "Payroll_ACV/2024/FNF_Latika.xlsx"
+    ],
+    [
+      "Payroll_ACV/2024/Increement sheet (2).xls",
+      "Payroll_ACV/2024/Increement sheet.xls"
+    ],
+    [
+      "Payroll_ACV/2024/Latika_April 2024 salary slip (2).docx",
+      "Payroll_ACV/2024/Latika_April 2024 salary slip.docx"
+    ],
+    [
+      "Payroll_ACV/2024/Latika_April 2024 salary slip (2).pdf",
+      "Payroll_ACV/2024/Latika_April 2024 salary slip.pdf"
+    ],
+    [
+      "Payroll_ACV/2025/December 2025/SALARY FOR THE MONTH OF -December 2025.xls",
+      "Payroll_ACV/2026/August 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "Payroll_ACV/2026/December 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "Payroll_ACV/2026/February 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "Payroll_ACV/2026/July 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "Payroll_ACV/2026/June 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "Payroll_ACV/2026/November 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "Payroll_ACV/2026/October 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "Payroll_ACV/2026/Septemeber 2026/SALARY FOR THE MONTH OF -January 2026.xls"
+    ],
+    [
+      "Payroll_ACV/Attendance/Feb 2024/ATTENDANCE SHEET CHINTAN (2).xlsx",
+      "Payroll_ACV/Attendance/Feb 2024/ATTENDANCE SHEET CHINTAN.xlsx"
+    ],
+    [
+      "Payroll_ACV/Attendance/Feb 2024/Attendance sheet month format (2).xlsx",
+      "Payroll_ACV/Attendance/Feb 2024/Attendance sheet month format.xlsx"
+    ],
+    [
+      "Payroll_ACV/Attendance/Feb 2024/Attendance+sheet+month+format (2).xlsx",
+      "Payroll_ACV/Attendance/Feb 2024/Attendance+sheet+month+format.xlsx"
+    ],
+    [
+      "Payroll_ACV/Chintan_November 23.docx",
+      "Payroll_ACV/Salary slip file/Chintan_November 23.docx"
+    ],
+    [
+      "Payroll_ACV/Latika_August (2).pdf",
+      "Payroll_ACV/Latika_August.pdf"
+    ],
+    [
+      "Payroll_ACV/Latika_August.docx",
+      "Payroll_ACV/Salary slip file/Latika_August.docx"
+    ],
+    [
+      "Payroll_ACV/Latika_July (2).pdf",
+      "Payroll_ACV/Latika_July.pdf"
+    ],
+    [
+      "Payroll_ACV/Latika_July.docx",
+      "Payroll_ACV/Salary slip file/Latika_July.docx"
+    ],
+    [
+      "Payroll_ACV/Latika_June (2).pdf",
+      "Payroll_ACV/Latika_June.pdf"
+    ],
+    [
+      "Payroll_ACV/Latika_June.docx",
+      "Payroll_ACV/Salary slip file/Latika_June.docx"
+    ],
+    [
+      "Payroll_ACV/Latika_Nov- March 24 (2).pdf",
+      "Payroll_ACV/Latika_Nov- March 24.pdf"
+    ],
+    [
+      "Payroll_ACV/Latika_Oct- March 24.docx",
+      "Payroll_ACV/Salary slip file/Latika_Oct- March 24.docx"
+    ],
+    [
+      "Payroll_ACV/Latika_September (2).pdf",
+      "Payroll_ACV/Latika_September.pdf"
+    ],
+    [
+      "Payroll_ACV/Latika_September.docx",
+      "Payroll_ACV/Salary slip file/Latika_September.docx"
+    ],
+    [
+      "Payroll_ACV/Latika_oct (2).pdf",
+      "Payroll_ACV/Latika_oct.pdf"
+    ],
+    [
+      "Payroll_ACV/SALARY FOR THE MONTH OF -January 2024 (2).xls",
+      "Payroll_ACV/SALARY FOR THE MONTH OF -January 2024.xls"
+    ],
+    [
+      "Payroll_ACV/Salary Slip ACV June.docx",
+      "Payroll_ACV/Salary slip file/Salary Slip ACV June.docx"
+    ],
+    [
+      "Payroll_ACV/Salary Slip June 2023.docx",
+      "Payroll_ACV/Salary slip file/Salary Slip June 2023.docx"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Chintan_December 23.pdf",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_December 23.pdf"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Chintan_January 24.pdf",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_January 24.pdf"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Chintan_November 23.pdf",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_November 23.pdf"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Chintan_September.docx",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_September.docx"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/FINAL SALARY FOR THE MONTH OF - July 2022.xls",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/FINAL SALARY FOR THE MONTH OF - July 2022.xls"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/FINAL SALARY FOR THE MONTH OF - June 2022.xls",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/FINAL SALARY FOR THE MONTH OF - June 2022.xls"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Romit salary slip.docx",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Romit salary slip.docx"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Romit salary slip.pdf",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Romit salary slip.pdf"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Salary Slip _Pooja.docx",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip _Pooja.docx"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Salary Slip-Employee.docx",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip-Employee.docx"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Salary Slip-July 22.docx",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip-July 22.docx"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Salary Slip-June 22.docx",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip-June 22.docx"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Salary Slip_june 2022.docx",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip_june 2022.docx"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Salary Slips_Aug 22.docx",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slips_Aug 22.docx"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Salary Slips_Tanvi.docx",
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slips_Tanvi.docx"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Sayali_Salary Slip.pdf",
+      "Payroll_ACV/Salary slip file/Salary slip/Sayali_Salary Slip.pdf"
+    ],
+    [
+      "Payroll_ACV/Salary slip file/Sayali_Salary Slip.docx",
+      "Payroll_ACV/Sayali_Salary Slip.docx"
+    ],
+    [
+      "Payroll_ACV/Sayali_Salary Slip (2).pdf",
+      "Payroll_ACV/Sayali_Salary Slip.pdf"
+    ]
+  ],
+  "files": [
+    {
+      "relativePath": "ACV PTEC Certificate.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 616255,
+      "sha256": "0210ceda018cac268d24eb452e64a8b547a839983ba0af75c5d6fb293601a7dd",
+      "category": "company_document",
+      "subjectHints": [],
+      "dateHint": null,
+      "pdfPages": 2
+    },
+    {
+      "relativePath": "ACV-AuroraHR-Missing-Data-and-Documents-Workbook-2026-05-26.xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 33388,
+      "sha256": "586f9fc3bf25b9f005d5de6440b97663c6d29552ed69639314cc00d405287790",
+      "category": "migration_gap_workbook",
+      "subjectHints": [],
+      "dateHint": "2026"
+    },
+    {
+      "relativePath": "Acknowlegement.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 406978,
+      "sha256": "b7db576069ee6cc798d3e29e5e02a55ad7198d63d682355447bd81e0d93055a8",
+      "category": "company_document",
+      "subjectHints": [],
+      "dateHint": null,
+      "pdfPages": 2
+    },
+    {
+      "relativePath": "CERTIFICATE OF INCORPORATION.PDF",
+      "extension": ".pdf",
+      "sizeBytes": 536520,
+      "sha256": "78e2276991799e38d9a3b0ad9af74d4f5d0880b506566e5aff899792cad02ed9",
+      "category": "company_document",
+      "subjectHints": [],
+      "dateHint": null,
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Form_INC-20A_ACV Solutions.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 241213,
+      "sha256": "504f29d72ad67121274c0dc24bea3ac0ceb21284848aa221f45cec0a770eb6a7",
+      "category": "company_document",
+      "subjectHints": [],
+      "dateHint": null,
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "GST Certificate-ACV Solutions.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 124954,
+      "sha256": "27aa10d2ecff75d33570f35c0c59b0f61484f2074cde32716a61dfa4a9bafa55",
+      "category": "company_document",
+      "subjectHints": [],
+      "dateHint": null,
+      "pdfPages": 3
+    },
+    {
+      "relativePath": "Gumasta License.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 329008,
+      "sha256": "7c81a38eefe33b2c0bc65aede2a27744a47d35e867bffb36c997809c8178b498",
+      "category": "company_document",
+      "subjectHints": [],
+      "dateHint": null,
+      "pdfPages": 3
+    },
+    {
+      "relativePath": "Leave_Management_2026.xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 21246,
+      "sha256": "44ab6e25a02204f3526740cc45f73e7b3a0ce670c43eb816f79dc43f19d846f3",
+      "category": "leave_balance_source",
+      "subjectHints": [],
+      "dateHint": "2026"
+    },
+    {
+      "relativePath": "Monthly attendance/Aniket 0008 Attendance sheet month ACV 2024.xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 48933,
+      "sha256": "363747d82bb5caa6a55b8408e737589ff0a3d81183b0b9f7e1be47f3253d48ad",
+      "category": "monthly_attendance_source",
+      "subjectHints": [
+        "aniket"
+      ],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Monthly attendance/Attendance sheet May_2026.xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 21369,
+      "sha256": "f1b5d21d182f9a5c2ef0af8c304298b9a29765a426671b0d4490489f6bb9cd1e",
+      "category": "monthly_attendance_source",
+      "subjectHints": [],
+      "dateHint": "May_2026"
+    },
+    {
+      "relativePath": "Monthly attendance/Lopamudra_Monthly_Attendance_Sheet.xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 25220,
+      "sha256": "e015e9850677a03db14a50d6bc40a892f7642811a2984216f17a7674e4563ed5",
+      "category": "monthly_attendance_source",
+      "subjectHints": [
+        "lopa",
+        "lopamudra"
+      ],
+      "dateHint": null
+    },
+    {
+      "relativePath": "Monthly attendance/Monthly_Attendance_Sheet.xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 15218,
+      "sha256": "b6ff0b43f6e1c3b4a8a3a04c7431cd501e24b35a07a65ec6cc28fea65e2faab0",
+      "category": "monthly_attendance_source",
+      "subjectHints": [],
+      "dateHint": null
+    },
+    {
+      "relativePath": "Monthly attendance/Surekha_attendance sheet month format_ACV 2024-2026.xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 58762,
+      "sha256": "2bf7feaf2adfbaf2b2006ce43a3d1b93ef44d97daacfa70a6351c3112acbfc4a",
+      "category": "monthly_attendance_source",
+      "subjectHints": [
+        "surekha"
+      ],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Monthly attendance.zip",
+      "extension": ".zip",
+      "sizeBytes": 147662,
+      "sha256": "5eefc29f4815ed6036de1d842b5a44762fb740c7bb1111ed5f37505b16df3ed2",
+      "category": "source_archive",
+      "subjectHints": [],
+      "dateHint": null,
+      "archiveFileCount": 10,
+      "archiveExtensions": {
+        ".xlsx": 10
+      }
+    },
+    {
+      "relativePath": "PAN Card-ACV.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 682535,
+      "sha256": "1ecdd570626eedb877c28efdeb26bcb451b6ef9d7117ffc76e37320fc731658b",
+      "category": "company_document",
+      "subjectHints": [],
+      "dateHint": null,
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "PTRC Certifcate.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 613437,
+      "sha256": "deb21be91ac89ca2a0f96e79b92e3ddb11910e572c72fc48ef73f054d82ee14b",
+      "category": "company_document",
+      "subjectHints": [],
+      "dateHint": null,
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF - May 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 347136,
+      "sha256": "8fe0d124fddcc141862f87e6931649eb216a3e39d5f9f81268573538b157d1a7",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF - May 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF - May 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF - May 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF - May 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 347136,
+      "sha256": "8fe0d124fddcc141862f87e6931649eb216a3e39d5f9f81268573538b157d1a7",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF - May 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF - May 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF - May 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -August 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "4b891bc9ce84d8f7e2250babf2a0f6d3222fb2cc548295c427f4205b6a69ed29",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -August 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -August 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -August 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -August 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -August 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "4b891bc9ce84d8f7e2250babf2a0f6d3222fb2cc548295c427f4205b6a69ed29",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -August 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -August 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -August 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -August 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Dec 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 353280,
+      "sha256": "dd2b9b7838f3d799726b5d37525111d736e58704e1b3505623e63f63dff99f4a",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Dec 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Dec 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Dec 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Dec 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Dec 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 353280,
+      "sha256": "dd2b9b7838f3d799726b5d37525111d736e58704e1b3505623e63f63dff99f4a",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Dec 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Dec 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Dec 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Dec 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -July 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 349184,
+      "sha256": "591e4162e04ccee6bf00658d568386af74ca2585cdb2222c3d08c56d80c4c26d",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -July 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -July 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -July 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -July 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -July 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 349184,
+      "sha256": "591e4162e04ccee6bf00658d568386af74ca2585cdb2222c3d08c56d80c4c26d",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -July 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -July 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -July 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -July 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -June 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 348160,
+      "sha256": "3968e187bd5457b870a37422dd5534c059aff95d7a80b1f3285bc95ad9216d43",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -June 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -June 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -June 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -June 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -June 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 348160,
+      "sha256": "3968e187bd5457b870a37422dd5534c059aff95d7a80b1f3285bc95ad9216d43",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -June 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -June 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -June 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -June 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Nov 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 353280,
+      "sha256": "de4f3783794b14021a7b9a01388aab96f700006ffd5a16c7a1a5533c12480d55",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Nov 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Nov 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Nov 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Nov 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Nov 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 353280,
+      "sha256": "de4f3783794b14021a7b9a01388aab96f700006ffd5a16c7a1a5533c12480d55",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Nov 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Nov 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Nov 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Nov 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -October 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "cfa3362f89d5acbe75cd74bb480fde6eb4ae9a783671cbdc85a26fc265a12aa9",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -October 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -October 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -October 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -October 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -October 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "cfa3362f89d5acbe75cd74bb480fde6eb4ae9a783671cbdc85a26fc265a12aa9",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -October 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -October 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -October 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -October 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -September 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "5f1a0cb3347a4055d0824db3a74619c07819e5278b3cce0ed4762a0b7d2f5f46",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -September 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -September 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -September 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2023/SALARY FOR THE MONTH OF -September 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "5f1a0cb3347a4055d0824db3a74619c07819e5278b3cce0ed4762a0b7d2f5f46",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -September 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -September 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -September 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/ABHIJITH ELLIKKAL_April 2024 salary slip (2).docx",
+      "extension": ".docx",
+      "sizeBytes": 34816,
+      "sha256": "ed8be4435f04edc00fa13c078292891cecb6bdf7418336d5291fedf696e11f7e",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "abhijith"
+      ],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/ABHIJITH ELLIKKAL_April 2024 salary slip (2).pdf",
+      "extension": ".pdf",
+      "sizeBytes": 136719,
+      "sha256": "1557fed76079449f1fa650b27424f7cc2200efcea27235182791c4cfdcf33284",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "abhijith"
+      ],
+      "dateHint": "2024",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/2024/ABHIJITH ELLIKKAL_April 2024 salary slip (2).pdf",
+        "Payroll_ACV/2024/ABHIJITH ELLIKKAL_April 2024 salary slip.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/ABHIJITH ELLIKKAL_April 2024 salary slip.docx",
+      "extension": ".docx",
+      "sizeBytes": 33298,
+      "sha256": "c82484b7713dee0354b150b9b1a3d472a28c92731ed062cd9e575d24565e1d1b",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "abhijith"
+      ],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/ABHIJITH ELLIKKAL_April 2024 salary slip.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 136719,
+      "sha256": "1557fed76079449f1fa650b27424f7cc2200efcea27235182791c4cfdcf33284",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "abhijith"
+      ],
+      "dateHint": "2024",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/2024/ABHIJITH ELLIKKAL_April 2024 salary slip (2).pdf",
+        "Payroll_ACV/2024/ABHIJITH ELLIKKAL_April 2024 salary slip.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/ACV Solutions Salary Tax Calculation April 2024 (2).xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 15511,
+      "sha256": "6f5cd1de44cf3a63a5e1d6ad248f0bd8762b7a37193266b3eb097cb22fd96868",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024",
+      "duplicateGroup": [
+        "Payroll_ACV/2024/ACV Solutions Salary Tax Calculation April 2024 (2).xlsx",
+        "Payroll_ACV/2024/ACV Solutions Salary Tax Calculation April 2024.xlsx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/ACV Solutions Salary Tax Calculation April 2024.xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 15511,
+      "sha256": "6f5cd1de44cf3a63a5e1d6ad248f0bd8762b7a37193266b3eb097cb22fd96868",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024",
+      "duplicateGroup": [
+        "Payroll_ACV/2024/ACV Solutions Salary Tax Calculation April 2024 (2).xlsx",
+        "Payroll_ACV/2024/ACV Solutions Salary Tax Calculation April 2024.xlsx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/FNF_Latika (2).xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 16454,
+      "sha256": "ae5f235248de73b91acea3f38838e4b08c5fab3f7e6572c6c5312b5c3e404d11",
+      "category": "exit_fnf_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "2024",
+      "duplicateGroup": [
+        "Payroll_ACV/2024/FNF_Latika (2).xlsx",
+        "Payroll_ACV/2024/FNF_Latika.xlsx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/FNF_Latika.xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 16454,
+      "sha256": "ae5f235248de73b91acea3f38838e4b08c5fab3f7e6572c6c5312b5c3e404d11",
+      "category": "exit_fnf_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "2024",
+      "duplicateGroup": [
+        "Payroll_ACV/2024/FNF_Latika (2).xlsx",
+        "Payroll_ACV/2024/FNF_Latika.xlsx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/Increement sheet (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 353792,
+      "sha256": "304f7cd3681c5aa2d03c26be71419536cbd1e82c09d832d536664662ffb2d8d6",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024",
+      "duplicateGroup": [
+        "Payroll_ACV/2024/Increement sheet (2).xls",
+        "Payroll_ACV/2024/Increement sheet.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/Increement sheet.xls",
+      "extension": ".xls",
+      "sizeBytes": 353792,
+      "sha256": "304f7cd3681c5aa2d03c26be71419536cbd1e82c09d832d536664662ffb2d8d6",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024",
+      "duplicateGroup": [
+        "Payroll_ACV/2024/Increement sheet (2).xls",
+        "Payroll_ACV/2024/Increement sheet.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/Latika_April 2024 salary slip (2).docx",
+      "extension": ".docx",
+      "sizeBytes": 32608,
+      "sha256": "7e357afbaff21b8b90e1f5cfcf809962c191d615223c94669de27fb0f14fa23b",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "2024",
+      "duplicateGroup": [
+        "Payroll_ACV/2024/Latika_April 2024 salary slip (2).docx",
+        "Payroll_ACV/2024/Latika_April 2024 salary slip.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/Latika_April 2024 salary slip (2).pdf",
+      "extension": ".pdf",
+      "sizeBytes": 130839,
+      "sha256": "91bbe37b8eaeac03fc3aed5d15aa6ee7314b17699d232695ca741e2fbc72d3e7",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "2024",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/2024/Latika_April 2024 salary slip (2).pdf",
+        "Payroll_ACV/2024/Latika_April 2024 salary slip.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/Latika_April 2024 salary slip.docx",
+      "extension": ".docx",
+      "sizeBytes": 32608,
+      "sha256": "7e357afbaff21b8b90e1f5cfcf809962c191d615223c94669de27fb0f14fa23b",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "2024",
+      "duplicateGroup": [
+        "Payroll_ACV/2024/Latika_April 2024 salary slip (2).docx",
+        "Payroll_ACV/2024/Latika_April 2024 salary slip.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/Latika_April 2024 salary slip.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 130839,
+      "sha256": "91bbe37b8eaeac03fc3aed5d15aa6ee7314b17699d232695ca741e2fbc72d3e7",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "2024",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/2024/Latika_April 2024 salary slip (2).pdf",
+        "Payroll_ACV/2024/Latika_April 2024 salary slip.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF - Increement April 2024 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 352768,
+      "sha256": "afc170fc20d38a1059d9871dcd748dc8d5409528919f5eb1698413129317cf77",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF - Increement April 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 352768,
+      "sha256": "849792649a08dfc0c2a81b0e04daa5567d84ff572fabfaa4427621b999da2b95",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -April 2024 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 351744,
+      "sha256": "213bba4aef943c24410372b590418caaf35d8c585c22f54d8c609004eb37ad6f",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -April 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 351744,
+      "sha256": "a26cce82135236991cd0e494174186d89fbe85978392a4a9309b1a2900101ef4",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -August 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 352768,
+      "sha256": "080dca95cd05e26fa7f6df264ceea86a0f7db47c8e72f27e4db1997372914d27",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -December 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 348160,
+      "sha256": "f61847da90160985c0e400f1d95bc9da1456885b8c6563bd2251d30a0373e480",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -February 2024 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 351744,
+      "sha256": "04b432186e503d9150a3dc48e0c90e9daa7ad4369cc26067641199584aaa8825",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -February 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 351744,
+      "sha256": "b0ad8fad5080f8264703e7ddc21a2bce7b51a478b7d00ee8ca4739bbcf65df6e",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -January 2024 - Copy (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "9795688cf555359eef1423646c6fe984651d733a4776f6b582c28e9fecd62fc6",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -January 2024 - Copy.xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "fc6ab8049c67da1e6f287ac71614cd57886737764ca2b4a2dd8cfae2dee0a440",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -July 2024 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 350208,
+      "sha256": "ae1696dd91fe9f5c2fe0d379b7bbe3c1a519e9c57255484f05b6dce15cc8a523",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -July 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 350208,
+      "sha256": "ccdf0fe4563c2593484bd30aaabdf4397887e83bed2c70122f33e4d9feac6fd6",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -June 2024 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 350208,
+      "sha256": "13e35769702f8ab85b19e9f6c1d7b033f98fd330506a0063c6e7f4b84fbf54f8",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -June 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 350208,
+      "sha256": "5b30b6d2c66fbefafe1d38fe0732b88e374610fddf224dad7de95cd9f326b551",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -March 2024 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 351232,
+      "sha256": "86b3b328fb8e8c953f941a47ceb319a6bfe8fa5e7fb71c94fffc494a9721cbc4",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -March 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 351232,
+      "sha256": "04a8e729692c5acd88521987a8156e0b78d9630a4a2d105cc7a32092187940c4",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -May 2024 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 351744,
+      "sha256": "7dd82b081c2a48138b353c46950a9e38af2ac43da1223a537554517254825a71",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -May 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 351744,
+      "sha256": "721bac903121931e8ab2591f21c7af273df97e37b25cd0182bd60fcb9840a892",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -November 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 349696,
+      "sha256": "dff8efe353189cfb4db76e7884cd2cd16981ffd62cd7eeed748006322fb2cf68",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -October 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 345600,
+      "sha256": "9b3f66c6b08713e8d3335b807c3779ae3c6db5a648dbae6c5967a75ff2489414",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2024/SALARY FOR THE MONTH OF -September 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 347648,
+      "sha256": "8a7ea05c87f334320e87d75c0b2f12b99e2b3442e7b2a81de55754df2234f232",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/April 2025/SALARY FOR THE MONTH OF -April 2025.xls",
+      "extension": ".xls",
+      "sizeBytes": 348160,
+      "sha256": "60d0ebc2c66e7665b03f4e341c968d1e4c18846d61f896c9d912c01ac3477cac",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/August 2025/SALARY FOR THE MONTH OF -August 2025.xls",
+      "extension": ".xls",
+      "sizeBytes": 347648,
+      "sha256": "1778998b2b2ff8362191eb364efef8668c20450a173a1360cdcedb3185f42eb0",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/August 2025/Timesheet-August-2025.xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 10068,
+      "sha256": "ca72cdadca3c602d903207e13bc5eb4acfc5e6f57473d9eef20d0d83ad5db7df",
+      "category": "unclassified",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/December 2025/SALARY FOR THE MONTH OF -December 2025.xls",
+      "extension": ".xls",
+      "sizeBytes": 346624,
+      "sha256": "b07dedc267584c100d00bb3f36871c6edc1d84326a0b8fe6a5ba1fa90b14f91b",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2025",
+      "duplicateGroup": [
+        "Payroll_ACV/2025/December 2025/SALARY FOR THE MONTH OF -December 2025.xls",
+        "Payroll_ACV/2026/August 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/December 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/February 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/July 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/June 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/November 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/October 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/Septemeber 2026/SALARY FOR THE MONTH OF -January 2026.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/Feb 2025/SALARY FOR THE MONTH OF -February 2025.xls",
+      "extension": ".xls",
+      "sizeBytes": 345088,
+      "sha256": "c73a86e40e358886efc5fdcd5ce87f1ebf82d0a23f64845cd4cd565a76960ef4",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/January 2025/SALARY FOR THE MONTH OF -January 2025.xls",
+      "extension": ".xls",
+      "sizeBytes": 345088,
+      "sha256": "814eaa1b014f6d1913248c9f593e38fca24bb538ebb761187d8e648c43047fb6",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/July 2025/SALARY FOR THE MONTH OF -July 2025.xls",
+      "extension": ".xls",
+      "sizeBytes": 346624,
+      "sha256": "07826ff25466b1bd02f6e26f4aa3046f21f94273060babe88fbbf5705b695065",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/June2025/SALARY FOR THE MONTH OF -June 2025 - payslip.xls",
+      "extension": ".xls",
+      "sizeBytes": 346624,
+      "sha256": "7d358f228522acd9f77230d86df8e00986617063f50a9a4779475852058fcae2",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/June2025/SALARY FOR THE MONTH OF -June 2025.docx",
+      "extension": ".docx",
+      "sizeBytes": 414884,
+      "sha256": "b520cb4862e4a833cbc812de38362825dd0eb7ff4776e6ba12bfeb2b95e83a5a",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/June2025/SALARY FOR THE MONTH OF -June 2025.xls",
+      "extension": ".xls",
+      "sizeBytes": 346624,
+      "sha256": "9b599a4b87683eac5ef32f2bee8fa808605ee92fb2bcaeed70e6e273f6246ea1",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/June2025/Salary Slip.docx",
+      "extension": ".docx",
+      "sizeBytes": 2390853,
+      "sha256": "0e9325af1a15330a55f98f79cf66e8a8949e36b1a66630f8894a1d7fbf36a69c",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/June2025/~$LARY FOR THE MONTH OF -June 2025.docx",
+      "extension": ".docx",
+      "sizeBytes": 162,
+      "sha256": "00c930fb869409845873f8515b17d6ec909c1d700b1010f5878bdeaa15a35dc0",
+      "category": "employee_compensation_document",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/March 2025/SALARY FOR THE MONTH OF -March 2025.xls",
+      "extension": ".xls",
+      "sizeBytes": 346112,
+      "sha256": "4870272013fe1c2d57acf1da2c01ccea6ea660667ddca8308731ee308bdb837a",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/May 2025/SALARY FOR THE MONTH OF -May 2025.xls",
+      "extension": ".xls",
+      "sizeBytes": 346112,
+      "sha256": "3d592e8234759ca5444bfdefc4de01aabc41008934839e52370261cfe19fa382",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/May 2025/Salary Slip.docx",
+      "extension": ".docx",
+      "sizeBytes": 2337572,
+      "sha256": "06dbf1fcc37c72dc16757dc415f16ded95fb2c03a3df417b70b88ff8307bb5e3",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/May 2025/Salary Slip_Aniket Dalvi.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 220380,
+      "sha256": "eccd333c1ad01d0baf75a6e01c7d5fbdfde1d958a36dfa3425cb3f830566ae4a",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "aniket"
+      ],
+      "dateHint": "2025",
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/May 2025/Salary Slip_David Vishwakarma.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 220005,
+      "sha256": "0848d1040fbc88364bcfbaf3ef0d4059aaaabc73c642729b6f68210732bc0fd1",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "david"
+      ],
+      "dateHint": "2025",
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/May 2025/Salary Slip_May 2025 Revised.docx",
+      "extension": ".docx",
+      "sizeBytes": 413894,
+      "sha256": "0d5247f1d1a5e6ef59694593399aebb30e6d84ec010940e4022ed7b124e8a327",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/May 2025/Salary Slip_Sanket Saroj.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 215666,
+      "sha256": "48f9b77b254458cf59bdf7d03fce991bc0d9ce77f986b80452aa82358877aed2",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "sanket"
+      ],
+      "dateHint": "2025",
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/May 2025/Salary Slip_Soni Gupta.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 216877,
+      "sha256": "59f30c9c17409685b741c47848801396bc0152880524efef9161f3dd6beaf4b3",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "soni"
+      ],
+      "dateHint": "2025",
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/May 2025/Salary Slip_Surekha.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 219563,
+      "sha256": "84fcc4ecd575d0806fc5545ef864e7f8f2c54222fe18897665d233ad42a1728e",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "surekha"
+      ],
+      "dateHint": "2025",
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/November 2025/SALARY FOR THE MONTH OF -November 2025.xls",
+      "extension": ".xls",
+      "sizeBytes": 345088,
+      "sha256": "0acccd38ef8e15b22519b43769dde230b16315e3c1bfbf9f4492fa01b0b8241e",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/October 2025/SALARY FOR THE MONTH OF -October 2025.xls",
+      "extension": ".xls",
+      "sizeBytes": 345088,
+      "sha256": "97d0df3fe076cc18e84bd1026c1e4101ef16944bd2b2fc7303c2f1a77f3b4793",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2025/September 2025/SALARY FOR THE MONTH OF -September 2025.xls",
+      "extension": ".xls",
+      "sizeBytes": 345088,
+      "sha256": "8b06bf6d3f45685a1e2f770bab61fc1b8a3c51a67a912a2ad2050d9355129c54",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/2026/April 2026/SALARY FOR THE MONTH OF -April 2026.xls",
+      "extension": ".xls",
+      "sizeBytes": 355840,
+      "sha256": "ad74f73fe9cd2a84ab2d16aa63d3a339ccc31d3478c299c9987c020e7a180a29",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2026"
+    },
+    {
+      "relativePath": "Payroll_ACV/2026/August 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "extension": ".xls",
+      "sizeBytes": 346624,
+      "sha256": "b07dedc267584c100d00bb3f36871c6edc1d84326a0b8fe6a5ba1fa90b14f91b",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2026",
+      "duplicateGroup": [
+        "Payroll_ACV/2025/December 2025/SALARY FOR THE MONTH OF -December 2025.xls",
+        "Payroll_ACV/2026/August 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/December 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/February 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/July 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/June 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/November 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/October 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/Septemeber 2026/SALARY FOR THE MONTH OF -January 2026.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2026/December 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "extension": ".xls",
+      "sizeBytes": 346624,
+      "sha256": "b07dedc267584c100d00bb3f36871c6edc1d84326a0b8fe6a5ba1fa90b14f91b",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2026",
+      "duplicateGroup": [
+        "Payroll_ACV/2025/December 2025/SALARY FOR THE MONTH OF -December 2025.xls",
+        "Payroll_ACV/2026/August 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/December 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/February 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/July 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/June 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/November 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/October 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/Septemeber 2026/SALARY FOR THE MONTH OF -January 2026.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2026/February 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "extension": ".xls",
+      "sizeBytes": 346624,
+      "sha256": "b07dedc267584c100d00bb3f36871c6edc1d84326a0b8fe6a5ba1fa90b14f91b",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2026",
+      "duplicateGroup": [
+        "Payroll_ACV/2025/December 2025/SALARY FOR THE MONTH OF -December 2025.xls",
+        "Payroll_ACV/2026/August 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/December 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/February 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/July 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/June 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/November 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/October 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/Septemeber 2026/SALARY FOR THE MONTH OF -January 2026.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2026/January2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "extension": ".xls",
+      "sizeBytes": 343552,
+      "sha256": "35e2c1c902937a2057fd54dd1d369318e10173d5437f92eba9cb706511eb52f4",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2026"
+    },
+    {
+      "relativePath": "Payroll_ACV/2026/July 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "extension": ".xls",
+      "sizeBytes": 346624,
+      "sha256": "b07dedc267584c100d00bb3f36871c6edc1d84326a0b8fe6a5ba1fa90b14f91b",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2026",
+      "duplicateGroup": [
+        "Payroll_ACV/2025/December 2025/SALARY FOR THE MONTH OF -December 2025.xls",
+        "Payroll_ACV/2026/August 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/December 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/February 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/July 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/June 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/November 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/October 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/Septemeber 2026/SALARY FOR THE MONTH OF -January 2026.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2026/June 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "extension": ".xls",
+      "sizeBytes": 346624,
+      "sha256": "b07dedc267584c100d00bb3f36871c6edc1d84326a0b8fe6a5ba1fa90b14f91b",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2026",
+      "duplicateGroup": [
+        "Payroll_ACV/2025/December 2025/SALARY FOR THE MONTH OF -December 2025.xls",
+        "Payroll_ACV/2026/August 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/December 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/February 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/July 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/June 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/November 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/October 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/Septemeber 2026/SALARY FOR THE MONTH OF -January 2026.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2026/March 2026/SALARY FOR THE MONTH OF -March 2026.xls",
+      "extension": ".xls",
+      "sizeBytes": 342528,
+      "sha256": "a98ba9594fa02fad685fbfcc01999a192a40bb9683d9384ade62021f7ac1cf68",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2026"
+    },
+    {
+      "relativePath": "Payroll_ACV/2026/May 2026/SALARY FOR THE MONTH OF -May 2026.xls",
+      "extension": ".xls",
+      "sizeBytes": 354304,
+      "sha256": "cfdfb04299b6db4d5f3f5743d63bff4d843e8af7f4bb67a7e056a987e1f22515",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2026"
+    },
+    {
+      "relativePath": "Payroll_ACV/2026/November 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "extension": ".xls",
+      "sizeBytes": 346624,
+      "sha256": "b07dedc267584c100d00bb3f36871c6edc1d84326a0b8fe6a5ba1fa90b14f91b",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2026",
+      "duplicateGroup": [
+        "Payroll_ACV/2025/December 2025/SALARY FOR THE MONTH OF -December 2025.xls",
+        "Payroll_ACV/2026/August 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/December 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/February 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/July 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/June 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/November 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/October 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/Septemeber 2026/SALARY FOR THE MONTH OF -January 2026.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2026/October 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "extension": ".xls",
+      "sizeBytes": 346624,
+      "sha256": "b07dedc267584c100d00bb3f36871c6edc1d84326a0b8fe6a5ba1fa90b14f91b",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2026",
+      "duplicateGroup": [
+        "Payroll_ACV/2025/December 2025/SALARY FOR THE MONTH OF -December 2025.xls",
+        "Payroll_ACV/2026/August 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/December 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/February 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/July 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/June 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/November 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/October 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/Septemeber 2026/SALARY FOR THE MONTH OF -January 2026.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/2026/Septemeber 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+      "extension": ".xls",
+      "sizeBytes": 346624,
+      "sha256": "b07dedc267584c100d00bb3f36871c6edc1d84326a0b8fe6a5ba1fa90b14f91b",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "2026",
+      "duplicateGroup": [
+        "Payroll_ACV/2025/December 2025/SALARY FOR THE MONTH OF -December 2025.xls",
+        "Payroll_ACV/2026/August 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/December 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/February 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/July 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/June 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/November 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/October 2026/SALARY FOR THE MONTH OF -January 2026.xls",
+        "Payroll_ACV/2026/Septemeber 2026/SALARY FOR THE MONTH OF -January 2026.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Attendance/Feb 2024/ATTENDANCE SHEET CHINTAN (2).xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 20976,
+      "sha256": "e0c57e5f7c7500464dbb5d168b9c8614ea76e123103f8b6824580ebe2255ac81",
+      "category": "monthly_attendance_source",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "Feb 2024",
+      "duplicateGroup": [
+        "Payroll_ACV/Attendance/Feb 2024/ATTENDANCE SHEET CHINTAN (2).xlsx",
+        "Payroll_ACV/Attendance/Feb 2024/ATTENDANCE SHEET CHINTAN.xlsx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Attendance/Feb 2024/ATTENDANCE SHEET CHINTAN.xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 20976,
+      "sha256": "e0c57e5f7c7500464dbb5d168b9c8614ea76e123103f8b6824580ebe2255ac81",
+      "category": "monthly_attendance_source",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "Feb 2024",
+      "duplicateGroup": [
+        "Payroll_ACV/Attendance/Feb 2024/ATTENDANCE SHEET CHINTAN (2).xlsx",
+        "Payroll_ACV/Attendance/Feb 2024/ATTENDANCE SHEET CHINTAN.xlsx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Attendance/Feb 2024/Attendance sheet month format (2).xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 20739,
+      "sha256": "3c66eaec91aa492cfffad16768c98d306c1663f1e0924bbd9efd1887586c773a",
+      "category": "monthly_attendance_source",
+      "subjectHints": [],
+      "dateHint": "Feb 2024",
+      "duplicateGroup": [
+        "Payroll_ACV/Attendance/Feb 2024/Attendance sheet month format (2).xlsx",
+        "Payroll_ACV/Attendance/Feb 2024/Attendance sheet month format.xlsx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Attendance/Feb 2024/Attendance sheet month format.xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 20739,
+      "sha256": "3c66eaec91aa492cfffad16768c98d306c1663f1e0924bbd9efd1887586c773a",
+      "category": "monthly_attendance_source",
+      "subjectHints": [],
+      "dateHint": "Feb 2024",
+      "duplicateGroup": [
+        "Payroll_ACV/Attendance/Feb 2024/Attendance sheet month format (2).xlsx",
+        "Payroll_ACV/Attendance/Feb 2024/Attendance sheet month format.xlsx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Attendance/Feb 2024/Attendance+sheet+month+format (2).xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 20773,
+      "sha256": "62119b7f7a3bddebaa130c18dde9590bcc4b29deed22f447d93dae290149bcc9",
+      "category": "monthly_attendance_source",
+      "subjectHints": [],
+      "dateHint": "Feb 2024",
+      "duplicateGroup": [
+        "Payroll_ACV/Attendance/Feb 2024/Attendance+sheet+month+format (2).xlsx",
+        "Payroll_ACV/Attendance/Feb 2024/Attendance+sheet+month+format.xlsx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Attendance/Feb 2024/Attendance+sheet+month+format.xlsx",
+      "extension": ".xlsx",
+      "sizeBytes": 20773,
+      "sha256": "62119b7f7a3bddebaa130c18dde9590bcc4b29deed22f447d93dae290149bcc9",
+      "category": "monthly_attendance_source",
+      "subjectHints": [],
+      "dateHint": "Feb 2024",
+      "duplicateGroup": [
+        "Payroll_ACV/Attendance/Feb 2024/Attendance+sheet+month+format (2).xlsx",
+        "Payroll_ACV/Attendance/Feb 2024/Attendance+sheet+month+format.xlsx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Chintan_November 23.docx",
+      "extension": ".docx",
+      "sizeBytes": 32748,
+      "sha256": "ff8335de6fd7baf4587f96a72719c07427f00199322257207421d2e5b4a01cde",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "November ",
+      "duplicateGroup": [
+        "Payroll_ACV/Chintan_November 23.docx",
+        "Payroll_ACV/Salary slip file/Chintan_November 23.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_August (2).pdf",
+      "extension": ".pdf",
+      "sizeBytes": 137769,
+      "sha256": "688506054bad08b412e4d0940c1f885378014419b9cdca36ad262db2ec9476b2",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "August ",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_August (2).pdf",
+        "Payroll_ACV/Latika_August.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_August.docx",
+      "extension": ".docx",
+      "sizeBytes": 32301,
+      "sha256": "d65acadd5d3c47e1fdbaccedde2cdbc374e9edcf2ef2be097d59b5c866442d10",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "August",
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_August.docx",
+        "Payroll_ACV/Salary slip file/Latika_August.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_August.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 137769,
+      "sha256": "688506054bad08b412e4d0940c1f885378014419b9cdca36ad262db2ec9476b2",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "August",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_August (2).pdf",
+        "Payroll_ACV/Latika_August.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_July (2).pdf",
+      "extension": ".pdf",
+      "sizeBytes": 136962,
+      "sha256": "bd5128a9a6f2bf6d46c3c99d9e92056b44d2bf0d585ea58e665d35bc76b94cf4",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "July ",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_July (2).pdf",
+        "Payroll_ACV/Latika_July.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_July.docx",
+      "extension": ".docx",
+      "sizeBytes": 32353,
+      "sha256": "0cccaa1bf6ded63d181a268966aea2d2a8c3661847ec0b8f86ecbbe76f8c0024",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "July",
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_July.docx",
+        "Payroll_ACV/Salary slip file/Latika_July.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_July.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 136962,
+      "sha256": "bd5128a9a6f2bf6d46c3c99d9e92056b44d2bf0d585ea58e665d35bc76b94cf4",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "July",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_July (2).pdf",
+        "Payroll_ACV/Latika_July.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_June (2).pdf",
+      "extension": ".pdf",
+      "sizeBytes": 136931,
+      "sha256": "befb1b04e5c8272425120986e14efeebce4618933a2d390b7f65adf1bd68099a",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "June ",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_June (2).pdf",
+        "Payroll_ACV/Latika_June.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_June.docx",
+      "extension": ".docx",
+      "sizeBytes": 32013,
+      "sha256": "61759e128fd0139744ee4a720ac6e5670de15ef1a02f1ba592ccb1fa8dd87cbe",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "June",
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_June.docx",
+        "Payroll_ACV/Salary slip file/Latika_June.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_June.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 136931,
+      "sha256": "befb1b04e5c8272425120986e14efeebce4618933a2d390b7f65adf1bd68099a",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "June",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_June (2).pdf",
+        "Payroll_ACV/Latika_June.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_Nov- March 24 (2).pdf",
+      "extension": ".pdf",
+      "sizeBytes": 161776,
+      "sha256": "afe3268b088eaa20a6d18c0a95cd479549ef24042de715b8ee0d3fb1c7318c1e",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "Nov- ",
+      "pdfPages": 4,
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_Nov- March 24 (2).pdf",
+        "Payroll_ACV/Latika_Nov- March 24.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_Nov- March 24.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 161776,
+      "sha256": "afe3268b088eaa20a6d18c0a95cd479549ef24042de715b8ee0d3fb1c7318c1e",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "Nov- ",
+      "pdfPages": 4,
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_Nov- March 24 (2).pdf",
+        "Payroll_ACV/Latika_Nov- March 24.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_Oct- March 24.docx",
+      "extension": ".docx",
+      "sizeBytes": 35752,
+      "sha256": "859dd56abb7e47ae1bf53e4d04c92a63ce469333341f16ca07e5be9929f3e66d",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "Oct- ",
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_Oct- March 24.docx",
+        "Payroll_ACV/Salary slip file/Latika_Oct- March 24.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_September (2).pdf",
+      "extension": ".pdf",
+      "sizeBytes": 137263,
+      "sha256": "309770a0cb4084ba8dd39e5116863376c98e0e2069584be5cce061cf4a1b7e4d",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "Sept",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_September (2).pdf",
+        "Payroll_ACV/Latika_September.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_September.docx",
+      "extension": ".docx",
+      "sizeBytes": 36509,
+      "sha256": "2dcb4713fe178ddc9eb41e21aaf3a6b1d5c6b283704ed49f41aed6ffdd36c2f1",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "Sept",
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_September.docx",
+        "Payroll_ACV/Salary slip file/Latika_September.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_September.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 137263,
+      "sha256": "309770a0cb4084ba8dd39e5116863376c98e0e2069584be5cce061cf4a1b7e4d",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "Sept",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_September (2).pdf",
+        "Payroll_ACV/Latika_September.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_oct (2).pdf",
+      "extension": ".pdf",
+      "sizeBytes": 137263,
+      "sha256": "006b01b5774894362df17c1c10c21871e158edab3a580b6d1e6b1b53671519af",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "oct ",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_oct (2).pdf",
+        "Payroll_ACV/Latika_oct.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Latika_oct.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 137263,
+      "sha256": "006b01b5774894362df17c1c10c21871e158edab3a580b6d1e6b1b53671519af",
+      "category": "employee_compensation_document",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "oct",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_oct (2).pdf",
+        "Payroll_ACV/Latika_oct.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF - May 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 347136,
+      "sha256": "6617d01d1864df858b637f73ba29043d6355b2fdaa187e8e65119cb0cc23bd4c",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "May 2023"
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF - May 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 347136,
+      "sha256": "8fe0d124fddcc141862f87e6931649eb216a3e39d5f9f81268573538b157d1a7",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "May 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF - May 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF - May 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF - May 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -August 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "4b891bc9ce84d8f7e2250babf2a0f6d3222fb2cc548295c427f4205b6a69ed29",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "August 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -August 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -August 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -August 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -August 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -August 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "4b891bc9ce84d8f7e2250babf2a0f6d3222fb2cc548295c427f4205b6a69ed29",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "August 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -August 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -August 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -August 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -August 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -Dec 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 353280,
+      "sha256": "dd2b9b7838f3d799726b5d37525111d736e58704e1b3505623e63f63dff99f4a",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "Dec 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Dec 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Dec 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Dec 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Dec 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -Dec 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 353280,
+      "sha256": "dd2b9b7838f3d799726b5d37525111d736e58704e1b3505623e63f63dff99f4a",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "Dec 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Dec 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Dec 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Dec 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Dec 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -January 2024 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "18121b36d046285491c037d3b5db49de344ba59e1571a988ed34caf9b4d37b4f",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "January 2024",
+      "duplicateGroup": [
+        "Payroll_ACV/SALARY FOR THE MONTH OF -January 2024 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -January 2024.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -January 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "18121b36d046285491c037d3b5db49de344ba59e1571a988ed34caf9b4d37b4f",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "January 2024",
+      "duplicateGroup": [
+        "Payroll_ACV/SALARY FOR THE MONTH OF -January 2024 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -January 2024.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -July 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 349184,
+      "sha256": "591e4162e04ccee6bf00658d568386af74ca2585cdb2222c3d08c56d80c4c26d",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "July 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -July 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -July 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -July 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -July 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -July 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 349184,
+      "sha256": "591e4162e04ccee6bf00658d568386af74ca2585cdb2222c3d08c56d80c4c26d",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "July 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -July 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -July 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -July 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -July 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -June 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 348160,
+      "sha256": "3968e187bd5457b870a37422dd5534c059aff95d7a80b1f3285bc95ad9216d43",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "June 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -June 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -June 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -June 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -June 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -June 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 348160,
+      "sha256": "3968e187bd5457b870a37422dd5534c059aff95d7a80b1f3285bc95ad9216d43",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "June 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -June 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -June 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -June 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -June 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -Nov 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 353280,
+      "sha256": "de4f3783794b14021a7b9a01388aab96f700006ffd5a16c7a1a5533c12480d55",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "Nov 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Nov 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Nov 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Nov 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Nov 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -Nov 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 353280,
+      "sha256": "de4f3783794b14021a7b9a01388aab96f700006ffd5a16c7a1a5533c12480d55",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "Nov 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Nov 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -Nov 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Nov 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -Nov 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -October 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "cfa3362f89d5acbe75cd74bb480fde6eb4ae9a783671cbdc85a26fc265a12aa9",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "October 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -October 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -October 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -October 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -October 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -October 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "cfa3362f89d5acbe75cd74bb480fde6eb4ae9a783671cbdc85a26fc265a12aa9",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "October 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -October 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -October 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -October 2023 (2).xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -October 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -September 2023 (2).xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "9f39aab7164f6623105a39097834bf258384c6da3cee9bca496dda75f82395a0",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "Sept"
+    },
+    {
+      "relativePath": "Payroll_ACV/SALARY FOR THE MONTH OF -September 2023.xls",
+      "extension": ".xls",
+      "sizeBytes": 352256,
+      "sha256": "5f1a0cb3347a4055d0824db3a74619c07819e5278b3cce0ed4762a0b7d2f5f46",
+      "category": "salary_transaction_source",
+      "subjectHints": [],
+      "dateHint": "Sept",
+      "duplicateGroup": [
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -September 2023 (2).xls",
+        "Payroll_ACV/2023/SALARY FOR THE MONTH OF -September 2023.xls",
+        "Payroll_ACV/SALARY FOR THE MONTH OF -September 2023.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary Slip ACV June.docx",
+      "extension": ".docx",
+      "sizeBytes": 368163,
+      "sha256": "69c12701a76d0d284e8f4eb010bddb7f197928b505c410671e123f6f68e5a5fe",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "June",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary Slip ACV June.docx",
+        "Payroll_ACV/Salary slip file/Salary Slip ACV June.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary Slip June 2023.docx",
+      "extension": ".docx",
+      "sizeBytes": 34173,
+      "sha256": "bd06dc9ac725540615819b481496ba4b73b061e1f818b388ced9d1ee68d17899",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "June 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary Slip June 2023.docx",
+        "Payroll_ACV/Salary slip file/Salary Slip June 2023.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/ABHIJITH ELLIKKAL_Aug & October 2024 salary slip.docx",
+      "extension": ".docx",
+      "sizeBytes": 34815,
+      "sha256": "138460fb91407c5a3489dd8159bba3fc51fc4b067f7e9be8163c255e6aa72f51",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "abhijith"
+      ],
+      "dateHint": "Aug "
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/ABHIJITH ELLIKKAL_Aug & October 2024 salary slip.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 145975,
+      "sha256": "e957e9cfd009f9677148292a842f28aad8e9f29fe5e30b738643ebabb32b49ce",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "abhijith"
+      ],
+      "dateHint": "Aug ",
+      "pdfPages": 2
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/ABHIJITH ELLIKKAL_Sep_salary slip.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 137206,
+      "sha256": "1c182a1d0f283efb6182b0aaaef40b39f9b8a8172a96735d85449325e362be86",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "abhijith"
+      ],
+      "dateHint": "Sep_",
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/ACV Appointment letter-_Sayali Deshpande.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 394819,
+      "sha256": "ecfcd484d4c2d68f99773222ca816c5ac081275d74ed6ea9d58c27c3fca910ea",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "sayali"
+      ],
+      "dateHint": null,
+      "pdfPages": 7
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Aniket Dalvi_Sep_salary slip.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 136602,
+      "sha256": "704e5e0bb56edf1db6ea8669460a4ee056c2628d62f824f7b9bb14bb6afa342f",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "aniket"
+      ],
+      "dateHint": "Sep_",
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Ankush Singh_salary slip_September.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 130203,
+      "sha256": "94e2adabd52d2b5dddfa61ebe24e4c4d6509a05095451ec985f4a4c7b04f0ec9",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "ankush"
+      ],
+      "dateHint": "Sept",
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Blank Letter head _salary slip.docx",
+      "extension": ".docx",
+      "sizeBytes": 29696,
+      "sha256": "f4d5de4ac51f916062c2ca2bf54f8810d120e25149e25a0386a20ef33a69d64f",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": null
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Chintan october 2023.docx",
+      "extension": ".docx",
+      "sizeBytes": 14760,
+      "sha256": "c0605192b710c4e5b508e5398dd5337dfe3eebfd76c22e616aaaa7d81e26a8e7",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "october 2023"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Chintan_November 23.docx",
+      "extension": ".docx",
+      "sizeBytes": 32748,
+      "sha256": "ff8335de6fd7baf4587f96a72719c07427f00199322257207421d2e5b4a01cde",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "November ",
+      "duplicateGroup": [
+        "Payroll_ACV/Chintan_November 23.docx",
+        "Payroll_ACV/Salary slip file/Chintan_November 23.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Chintan_salary slip_September.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 135779,
+      "sha256": "a005239bf375d896639b1c2d587fe6d455429f9ed502fd7024d209c427108eff",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "Sept",
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Latika_August.docx",
+      "extension": ".docx",
+      "sizeBytes": 32301,
+      "sha256": "d65acadd5d3c47e1fdbaccedde2cdbc374e9edcf2ef2be097d59b5c866442d10",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "August",
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_August.docx",
+        "Payroll_ACV/Salary slip file/Latika_August.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Latika_July.docx",
+      "extension": ".docx",
+      "sizeBytes": 32353,
+      "sha256": "0cccaa1bf6ded63d181a268966aea2d2a8c3661847ec0b8f86ecbbe76f8c0024",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "July",
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_July.docx",
+        "Payroll_ACV/Salary slip file/Latika_July.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Latika_June.docx",
+      "extension": ".docx",
+      "sizeBytes": 32013,
+      "sha256": "61759e128fd0139744ee4a720ac6e5670de15ef1a02f1ba592ccb1fa8dd87cbe",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "June",
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_June.docx",
+        "Payroll_ACV/Salary slip file/Latika_June.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Latika_Oct- March 24.docx",
+      "extension": ".docx",
+      "sizeBytes": 35752,
+      "sha256": "859dd56abb7e47ae1bf53e4d04c92a63ce469333341f16ca07e5be9929f3e66d",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "Oct- ",
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_Oct- March 24.docx",
+        "Payroll_ACV/Salary slip file/Latika_Oct- March 24.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Latika_September.docx",
+      "extension": ".docx",
+      "sizeBytes": 36509,
+      "sha256": "2dcb4713fe178ddc9eb41e21aaf3a6b1d5c6b283704ed49f41aed6ffdd36c2f1",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "latika"
+      ],
+      "dateHint": "Sept",
+      "duplicateGroup": [
+        "Payroll_ACV/Latika_September.docx",
+        "Payroll_ACV/Salary slip file/Latika_September.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/SALARY FOR THE MONTH OF -September 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 311296,
+      "sha256": "edb588a2c284516c50b2ec52b985f3a03b01d82735065b6fed657483b03d4382",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "Sept"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary Slip ACV June.docx",
+      "extension": ".docx",
+      "sizeBytes": 368163,
+      "sha256": "69c12701a76d0d284e8f4eb010bddb7f197928b505c410671e123f6f68e5a5fe",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "June",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary Slip ACV June.docx",
+        "Payroll_ACV/Salary slip file/Salary Slip ACV June.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary Slip ACV September.docx",
+      "extension": ".docx",
+      "sizeBytes": 36138,
+      "sha256": "9b7f69defff1fa0911e14e415bf2cbdcb952bfe981b338612a50a3501e32ce69",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "Sept"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary Slip June 2023.docx",
+      "extension": ".docx",
+      "sizeBytes": 34173,
+      "sha256": "bd06dc9ac725540615819b481496ba4b73b061e1f818b388ced9d1ee68d17899",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "June 2023",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary Slip June 2023.docx",
+        "Payroll_ACV/Salary slip file/Salary Slip June 2023.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary Slip October 2024.xls",
+      "extension": ".xls",
+      "sizeBytes": 345600,
+      "sha256": "887ffcfaddea3b367696aac149ca040e516128171463d9a42bfc5ceb915af438",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "October 2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary Slip SALARY FOR THE MONTH OF -May 2025.xls",
+      "extension": ".xls",
+      "sizeBytes": 346624,
+      "sha256": "a01fbfc685f43d5821b39c6105cc42aa9f52cb2a9b1a3137ebde969483b89edb",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "May 2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary Slip_September 2024.docx",
+      "extension": ".docx",
+      "sizeBytes": 576248,
+      "sha256": "72022ae6b53756a36cfba9ef4348e53c4ba00c0d7d8787f46fe0ec9dfa54ad7d",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "Sept"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Chintan_December 23.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 133829,
+      "sha256": "01286163921aeaa0dec01fe576099e09ca6b632c6e391685de460300ad53d8d3",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "December ",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Chintan_December 23.pdf",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_December 23.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Chintan_January 24.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 133417,
+      "sha256": "84ed9fa99c1c0d81890f46fa7ffb731cd7685b53df28f62ba91f8664725b8846",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "January ",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Chintan_January 24.pdf",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_January 24.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Chintan_July 24.docx",
+      "extension": ".docx",
+      "sizeBytes": 34621,
+      "sha256": "dad40f1e51ad16e0f7eddd5ad13270de73219be133d9db70737a2f1ce6b683de",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "July "
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Chintan_November 23.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 133835,
+      "sha256": "82f0b133964a0ce1af75893e4e81c65548634c749c2382463757e521d04495b0",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "November ",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Chintan_November 23.pdf",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_November 23.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Chintan_September.docx",
+      "extension": ".docx",
+      "sizeBytes": 32639,
+      "sha256": "3d244e707009d7005b4aa04faa9a394850db93227618f91ff611dbe5396c069d",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "Sept",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Chintan_September.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_September.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/FINAL SALARY FOR THE MONTH OF - August 2022.xls",
+      "extension": ".xls",
+      "sizeBytes": 353280,
+      "sha256": "2d37ee187b93ffcc9bde0d702704b99d827c3d13403cf1d651810262899eed02",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "August 2022"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/FINAL SALARY FOR THE MONTH OF - July 2022.xls",
+      "extension": ".xls",
+      "sizeBytes": 96768,
+      "sha256": "77c366a915cfd22c680ce872b088ee431abf2ef44feafee2d0b16768435d9c20",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "July 2022",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/FINAL SALARY FOR THE MONTH OF - July 2022.xls",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/FINAL SALARY FOR THE MONTH OF - July 2022.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/FINAL SALARY FOR THE MONTH OF - June 2022.xls",
+      "extension": ".xls",
+      "sizeBytes": 77824,
+      "sha256": "b881dd82064af734554cba1c6f952004f4543009857279ec5a6ae013de6d0f2f",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "June 2022",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/FINAL SALARY FOR THE MONTH OF - June 2022.xls",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/FINAL SALARY FOR THE MONTH OF - June 2022.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Romit salary slip.docx",
+      "extension": ".docx",
+      "sizeBytes": 25838,
+      "sha256": "dcf67537adce588b50fbce6e246c53fe89206fcf274bb7e6fd6475021ae5b97a",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "romit"
+      ],
+      "dateHint": null,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Romit salary slip.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Romit salary slip.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Romit salary slip.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 136460,
+      "sha256": "da03ad2ddecd13aabcc415907067e7e025545dc314cb9857ccbb2ba6a6ff5ad3",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "romit"
+      ],
+      "dateHint": null,
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Romit salary slip.pdf",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Romit salary slip.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slip July - November _Ankush Singh.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 218659,
+      "sha256": "8fd9a2672733df114342ae0456f497f41863099b0d590fa61f5d4c72233bd9d4",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "ankush"
+      ],
+      "dateHint": "July - ",
+      "pdfPages": 5
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slip October _Aniket Dalvi.docx",
+      "extension": ".docx",
+      "sizeBytes": 2337780,
+      "sha256": "87be65e502cb14c2cd6d7655fcad69b27d524b96d51f9c17a4175dfae70483ba",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "aniket"
+      ],
+      "dateHint": "October _"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slip October _Aniket Dalvi.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 183938,
+      "sha256": "345070e408b20ee5e8cda178ad4448972d58254c0ca9837bc46508d82dc631c1",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "aniket"
+      ],
+      "dateHint": "October _",
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slip October.docx",
+      "extension": ".docx",
+      "sizeBytes": 2337622,
+      "sha256": "f274ad95ac3cbc55411cc3324a91b4dd4ae6c7cbce09b54fa193f8b48c200afb",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "October"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slip October_Surekha Kamat.docx",
+      "extension": ".docx",
+      "sizeBytes": 2337574,
+      "sha256": "29e242be8656d080ba3e63d905bf1be43b4364be0bad3979a49a25465baec072",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "surekha"
+      ],
+      "dateHint": "October_"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slip October_Surekha Kamat.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 183797,
+      "sha256": "5ddafa9501fc9ff7226e9e328994cdc94555aece476e5d3e2c8403b05f300e29",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "surekha"
+      ],
+      "dateHint": "October_",
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slip _Pooja.docx",
+      "extension": ".docx",
+      "sizeBytes": 26169,
+      "sha256": "67584f4314aa02c881e9a825cf9e73d6f9cb2dff3564e147275921972838013c",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "pooja"
+      ],
+      "dateHint": null,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slip _Pooja.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip _Pooja.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slip october _Ankush Singh.docx",
+      "extension": ".docx",
+      "sizeBytes": 2344116,
+      "sha256": "bd35236f9fbe2bcfe9d5b045705d08f00d8a9fd001e650952b51ff922feb7cf6",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "ankush"
+      ],
+      "dateHint": "october _"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slip october _Ankush Singh.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 182308,
+      "sha256": "7cfac5ed1133428c282aa93b2785918872e5a602d3b59a96d5843d9a9fcdf460",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "ankush"
+      ],
+      "dateHint": "october _",
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slip-Employee.docx",
+      "extension": ".docx",
+      "sizeBytes": 27456,
+      "sha256": "6e43bd617f7c82b37a5c7e5869eb9ab252ffd8529256145498711852e9f9e11d",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": null,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slip-Employee.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip-Employee.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slip-July 22.docx",
+      "extension": ".docx",
+      "sizeBytes": 27983,
+      "sha256": "20125739997280b04aa5474eaf192d506031c60c110c31b01e80a7b0f4d07ba8",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "July ",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slip-July 22.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip-July 22.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slip-June 22.docx",
+      "extension": ".docx",
+      "sizeBytes": 27964,
+      "sha256": "2767affed7bf38a708c677fc774c0b52b20c1912ca8bfe37aec1333380296895",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "June ",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slip-June 22.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip-June 22.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slip_june 2022.docx",
+      "extension": ".docx",
+      "sizeBytes": 60704,
+      "sha256": "a40a2741c28c4fafcd531608f844b49fbed159d46c8b7044a94b289a569d45b6",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "june 2022",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slip_june 2022.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip_june 2022.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slips_Aug 22.docx",
+      "extension": ".docx",
+      "sizeBytes": 367081,
+      "sha256": "58ed04d892616a4548358f30c40cfa4c8e9855e999a8bac836f281b1ff5a4e33",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "Aug ",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slips_Aug 22.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slips_Aug 22.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary Slips_Tanvi.docx",
+      "extension": ".docx",
+      "sizeBytes": 31015,
+      "sha256": "3a3b63f2105090adf05bc2288df64387504737e36e085f03427a9dafee2599c6",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "tanvi"
+      ],
+      "dateHint": null,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slips_Tanvi.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slips_Tanvi.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_December 23.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 133829,
+      "sha256": "01286163921aeaa0dec01fe576099e09ca6b632c6e391685de460300ad53d8d3",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "December ",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Chintan_December 23.pdf",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_December 23.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_January 24.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 133417,
+      "sha256": "84ed9fa99c1c0d81890f46fa7ffb731cd7685b53df28f62ba91f8664725b8846",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "January ",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Chintan_January 24.pdf",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_January 24.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_November 23.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 133835,
+      "sha256": "82f0b133964a0ce1af75893e4e81c65548634c749c2382463757e521d04495b0",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "November ",
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Chintan_November 23.pdf",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_November 23.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_September.docx",
+      "extension": ".docx",
+      "sizeBytes": 32639,
+      "sha256": "3d244e707009d7005b4aa04faa9a394850db93227618f91ff611dbe5396c069d",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "chintan"
+      ],
+      "dateHint": "Sept",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Chintan_September.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Chintan_September.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/FINAL SALARY FOR THE MONTH OF - August 2022.xls",
+      "extension": ".xls",
+      "sizeBytes": 353280,
+      "sha256": "4c3cd64a52a94179ec910def6b863abae613ab5867a548d4b6be657ab0fd6a6b",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "August 2022"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/FINAL SALARY FOR THE MONTH OF - July 2022.xls",
+      "extension": ".xls",
+      "sizeBytes": 96768,
+      "sha256": "77c366a915cfd22c680ce872b088ee431abf2ef44feafee2d0b16768435d9c20",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "July 2022",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/FINAL SALARY FOR THE MONTH OF - July 2022.xls",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/FINAL SALARY FOR THE MONTH OF - July 2022.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/FINAL SALARY FOR THE MONTH OF - June 2022.xls",
+      "extension": ".xls",
+      "sizeBytes": 77824,
+      "sha256": "b881dd82064af734554cba1c6f952004f4543009857279ec5a6ae013de6d0f2f",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "June 2022",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/FINAL SALARY FOR THE MONTH OF - June 2022.xls",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/FINAL SALARY FOR THE MONTH OF - June 2022.xls"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Romit salary slip.docx",
+      "extension": ".docx",
+      "sizeBytes": 25838,
+      "sha256": "dcf67537adce588b50fbce6e246c53fe89206fcf274bb7e6fd6475021ae5b97a",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "romit"
+      ],
+      "dateHint": null,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Romit salary slip.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Romit salary slip.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Romit salary slip.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 136460,
+      "sha256": "da03ad2ddecd13aabcc415907067e7e025545dc314cb9857ccbb2ba6a6ff5ad3",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "romit"
+      ],
+      "dateHint": null,
+      "pdfPages": 1,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Romit salary slip.pdf",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Romit salary slip.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip _Pooja.docx",
+      "extension": ".docx",
+      "sizeBytes": 26169,
+      "sha256": "67584f4314aa02c881e9a825cf9e73d6f9cb2dff3564e147275921972838013c",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "pooja"
+      ],
+      "dateHint": null,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slip _Pooja.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip _Pooja.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip-Employee.docx",
+      "extension": ".docx",
+      "sizeBytes": 27456,
+      "sha256": "6e43bd617f7c82b37a5c7e5869eb9ab252ffd8529256145498711852e9f9e11d",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": null,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slip-Employee.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip-Employee.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip-July 22.docx",
+      "extension": ".docx",
+      "sizeBytes": 27983,
+      "sha256": "20125739997280b04aa5474eaf192d506031c60c110c31b01e80a7b0f4d07ba8",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "July ",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slip-July 22.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip-July 22.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip-June 22.docx",
+      "extension": ".docx",
+      "sizeBytes": 27964,
+      "sha256": "2767affed7bf38a708c677fc774c0b52b20c1912ca8bfe37aec1333380296895",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "June ",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slip-June 22.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip-June 22.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip_june 2022.docx",
+      "extension": ".docx",
+      "sizeBytes": 60704,
+      "sha256": "a40a2741c28c4fafcd531608f844b49fbed159d46c8b7044a94b289a569d45b6",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "june 2022",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slip_june 2022.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slip_june 2022.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slips_Aug 22.docx",
+      "extension": ".docx",
+      "sizeBytes": 367081,
+      "sha256": "58ed04d892616a4548358f30c40cfa4c8e9855e999a8bac836f281b1ff5a4e33",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "Aug ",
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slips_Aug 22.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slips_Aug 22.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slips_Tanvi.docx",
+      "extension": ".docx",
+      "sizeBytes": 31015,
+      "sha256": "3a3b63f2105090adf05bc2288df64387504737e36e085f03427a9dafee2599c6",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "tanvi"
+      ],
+      "dateHint": null,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary Slips_Tanvi.docx",
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Salary Slips_Tanvi.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Sayali_Salary Slip.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 145215,
+      "sha256": "91827c6197d2a2c532ad4855e9ccbc6fc515891cc30ed7d4c5b06b26a953508f",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "sayali"
+      ],
+      "dateHint": null,
+      "pdfPages": 3,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Sayali_Salary Slip.pdf",
+        "Payroll_ACV/Salary slip file/Salary slip/Sayali_Salary Slip.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip/Sayali_Salary Slip.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 145215,
+      "sha256": "91827c6197d2a2c532ad4855e9ccbc6fc515891cc30ed7d4c5b06b26a953508f",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "sayali"
+      ],
+      "dateHint": null,
+      "pdfPages": 3,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Salary slip/Salary slip/Sayali_Salary Slip.pdf",
+        "Payroll_ACV/Salary slip file/Salary slip/Sayali_Salary Slip.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Salary slip May 2025.docx",
+      "extension": ".docx",
+      "sizeBytes": 67440,
+      "sha256": "d08e764c7e43ec268ee565e19f6c768157347404336a335d6746349e8cc71dcf",
+      "category": "payslip_document_or_template",
+      "subjectHints": [],
+      "dateHint": "May 2025"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Sayali_Salary Slip June 24 - Sept 24.docx",
+      "extension": ".docx",
+      "sizeBytes": 71635,
+      "sha256": "0131b82d25b61450642d18c5c6f732489486918b0789c24e9a619c7331a62876",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "sayali"
+      ],
+      "dateHint": "June "
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Sayali_Salary Slip June 24 - Sept 24.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 154519,
+      "sha256": "f92607858417291841c3edc28ecab8c471b074280270b30b9a8ade38075473f3",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "sayali"
+      ],
+      "dateHint": "June ",
+      "pdfPages": 4
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Sayali_Salary Slip october 2024.docx",
+      "extension": ".docx",
+      "sizeBytes": 67268,
+      "sha256": "611a46df45d844db2c7c31092682dffd23b1643a9932696a8bdcddcaec8b5699",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "sayali"
+      ],
+      "dateHint": "october 2024"
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Sayali_Salary Slip october 2024.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 128633,
+      "sha256": "68cecf6497b56f9e97745e440aacadf10e2199a5a7c0db26ec8060d0b56cd3fd",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "sayali"
+      ],
+      "dateHint": "october 2024",
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Sayali_Salary Slip.docx",
+      "extension": ".docx",
+      "sizeBytes": 73274,
+      "sha256": "d318eb309bf27066200a591affc0bd1fe684d55c928eaf0e7c59073704880077",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "sayali"
+      ],
+      "dateHint": null,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Sayali_Salary Slip.docx",
+        "Payroll_ACV/Sayali_Salary Slip.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Surekha_salary slip.docx",
+      "extension": ".docx",
+      "sizeBytes": 32471,
+      "sha256": "f058de6595a9c5d91ee6361dc2a90ebf9f8e1a1ec930ede860bc9ebce4041399",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "surekha"
+      ],
+      "dateHint": null
+    },
+    {
+      "relativePath": "Payroll_ACV/Salary slip file/Surekha_salary slip.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 133831,
+      "sha256": "bd2007ce06f7515320d9c7cd6c476c36ad3bd92b4e21a41c604256329440fe31",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "surekha"
+      ],
+      "dateHint": null,
+      "pdfPages": 1
+    },
+    {
+      "relativePath": "Payroll_ACV/Sayali_Salary Slip (2).pdf",
+      "extension": ".pdf",
+      "sizeBytes": 168841,
+      "sha256": "d260a5ee2c8c48c406cfcd4709dfa5fefc3044d031dffea4e16b39123c4924fa",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "sayali"
+      ],
+      "dateHint": null,
+      "pdfPages": 6,
+      "duplicateGroup": [
+        "Payroll_ACV/Sayali_Salary Slip (2).pdf",
+        "Payroll_ACV/Sayali_Salary Slip.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Sayali_Salary Slip.docx",
+      "extension": ".docx",
+      "sizeBytes": 73274,
+      "sha256": "d318eb309bf27066200a591affc0bd1fe684d55c928eaf0e7c59073704880077",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "sayali"
+      ],
+      "dateHint": null,
+      "duplicateGroup": [
+        "Payroll_ACV/Salary slip file/Sayali_Salary Slip.docx",
+        "Payroll_ACV/Sayali_Salary Slip.docx"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV/Sayali_Salary Slip.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 168841,
+      "sha256": "d260a5ee2c8c48c406cfcd4709dfa5fefc3044d031dffea4e16b39123c4924fa",
+      "category": "payslip_document_or_template",
+      "subjectHints": [
+        "sayali"
+      ],
+      "dateHint": null,
+      "pdfPages": 6,
+      "duplicateGroup": [
+        "Payroll_ACV/Sayali_Salary Slip (2).pdf",
+        "Payroll_ACV/Sayali_Salary Slip.pdf"
+      ]
+    },
+    {
+      "relativePath": "Payroll_ACV.zip",
+      "extension": ".zip",
+      "sizeBytes": 30824734,
+      "sha256": "52ca1ee86f22eb6b6c4834234d0271b7a2d666401248935cacfbcb4888b63822",
+      "category": "source_archive",
+      "subjectHints": [],
+      "dateHint": null,
+      "archiveFileCount": 216,
+      "archiveExtensions": {
+        ".docx": 60,
+        ".xls": 98,
+        ".pdf": 46,
+        ".xlsx": 12
+      }
+    },
+    {
+      "relativePath": "Print _ Udyam Registration Certificate with Anexure.pdf",
+      "extension": ".pdf",
+      "sizeBytes": 354303,
+      "sha256": "1ca302e047dade2842a2bc38b578c36c7faff4f7e8949d79c4f0989274709a9c",
+      "category": "company_document",
+      "subjectHints": [],
+      "dateHint": null,
+      "pdfPages": 5
+    },
+    {
+      "relativePath": "biometric attendance list/Aniket_DailyAttendance_BasicReport.xls",
+      "extension": ".xls",
+      "sizeBytes": 35840,
+      "sha256": "82441cbaf813ec20fd1cc2906fa8d5fc40558c50d6340ec67b876128c9c1030a",
+      "category": "biometric_attendance_source",
+      "subjectHints": [
+        "aniket"
+      ],
+      "dateHint": null
+    },
+    {
+      "relativePath": "biometric attendance list/Lopa_DailyAttendance_BasicReport.xls",
+      "extension": ".xls",
+      "sizeBytes": 54272,
+      "sha256": "63a7105d89eb8700219759e874533dcc1a647dfac99022f64265ec81bb6791b2",
+      "category": "biometric_attendance_source",
+      "subjectHints": [
+        "lopa"
+      ],
+      "dateHint": null
+    },
+    {
+      "relativePath": "biometric attendance list/Pooja_DailyAttendance_BasicReport.xls",
+      "extension": ".xls",
+      "sizeBytes": 54272,
+      "sha256": "00e85cea97c257564ae14cf0623c1a441944b3388fdb82c8f760438ba477f9a1",
+      "category": "biometric_attendance_source",
+      "subjectHints": [
+        "pooja"
+      ],
+      "dateHint": null
+    },
+    {
+      "relativePath": "biometric attendance list/Suraj_DailyAttendance_BasicReport.xls",
+      "extension": ".xls",
+      "sizeBytes": 54272,
+      "sha256": "f5af7ec186e464eb34d6617059614379e60d468f376f0d585529bb4323719247",
+      "category": "biometric_attendance_source",
+      "subjectHints": [
+        "suraj"
+      ],
+      "dateHint": null
+    },
+    {
+      "relativePath": "biometric_attendance_list.zip",
+      "extension": ".zip",
+      "sizeBytes": 55166,
+      "sha256": "f892a318fb15e992958e31091b498f8a04530d75526a4e65189ea84cf1e20a87",
+      "category": "source_archive",
+      "subjectHints": [],
+      "dateHint": null,
+      "archiveFileCount": 4,
+      "archiveExtensions": {
+        ".xls": 4
+      }
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "mode": "dry-run",
+  "generatedAt": "2026-05-27T15:52:15.069Z",
+  "tenant": {
+    "tenantId": "f5ed3bd0-d89f-4762-b212-c3b41d358fe8",
+    "companyName": "ACV Solutions",
+    "subdomain": null
+  },
+  "actor": {
+    "userId": "cd24150b-ecdd-40dd-82a2-e1b81a64549a",
+    "email": "anupama.bhat@acvsolutions.in",
+    "role": "system_admin"
+  },
+  "options": {
+    "companyName": "ACV Solutions",
+    "sourceDir": "/Users/chinar.deshpande06/Temp/CL-ACV/ACV-India/HRMS-MVP/ACV Implementation Data/01-source-files/Latest Data",
+    "outputDir": "/Users/chinar.deshpande06/Documents/GitHub/HRMS-SaaS-MVP/docs/acv-implementation/latest-data-ingestion-2026-05-27/company-documents-idempotency-check",
+    "actorEmail": "anupama.bhat@acvsolutions.in"
+  },
+  "summary": {
+    "total": 9,
+    "create": 0,
+    "skip_existing_hash": 9,
+    "update_existing_metadata": 0,
+    "repair_existing_file": 0,
+    "warnings": 0
+  },
+  "planned": [
+    {
+      "sourceFile": "ACV PTEC Certificate.pdf",
+      "title": "ACV PTEC Certificate",
+      "category": "tax_registration",
+      "sha256": "0210ceda018cac268d24eb452e64a8b547a839983ba0af75c5d6fb293601a7dd",
+      "fileSize": 616255,
+      "action": "skip_existing_hash",
+      "existingDocumentId": "b79474d1-2aeb-4b32-999b-a258fd3ae646",
+      "existingTitle": "ACV PTEC Certificate",
+      "targetFileName": "acv-ptec-certificate-0210ceda018c.pdf"
+    },
+    {
+      "sourceFile": "PTRC Certifcate.pdf",
+      "title": "PTRC Certificate",
+      "category": "tax_registration",
+      "sha256": "deb21be91ac89ca2a0f96e79b92e3ddb11910e572c72fc48ef73f054d82ee14b",
+      "fileSize": 613437,
+      "action": "skip_existing_hash",
+      "existingDocumentId": "6d308da1-0446-4bc4-b3d1-c1e0337b61be",
+      "existingTitle": "PTRC Certificate",
+      "targetFileName": "ptrc-certificate-deb21be91ac8.pdf"
+    },
+    {
+      "sourceFile": "GST Certificate-ACV Solutions.pdf",
+      "title": "GST Certificate",
+      "category": "tax_registration",
+      "sha256": "27aa10d2ecff75d33570f35c0c59b0f61484f2074cde32716a61dfa4a9bafa55",
+      "fileSize": 124954,
+      "action": "skip_existing_hash",
+      "existingDocumentId": "b5bcee67-6d18-464d-a27b-01f7fad1e79b",
+      "existingTitle": "GST Certificate",
+      "targetFileName": "gst-certificate-27aa10d2ecff.pdf"
+    },
+    {
+      "sourceFile": "PAN Card-ACV.pdf",
+      "title": "PAN Card",
+      "category": "tax_registration",
+      "sha256": "1ecdd570626eedb877c28efdeb26bcb451b6ef9d7117ffc76e37320fc731658b",
+      "fileSize": 682535,
+      "action": "skip_existing_hash",
+      "existingDocumentId": "f2c53784-f5d0-4cca-9101-60351eb827bd",
+      "existingTitle": "PAN Card",
+      "targetFileName": "pan-card-1ecdd570626e.pdf"
+    },
+    {
+      "sourceFile": "CERTIFICATE OF INCORPORATION.PDF",
+      "title": "Certificate of Incorporation",
+      "category": "incorporation_identity",
+      "sha256": "78e2276991799e38d9a3b0ad9af74d4f5d0880b506566e5aff899792cad02ed9",
+      "fileSize": 536520,
+      "action": "skip_existing_hash",
+      "existingDocumentId": "722fba4e-f42d-4e54-94ed-5c1b2f6c827f",
+      "existingTitle": "Certificate of Incorporation",
+      "targetFileName": "certificate-of-incorporation-78e227699179.pdf"
+    },
+    {
+      "sourceFile": "Form_INC-20A_ACV Solutions.pdf",
+      "title": "Form INC-20A Declaration",
+      "category": "incorporation_identity",
+      "sha256": "504f29d72ad67121274c0dc24bea3ac0ceb21284848aa221f45cec0a770eb6a7",
+      "fileSize": 241213,
+      "action": "skip_existing_hash",
+      "existingDocumentId": "0d6447c4-af20-427f-94ef-011af118a412",
+      "existingTitle": "Form INC-20A Declaration",
+      "targetFileName": "form-inc-20a-declaration-504f29d72ad6.pdf"
+    },
+    {
+      "sourceFile": "Acknowlegement.pdf",
+      "title": "Company Registration Acknowledgement",
+      "category": "incorporation_identity",
+      "sha256": "b7db576069ee6cc798d3e29e5e02a55ad7198d63d682355447bd81e0d93055a8",
+      "fileSize": 406978,
+      "action": "skip_existing_hash",
+      "existingDocumentId": "e38fe8ab-78dc-4931-9f01-a5e3a6260c08",
+      "existingTitle": "Company Registration Acknowledgement",
+      "targetFileName": "company-registration-acknowledgement-b7db576069ee.pdf"
+    },
+    {
+      "sourceFile": "Print _ Udyam Registration Certificate with Anexure.pdf",
+      "title": "Udyam Registration Certificate",
+      "category": "incorporation_identity",
+      "sha256": "1ca302e047dade2842a2bc38b578c36c7faff4f7e8949d79c4f0989274709a9c",
+      "fileSize": 354303,
+      "action": "skip_existing_hash",
+      "existingDocumentId": "ca3315d5-9116-4a57-b8aa-a104e7a0478f",
+      "existingTitle": "Udyam Registration Certificate",
+      "targetFileName": "udyam-registration-certificate-1ca302e047da.pdf"
+    },
+    {
+      "sourceFile": "Gumasta License.pdf",
+      "title": "Gumasta / Shops and Establishment License",
+      "category": "labor_hr_compliance",
+      "sha256": "7c81a38eefe33b2c0bc65aede2a27744a47d35e867bffb36c997809c8178b498",
+      "fileSize": 329008,
+      "action": "skip_existing_hash",
+      "existingDocumentId": "db0660ab-aa3c-4980-825f-cd8db384acf9",
+      "existingTitle": "Gumasta / Shops and Establishment License",
+      "targetFileName": "gumasta-shops-and-establishment-license-7c81a38eefe3.pdf"
+    }
+  ],
+  "applied": [],
+  "warnings": []
+}

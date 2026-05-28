@@ -61,6 +61,26 @@ export interface LeaveBalance {
   updatedAt: string;
 }
 
+export interface LeavePolicy {
+  policyId: string;
+  tenantId: string;
+  policyName: string;
+  leaveType: string;
+  totalLeaves: number;
+  maxConsecutiveDays: number;
+  carryForward: boolean;
+  maxCarryForward: number;
+  encashable: boolean;
+  minNoticeDays: number;
+  requiresApproval: boolean;
+  probationPeriod: number;
+  applicableGender?: string;
+  isActive: boolean;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface LeaveStatistics {
   totalRequests: number;
   pendingRequests: number;
@@ -72,6 +92,19 @@ export interface LeaveStatistics {
     count: number;
     totalDays: number;
   }[];
+}
+
+export interface CompanyLeaveBalanceReportRow {
+  employeeId: string;
+  employeeName: string;
+  employeeCode: string;
+  department?: string;
+  leaveType: string;
+  totalEntitlement: number;
+  used: number;
+  pending: number;
+  available: number;
+  carriedForward: number;
 }
 
 class LeaveService {
@@ -116,6 +149,14 @@ class LeaveService {
   async getMyBalance(year?: number): Promise<LeaveBalance[]> {
     const params = year ? `?year=${year}` : '';
     const response = await api.get(`/leave/my-balance${params}`);
+    return response.data || [];
+  }
+
+  /**
+   * Employee: Get active tenant leave policies
+   */
+  async getPolicies(): Promise<LeavePolicy[]> {
+    const response = await api.get('/leave/policies');
     return response.data || [];
   }
 
@@ -171,6 +212,14 @@ class LeaveService {
 
     const response = await api.get(`/leave/statistics?${params.toString()}`);
     return response.data!;
+  }
+
+  /**
+   * HR/Manager: Get company leave balance report
+   */
+  async getCompanyLeaveBalanceReport(): Promise<CompanyLeaveBalanceReportRow[]> {
+    const response: any = await api.get('/reports/leave-balance');
+    return response?.data?.results || response?.data?.data?.results || response?.results || [];
   }
 
   /**

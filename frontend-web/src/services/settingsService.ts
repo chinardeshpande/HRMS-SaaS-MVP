@@ -118,6 +118,26 @@ export interface BusinessRule {
   createdAt: string;
 }
 
+export interface LeavePolicy {
+  policyId: string;
+  tenantId: string;
+  policyName: string;
+  leaveType: 'sick' | 'casual' | 'earned' | 'maternity' | 'paternity' | 'unpaid' | 'compensatory';
+  totalLeaves: number;
+  maxConsecutiveDays: number;
+  carryForward: boolean;
+  maxCarryForward: number;
+  encashable: boolean;
+  minNoticeDays: number;
+  requiresApproval: boolean;
+  probationPeriod: number;
+  applicableGender?: string;
+  isActive: boolean;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Role {
   roleId: string;
   tenantId: string;
@@ -240,6 +260,29 @@ class SettingsService {
 
   async deleteBusinessRule(ruleId: string): Promise<void> {
     await api.delete(`/settings/business-rules/${ruleId}`);
+  }
+
+  // ==================== LEAVE POLICIES ====================
+
+  async getLeavePolicies(isActive?: boolean): Promise<LeavePolicy[]> {
+    const response = await api.get('/settings/leave-policies', {
+      params: isActive === undefined ? undefined : { isActive },
+    });
+    return response.data || [];
+  }
+
+  async createLeavePolicy(data: Partial<LeavePolicy>): Promise<LeavePolicy> {
+    const response = await api.post('/settings/leave-policies', data);
+    return response.data!;
+  }
+
+  async updateLeavePolicy(policyId: string, data: Partial<LeavePolicy>): Promise<LeavePolicy> {
+    const response = await api.put(`/settings/leave-policies/${policyId}`, data);
+    return response.data!;
+  }
+
+  async deleteLeavePolicy(policyId: string): Promise<void> {
+    await api.delete(`/settings/leave-policies/${policyId}`);
   }
 
   // ==================== ROLES ====================

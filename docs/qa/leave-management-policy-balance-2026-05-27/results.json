@@ -1,0 +1,108 @@
+{
+  "target": "http://localhost:5173",
+  "checks": [
+    {
+      "name": "Leave page loaded",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "View Leave Policies button visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Policy modal opened",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Sick policy visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Casual policy visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Earned policy visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Leave balance card visible after initialization",
+      "passed": true,
+      "details": "Expected at least one balance card with days available"
+    },
+    {
+      "name": "No API failures",
+      "passed": true,
+      "details": "[]"
+    },
+    {
+      "name": "Leave balance cards visible on landing",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Settings leave policy panel visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Add Leave Policy action visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Existing Casual Leave policy visible in settings",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Add Leave Policy modal opens",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "No API failures",
+      "passed": true,
+      "details": "[]"
+    }
+  ],
+  "apiFailures": [],
+  "policySimplificationChecks": [
+    {
+      "name": "Operational Leave Policies heading visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Company-wide scope visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Workflow Business Rules heading visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "Policy status defaults inactive",
+      "passed": true,
+      "details": "value=inactive"
+    },
+    {
+      "name": "Company-wide applicability field visible",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "No API failures in simplification smoke",
+      "passed": true,
+      "details": "[]"
+    }
+  ]
+}
