@@ -7,7 +7,8 @@
     "src/scripts/applyAcvCustomerZeroCleanup.ts",
     "src/scripts/importAcvCompanyDocuments.ts",
     "src/scripts/importAcvLeaveBalances.ts",
-    "src/scripts/importAcvMonthlyAttendance.ts"
+    "src/scripts/importAcvMonthlyAttendance.ts",
+    "src/scripts/ensureStandardLeavePolicies.ts"
   ],
   "exclude": ["node_modules", "dist", "tests"]
 }
