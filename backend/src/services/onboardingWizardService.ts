@@ -201,11 +201,18 @@ export class OnboardingWizardService {
             continue;
           }
 
+          const leaveType = policy.type as LeaveType;
           const leavePolicy = queryRunner.manager.create(LeavePolicy, {
             tenantId,
             policyName: policy.name,
-            leaveType: policy.type as LeaveType,
+            leaveType,
             totalLeaves: policy.daysAllowed,
+            applicableGender:
+              leaveType === LeaveType.MATERNITY
+                ? 'female'
+                : leaveType === LeaveType.PATERNITY
+                  ? 'male'
+                  : 'all',
             isActive: true,
           });
           await queryRunner.manager.save(leavePolicy);
@@ -374,6 +381,8 @@ export class OnboardingWizardService {
       { policyName: 'Sick Leave', leaveType: LeaveType.SICK, totalLeaves: 12 },
       { policyName: 'Casual Leave', leaveType: LeaveType.CASUAL, totalLeaves: 12 },
       { policyName: 'Earned Leave', leaveType: LeaveType.EARNED, totalLeaves: 21 },
+      { policyName: 'Maternity Leave', leaveType: LeaveType.MATERNITY, totalLeaves: 180 },
+      { policyName: 'Paternity Leave', leaveType: LeaveType.PATERNITY, totalLeaves: 15 },
     ];
 
     for (const policy of defaultPolicies) {
@@ -389,6 +398,12 @@ export class OnboardingWizardService {
         minNoticeDays: 1,
         requiresApproval: true,
         probationPeriod: 0,
+        applicableGender:
+          policy.leaveType === LeaveType.MATERNITY
+            ? 'female'
+            : policy.leaveType === LeaveType.PATERNITY
+              ? 'male'
+              : 'all',
         isActive: true,
         description: `Default ${policy.policyName} policy`,
       });

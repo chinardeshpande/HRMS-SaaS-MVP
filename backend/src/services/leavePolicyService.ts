@@ -1,9 +1,23 @@
 import { AppDataSource } from '../config/database';
-import { LeavePolicy } from '../models/LeavePolicy';
+import { LeavePolicy, LeaveType } from '../models/LeavePolicy';
 import logger from '../utils/logger';
+
+const getSystemGenderApplicability = (leaveType?: LeaveType | string): string | undefined => {
+  if (leaveType === LeaveType.MATERNITY) return 'female';
+  if (leaveType === LeaveType.PATERNITY) return 'male';
+  return undefined;
+};
 
 export class LeavePolicyService {
   private leavePolicyRepo = AppDataSource.getRepository(LeavePolicy);
+
+  private normalizePolicyData(data: Partial<LeavePolicy>): Partial<LeavePolicy> {
+    const applicableGender = getSystemGenderApplicability(data.leaveType);
+    return {
+      ...data,
+      applicableGender: applicableGender || data.applicableGender || 'all',
+    };
+  }
 
   /**
    * Create a new leave policy
@@ -24,7 +38,7 @@ export class LeavePolicyService {
       }
 
       const policy = this.leavePolicyRepo.create({
-        ...data,
+        ...this.normalizePolicyData(data),
         tenantId,
       });
 
@@ -100,7 +114,7 @@ export class LeavePolicyService {
         }
       }
 
-      Object.assign(policy, data);
+      Object.assign(policy, this.normalizePolicyData(data));
       const saved = await this.leavePolicyRepo.save(policy);
       logger.info(`Leave policy updated: ${saved.policyId}`);
       return saved;
