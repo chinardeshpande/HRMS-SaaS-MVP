@@ -163,22 +163,6 @@ export const navigationItems: NavItemConfig[] = [
     path: '/master-data',
     icon: BuildingOfficeIcon,
     roles: ADMIN_ROLES,
-    children: [
-      {
-        name: 'Departments',
-        href: '/departments',
-        path: '/departments',
-        icon: BuildingOfficeIcon,
-        roles: ADMIN_ROLES,
-      },
-      {
-        name: 'Designations',
-        href: '/designations',
-        path: '/designations',
-        icon: BriefcaseIcon,
-        roles: ADMIN_ROLES,
-      },
-    ],
   },
   {
     name: 'HR Analytics',

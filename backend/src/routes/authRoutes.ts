@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import authController from '../controllers/authController';
 import { authenticate } from '../middleware/auth';
 import multer from 'multer';
@@ -30,6 +30,37 @@ const profilePhotoUpload = multer({
   },
 });
 
+const handleProfilePhotoUpload = (req: Request, res: Response, next: NextFunction) => {
+  profilePhotoUpload.single('file')(req as any, res as any, (error: any) => {
+    if (!error) {
+      next();
+      return;
+    }
+
+    if (error instanceof multer.MulterError) {
+      const isFileTooLarge = error.code === 'LIMIT_FILE_SIZE';
+      res.status(isFileTooLarge ? 413 : 400).json({
+        success: false,
+        error: {
+          code: error.code,
+          message: isFileTooLarge
+            ? 'Profile photo must be 2 MB or smaller.'
+            : 'Unable to process profile photo upload.',
+        },
+      });
+      return;
+    }
+
+    res.status(400).json({
+      success: false,
+      error: {
+        code: 'INVALID_FILE_TYPE',
+        message: error.message || 'Only JPG, PNG, or WebP images are allowed.',
+      },
+    });
+  });
+};
+
 // Public routes
 router.post('/login', authController.login);
 router.post('/forgot-password', authController.requestPasswordReset);
@@ -42,7 +73,7 @@ router.post('/change-password', authenticate, authController.changePassword);
 router.post(
   '/profile-photo',
   authenticate,
-  profilePhotoUpload.single('file') as any,
+  handleProfilePhotoUpload,
   authController.uploadProfilePhoto
 );
 

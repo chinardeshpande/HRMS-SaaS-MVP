@@ -38,6 +38,9 @@ const persistUser = (user: User) => {
   window.dispatchEvent(new CustomEvent('aurorahr:user-updated', { detail: user }));
 };
 
+const PROFILE_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const PROFILE_PHOTO_MAX_SIZE = 2 * 1024 * 1024;
+
 export default function ModernEditProfile() {
   const [user, setUser] = useState<User | null>(null);
   const [profileForm, setProfileForm] = useState<ProfileForm>({
@@ -150,6 +153,17 @@ export default function ModernEditProfile() {
   const handlePhotoChange = async (file?: File) => {
     if (!file) return;
     setNotice(null);
+
+    if (!PROFILE_PHOTO_TYPES.includes(file.type)) {
+      setNotice({ type: 'error', message: 'Please upload a JPG, PNG, or WebP profile photo.' });
+      return;
+    }
+
+    if (file.size > PROFILE_PHOTO_MAX_SIZE) {
+      setNotice({ type: 'error', message: 'Profile photo must be 2 MB or smaller.' });
+      return;
+    }
+
     setUploadingPhoto(true);
 
     try {
@@ -216,7 +230,10 @@ export default function ModernEditProfile() {
                     accept="image/png,image/jpeg,image/webp"
                     className="hidden"
                     disabled={uploadingPhoto}
-                    onChange={(event) => handlePhotoChange(event.target.files?.[0])}
+                    onChange={(event) => {
+                      handlePhotoChange(event.target.files?.[0]);
+                      event.target.value = '';
+                    }}
                   />
                 </label>
                 <p className="mt-3 text-xs text-gray-500">JPG, PNG, or WebP up to 2 MB.</p>
