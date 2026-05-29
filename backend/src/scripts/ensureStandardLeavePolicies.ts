@@ -184,6 +184,7 @@ const main = async () => {
     const needsUpdate =
       !existing.isActive ||
       existing.applicableGender !== standardPolicy.applicableGender ||
+      Number(existing.totalLeaves) !== standardPolicy.totalLeaves ||
       !existing.policyName;
 
     if (needsUpdate) {
@@ -194,6 +195,7 @@ const main = async () => {
         reason: [
           !existing.isActive ? 'reactivate' : '',
           existing.applicableGender !== standardPolicy.applicableGender ? 'fix gender applicability' : '',
+          Number(existing.totalLeaves) !== standardPolicy.totalLeaves ? 'fix annual entitlement' : '',
           !existing.policyName ? 'fill policy name' : '',
         ].filter(Boolean).join(', '),
       });
@@ -201,6 +203,7 @@ const main = async () => {
       if (execute) {
         existing.isActive = true;
         existing.applicableGender = standardPolicy.applicableGender;
+        existing.totalLeaves = standardPolicy.totalLeaves;
         existing.policyName = existing.policyName || standardPolicy.policyName;
         existing.description = existing.description || standardPolicy.description;
         await policyRepo.save(existing);
