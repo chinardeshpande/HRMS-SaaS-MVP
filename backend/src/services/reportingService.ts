@@ -362,6 +362,12 @@ export class ReportingService {
       });
     }
 
+    if (filters.status && filters.status.length > 0) {
+      query.andWhere('employee.status IN (:...status)', {
+        status: filters.status,
+      });
+    }
+
     const results = await query.getRawMany();
 
     // Calculate total for percentage

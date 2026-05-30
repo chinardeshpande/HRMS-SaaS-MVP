@@ -1,679 +1,1100 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import {
-  ChartBarIcon,
-  UsersIcon,
-  CalendarIcon,
-  ClipboardDocumentCheckIcon,
-  UserGroupIcon,
-  ArrowRightOnRectangleIcon,
-  TrophyIcon,
-  DocumentTextIcon,
-  ArrowPathIcon,
   ArrowDownTrayIcon,
-  ArrowLeftIcon,
+  ArrowPathIcon,
+  BookmarkIcon,
+  ChartBarIcon,
+  ChatBubbleLeftRightIcon,
+  CheckCircleIcon,
+  ChevronDownIcon,
+  Cog6ToothIcon,
+  DocumentChartBarIcon,
+  DocumentDuplicateIcon,
+  FunnelIcon,
+  PresentationChartLineIcon,
+  SparklesIcon,
+  TableCellsIcon,
 } from '@heroicons/react/24/outline';
 import api from '../services/api';
 
-interface ReportCard {
+type WorkbenchTab = 'builder' | 'saved';
+type ViewMode = 'table' | 'summary' | 'visual';
+type ExportFormat = 'csv' | 'json' | 'print';
+type ChartType = 'bar' | 'pie' | 'line';
+type AggregationMode = 'count' | 'sum' | 'average';
+
+interface AnalyticsTopic {
   id: string;
   title: string;
-  description: string;
-  icon: typeof ChartBarIcon;
+  purpose: string;
+  prompt: string;
   endpoint: string;
-  color: string;
-  requiresDateRange?: boolean;
+  reportType: string;
+  category: string;
+  dateRange?: boolean;
+  icon: typeof ChartBarIcon;
+  tone: string;
+  suggestedColumns?: string[];
+  defaultGroupBy?: string;
+  measureField?: string;
+  measureLabel?: string;
+  aggregation?: AggregationMode;
+  defaultParams?: Record<string, string>;
 }
 
-const REPORT_CARDS: ReportCard[] = [
+interface SavedReportCard {
+  reportId: string;
+  reportName: string;
+  description?: string;
+  category: string;
+  reportType: string;
+  filterConfig?: any;
+  chartConfig?: any;
+  outputFormat?: string;
+  executionCount?: number;
+  lastExecutedAt?: string;
+  createdAt?: string;
+}
+
+const today = new Date();
+const firstDayOfYear = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
+const todayIso = today.toISOString().split('T')[0];
+
+const TOPICS: AnalyticsTopic[] = [
   {
     id: 'headcount',
-    title: 'Headcount Report',
-    description: 'Current workforce distribution by department, employment type, and status',
-    icon: UsersIcon,
+    title: 'Workforce snapshot',
+    purpose: 'Understand active workforce distribution by department, employment type, status, and location.',
+    prompt: 'Show current headcount by department, employment type, status, and location.',
     endpoint: '/reports/headcount',
-    color: 'blue',
+    reportType: 'headcount',
+    category: 'workforce',
+    icon: DocumentChartBarIcon,
+    tone: 'blue',
+    suggestedColumns: ['department', 'employmentType', 'status', 'location', 'count'],
+    defaultGroupBy: 'department',
+    measureField: 'count',
+    measureLabel: 'Headcount',
+    aggregation: 'sum',
+    defaultParams: { status: 'active' },
   },
   {
     id: 'attendance',
-    title: 'Attendance Summary',
-    description: 'Employee attendance patterns and statistics',
-    icon: CalendarIcon,
+    title: 'Attendance operations',
+    purpose: 'Review presence, absence, regularity, and work mode patterns for a selected period.',
+    prompt: 'Analyze attendance rate and presence patterns for this period.',
     endpoint: '/reports/attendance-summary',
-    color: 'green',
-    requiresDateRange: true,
+    reportType: 'attendance_summary',
+    category: 'attendance',
+    dateRange: true,
+    icon: PresentationChartLineIcon,
+    tone: 'green',
+    suggestedColumns: ['employeeName', 'department', 'presentDays', 'absentDays', 'onLeaveDays', 'totalWorkingDays', 'attendancePercentage'],
+    defaultGroupBy: 'department',
+    measureField: 'presentDays',
+    measureLabel: 'Present days',
+    aggregation: 'sum',
   },
   {
     id: 'leave',
-    title: 'Leave Balance',
-    description: 'Leave entitlements, usage, and available balances',
-    icon: ClipboardDocumentCheckIcon,
+    title: 'Leave position',
+    purpose: 'See leave eligibility, usage, balance, and policy utilization across employees.',
+    prompt: 'Show leave utilization and balance position across employees.',
     endpoint: '/reports/leave-balance',
-    color: 'purple',
+    reportType: 'leave_balance',
+    category: 'leave',
+    icon: FunnelIcon,
+    tone: 'purple',
+    suggestedColumns: ['employeeName', 'department', 'leaveType', 'totalAllocated', 'used', 'available'],
+    defaultGroupBy: 'leaveType',
+    measureField: 'used',
+    measureLabel: 'Leave used',
+    aggregation: 'sum',
   },
   {
-    id: 'joiners-leavers',
-    title: 'Joiners & Leavers',
-    description: 'Monthly movement trends and headcount changes',
-    icon: UserGroupIcon,
+    id: 'movement',
+    title: 'Joiners and leavers',
+    purpose: 'Track monthly people movement and headcount change over a period.',
+    prompt: 'Show joiners and leavers movement trend for this period.',
     endpoint: '/reports/joiners-leavers',
-    color: 'indigo',
-    requiresDateRange: true,
+    reportType: 'joiners_leavers',
+    category: 'workforce',
+    dateRange: true,
+    icon: ArrowPathIcon,
+    tone: 'indigo',
+    suggestedColumns: ['month', 'joiners', 'leavers', 'netChange'],
+    defaultGroupBy: 'month',
+    measureField: 'netChange',
+    measureLabel: 'Net change',
+    aggregation: 'sum',
   },
   {
     id: 'confirmation',
-    title: 'Confirmation Due',
-    description: 'Employees with probation ending soon',
-    icon: DocumentTextIcon,
+    title: 'Probation and confirmations',
+    purpose: 'Find employees whose probation confirmation is due or overdue.',
+    prompt: 'Show confirmation due and probation pending employees.',
     endpoint: '/reports/confirmation-due',
-    color: 'orange',
+    reportType: 'confirmation_due',
+    category: 'confirmation',
+    icon: CheckCircleIcon,
+    tone: 'orange',
+    suggestedColumns: ['employeeName', 'department', 'designation', 'probationEndDate', 'daysRemaining'],
+    defaultGroupBy: 'department',
+    measureLabel: 'Employees',
+    aggregation: 'count',
   },
   {
     id: 'attrition',
-    title: 'Attrition Report',
-    description: 'Employee turnover analysis and attrition rates',
-    icon: ArrowRightOnRectangleIcon,
+    title: 'Attrition and exits',
+    purpose: 'Analyze exit volume, attrition rate, and separation pattern over a selected period.',
+    prompt: 'Show attrition and exit trend for this period.',
     endpoint: '/reports/attrition',
-    color: 'red',
-    requiresDateRange: true,
+    reportType: 'attrition',
+    category: 'exit',
+    dateRange: true,
+    icon: ChartBarIcon,
+    tone: 'red',
+    suggestedColumns: ['department', 'month', 'exits', 'attritionRate', 'voluntaryExits', 'involuntaryExits'],
+    defaultGroupBy: 'department',
+    measureField: 'exits',
+    measureLabel: 'Exits',
+    aggregation: 'sum',
   },
   {
-    id: 'pms',
-    title: 'PMS Completion',
-    description: 'Performance review completion status',
-    icon: TrophyIcon,
+    id: 'performance',
+    title: 'Performance cycle',
+    purpose: 'Check appraisal cycle completion, pending reviews, and overdue actions.',
+    prompt: 'Show performance review completion status.',
     endpoint: '/reports/pms-completion',
-    color: 'yellow',
+    reportType: 'review_completion',
+    category: 'performance',
+    icon: PresentationChartLineIcon,
+    tone: 'amber',
+    suggestedColumns: ['employeeName', 'department', 'reviewCycle', 'status', 'overdueDays'],
+    defaultGroupBy: 'status',
+    measureLabel: 'Reviews',
+    aggregation: 'count',
   },
   {
-    id: 'missing-docs',
-    title: 'Missing Documents',
-    description: 'Employees with incomplete documentation',
-    icon: ClipboardDocumentCheckIcon,
+    id: 'documents',
+    title: 'Document completeness',
+    purpose: 'Identify employee document gaps and compliance readiness issues.',
+    prompt: 'Show missing employee documents and compliance gaps.',
     endpoint: '/reports/missing-documents',
-    color: 'pink',
+    reportType: 'missing_documents',
+    category: 'compliance',
+    icon: DocumentDuplicateIcon,
+    tone: 'pink',
+    suggestedColumns: ['employeeName', 'department', 'missingDocuments', 'criticality'],
+    defaultGroupBy: 'criticality',
+    measureField: 'documentCount',
+    measureLabel: 'Missing documents',
+    aggregation: 'sum',
   },
   {
-    id: 'memory-readiness',
-    title: 'Memory Readiness',
-    description: 'Employee, document, company record, and compensation coverage for implementation readiness',
-    icon: DocumentTextIcon,
+    id: 'memory',
+    title: 'ACV memory readiness',
+    purpose: 'Validate employee master, company documents, compensation, and payslip coverage.',
+    prompt: 'Show ACV implementation memory readiness and missing data.',
     endpoint: '/reports/memory-readiness',
-    color: 'cyan',
+    reportType: 'missing_documents',
+    category: 'compliance',
+    icon: SparklesIcon,
+    tone: 'cyan',
+    suggestedColumns: ['employeeName', 'employeeStatus', 'department', 'designation', 'missingMasterFields', 'readinessStatus'],
+    defaultGroupBy: 'readinessStatus',
+    measureLabel: 'Employees',
+    aggregation: 'count',
   },
 ];
 
-export default function ModernReports() {
-  const [selectedReport, setSelectedReport] = useState<string | null>(null);
-  const [reportData, setReportData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [analyticsQuestion, setAnalyticsQuestion] = useState('Show headcount, attendance, leave, attrition, and performance');
-  const [analyticsLoading, setAnalyticsLoading] = useState(false);
-  const [analyticsResult, setAnalyticsResult] = useState<any>(null);
-  const [dateRange, setDateRange] = useState({
-    startDate: new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0],
-    endDate: new Date().toISOString().split('T')[0],
-  });
+const toneClasses: Record<string, { bg: string; border: string; text: string; soft: string; bar: string }> = {
+  blue: { bg: 'bg-blue-600', border: 'border-blue-200', text: 'text-blue-700', soft: 'bg-blue-50', bar: 'bg-blue-500' },
+  green: { bg: 'bg-emerald-600', border: 'border-emerald-200', text: 'text-emerald-700', soft: 'bg-emerald-50', bar: 'bg-emerald-500' },
+  purple: { bg: 'bg-purple-600', border: 'border-purple-200', text: 'text-purple-700', soft: 'bg-purple-50', bar: 'bg-purple-500' },
+  indigo: { bg: 'bg-indigo-600', border: 'border-indigo-200', text: 'text-indigo-700', soft: 'bg-indigo-50', bar: 'bg-indigo-500' },
+  orange: { bg: 'bg-orange-600', border: 'border-orange-200', text: 'text-orange-700', soft: 'bg-orange-50', bar: 'bg-orange-500' },
+  red: { bg: 'bg-red-600', border: 'border-red-200', text: 'text-red-700', soft: 'bg-red-50', bar: 'bg-red-500' },
+  amber: { bg: 'bg-amber-500', border: 'border-amber-200', text: 'text-amber-700', soft: 'bg-amber-50', bar: 'bg-amber-500' },
+  pink: { bg: 'bg-pink-600', border: 'border-pink-200', text: 'text-pink-700', soft: 'bg-pink-50', bar: 'bg-pink-500' },
+  cyan: { bg: 'bg-cyan-600', border: 'border-cyan-200', text: 'text-cyan-700', soft: 'bg-cyan-50', bar: 'bg-cyan-500' },
+};
 
-  const getColorClasses = (color: string) => {
-    const colors: Record<string, { bg: string; text: string; hover: string; border: string }> = {
-      blue: { bg: 'bg-blue-50', text: 'text-blue-700', hover: 'hover:bg-blue-100', border: 'border-blue-200' },
-      green: { bg: 'bg-green-50', text: 'text-green-700', hover: 'hover:bg-green-100', border: 'border-green-200' },
-      purple: { bg: 'bg-purple-50', text: 'text-purple-700', hover: 'hover:bg-purple-100', border: 'border-purple-200' },
-      indigo: { bg: 'bg-indigo-50', text: 'text-indigo-700', hover: 'hover:bg-indigo-100', border: 'border-indigo-200' },
-      orange: { bg: 'bg-orange-50', text: 'text-orange-700', hover: 'hover:bg-orange-100', border: 'border-orange-200' },
-      red: { bg: 'bg-red-50', text: 'text-red-700', hover: 'hover:bg-red-100', border: 'border-red-200' },
-      yellow: { bg: 'bg-yellow-50', text: 'text-yellow-700', hover: 'hover:bg-yellow-100', border: 'border-yellow-200' },
-      pink: { bg: 'bg-pink-50', text: 'text-pink-700', hover: 'hover:bg-pink-100', border: 'border-pink-200' },
-      cyan: { bg: 'bg-cyan-50', text: 'text-cyan-700', hover: 'hover:bg-cyan-100', border: 'border-cyan-200' },
-    };
-    return colors[color] || colors.blue;
+const labelize = (value: string) =>
+  value
+    .replace(/_/g, ' ')
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^./, (char) => char.toUpperCase());
+
+const flattenValue = (value: any): string => {
+  if (value === null || value === undefined || value === '') return '-';
+  if (Array.isArray(value)) return value.join(', ');
+  if (typeof value === 'object') return JSON.stringify(value);
+  return String(value);
+};
+
+const toNumber = (value: any): number => {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  if (typeof value === 'string') {
+    const parsed = Number(value.replace(/,/g, ''));
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+};
+
+const isNumericColumn = (rows: any[], column: string) =>
+  rows.some((row) => row?.[column] !== null && row?.[column] !== undefined && row?.[column] !== '' && !Number.isNaN(Number(row[column])));
+
+const extractRows = (data: any): any[] => {
+  if (!data) return [];
+  if (Array.isArray(data.results)) return data.results;
+  if (Array.isArray(data)) return data;
+  return [];
+};
+
+const buildContextualNarrative = (topic: AnalyticsTopic, data: any, rowCount: number) => {
+  const reportName = data?.report || topic.title;
+  const summary = data?.summary || {};
+  const summaryParts = Object.entries(summary)
+    .filter(([, value]) => typeof value !== 'object' || value === null)
+    .slice(0, 3)
+    .map(([key, value]) => `${labelize(key)}: ${flattenValue(value)}`);
+
+  const suffix = summaryParts.length > 0 ? ` Key signals: ${summaryParts.join(' | ')}.` : '';
+  return `Fetched ${rowCount} source rows for ${reportName}. You can now refine columns, search the result set, group the data, switch to visualization, export it, or save this configuration as a reusable report template.${suffix}`;
+};
+
+export default function ModernReports() {
+  const [activeTab, setActiveTab] = useState<WorkbenchTab>('builder');
+  const [question, setQuestion] = useState(TOPICS[0].prompt);
+  const [selectedTopicId, setSelectedTopicId] = useState(TOPICS[0].id);
+  const [dateRange, setDateRange] = useState({ startDate: firstDayOfYear, endDate: todayIso });
+  const [reportData, setReportData] = useState<any>(null);
+  const [analyticsResult, setAnalyticsResult] = useState<any>(null);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [columnsOpen, setColumnsOpen] = useState(false);
+  const [groupBy, setGroupBy] = useState('');
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
+  const [chartType, setChartType] = useState<ChartType>('bar');
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [savedReports, setSavedReports] = useState<SavedReportCard[]>([]);
+
+  const selectedTopic = TOPICS.find((topic) => topic.id === selectedTopicId) || TOPICS[0];
+  const rows = useMemo(() => extractRows(reportData), [reportData]);
+  const availableColumns = useMemo(() => {
+    const columns = new Set<string>();
+    rows.slice(0, 25).forEach((row) => Object.keys(row || {}).forEach((key) => columns.add(key)));
+    return Array.from(columns);
+  }, [rows]);
+  const groupableColumns = useMemo(() => {
+    const preferred = selectedTopic.defaultGroupBy && availableColumns.includes(selectedTopic.defaultGroupBy)
+      ? [selectedTopic.defaultGroupBy]
+      : [];
+    const categorical = availableColumns.filter((column) => !isNumericColumn(rows, column));
+    return Array.from(new Set([...preferred, ...categorical]));
+  }, [availableColumns, rows, selectedTopic.defaultGroupBy]);
+  const effectiveMeasureField = selectedTopic.measureField && availableColumns.includes(selectedTopic.measureField)
+    ? selectedTopic.measureField
+    : undefined;
+  const measureColumnKey = 'metricValue';
+  const measureColumnLabel = selectedTopic.measureLabel || (effectiveMeasureField ? labelize(effectiveMeasureField) : 'Records');
+
+  const visibleColumns = selectedColumns.length > 0
+    ? selectedColumns.filter((column) => availableColumns.includes(column))
+    : availableColumns.slice(0, 8);
+
+  const groupedRows = useMemo(() => {
+    if (!groupBy) return [];
+    const groups = new Map<string, { total: number; count: number }>();
+    rows.forEach((row) => {
+      const key = flattenValue(row[groupBy]);
+      const current = groups.get(key) || { total: 0, count: 0 };
+      const value = selectedTopic.aggregation === 'count' || !effectiveMeasureField ? 1 : toNumber(row[effectiveMeasureField]);
+      groups.set(key, { total: current.total + value, count: current.count + 1 });
+    });
+    return Array.from(groups.entries())
+      .map(([label, aggregate]) => ({
+        label,
+        count: aggregate.count,
+        value: selectedTopic.aggregation === 'average'
+          ? aggregate.count > 0 ? Math.round((aggregate.total / aggregate.count) * 10) / 10 : 0
+          : aggregate.total,
+      }))
+      .sort((a, b) => b.value - a.value);
+  }, [effectiveMeasureField, groupBy, rows, selectedTopic.aggregation]);
+
+  const groupedDisplayRows = useMemo(() => {
+    if (!groupBy) return rows;
+    return groupedRows.map((group) => ({
+      [groupBy]: group.label,
+      [measureColumnKey]: group.value,
+      records: group.count,
+    }));
+  }, [groupBy, groupedRows, measureColumnKey, rows]);
+
+  const groupedDisplayColumns = groupBy ? [groupBy, measureColumnKey, 'records'] : visibleColumns;
+  const tableRows = rows;
+  const tableColumns = visibleColumns;
+  const exportRows = viewMode === 'table' ? tableRows : groupedDisplayRows;
+  const exportColumns = viewMode === 'table' ? tableColumns : groupedDisplayColumns;
+
+  const summaryCards = useMemo(() => {
+    const summary = reportData?.summary || {};
+    const primitiveSummary = Object.entries(summary)
+      .filter(([, value]) => typeof value !== 'object' || value === null)
+      .slice(0, 6)
+      .map(([key, value]) => ({ label: labelize(key), value: flattenValue(value) }));
+
+    if (primitiveSummary.length > 0) return primitiveSummary;
+
+    return [
+      { label: 'Rows fetched', value: String(rows.length) },
+      { label: 'Columns available', value: String(availableColumns.length) },
+      { label: 'Rows in current view', value: String(viewMode === 'table' ? tableRows.length : groupedDisplayRows.length) },
+      { label: 'Grouping', value: groupBy ? labelize(groupBy) : 'None' },
+    ];
+  }, [availableColumns.length, groupedDisplayRows.length, groupBy, reportData, rows.length, tableRows.length, viewMode]);
+
+  useEffect(() => {
+    loadSavedReports();
+  }, []);
+
+  useEffect(() => {
+    if (!rows.length || !availableColumns.length) return;
+
+    setSelectedColumns((current) => {
+      const retained = current.filter((column) => availableColumns.includes(column));
+      if (retained.length > 0) return retained;
+
+      const suggested = selectedTopic.suggestedColumns?.filter((column) => availableColumns.includes(column)) || [];
+      return suggested.length > 0 ? suggested : availableColumns.slice(0, 8);
+    });
+
+    setGroupBy((current) => {
+      if (current && groupableColumns.includes(current)) return current;
+      if (viewMode !== 'visual') return '';
+      return selectedTopic.defaultGroupBy && groupableColumns.includes(selectedTopic.defaultGroupBy)
+        ? selectedTopic.defaultGroupBy
+        : groupableColumns[0] || '';
+    });
+  }, [availableColumns.join('|'), groupableColumns.join('|'), rows.length, selectedTopicId, selectedTopic.suggestedColumns, selectedTopic.defaultGroupBy, viewMode]);
+
+  const ensureGrouping = () => {
+    if (groupBy) return groupBy;
+    const fallback = selectedTopic.defaultGroupBy && groupableColumns.includes(selectedTopic.defaultGroupBy)
+      ? selectedTopic.defaultGroupBy
+      : groupableColumns[0] || '';
+    if (fallback) setGroupBy(fallback);
+    return fallback;
   };
 
-  const fetchReport = async (report: ReportCard) => {
+  const changeViewMode = (mode: ViewMode) => {
+    if (mode === 'visual') {
+      ensureGrouping();
+    }
+    setViewMode(mode);
+  };
+
+  const loadSavedReports = async () => {
+    try {
+      const response = await api.get<SavedReportCard[]>('/reports/saved');
+      setSavedReports(response.data || []);
+    } catch (err) {
+      console.error('Failed to load saved reports', err);
+    }
+  };
+
+  const buildReportUrl = (topic: AnalyticsTopic) => {
+    const params = new URLSearchParams(topic.defaultParams || {});
+    if (topic.dateRange) {
+      params.set('startDate', dateRange.startDate);
+      params.set('endDate', dateRange.endDate);
+    }
+    const query = params.toString();
+    return query ? `${topic.endpoint}?${query}` : topic.endpoint;
+  };
+
+  const runWorkbench = async (topic = selectedTopic, nextQuestion = question) => {
     setLoading(true);
     setError(null);
-    setSelectedReport(report.id);
+    setReportData(null);
+    setAnalyticsResult(null);
 
     try {
-      let url = report.endpoint;
-      if (report.requiresDateRange) {
-        url += `?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`;
-      }
+      const reportResponse = await api.get(buildReportUrl(topic));
+      setReportData(reportResponse.data);
 
-      const response = await api.get(url);
-      setReportData(response.data);
+      try {
+        const analyticsResponse = await api.post('/analytics/query', { question: nextQuestion.trim() || topic.prompt });
+        const analyticsRows = extractRows(reportResponse.data);
+        const analyticsPayload = analyticsResponse.data;
+        const recognized = Array.isArray(analyticsPayload?.metrics) && analyticsPayload.metrics.length > 0;
+        setAnalyticsResult(
+          recognized
+            ? analyticsPayload
+            : {
+                answer: buildContextualNarrative(topic, reportResponse.data, analyticsRows.length),
+                followUpQuestions: [
+                  `Group ${topic.title.toLowerCase()} by ${labelize(topic.defaultGroupBy || 'department')}`,
+                  `Show only critical ${topic.title.toLowerCase()} records`,
+                  `Convert this ${topic.title.toLowerCase()} view into a chart`,
+                ],
+              }
+        );
+      } catch (analyticsError) {
+        setAnalyticsResult({
+          answer: buildContextualNarrative(topic, reportResponse.data, extractRows(reportResponse.data).length),
+          followUpQuestions: [],
+        });
+      }
+      setViewMode('table');
     } catch (err: any) {
-      console.error('Error fetching report:', err);
-      setError(err.response?.data?.error?.message || err.response?.data?.message || 'Failed to fetch report');
+      setError(err.response?.data?.error?.message || err.response?.data?.message || 'Failed to build analytics view');
     } finally {
       setLoading(false);
     }
   };
 
-  const runAnalyticsQuery = async () => {
-    if (!analyticsQuestion.trim()) return;
-
-    setAnalyticsLoading(true);
-    setError(null);
-    try {
-      const response = await api.post('/analytics/query', {
-        question: analyticsQuestion.trim(),
-      });
-      setAnalyticsResult(response.data);
-    } catch (err: any) {
-      console.error('Error running analytics query:', err);
-      setError(err.response?.data?.error?.message || err.response?.data?.message || 'Failed to run analytics query');
-    } finally {
-      setAnalyticsLoading(false);
-    }
+  const selectTopic = (topic: AnalyticsTopic) => {
+    setSelectedTopicId(topic.id);
+    setQuestion(topic.prompt);
+    setReportData(null);
+    setAnalyticsResult(null);
+    setSelectedColumns([]);
+    setColumnsOpen(false);
+    setGroupBy('');
+    setViewMode('table');
+    setChartType('bar');
   };
 
-  const exportToCSV = () => {
-    if (!reportData || !reportData.results || reportData.results.length === 0) return;
+  const exportData = (format: ExportFormat) => {
+    const filenameBase = `${selectedTopic.id}_${new Date().toISOString().split('T')[0]}`;
 
-    const headers = Object.keys(reportData.results[0]);
-    const csvContent = [
-      headers.join(','),
-      ...reportData.results.map((row: any) =>
-        headers.map((header) => {
-          const value = row[header];
-          // Escape commas and quotes
-          if (value === null || value === undefined) return '';
-          const stringValue = String(value);
-          if (stringValue.includes(',') || stringValue.includes('"')) {
-            return `"${stringValue.replace(/"/g, '""')}"`;
-          }
-          return stringValue;
+    if (format === 'print') {
+      window.print();
+      return;
+    }
+
+    if (format === 'json') {
+      const blob = new Blob([JSON.stringify({ reportData, rows: exportRows, groupBy, columns: exportColumns, viewMode }, null, 2)], { type: 'application/json' });
+      downloadBlob(blob, `${filenameBase}.json`);
+      return;
+    }
+
+    const columns = exportColumns.length ? exportColumns : availableColumns;
+    const csv = [
+      columns.map(getColumnLabel).join(','),
+      ...exportRows.map((row) =>
+        columns.map((column) => {
+          const text = flattenValue(row[column]);
+          return text.includes(',') || text.includes('"') ? `"${text.replace(/"/g, '""')}"` : text;
         }).join(',')
-      )
+      ),
     ].join('\n');
+    downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), `${filenameBase}.csv`);
+  };
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+  const downloadBlob = (blob: Blob, filename: string) => {
     const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${reportData.report.replace(/ /g, '_')}_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
-  const getStatusBadgeClass = (status?: string) => {
-    switch (status) {
-      case 'complete':
-      case 'present':
-      case 'active':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
-      case 'needs_review':
-      case 'inactive':
-      case 'missing_attachments':
-        return 'bg-amber-50 text-amber-700 border-amber-200';
-      case 'critical':
-      case 'missing':
-      case 'exited':
-        return 'bg-red-50 text-red-700 border-red-200';
-      default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
+  const saveCurrentReport = async () => {
+    if (!reportData) return;
+    const name = `${selectedTopic.title} - ${new Date().toLocaleDateString()}`;
+    setSaving(true);
+    setError(null);
+
+    try {
+      await api.post('/reports/saved', {
+        reportName: name,
+        description: question,
+        category: selectedTopic.category,
+        reportType: selectedTopic.reportType,
+        filterConfig: {
+          dateRange: selectedTopic.dateRange ? dateRange : undefined,
+          customFilters: {
+            topicId: selectedTopic.id,
+            question,
+            columns: visibleColumns,
+            groupBy,
+            viewMode,
+            chartType,
+          },
+        },
+        chartConfig: groupBy ? { type: chartType, xAxis: groupBy, yAxis: effectiveMeasureField || 'records', groupBy, aggregation: selectedTopic.aggregation || 'count' } : undefined,
+        outputFormat: 'json',
+        isPublic: false,
+      });
+      await loadSavedReports();
+      setActiveTab('saved');
+    } catch (err: any) {
+      setError(err.response?.data?.error?.message || err.response?.data?.message || 'Failed to save report template');
+    } finally {
+      setSaving(false);
     }
   };
 
-  const renderBadge = (status?: string) => (
-    <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold capitalize ${getStatusBadgeClass(status)}`}>
-      {(status || 'unknown').replace(/_/g, ' ')}
-    </span>
-  );
+  const executeSavedReport = async (report: SavedReportCard) => {
+    setLoading(true);
+    setError(null);
+    setActiveTab('builder');
 
-  const renderMemoryReadinessReport = () => {
-    const summary = reportData?.summary || {};
-    const results = reportData?.results || [];
-    const companyFindings = reportData?.companyDocumentFindings || [];
-    const summaryCards = [
-      { label: 'Readiness score', value: `${summary.readinessScore ?? 0}%`, tone: 'blue' },
-      { label: 'Employees', value: summary.totalEmployees ?? 0, tone: 'slate' },
-      { label: 'Active', value: summary.activeEmployees ?? 0, tone: 'green' },
-      { label: 'Inactive to classify', value: summary.inactiveEmployeesNeedingExitClassification ?? 0, tone: 'amber' },
-      { label: 'Missing master data', value: summary.employeesWithMissingMasterData ?? 0, tone: 'red' },
-      { label: 'Missing required docs', value: summary.employeesMissingRequiredDocuments ?? 0, tone: 'red' },
-      { label: 'No salary structure', value: summary.employeesWithoutSalaryStructure ?? 0, tone: 'amber' },
-      { label: 'No payslip records', value: summary.employeesWithoutPayslip ?? 0, tone: 'amber' },
-      { label: 'Payslips without files', value: summary.payslipRecordsMissingAttachments ?? 0, tone: 'red' },
-      { label: 'Company documents', value: summary.companyDocuments ?? 0, tone: 'blue' },
-      { label: 'Unverified company docs', value: summary.unverifiedCompanyDocuments ?? 0, tone: 'amber' },
-      { label: 'Expiring in 60 days', value: summary.expiringCompanyDocuments60Days ?? 0, tone: 'red' },
-    ];
-    const toneClasses: Record<string, string> = {
-      blue: 'from-blue-50 to-white border-blue-100 text-blue-800',
-      green: 'from-emerald-50 to-white border-emerald-100 text-emerald-800',
-      amber: 'from-amber-50 to-white border-amber-100 text-amber-800',
-      red: 'from-red-50 to-white border-red-100 text-red-800',
-      slate: 'from-slate-50 to-white border-slate-100 text-slate-800',
-    };
+    try {
+      const savedTopicId = report.filterConfig?.customFilters?.topicId;
+      const matchingTopic =
+        TOPICS.find((topic) => topic.id === savedTopicId) ||
+        TOPICS.find((topic) => topic.reportType === report.reportType) ||
+        selectedTopic;
 
-    return (
-      <div className="space-y-6">
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-primary-700">Implementation readiness</p>
-              <h3 className="mt-1 text-xl font-semibold text-gray-900">{reportData.report}</h3>
-              <p className="mt-2 max-w-3xl text-sm text-gray-600">
-                This view checks whether tenant memory is usable: employee master completeness, documents,
-                company records, compensation records, payslip file coverage, and historical employee classification.
-              </p>
-            </div>
-            {results.length > 0 && (
-              <button onClick={exportToCSV} className="btn-secondary flex items-center gap-2 whitespace-nowrap">
-                <ArrowDownTrayIcon className="h-4 w-4" />
-                Export CSV
-              </button>
-            )}
-          </div>
-        </div>
+      setSelectedTopicId(matchingTopic.id);
+      setQuestion(report.description || report.reportName);
+      const savedColumns = report.filterConfig?.customFilters?.columns;
+      if (Array.isArray(savedColumns)) setSelectedColumns(savedColumns);
+      setGroupBy(report.filterConfig?.customFilters?.groupBy || matchingTopic.defaultGroupBy || '');
+      setViewMode(report.filterConfig?.customFilters?.viewMode || 'table');
+      setChartType(report.filterConfig?.customFilters?.chartType || report.chartConfig?.type || 'bar');
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {summaryCards.map((card) => (
-            <div key={card.label} className={`rounded-lg border bg-gradient-to-br p-4 ${toneClasses[card.tone]}`}>
-              <p className="text-xs font-bold uppercase tracking-wide opacity-75">{card.label}</p>
-              <p className="mt-2 text-2xl font-bold text-gray-950">{card.value}</p>
-            </div>
-          ))}
-        </div>
+      if (report.filterConfig?.dateRange) {
+        setDateRange(report.filterConfig.dateRange);
+      }
 
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-          Historical employees imported as inactive are included in readiness coverage. They should be reviewed
-          and converted to exited only when the HR exit/FNF evidence is confirmed.
-        </div>
+      const response =
+        savedTopicId
+          ? await api.get(buildReportUrl(matchingTopic))
+          : await api.post(`/reports/saved/${report.reportId}/execute`);
 
-        {companyFindings.length > 0 && (
-          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <h4 className="text-lg font-semibold text-gray-900">Company document vault coverage</h4>
-            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-              {companyFindings.map((finding: any) => (
-                <div key={finding.category} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                  <p className="text-xs font-bold uppercase tracking-wide text-gray-500">{String(finding.category).replace(/_/g, ' ')}</p>
-                  <div className="mt-3">{renderBadge(finding.status)}</div>
-                  <div className="mt-3 space-y-1 text-sm text-gray-700">
-                    <p className="flex justify-between"><span>Active</span><span className="font-semibold">{finding.activeDocuments}</span></p>
-                    <p className="flex justify-between"><span>Verified</span><span className="font-semibold">{finding.verifiedDocuments}</span></p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {results.length > 0 ? (
-          <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-            <div className="border-b border-gray-200 p-4">
-              <h4 className="text-lg font-semibold text-gray-900">Employee readiness details</h4>
-              <p className="mt-1 text-sm text-gray-500">Use this table as the cleanup queue for ACV data migration.</p>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    {[
-                      'Employee',
-                      'Status',
-                      'Department',
-                      'Designation',
-                      'Master gaps',
-                      'Required docs',
-                      'Salary',
-                      'Payslips',
-                      'Files missing',
-                      'Readiness',
-                    ].map((heading) => (
-                      <th key={heading} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-                        {heading}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {results.map((row: any) => (
-                    <tr key={row.employeeId} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm">
-                        <p className="font-semibold text-gray-900">{row.employeeName}</p>
-                        <p className="text-xs text-gray-500">{row.employeeCode}</p>
-                      </td>
-                      <td className="px-4 py-3">{renderBadge(row.employeeStatus)}</td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{row.department}</td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{row.designation}</td>
-                      <td className="max-w-[220px] px-4 py-3 text-sm text-gray-700">{row.missingMasterFields}</td>
-                      <td className="max-w-[220px] px-4 py-3 text-sm text-gray-700">{row.missingRequiredDocuments}</td>
-                      <td className="px-4 py-3">{renderBadge(row.salaryStructureStatus)}</td>
-                      <td className="px-4 py-3">
-                        <div className="space-y-1">
-                          {renderBadge(row.payslipStatus)}
-                          <p className="text-xs text-gray-500">{row.payslipRecords || 0} records</p>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="space-y-1">
-                          {renderBadge(row.payslipAttachmentStatus)}
-                          <p className="text-xs text-gray-500">{row.payslipRecordsMissingAttachments || 0} missing</p>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">{renderBadge(row.readinessStatus)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        ) : (
-          <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-center">
-            <ChartBarIcon className="mx-auto mb-4 h-16 w-16 text-gray-400" />
-            <h3 className="text-lg font-medium text-gray-900">No readiness data available</h3>
-          </div>
-        )}
-      </div>
-    );
+      setReportData(response.data);
+      setAnalyticsResult({
+        answer: buildContextualNarrative(matchingTopic, response.data, extractRows(response.data).length),
+        followUpQuestions: [],
+      });
+      await loadSavedReports();
+    } catch (err: any) {
+      setError(err.response?.data?.error?.message || err.response?.data?.message || 'Failed to execute saved report');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const renderReportData = () => {
-    if (loading) {
-      return (
-        <div className="flex flex-col items-center justify-center h-64 bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mb-4"></div>
-          <p className="text-gray-500">Loading report...</p>
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">Error loading report</h3>
-              <p className="mt-1 text-sm text-red-700">{error}</p>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    if (!reportData) return null;
-
-    if (selectedReport === 'memory-readiness') {
-      return renderMemoryReadinessReport();
-    }
-
-    const hasResults = reportData.results && reportData.results.length > 0;
-
-    return (
-      <div className="space-y-6">
-        {/* Report Header with Export */}
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{reportData.report}</h3>
-              {reportData.totalRecords !== undefined && (
-                <p className="text-sm text-gray-500">Total Records: {reportData.totalRecords}</p>
-              )}
-            </div>
-            {hasResults && (
-              <button
-                onClick={exportToCSV}
-                className="btn-secondary flex items-center gap-2"
-              >
-                <ArrowDownTrayIcon className="h-4 w-4" />
-                Export CSV
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Summary */}
-        {reportData.summary && (
-          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-            <h4 className="text-lg font-medium text-gray-900 mb-4">Summary</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {Object.entries(reportData.summary).map(([key, value]: [string, any]) => (
-                <div key={key} className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-                    {key.replace(/([A-Z])/g, ' $1').trim()}
-                  </p>
-                  {typeof value === 'object' && value !== null ? (
-                    <div className="space-y-1">
-                      {Object.entries(value).map(([k, v]) => (
-                        <p key={k} className="text-sm text-gray-700 flex justify-between">
-                          <span className="font-medium">{k}:</span>
-                          <span className="text-gray-900 font-semibold">{String(v)}</span>
-                        </p>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-2xl font-bold text-gray-900">{String(value)}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Results Table */}
-        {hasResults ? (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    {Object.keys(reportData.results[0]).map((key) => (
-                      <th
-                        key={key}
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
-                      >
-                        {key.replace(/([A-Z])/g, ' $1').trim()}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {reportData.results.map((row: any, idx: number) => (
-                    <tr key={idx} className="hover:bg-gray-50 transition-colors">
-                      {Object.values(row).map((value: any, cellIdx) => (
-                        <td key={cellIdx} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {value !== null && value !== undefined ? String(value) : '-'}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm p-12 border-2 border-dashed border-gray-300 text-center">
-            <ChartBarIcon className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Data Available</h3>
-            <p className="text-gray-500 max-w-md mx-auto">
-              There are no records matching the selected criteria. Try adjusting your filters or check back later.
-            </p>
-          </div>
-        )}
-      </div>
-    );
+  const toggleColumn = (column: string) => {
+    setSelectedColumns((current) => {
+      const base = current.length > 0 ? current : availableColumns.slice(0, 8);
+      return base.includes(column) ? base.filter((item) => item !== column) : [...base, column];
+    });
   };
 
-  const currentReport = REPORT_CARDS.find((r) => r.id === selectedReport);
+  const maxGroupCount = Math.max(...groupedRows.map((row) => row.value), 1);
+  const tone = toneClasses[selectedTopic.tone] || toneClasses.blue;
+  const piePalette = ['#2563eb', '#059669', '#7c3aed', '#ea580c', '#dc2626', '#0891b2', '#be123c', '#4f46e5'];
+  const totalGroupCount = groupedRows.reduce((sum, group) => sum + group.value, 0);
+  const chartTypeLabel = `${labelize(chartType)} chart`;
+  const getColumnLabel = (column: string) => {
+    if (column === measureColumnKey) return measureColumnLabel;
+    if (column === 'records') return 'Source rows';
+    return labelize(column);
+  };
+  const pieGradient = groupedRows.slice(0, 8).reduce(
+    (segments, group, index) => {
+      const start = segments.cursor;
+      const end = start + (totalGroupCount ? (group.value / totalGroupCount) * 100 : 0);
+      return {
+        cursor: end,
+        parts: [...segments.parts, `${piePalette[index % piePalette.length]} ${start}% ${end}%`],
+      };
+    },
+    { cursor: 0, parts: [] as string[] }
+  ).parts.join(', ');
+  const linePoints = groupedRows.slice(0, 12).map((group, index, items) => {
+    const x = items.length <= 1 ? 0 : (index / (items.length - 1)) * 100;
+    const y = 100 - ((group.value / maxGroupCount) * 90 + 5);
+    return `${x},${y}`;
+  }).join(' ');
 
   return (
     <ModernLayout>
-      <div className="p-6 space-y-6 max-w-7xl mx-auto">
-        {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Reports & Analytics</h1>
-            <p className="mt-2 text-sm text-gray-600">
-              Generate comprehensive HR reports and export data for analysis
-            </p>
-          </div>
-        </div>
-
-        {/* Date Range Filter & Back Button (shown when report is selected) */}
-        {selectedReport && (
-          <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
-            <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
-              {currentReport?.requiresDateRange && (
-                <>
-                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full sm:w-auto">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                        Start Date
-                      </label>
-                      <input
-                        type="date"
-                        value={dateRange.startDate}
-                        onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                        End Date
-                      </label>
-                      <input
-                        type="date"
-                        value={dateRange.endDate}
-                        onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      />
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => currentReport && fetchReport(currentReport)}
-                    className="btn-primary flex items-center gap-2 whitespace-nowrap"
-                  >
-                    <ArrowPathIcon className="h-4 w-4" />
-                    Refresh
-                  </button>
-                </>
-              )}
+      <div className="mx-auto max-w-[1500px] space-y-4 p-4 lg:p-5">
+        <section className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary-700">HR Analytics</p>
+                <h1 className="text-xl font-bold text-slate-950">Conversational report workbench</h1>
+              </div>
+              <p className="mt-1 max-w-4xl text-xs text-slate-600">
+                Build HR views from a business question, then shape, visualize, export, or save them as reusable templates.
+              </p>
+            </div>
+            <div className="inline-flex w-fit rounded-lg border border-slate-200 bg-slate-50 p-1">
               <button
-                onClick={() => {
-                  setSelectedReport(null);
-                  setReportData(null);
-                  setError(null);
-                }}
-                className="btn-secondary flex items-center gap-2 whitespace-nowrap"
+                onClick={() => setActiveTab('builder')}
+                className={`rounded-md px-3 py-1.5 text-xs font-semibold ${activeTab === 'builder' ? 'bg-white text-primary-700 shadow-sm' : 'text-slate-600'}`}
               >
-                <ArrowLeftIcon className="h-4 w-4" />
-                Back to Reports
+                Builder
+              </button>
+              <button
+                onClick={() => setActiveTab('saved')}
+                className={`rounded-md px-3 py-1.5 text-xs font-semibold ${activeTab === 'saved' ? 'bg-white text-primary-700 shadow-sm' : 'text-slate-600'}`}
+              >
+                Saved reports
               </button>
             </div>
+          </div>
+        </section>
+
+        {error && (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-800">
+            {error}
           </div>
         )}
 
-        {!selectedReport && (
-          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-            <div className="flex flex-col lg:flex-row lg:items-end gap-4">
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Analytics Question
-                </label>
-                <input
-                  type="text"
-                  value={analyticsQuestion}
-                  onChange={(e) => setAnalyticsQuestion(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                />
-              </div>
-              <button
-                onClick={runAnalyticsQuery}
-                disabled={analyticsLoading || !analyticsQuestion.trim()}
-                className="btn-primary flex items-center gap-2 whitespace-nowrap disabled:opacity-50"
-              >
-                <ChartBarIcon className="h-4 w-4" />
-                {analyticsLoading ? 'Analyzing...' : 'Run Analytics'}
-              </button>
-            </div>
+        {activeTab === 'builder' ? (
+          <>
+            <section className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+              <div className="grid grid-cols-1 gap-2 xl:grid-cols-[280px_1fr_108px] xl:items-start">
+                <div className="min-w-0">
+                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                    HR/Business Perspective
+                  </label>
+                  <select
+                    value={selectedTopicId}
+                    onChange={(event) => {
+                      const topic = TOPICS.find((item) => item.id === event.target.value);
+                      if (topic) selectTopic(topic);
+                    }}
+                    className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                  >
+                    {TOPICS.map((topic) => (
+                      <option key={topic.id} value={topic.id}>
+                        {topic.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-            {analyticsResult && (
-              <div className="mt-6 space-y-4">
-                <div className="text-sm text-gray-700">{analyticsResult.answer}</div>
-                {analyticsResult.metrics?.length > 0 && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {analyticsResult.metrics.map((metric: any) => (
-                      <div key={metric.metricName} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                        <p className="text-xs font-medium text-gray-500 uppercase">
-                          {metric.metricName.replace(/_/g, ' ')}
-                        </p>
-                        <p className="mt-2 text-2xl font-bold text-gray-900">
-                          {typeof metric.value === 'number' ? metric.value.toFixed(1) : metric.value}
-                        </p>
-                        {metric.trend && (
-                          <p className="mt-1 text-xs text-gray-500 capitalize">{metric.trend}</p>
+                <div className="min-w-0">
+                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wide text-slate-500">Ask AuroraHR</label>
+                  <textarea
+                    value={question}
+                    onChange={(event) => setQuestion(event.target.value)}
+                    rows={1}
+                    className="h-10 w-full resize-none overflow-hidden rounded-lg border border-slate-300 px-3 py-2 text-sm leading-6 focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                    placeholder="Example: Show leave utilization by employee and department"
+                  />
+                </div>
+
+                <div className="pt-[21px]">
+                  <button
+                    onClick={() => runWorkbench()}
+                    disabled={loading || !question.trim()}
+                    className="btn-primary flex h-10 w-full items-center justify-center gap-1.5 whitespace-nowrap px-3 text-xs disabled:opacity-60"
+                  >
+                    <SparklesIcon className="h-4 w-4" />
+                    {loading ? 'Building...' : 'Build'}
+                  </button>
+                </div>
+              </div>
+              <p className="mt-2 line-clamp-1 text-xs leading-5 text-slate-500">{selectedTopic.purpose}</p>
+
+              {analyticsResult && (
+                <div className={`mt-3 rounded-lg border ${tone.border} ${tone.soft} px-3 py-2`}>
+                  <p className="text-xs font-medium leading-5 text-slate-800">{analyticsResult.answer}</p>
+                  {analyticsResult.followUpQuestions?.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {analyticsResult.followUpQuestions.map((followUp: string) => (
+                        <button
+                          key={followUp}
+                          onClick={() => setQuestion(followUp)}
+                          className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm hover:text-primary-700"
+                        >
+                          {followUp}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+
+            {reportData && (
+              <section className="space-y-3">
+                <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                  <div className="space-y-2">
+                    <div className="min-w-0 border-b border-slate-100 pb-2">
+                      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                        <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Fetched source data</p>
+                        <h2 className="truncate text-lg font-bold text-slate-950">{reportData.report || selectedTopic.title}</h2>
+                      </div>
+                      <p className="mt-0.5 text-xs text-slate-600">
+                        {rows.length} rows visible. {availableColumns.length} fields available.
+                      </p>
+                    </div>
+
+                    <div className="flex w-full flex-wrap items-center gap-1.5 overflow-visible pb-1 xl:gap-2">
+                      {selectedTopic.dateRange && (
+                        <>
+                          <input
+                            aria-label="Start date"
+                            type="date"
+                            value={dateRange.startDate}
+                            onChange={(event) => setDateRange({ ...dateRange, startDate: event.target.value })}
+                            className="h-9 w-[124px] shrink-0 rounded-lg border border-slate-300 bg-white px-2 text-xs font-semibold text-slate-700"
+                          />
+                          <input
+                            aria-label="End date"
+                            type="date"
+                            value={dateRange.endDate}
+                            onChange={(event) => setDateRange({ ...dateRange, endDate: event.target.value })}
+                            className="h-9 w-[124px] shrink-0 rounded-lg border border-slate-300 bg-white px-2 text-xs font-semibold text-slate-700"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => runWorkbench()}
+                            disabled={loading}
+                            className="h-9 shrink-0 rounded-lg border border-primary-200 bg-primary-50 px-3 text-xs font-bold text-primary-700 disabled:opacity-60"
+                          >
+                            Apply dates
+                          </button>
+                        </>
+                      )}
+                      <select
+                        aria-label="Group report by"
+                        value={groupBy}
+                        onChange={(event) => setGroupBy(event.target.value)}
+                        className="h-9 w-[150px] shrink-0 rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700"
+                      >
+                        <option value="">No grouping</option>
+                        {groupableColumns.map((column) => (
+                          <option key={column} value={column}>{labelize(column)}</option>
+                        ))}
+                      </select>
+                      <div className="relative shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => setColumnsOpen((open) => !open)}
+                          className="flex h-9 w-[210px] items-center justify-between gap-2 rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700"
+                          aria-haspopup="listbox"
+                          aria-expanded={columnsOpen}
+                        >
+                          <span className="truncate">{visibleColumns.length} columns selected</span>
+                          <ChevronDownIcon className={`h-4 w-4 shrink-0 transition ${columnsOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        {columnsOpen && (
+                        <div className="absolute left-0 z-20 mt-2 max-h-80 w-72 overflow-auto rounded-xl border border-slate-200 bg-white p-2 shadow-xl" role="listbox" aria-label="Column selector">
+                          <div className="mb-1 border-b border-slate-100 px-2 pb-2 text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                            Multi-select fields
+                          </div>
+                          <div className="mb-2 flex gap-2 px-2">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedColumns(availableColumns)}
+                              className="rounded-md bg-slate-100 px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-200"
+                            >
+                              Select all
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedColumns(availableColumns.slice(0, 8))}
+                              className="rounded-md bg-slate-100 px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-200"
+                            >
+                              Reset
+                            </button>
+                          </div>
+                          {availableColumns.map((column) => (
+                            <button
+                              key={column}
+                              type="button"
+                              aria-pressed={visibleColumns.includes(column)}
+                              onClick={() => toggleColumn(column)}
+                              className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs ${
+                                visibleColumns.includes(column) ? 'bg-primary-50 text-primary-800' : 'text-slate-700 hover:bg-slate-50'
+                              }`}
+                            >
+                              <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[10px] ${
+                                visibleColumns.includes(column) ? 'border-primary-600 bg-primary-600 text-white' : 'border-slate-300 bg-white'
+                              }`}>
+                                {visibleColumns.includes(column) ? '✓' : ''}
+                              </span>
+                              <span className="truncate">{labelize(column)}</span>
+                            </button>
+                          ))}
+                        </div>
                         )}
                       </div>
-                    ))}
-                  </div>
-                )}
-                {analyticsResult.followUpQuestions?.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {analyticsResult.followUpQuestions.map((question: string) => (
+                      <div className="flex h-9 shrink-0 items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5">
+                        {(['table', 'summary', 'visual'] as ViewMode[]).map((mode) => (
+                          <button
+                            key={mode}
+                            onClick={() => changeViewMode(mode)}
+                            className={`h-7 rounded-md px-2 text-xs font-semibold capitalize ${
+                              viewMode === mode ? 'bg-primary-600 text-white shadow-sm' : 'text-slate-700'
+                            }`}
+                          >
+                            {mode}
+                          </button>
+                        ))}
+                      </div>
+                      {viewMode === 'visual' && (
+                        <div className="flex h-9 shrink-0 items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5">
+                          {(['bar', 'pie', 'line'] as ChartType[]).map((type) => (
+                            <button
+                              key={type}
+                              type="button"
+                              aria-label={`${labelize(type)} chart`}
+                              aria-pressed={chartType === type}
+                              onClick={() => setChartType(type)}
+                              className={`h-7 rounded-md px-2.5 text-xs font-semibold ${
+                                chartType === type ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700'
+                              }`}
+                            >
+                              {labelize(type)}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      <details className="relative shrink-0">
+                        <summary className="flex h-9 w-[96px] cursor-pointer list-none items-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700">
+                          <ArrowDownTrayIcon className="h-4 w-4" />
+                          Download
+                        </summary>
+                        <div className="absolute right-0 z-20 mt-2 w-36 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl">
+                          <button onClick={() => exportData('csv')} className="block w-full rounded-lg px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-50">CSV</button>
+                          <button onClick={() => exportData('json')} className="block w-full rounded-lg px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-50">JSON</button>
+                          <button onClick={() => exportData('print')} className="block w-full rounded-lg px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-50">Print / PDF</button>
+                        </div>
+                      </details>
                       <button
-                        key={question}
-                        onClick={() => setAnalyticsQuestion(question)}
-                        className="px-3 py-1.5 rounded-full bg-gray-100 text-sm text-gray-700 hover:bg-gray-200"
+                        onClick={saveCurrentReport}
+                        disabled={saving}
+                        className="flex h-9 w-[66px] shrink-0 items-center justify-center gap-1 rounded-lg bg-slate-950 px-2 text-xs font-semibold text-white disabled:opacity-60"
                       >
-                        {question}
+                        <BookmarkIcon className="h-4 w-4" />
+                        {saving ? 'Saving...' : 'Save'}
                       </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Report Cards Grid */}
-        {!selectedReport && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {REPORT_CARDS.map((report) => {
-              const colors = getColorClasses(report.color);
-              return (
-                <button
-                  key={report.id}
-                  onClick={() => fetchReport(report)}
-                  className={`text-left bg-white rounded-lg shadow-sm p-6 border-2 ${colors.border} transition-all duration-200 hover:shadow-md ${colors.hover} group`}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-lg ${colors.bg} flex-shrink-0`}>
-                      <report.icon className={`h-6 w-6 ${colors.text}`} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
-                        {report.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 leading-relaxed">
-                        {report.description}
-                      </p>
-                      {report.requiresDateRange && (
-                        <span className="inline-flex items-center mt-3 text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-medium">
-                          📅 Date Range Required
+                  </div>
+                </div>
+
+                <main className="space-y-3">
+                  {viewMode === 'summary' && (
+                    <div className="min-h-[460px] rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                      <div className={`rounded-xl border ${tone.border} ${tone.soft} p-4`}>
+                        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                          <div>
+                            <p className={`text-xs font-bold uppercase tracking-[0.18em] ${tone.text}`}>Summary infographic</p>
+                            <h3 className="mt-1 text-xl font-bold text-slate-950">{reportData.report || selectedTopic.title}</h3>
+                            <p className="mt-1 max-w-3xl text-sm text-slate-600">
+                              {rows.length} source rows across {availableColumns.length} fields, shaped from the selected HR perspective.
+                            </p>
+                          </div>
+                          <div className="rounded-2xl bg-white px-6 py-4 text-center shadow-sm">
+                            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Records</p>
+                            <p className="text-4xl font-bold text-slate-950">{rows.length}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                        {summaryCards.map((card) => (
+                          <div key={card.label} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{card.label}</p>
+                            <p className="mt-2 break-words text-2xl font-bold text-slate-950">{card.value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {viewMode === 'visual' && (
+                    <div className="min-h-[460px] rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <ChartBarIcon className="h-5 w-5 text-primary-700" />
+                          <h3 className="font-semibold text-slate-950">
+                            {groupBy ? `${labelize(groupBy)} distribution` : 'Select a grouping field to visualize'}
+                          </h3>
+                        </div>
+                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-slate-600">
+                          {chartTypeLabel}
                         </span>
+                      </div>
+
+                      {groupedRows.length > 0 ? (
+                        <>
+                          {chartType === 'bar' && (
+                            <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                              <div className="flex h-56 items-end gap-4 overflow-x-auto border-b border-l border-slate-200 px-4 pb-4">
+                              {groupedRows.slice(0, 12).map((group) => (
+                                <div key={group.label} className="flex h-full min-w-[72px] flex-col items-center justify-end gap-2">
+                                  <span className="text-xs font-bold text-slate-900">{group.value}</span>
+                                  <div
+                                    className={`w-12 rounded-t-lg ${tone.bar}`}
+                                    style={{ height: `${Math.max(12, (group.value / maxGroupCount) * 160)}px` }}
+                                  />
+                                  <div className="h-10 w-full text-center text-[11px] font-semibold leading-4 text-slate-600">
+                                    {group.label}
+                                  </div>
+                                </div>
+                              ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {chartType === 'pie' && (
+                            <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] lg:items-center">
+                              <div className="relative mx-auto flex h-56 w-56 items-center justify-center rounded-full border border-slate-200 shadow-inner" style={{ background: `conic-gradient(${pieGradient || '#e2e8f0 0% 100%'})` }}>
+                                <div className="flex h-28 w-28 flex-col items-center justify-center rounded-full bg-white shadow-sm">
+                                  <span className="text-xs font-bold uppercase tracking-wide text-slate-500">Total</span>
+                                  <span className="text-3xl font-bold text-slate-950">{totalGroupCount}</span>
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                                {groupedRows.slice(0, 8).map((group, index) => (
+                                  <div key={group.label} className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-3 py-2">
+                                    <span className="flex min-w-0 items-center gap-2">
+                                      <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: piePalette[index % piePalette.length] }} />
+                                      <span className="truncate text-sm font-medium text-slate-700">{group.label}</span>
+                                    </span>
+                                    <span className="text-sm font-bold text-slate-950">{group.value}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {chartType === 'line' && (
+                            <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                              <svg viewBox="0 0 100 100" className="h-56 w-full overflow-visible rounded-lg bg-white">
+                                {[20, 40, 60, 80].map((y) => (
+                                  <line key={y} x1="0" x2="100" y1={y} y2={y} stroke="#e2e8f0" strokeWidth="0.4" />
+                                ))}
+                                <polyline
+                                  fill="none"
+                                  stroke="#2563eb"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="3"
+                                  points={linePoints}
+                                />
+                                {linePoints.split(' ').filter(Boolean).map((point, index) => {
+                                  const [x, y] = point.split(',');
+                                  return <circle key={point} cx={x} cy={y} r="1.8" fill={piePalette[index % piePalette.length]} />;
+                                })}
+                              </svg>
+                              <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4">
+                                {groupedRows.slice(0, 8).map((group) => (
+                                  <div key={group.label} className="rounded-lg bg-white px-3 py-2">
+                                    <p className="truncate text-xs font-semibold text-slate-600">{group.label}</p>
+                                    <p className="text-lg font-bold text-slate-950">{group.value}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="mt-5 rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-500">
+                          Select a grouping field to generate a chart.
+                        </div>
                       )}
                     </div>
+                  )}
+
+                  {viewMode === 'table' && (
+                    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                      <div className="max-h-[calc(100vh-360px)] min-h-[460px] overflow-auto">
+                        <table className="min-w-full divide-y divide-slate-200">
+                          <thead className="sticky top-0 z-10 bg-slate-50">
+                            <tr>
+                              {tableColumns.map((column) => (
+                                <th key={column} className="whitespace-nowrap px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500">
+                                  {getColumnLabel(column)}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100">
+                            {tableRows.length > 0 ? tableRows.slice(0, 250).map((row, index) => (
+                              <tr key={index} className="hover:bg-slate-50">
+                                {tableColumns.map((column) => (
+                                  <td key={column} className="max-w-[280px] truncate px-4 py-3 text-sm text-slate-700">
+                                    {flattenValue(row[column])}
+                                  </td>
+                                ))}
+                              </tr>
+                            )) : (
+                              <tr>
+                                <td colSpan={Math.max(tableColumns.length, 1)} className="px-4 py-10 text-center text-sm text-slate-500">
+                                  No rows match the current view.
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </main>
+              </section>
+            )}
+          </>
+        ) : (
+          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h2 className="text-xl font-bold text-slate-950">Saved reports and templates</h2>
+                <p className="mt-1 text-sm text-slate-600">Reusable report views, column choices, grouping rules, and visualization settings.</p>
+              </div>
+              <button onClick={loadSavedReports} className="btn-secondary flex items-center gap-2">
+                <ArrowPathIcon className="h-4 w-4" />
+                Refresh
+              </button>
+            </div>
+
+            <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {savedReports.length > 0 ? savedReports.map((report) => (
+                <button
+                  key={report.reportId}
+                  onClick={() => executeSavedReport(report)}
+                  className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-left transition hover:border-primary-200 hover:bg-white hover:shadow-sm"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="rounded-lg bg-white p-2 text-primary-700 shadow-sm">
+                      <TableCellsIcon className="h-5 w-5" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-base font-semibold text-slate-950">{report.reportName}</span>
+                      <span className="mt-1 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                        {labelize(report.category)} | {labelize(report.reportType)}
+                      </span>
+                      {report.description && <span className="mt-2 line-clamp-2 block text-sm text-slate-600">{report.description}</span>}
+                      <span className="mt-3 block text-xs text-slate-500">
+                        Used {report.executionCount || 0} times
+                        {report.lastExecutedAt ? ` | Last run ${new Date(report.lastExecutedAt).toLocaleDateString()}` : ''}
+                      </span>
+                    </span>
                   </div>
                 </button>
-              );
-            })}
-          </div>
+              )) : (
+                <div className="col-span-full rounded-xl border-2 border-dashed border-slate-300 p-10 text-center">
+                  <BookmarkIcon className="mx-auto h-10 w-10 text-slate-400" />
+                  <h3 className="mt-3 text-lg font-semibold text-slate-950">No saved reports yet</h3>
+                  <p className="mt-1 text-sm text-slate-500">Build a view, shape it, then save it as a reusable template.</p>
+                </div>
+              )}
+            </div>
+          </section>
         )}
-
-        {/* Report Data */}
-        {selectedReport && renderReportData()}
       </div>
     </ModernLayout>
   );
