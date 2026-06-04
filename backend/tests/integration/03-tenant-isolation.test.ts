@@ -9,14 +9,11 @@ describe('Tenant Isolation', () => {
 
   it('forged tenantId in JWT is rejected or scoped correctly', async () => {
     const ctx = await loginAs(TEST_ACCOUNTS.SYSTEM_ADMIN);
-    if (!ctx) {
-      console.warn('SCAFFOLD: system_admin not in DB — skipping');
-      return;
-    }
+    expect(ctx).toBeTruthy();
 
     // Forge a token with a different tenantId
     const forgedPayload = {
-      userId: ctx.userId,
+      userId: ctx!.userId,
       tenantId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
       email: TEST_ACCOUNTS.SYSTEM_ADMIN.email,
       role: 'system_admin',
@@ -27,34 +24,43 @@ describe('Tenant Isolation', () => {
 
     // The server should reject this because the userId doesn't belong to the forged tenant
     const res = await authGet('/employees', forgedToken);
-    // Expect either 401 (user not found for that tenant) or empty results (tenant-scoped)
-    expect([401, 200]).toContain(res.status);
-    if (res.status === 200) {
-      // If 200, the response must be scoped to the forged (empty) tenant — no real data
-      const employees = res.body.data?.employees || res.body.data || [];
-      if (Array.isArray(employees)) {
-        expect(employees.length).toBe(0);
-      }
-    }
+    expect(res.status).toBe(401);
   });
 
   it('employees endpoint returns only same-tenant data', async () => {
     const ctx = await loginAs(TEST_ACCOUNTS.SYSTEM_ADMIN);
-    if (!ctx) {
-      console.warn('SCAFFOLD: system_admin not in DB — skipping');
-      return;
-    }
+    expect(ctx).toBeTruthy();
 
-    const res = await authGet('/employees', ctx.token);
+    const res = await authGet('/employees', ctx!.token);
     expect(res.status).toBe(200);
 
     const employees = res.body.data?.employees || res.body.data || [];
     if (Array.isArray(employees) && employees.length > 0) {
       // Every returned employee must belong to the same tenant
       for (const emp of employees) {
-        expect(emp.tenantId).toBe(ctx.tenantId);
+        expect(emp.tenantId).toBe(ctx!.tenantId);
       }
     }
+  });
+
+  it('two seeded tenants receive different tenant contexts and isolated employee lists', async () => {
+    const acv = await loginAs(TEST_ACCOUNTS.SYSTEM_ADMIN);
+    const orbit = await loginAs(TEST_ACCOUNTS.SECOND_TENANT_ADMIN);
+    expect(acv).toBeTruthy();
+    expect(orbit).toBeTruthy();
+    expect(acv!.tenantId).not.toBe(orbit!.tenantId);
+
+    const acvEmployees = await authGet('/employees', acv!.token);
+    const orbitEmployees = await authGet('/employees', orbit!.token);
+    expect(acvEmployees.status).toBe(200);
+    expect(orbitEmployees.status).toBe(200);
+
+    const acvRows = acvEmployees.body.data?.employees || acvEmployees.body.data || [];
+    const orbitRows = orbitEmployees.body.data?.employees || orbitEmployees.body.data || [];
+    expect(acvRows.length).toBeGreaterThan(0);
+    expect(orbitRows.length).toBeGreaterThan(0);
+    expect(acvRows.every((employee: any) => employee.tenantId === acv!.tenantId)).toBe(true);
+    expect(orbitRows.every((employee: any) => employee.tenantId === orbit!.tenantId)).toBe(true);
   });
 
   it('unauthenticated request to tenant-scoped endpoint returns 401', async () => {

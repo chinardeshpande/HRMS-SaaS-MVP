@@ -9,8 +9,11 @@ const config: Config = {
   transform: {
     '^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.json' }],
   },
-  setupFilesAfterEnv: [],
+  setupFiles: ['<rootDir>/tests/setup/testEnv.ts'],
+  globalSetup: '<rootDir>/tests/setup/globalSetup.ts',
+  setupFilesAfterEnv: ['<rootDir>/tests/setup/jestSetup.ts'],
   testTimeout: 30000,
+  maxWorkers: 1,
   verbose: true,
   collectCoverageFrom: [
     'src/**/*.ts',

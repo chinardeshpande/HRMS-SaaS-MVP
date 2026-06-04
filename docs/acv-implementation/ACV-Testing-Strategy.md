@@ -94,7 +94,12 @@ Evidence:
 - Import dry-run/execution/idempotency reports.
 - Manual missing-data register.
 
-### Layer 3: Role-Based Browser Tests
+### Layer 3: Role-Based Browser Tests (Playwright E2E)
+
+**Plan**: `docs/acv-implementation/ACV-E2E-Test-Plan.md`
+**Status**: Plan complete, implementation pending Playwright installation.
+**Framework**: Playwright (recommended)
+**Estimated tests**: ~60 across 11 spec files
 
 Required roles:
 
@@ -102,17 +107,21 @@ Required roles:
 - HR Admin / HR Manager.
 - Manager.
 - Employee.
+- Second Tenant Admin (cross-tenant isolation).
 
-Critical scenarios:
+Critical scenarios (mapped to E2E test IDs):
 
-- Login/logout/profile update/profile photo upload.
-- Dashboard data visibility.
-- Employee register visibility.
-- Employee detail tabs and role-based access.
-- Document preview/download/upload/verify/delete.
-- Salary visibility and restrictions.
-- Attendance self-service and company/team views.
-- Leave self-service, team approvals, company leaves.
+- Login/logout/protected routes/expired token (A01-A07).
+- Dashboard per-role widget rendering (D01-D06).
+- Employee register visibility and denial (E01-E06).
+- Employee detail tabs and role-based access (E03-E04).
+- Document preview/download/access boundaries (DC01-DC06).
+- Salary/payslip visibility and restrictions (C01-C05).
+- Attendance self-service and company/team views (AT01-AT04).
+- Leave apply/approve workflow (L01-L06).
+- Company document vault access (CD01-CD03).
+- RBAC route denial across all roles (rbac.spec.ts).
+- Cross-tenant browser isolation (tenant-isolation.spec.ts).
 - HR Connect feed, groups, comments, reactions.
 - Chat/helpdesk/calendar.
 - Settings/business rules/policies/users.
@@ -173,13 +182,16 @@ Minimum acceptance before production-grade claim:
 
 ## Regression Test Foundation (2026-06-04)
 
-Branch: `claude/acv-regression-test-foundation`
+Original branch: `claude/acv-regression-test-foundation`  
+Hardened branch: `codex/qa-foundation-hardening`
 
 ### Architecture
 
 - **Framework**: Jest 29 + supertest + ts-jest (already in `devDependencies`)
 - **Test type**: API-level integration tests via supertest against the Express app
-- **Database**: Tests require a running PostgreSQL with ACV seed data
+- **Database**: Tests require a running PostgreSQL test database. Default DB: `hrms_saas_test`
+- **Isolation**: Jest global setup resets the dedicated test database and refuses destructive reset unless the DB name contains `test`, unless `ALLOW_NON_TEST_DB_FOR_TESTS=true` is explicitly set
+- **Seed data**: Synthetic seed matrix is reset and loaded per run; real ACV employee data is not required
 - **Config**: `backend/jest.config.ts`
 - **Test root**: `backend/tests/integration/`
 - **Helpers**: `backend/tests/helpers/testSetup.ts`
@@ -188,18 +200,19 @@ Branch: `claude/acv-regression-test-foundation`
 
 | Role | Email | DB Role | Verified |
 |------|-------|---------|----------|
-| System Admin | `chinar@acvsolutions.in` | `system_admin` | Yes |
-| HR Admin | `hr@acvsolutions.in` | `hr_admin` | Yes |
-| Manager | `manager@acvsolutions.in` | `manager` | Yes |
-| Employee | `employee@acvsolutions.in` | `employee` | Yes |
+| System Admin | `system.admin@acv.test` | `system_admin` | Synthetic seed |
+| HR Admin | `hr.admin@acv.test` | `hr_admin` | Synthetic seed |
+| Manager | `manager@acv.test` | `manager` | Synthetic seed |
+| Employee | `employee@acv.test` | `employee` | Synthetic seed |
+| Second Tenant Admin | `admin@orbit.test` | `system_admin` | Synthetic seed |
 
-### Coverage (65 tests, all passing)
+### Coverage (68 tests, all passing)
 
 | Suite | Count | Critical Risk |
 |-------|-------|---------------|
 | Health/Smoke | 3 | Build health |
-| Auth login/me | 10 | Authentication |
-| Tenant Isolation | 3 | Tenant leakage |
+| Auth login/me | 13 | Authentication |
+| Tenant Isolation | 4 | Tenant leakage |
 | RBAC | 11 | Role leakage |
 | Employee Register | 4 | Data visibility |
 | Employee Detail | 4 | Data visibility |
@@ -210,15 +223,17 @@ Branch: `claude/acv-regression-test-foundation`
 
 ### Bugs Found
 
-1. Login returns 500 (instead of 401) for nonexistent email — `authController.ts`
+1. Login returned 500 instead of 401 for nonexistent email. Fixed in `authController.ts`.
 
 ### Run
 
 ```bash
 cd backend
-npx jest --config jest.config.ts --no-coverage    # fast run
-npx jest --config jest.config.ts                   # with coverage
+npm run test:qa
+npm run test:qa:coverage
 ```
+
+Detailed local setup is documented in `backend/TESTING.md`.
 
 ## Immediate Test Backlog
 
@@ -277,4 +292,3 @@ A production release should not be approved only on build success. Minimum gate:
 4. No migration script pending without idempotency report.
 5. No known P0/P1 regression in employee master, documents, compensation, attendance, leave.
 6. Rollback notes exist for data-affecting changes.
-

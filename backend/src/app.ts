@@ -146,8 +146,8 @@ app.use(
   })
 );
 
-// Rate limiting (disabled in development for easier testing)
-if (config.nodeEnv !== 'development') {
+// Rate limiting (disabled in development/test for easier local and CI testing)
+if (config.nodeEnv !== 'development' && config.nodeEnv !== 'test') {
   const limiter = rateLimit({
     windowMs: config.rateLimitWindowMs,
     max: config.rateLimitMaxRequests,
@@ -156,7 +156,7 @@ if (config.nodeEnv !== 'development') {
   app.use('/api/', limiter);
   console.log(`⚠️  Rate limiting enabled: ${config.rateLimitMaxRequests} requests per ${config.rateLimitWindowMs / 1000}s`);
 } else {
-  console.log('✅ Rate limiting DISABLED in development mode');
+  console.log(`✅ Rate limiting DISABLED in ${config.nodeEnv} mode`);
 }
 
 // Body parsing middleware

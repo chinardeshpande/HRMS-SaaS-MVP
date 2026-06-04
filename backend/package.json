@@ -10,6 +10,8 @@
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "test:integration": "jest --testPathPattern=tests/integration",
+    "test:qa": "jest --runInBand",
+    "test:qa:coverage": "jest --coverage --runInBand",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",

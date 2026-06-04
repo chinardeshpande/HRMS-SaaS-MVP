@@ -20,24 +20,21 @@ describe('Document Access', () => {
     }
 
     const res = await authGet('/company-documents', ctx.token);
-    expect([200, 500]).toContain(res.status);
-    if (res.status === 200) {
-      expect(res.body.success).toBe(true);
-    }
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.documents.length).toBeGreaterThan(0);
   });
 
   it('HR admin can list employee documents', async () => {
     const ctx = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
-    if (!ctx) {
-      console.warn('SCAFFOLD: hr_admin not in DB — skipping');
-      return;
-    }
+    const employeeCtx = await loginAs(TEST_ACCOUNTS.EMPLOYEE);
+    expect(ctx).toBeTruthy();
+    expect(employeeCtx?.employeeId).toBeTruthy();
 
-    const res = await authGet('/employee-documents', ctx.token);
-    expect([200, 500]).toContain(res.status);
-    if (res.status === 200) {
-      expect(res.body.success).toBe(true);
-    }
+    const res = await authGet(`/employee-documents/employees/${employeeCtx!.employeeId}`, ctx!.token);
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.data.documents)).toBe(true);
   });
 
   it('HR admin can list document categories', async () => {
@@ -48,29 +45,23 @@ describe('Document Access', () => {
     }
 
     const res = await authGet('/document-categories', ctx.token);
-    expect([200, 500]).toContain(res.status);
-    if (res.status === 200) {
-      expect(res.body.success).toBe(true);
-    }
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 
   it('employee can access their own documents', async () => {
     const ctx = await loginAs(TEST_ACCOUNTS.EMPLOYEE);
-    if (!ctx) {
-      console.warn('SCAFFOLD: employee not in DB — skipping');
-      return;
-    }
+    expect(ctx?.employeeId).toBeTruthy();
 
-    // Employee documents endpoint — employee should see their own
-    const res = await authGet('/employee-documents', ctx.token);
-    expect([200, 403, 500]).toContain(res.status);
+    const res = await authGet(`/employee-documents/employees/${ctx!.employeeId}`, ctx!.token);
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
 
-    if (res.status === 200 && res.body.data) {
-      const docs = Array.isArray(res.body.data) ? res.body.data : res.body.data.documents || [];
-      for (const doc of docs) {
-        if (doc.tenantId) {
-          expect(doc.tenantId).toBe(ctx.tenantId);
-        }
+    const docs = res.body.data.documents || [];
+    expect(docs.length).toBeGreaterThan(0);
+    for (const doc of docs) {
+      if (doc.tenantId) {
+        expect(doc.tenantId).toBe(ctx!.tenantId);
       }
     }
   });
@@ -83,9 +74,10 @@ describe('Document Access', () => {
     }
 
     const res = await authGet('/company-documents', ctx.token);
-    if (res.status !== 200) return;
+    expect(res.status).toBe(200);
 
     const docs = res.body.data?.documents || res.body.data || [];
+    expect(docs.length).toBeGreaterThan(0);
     if (Array.isArray(docs)) {
       for (const doc of docs) {
         if (doc.tenantId) {

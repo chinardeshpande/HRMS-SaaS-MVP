@@ -14,10 +14,8 @@ describe('Leave Basic Flow', () => {
     }
 
     const res = await authGet('/leave/my-requests', ctx.token);
-    expect([200, 500]).toContain(res.status);
-    if (res.status === 200) {
-      expect(res.body.success).toBe(true);
-    }
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 
   it('employee can view own leave balance', async () => {
@@ -28,10 +26,8 @@ describe('Leave Basic Flow', () => {
     }
 
     const res = await authGet('/leave/my-balance', ctx.token);
-    expect([200, 500]).toContain(res.status);
-    if (res.status === 200) {
-      expect(res.body.success).toBe(true);
-    }
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 
   it('employee can view leave policies', async () => {
@@ -42,10 +38,8 @@ describe('Leave Basic Flow', () => {
     }
 
     const res = await authGet('/leave/policies', ctx.token);
-    expect([200, 500]).toContain(res.status);
-    if (res.status === 200) {
-      expect(res.body.success).toBe(true);
-    }
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 
   it('employee cannot view all leave requests (HR-only)', async () => {
@@ -78,8 +72,8 @@ describe('Leave Basic Flow', () => {
     }
 
     const res = await authGet('/leave/pending-approvals', ctx.token);
-    expect([200, 500]).toContain(res.status);
-    expect(res.status).not.toBe(403);
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 
   it('HR admin CAN view all leave requests', async () => {
@@ -90,8 +84,8 @@ describe('Leave Basic Flow', () => {
     }
 
     const res = await authGet('/leave/all-requests', ctx.token);
-    expect([200, 500]).toContain(res.status);
-    expect(res.status).not.toBe(403);
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 
   it('leave apply rejects invalid payload', async () => {
@@ -102,7 +96,6 @@ describe('Leave Basic Flow', () => {
     }
 
     const res = await authPost('/leave/apply', ctx.token).send({});
-    // Should reject with 400 (validation) or 500, never silently succeed
-    expect([400, 422, 500]).toContain(res.status);
+    expect([400, 422]).toContain(res.status);
   });
 });

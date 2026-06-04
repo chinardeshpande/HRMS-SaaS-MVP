@@ -13,21 +13,39 @@ describe('Auth: Login / Logout / Me', () => {
         email: TEST_ACCOUNTS.SYSTEM_ADMIN.email,
         password: 'definitely-wrong-password',
       });
-      expect([401, 500]).toContain(res.status);
-      if (res.status === 401) {
-        expect(res.body.success).toBe(false);
-      }
+      expect(res.status).toBe(401);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error.code).toBe('INVALID_CREDENTIALS');
     });
 
-    it('rejects nonexistent email with 401 or 500', async () => {
+    it('rejects nonexistent email with 401', async () => {
       const res = await api.post(`${API_PREFIX}/auth/login`).send({
         email: 'nonexistent-user-12345@example.com',
         password: 'any-password',
       });
-      // BUG: currently returns 500 instead of 401 for nonexistent users
-      // TODO: Fix authController.login to handle missing user without throwing
-      expect([401, 500]).toContain(res.status);
+      expect(res.status).toBe(401);
       expect(res.body.success).toBe(false);
+      expect(res.body.error.code).toBe('INVALID_CREDENTIALS');
+    });
+
+    it('rejects malformed email payload with 400', async () => {
+      const res = await api.post(`${API_PREFIX}/auth/login`).send({
+        email: 'not-an-email',
+        password: TEST_ACCOUNTS.SYSTEM_ADMIN.password,
+      });
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('rejects non-string login payload with 400', async () => {
+      const res = await api.post(`${API_PREFIX}/auth/login`).send({
+        email: 12345,
+        password: { value: TEST_ACCOUNTS.SYSTEM_ADMIN.password },
+      });
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error.code).toBe('VALIDATION_ERROR');
     });
 
     it('login as system_admin returns token and correct role', async () => {
@@ -69,6 +87,14 @@ describe('Auth: Login / Logout / Me', () => {
       }
       expect(ctx.token).toBeTruthy();
       expect(ctx.role).toBe(TEST_ACCOUNTS.EMPLOYEE.expectedRole);
+    });
+
+    it('login as second tenant admin returns an isolated tenant context', async () => {
+      const ctx = await loginAs(TEST_ACCOUNTS.SECOND_TENANT_ADMIN);
+      expect(ctx).toBeTruthy();
+      expect(ctx!.token).toBeTruthy();
+      expect(ctx!.role).toBe(TEST_ACCOUNTS.SECOND_TENANT_ADMIN.expectedRole);
+      expect(ctx!.tenantId).toBeTruthy();
     });
   });
 

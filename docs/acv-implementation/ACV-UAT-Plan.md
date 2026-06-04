@@ -172,15 +172,16 @@ Evidence folder:
 
 ## Automated Regression Foundation (2026-06-04)
 
-Branch: `claude/acv-regression-test-foundation`
+Original branch: `claude/acv-regression-test-foundation`  
+Hardened branch: `codex/qa-foundation-hardening`
 
-A Jest + supertest integration test suite now covers 65 automated API-level checks:
+A Jest + supertest integration test suite now covers 68 automated API-level checks against a dedicated synthetic test database:
 
 | Area | Tests | Status |
 |------|-------|--------|
 | Health/Smoke | 3 | Automated |
-| Auth (login/logout/me) | 10 | Automated |
-| Tenant Isolation | 3 | Automated |
+| Auth (login/logout/me) | 13 | Automated |
+| Tenant Isolation | 4 | Automated |
 | RBAC (role boundaries) | 11 | Automated |
 | Employee Register | 4 | Automated |
 | Employee Detail | 4 | Automated |
@@ -189,11 +190,35 @@ A Jest + supertest integration test suite now covers 65 automated API-level chec
 | Attendance Flow | 7 | Automated |
 | Leave Flow | 9 | Automated |
 
-Run: `cd backend && npx jest --config jest.config.ts`
+Run: `cd backend && npm run test:qa`
 
-Test accounts: see `backend/tests/helpers/testSetup.ts` for the ACV Customer Zero test account matrix.
+Test accounts: see `backend/tests/helpers/testSetup.ts` and `backend/tests/setup/seedTestData.ts`. The account matrix uses synthetic `*.test` emails and does not require real ACV production/development data.
 
 Full report: `docs/qa/acv-regression-foundation-2026-06-04/report.md`
+
+## Browser E2E Test Plan (2026-06-04)
+
+Branch: `claude/acv-e2e-test-plan`
+
+A Playwright-based browser E2E test plan covers ~60 planned tests across 11 spec files:
+
+| Spec | Tests | Priority | UAT Track |
+|------|-------|----------|-----------|
+| `auth.spec.ts` | 7 | Critical | Track 1 |
+| `rbac.spec.ts` | 10+ | Critical | Track 3 |
+| `tenant-isolation.spec.ts` | 4 | Critical | Track 3 |
+| `employees.spec.ts` | 6 | Critical | Track 2 |
+| `documents.spec.ts` | 6 | Critical | Track 4 |
+| `compensation.spec.ts` | 5 | Critical | Track 5 |
+| `dashboard.spec.ts` | 6 | High | Track 8 |
+| `leave.spec.ts` | 6 | High | Track 7 |
+| `attendance.spec.ts` | 4 | High | Track 7 |
+| `company-documents.spec.ts` | 3 | High | Track 4 |
+| `hr-connect.spec.ts` | 3 | Medium | Track 6 |
+
+**Status**: Plan complete. Implementation blocked by Playwright installation (corp registry).
+
+**Coverage bridge**: Each UAT track maps to both API tests (Jest) and browser E2E tests (Playwright). See `docs/acv-implementation/ACV-E2E-Test-Plan.md` Section 4 for the full mapping.
 
 ## Release Gate
 

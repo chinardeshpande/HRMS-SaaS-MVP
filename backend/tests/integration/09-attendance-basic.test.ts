@@ -1,4 +1,4 @@
-import { TEST_ACCOUNTS, loginAs, authGet, authPost } from '../helpers/testSetup';
+import { TEST_ACCOUNTS, loginAs, authGet } from '../helpers/testSetup';
 
 describe('Attendance Basic Flow', () => {
   it('unauthenticated request to attendance is rejected', async () => {
@@ -14,10 +14,8 @@ describe('Attendance Basic Flow', () => {
     }
 
     const res = await authGet('/attendance/my-attendance', ctx.token);
-    expect([200, 500]).toContain(res.status);
-    if (res.status === 200) {
-      expect(res.body.success).toBe(true);
-    }
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 
   it('HR admin can view company-wide attendance', async () => {
@@ -28,8 +26,8 @@ describe('Attendance Basic Flow', () => {
     }
 
     const res = await authGet('/attendance/company-wide', ctx.token);
-    expect([200, 500]).toContain(res.status);
-    expect(res.status).not.toBe(403);
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 
   it('employee cannot view company-wide attendance', async () => {
@@ -62,8 +60,8 @@ describe('Attendance Basic Flow', () => {
     }
 
     const res = await authGet('/attendance/statistics', ctx.token);
-    expect([200, 500]).toContain(res.status);
-    expect(res.status).not.toBe(403);
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 
   it('HR admin can access attendance by department', async () => {
@@ -74,7 +72,7 @@ describe('Attendance Basic Flow', () => {
     }
 
     const res = await authGet('/attendance/by-department', ctx.token);
-    expect([200, 500]).toContain(res.status);
-    expect(res.status).not.toBe(403);
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 });

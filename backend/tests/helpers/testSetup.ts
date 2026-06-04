@@ -1,5 +1,6 @@
 import request from 'supertest';
 import app from '../../src/app';
+import { TEST_PASSWORD, TEST_USERS } from '../setup/seedTestData';
 
 export const api = request(app);
 export const API_PREFIX = '/api/v1';
@@ -12,37 +13,43 @@ export interface TestUser {
   expectedTenantName?: string;
 }
 
-// ACV Customer Zero test account matrix
-// These accounts must exist in the database for integration tests to pass.
-// If they don't exist, tests are marked as SCAFFOLD (expected to skip gracefully).
+// Deterministic QA fixture account matrix.
+// These users are created in tests/setup/globalSetup.ts against the dedicated test DB.
 export const TEST_ACCOUNTS: Record<string, TestUser> = {
   SYSTEM_ADMIN: {
     label: 'System Admin (Tenant Owner)',
-    email: 'chinar@acvsolutions.in',
-    password: 'ACV@2026!',
+    email: TEST_USERS.SYSTEM_ADMIN,
+    password: TEST_PASSWORD,
     expectedRole: 'system_admin',
-    expectedTenantName: 'ACV Solutions',
+    expectedTenantName: 'ACV Solutions Pvt Ltd',
   },
   HR_ADMIN: {
     label: 'ACV HR Admin',
-    email: 'hr@acvsolutions.in',
-    password: 'ACV@2026!',
+    email: TEST_USERS.HR_ADMIN,
+    password: TEST_PASSWORD,
     expectedRole: 'hr_admin',
-    expectedTenantName: 'ACV Solutions',
+    expectedTenantName: 'ACV Solutions Pvt Ltd',
   },
   MANAGER: {
     label: 'ACV Manager',
-    email: 'manager@acvsolutions.in',
-    password: 'ACV@2026!',
+    email: TEST_USERS.MANAGER,
+    password: TEST_PASSWORD,
     expectedRole: 'manager',
-    expectedTenantName: 'ACV Solutions',
+    expectedTenantName: 'ACV Solutions Pvt Ltd',
   },
   EMPLOYEE: {
     label: 'ACV Employee',
-    email: 'employee@acvsolutions.in',
-    password: 'ACV@2026!',
+    email: TEST_USERS.EMPLOYEE,
+    password: TEST_PASSWORD,
     expectedRole: 'employee',
-    expectedTenantName: 'ACV Solutions',
+    expectedTenantName: 'ACV Solutions Pvt Ltd',
+  },
+  SECOND_TENANT_ADMIN: {
+    label: 'Second Tenant Admin',
+    email: TEST_USERS.SECOND_TENANT_ADMIN,
+    password: TEST_PASSWORD,
+    expectedRole: 'system_admin',
+    expectedTenantName: 'Orbit QA Isolation Ltd',
   },
 };
 
@@ -57,7 +64,7 @@ export interface AuthContext {
 
 /**
  * Authenticate a test user and return tokens + context.
- * Returns null if login fails (account doesn't exist or wrong password).
+ * Returns null if login fails.
  */
 export async function loginAs(account: TestUser): Promise<AuthContext | null> {
   const res = await api
