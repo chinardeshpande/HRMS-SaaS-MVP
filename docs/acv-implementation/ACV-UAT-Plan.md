@@ -170,6 +170,31 @@ Evidence folder:
 
 `docs/acv-implementation/ACV-Testing-Evidence/`
 
+## Automated Regression Foundation (2026-06-04)
+
+Branch: `claude/acv-regression-test-foundation`
+
+A Jest + supertest integration test suite now covers 65 automated API-level checks:
+
+| Area | Tests | Status |
+|------|-------|--------|
+| Health/Smoke | 3 | Automated |
+| Auth (login/logout/me) | 10 | Automated |
+| Tenant Isolation | 3 | Automated |
+| RBAC (role boundaries) | 11 | Automated |
+| Employee Register | 4 | Automated |
+| Employee Detail | 4 | Automated |
+| Document Access | 6 | Automated |
+| Compensation/Payslip | 6 | Automated |
+| Attendance Flow | 7 | Automated |
+| Leave Flow | 9 | Automated |
+
+Run: `cd backend && npx jest --config jest.config.ts`
+
+Test accounts: see `backend/tests/helpers/testSetup.ts` for the ACV Customer Zero test account matrix.
+
+Full report: `docs/qa/acv-regression-foundation-2026-06-04/report.md`
+
 ## Release Gate
 
 ACV implementation should not be considered ready until:
