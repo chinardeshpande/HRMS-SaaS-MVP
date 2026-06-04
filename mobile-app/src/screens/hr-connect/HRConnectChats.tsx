@@ -14,6 +14,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore } from '../../context/useAuthStore';
 import { sendLocalNotification } from '../../utils/notifications';
+import { themeColors } from '../../utils/theme';
 
 export interface ChatMessage {
   messageId: string;
@@ -92,6 +93,19 @@ const DIRECTORY_EMPLOYEES = [
 
 export const HRConnectChats: React.FC = () => {
   const { user } = useAuthStore();
+
+  if (!__DEV__) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24, backgroundColor: '#f9fafb' }}>
+        <MaterialCommunityIcons name="forum-outline" size={64} color="#0A66C2" style={{ marginBottom: 16 }} />
+        <Text style={{ fontSize: 18, fontWeight: '800', color: '#111827', marginBottom: 8, textAlign: 'center' }}>Direct Chats (Coming Soon)</Text>
+        <Text style={{ fontSize: 13, color: '#4B5563', textAlign: 'center', lineHeight: 18 }}>
+          Direct Chat channels are currently undergoing security verification for the ACV pilot. Please use the Web Application for team chats.
+        </Text>
+      </View>
+    );
+  }
+
   const [sessions, setSessions] = useState<ChatSession[]>(SEED_CHATS);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [typedMessage, setTypedMessage] = useState('');

@@ -83,6 +83,7 @@ graph TD
 | **3** | Accept biometric check successfully. | Screen fades out, session is decrypted, and Dashboard is displayed. | Verified |
 | **4** | Reject / Cancel biometric check. | Screen prompts for user password, blocking access to the dashboard. | Verified |
 | **5** | Tap "Doc Hub" ➔ "Payslips" while authenticated. | A biometric lock screen appears. Fingerprint/Face validation is required to list files. | Verified |
+| **6** | Tap "Doc Hub" ➔ "Payslips" on device with unconfigured biometrics. | Custom password verification modal appears. Inputting correct account password decrypts and lists vault items; incorrect password fails securely. | Verified |
 
 ---
 

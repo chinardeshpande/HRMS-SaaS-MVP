@@ -294,11 +294,15 @@ export const endpoints = {
           data: mappedBalances
         };
       } catch (err) {
+        if (!__DEV__) {
+          throw err;
+        }
         console.warn('⚠️ Leave balance fetch failed, using fallback defaults:', err);
         return {
           success: true,
-          data: { CL: 12, SL: 10, PL: 15 }
-        };
+          data: { CL: 12, SL: 10, PL: 15 },
+          isMock: true
+        } as any;
       }
     },
     
@@ -371,6 +375,9 @@ export const endpoints = {
         const res = await api.get<ExitClearance[]>(url);
         return res;
       } catch (err) {
+        if (!__DEV__) {
+          throw err;
+        }
         console.warn('⚠️ Exit clearance fetch failed, returning mock data:', err);
         return {
           success: true,
@@ -378,8 +385,9 @@ export const endpoints = {
             { clearanceId: '1', tenantId: 'demo-tenant', resignId: resignId, departmentCategory: 'IT Assets', status: 'cleared' as const, remarks: 'MacBook & Keycard returned', createdAt: '', updatedAt: '' },
             { clearanceId: '2', tenantId: 'demo-tenant', resignId: resignId, departmentCategory: 'Finance & Accounts', status: 'pending' as const, remarks: 'Pending final settlement calculation', createdAt: '', updatedAt: '' },
             { clearanceId: '3', tenantId: 'demo-tenant', resignId: resignId, departmentCategory: 'HR & Administration', status: 'cleared' as const, remarks: 'Exit interview form submitted', createdAt: '', updatedAt: '' },
-          ]
-        };
+          ],
+          isMock: true
+        } as any;
       }
     },
     
@@ -393,6 +401,9 @@ export const endpoints = {
         const res = await api.get<any[]>('/digital-library', { params });
         return res;
       } catch (err) {
+        if (!__DEV__) {
+          throw err;
+        }
         console.warn('⚠️ Fetching digital library items failed, returning mock data:', err);
         return {
           success: true,
@@ -402,8 +413,9 @@ export const endpoints = {
             { libraryId: 'lib-3', tenantId: 'demo-tenant', employeeId: 'e-1', fileName: 'payslip_march_2026.pdf', fileUrl: 'https://aurorahr.in/uploads/payslip_march_2026.pdf', fileType: 'application/pdf', fileSize: 101890, resourceType: 'document' as const, accessLevel: 'private' as const, category: 'payslip', createdAt: new Date(2026, 2, 31).toISOString(), updatedAt: new Date(2026, 2, 31).toISOString() },
             { libraryId: 'lib-4', tenantId: 'demo-tenant', employeeId: 'e-1', fileName: 'AuroraHR_Employee_Handbook_2026.pdf', fileUrl: 'https://aurorahr.in/uploads/handbook.pdf', fileType: 'application/pdf', fileSize: 2450000, resourceType: 'document' as const, accessLevel: 'public' as const, category: 'policy', createdAt: new Date(2026, 0, 1).toISOString(), updatedAt: new Date(2026, 0, 1).toISOString() },
             { libraryId: 'lib-5', tenantId: 'demo-tenant', employeeId: 'e-1', fileName: 'AURORAHR_Travel_Policy_v4.pdf', fileUrl: 'https://aurorahr.in/uploads/travel_policy.pdf', fileType: 'application/pdf', fileSize: 580000, resourceType: 'document' as const, accessLevel: 'public' as const, category: 'policy', createdAt: new Date(2026, 1, 15).toISOString(), updatedAt: new Date(2026, 1, 15).toISOString() }
-          ]
-        };
+          ],
+          isMock: true
+        } as any;
       }
     },
     
@@ -412,6 +424,9 @@ export const endpoints = {
         const res = await api.get<any>(`/documents/entity/employee/${employeeId}`);
         return res;
       } catch (err) {
+        if (!__DEV__) {
+          throw err;
+        }
         console.warn('⚠️ Fetching employee documents failed, returning mock data:', err);
         return {
           success: true,
@@ -421,8 +436,9 @@ export const endpoints = {
               { documentId: 'doc-2', tenantId: 'demo-tenant', employeeId, documentType: 'nda', documentName: 'Mutual_NDA_AuroraHR.pdf', fileSizeBytes: 98200, createdAt: new Date(2025, 11, 15).toISOString(), status: 'issued' as const, format: 'pdf' as const, updatedAt: new Date(2025, 11, 15).toISOString() },
               { documentId: 'doc-3', tenantId: 'demo-tenant', employeeId, documentType: 'code_of_conduct', documentName: 'AuroraHR_Code_of_Conduct_Signoff.pdf', fileSizeBytes: 205100, createdAt: new Date(2025, 11, 16).toISOString(), status: 'issued' as const, format: 'pdf' as const, updatedAt: new Date(2025, 11, 16).toISOString() }
             ]
-          }
-        };
+          },
+          isMock: true
+        } as any;
       }
     }
   },
@@ -444,8 +460,11 @@ export const endpoints = {
             exits: exitCount
           }
         };
-      } catch {
-        return { success: true, data: { total: 2, leaves: 1, exits: 1 } };
+      } catch (err) {
+        if (!__DEV__) {
+          throw err;
+        }
+        return { success: true, data: { total: 2, leaves: 1, exits: 1 }, isMock: true } as any;
       }
     }
   },
@@ -462,8 +481,11 @@ export const endpoints = {
         }
         return { success: true, data: [] };
       } catch (err) {
+        if (!__DEV__) {
+          throw err;
+        }
         console.warn('⚠️ PMS goals fetch failed, returning empty list:', err);
-        return { success: true, data: [] };
+        return { success: true, data: [], isMock: true } as any;
       }
     },
     
@@ -488,8 +510,11 @@ export const endpoints = {
         }
         return { success: true, data: _mockPosts };
       } catch (err) {
+        if (!__DEV__) {
+          throw err;
+        }
         console.warn('⚠️ Fetching HR Connect posts failed, returning mock data:', err);
-        return { success: true, data: _mockPosts };
+        return { success: true, data: _mockPosts, isMock: true } as any;
       }
     },
 
@@ -652,8 +677,11 @@ export const endpoints = {
         }
         return { success: true, data: _mockGroups };
       } catch (err) {
+        if (!__DEV__) {
+          throw err;
+        }
         console.warn('⚠️ Groups fetch failed, returning mock groups:', err);
-        return { success: true, data: _mockGroups };
+        return { success: true, data: _mockGroups, isMock: true } as any;
       }
     },
 

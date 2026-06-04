@@ -9,6 +9,9 @@ import {
   Alert,
   SafeAreaView,
   Animated,
+  TextInput,
+  Modal,
+  RefreshControl,
 } from 'react-native';
 import { useAuthStore } from '../../context/useAuthStore';
 import { endpoints } from '../../api/endpoints';
@@ -29,6 +32,9 @@ export const DigitalVaultScreen: React.FC = () => {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'payslips' | 'contracts' | 'policies'>('payslips');
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isMockData, setIsMockData] = useState(false);
+  const [hasError, setHasError] = useState(false);
   
   // Data lists
   const [libraryItems, setLibraryItems] = useState<DigitalLibraryItem[]>([]);
@@ -37,6 +43,16 @@ export const DigitalVaultScreen: React.FC = () => {
   // Authentication states
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [authenticating, setAuthenticating] = useState(false);
+
+  // Password fallback verification states
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [verifyingPassword, setVerifyingPassword] = useState(false);
+  const [pendingAction, setPendingAction] = useState<{
+    action: 'view' | 'download';
+    fileName: string;
+    fileUrl: string;
+  } | null>(null);
 
   // Concentric Rings Animations
   const ring1Scale = useRef(new Animated.Value(1)).current;
@@ -110,6 +126,8 @@ export const DigitalVaultScreen: React.FC = () => {
 
   const loadVaultData = async () => {
     setLoading(true);
+    setIsMockData(false);
+    setHasError(false);
     try {
       if (activeTab === 'payslips' || activeTab === 'policies') {
         const category = activeTab === 'payslips' ? 'payslip' : 'policy';
@@ -122,6 +140,11 @@ export const DigitalVaultScreen: React.FC = () => {
               ? rawData.items 
               : [];
           setLibraryItems(items);
+          if ((res as any).isMock) {
+            setIsMockData(true);
+          }
+        } else {
+          setHasError(true);
         }
       } else if (activeTab === 'contracts') {
         const empId = user?.employeeId || 'e-current';
@@ -134,12 +157,57 @@ export const DigitalVaultScreen: React.FC = () => {
               ? rawData.documents
               : [];
           setIssuedDocs(docs);
+          if ((res as any).isMock) {
+            setIsMockData(true);
+          }
+        } else {
+          setHasError(true);
         }
       }
     } catch (err) {
       console.warn('⚠️ Vault fetch error:', err);
+      setHasError(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await loadVaultData();
+    } catch (err) {
+      console.warn('⚠️ Vault refresh error:', err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const handleVerifyPassword = async () => {
+    if (!user?.email || !passwordInput.trim() || !pendingAction) return;
+
+    setVerifyingPassword(true);
+    try {
+      const res = await endpoints.auth.login({
+        email: user.email,
+        password: passwordInput,
+      });
+
+      setVerifyingPassword(false);
+      
+      if (res.success) {
+        setPasswordVisible(false);
+        setPasswordInput('');
+        const actionToExecute = pendingAction;
+        setPendingAction(null);
+        executeAction(actionToExecute.action, actionToExecute.fileName, actionToExecute.fileUrl);
+      } else {
+        Alert.alert('Authentication Failed', res.error?.message || 'Invalid password. Access remains locked.');
+      }
+    } catch (err: any) {
+      setVerifyingPassword(false);
+      console.warn('⚠️ Password verification exception:', err);
+      Alert.alert('Verification Failed', err.message || 'Could not verify credentials. Access remains locked.');
     }
   };
 
@@ -167,14 +235,8 @@ export const DigitalVaultScreen: React.FC = () => {
       }
     } else {
       // Fallback if biometrics aren't configured/available
-      Alert.alert(
-        'Verify Identity',
-        'Biometric authentication is not set up on this device. Would you like to view this file anyway?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'View File', onPress: () => executeAction(action, fileName, fileUrl) }
-        ]
-      );
+      setPendingAction({ action, fileName, fileUrl });
+      setPasswordVisible(true);
       return;
     }
 
@@ -424,8 +486,27 @@ export const DigitalVaultScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
+      {/* Developer warning banner in sandboxes */}
+      {isMockData && (
+        <View style={styles.warningBanner}>
+          <MaterialCommunityIcons name="xml" size={16} color="#ca8a04" style={{ marginRight: 6 }} />
+          <Text style={styles.warningBannerText}>
+            Developer Sandbox: Displaying mock vault library items.
+          </Text>
+        </View>
+      )}
+
       {/* Screen body */}
-      {loading && !authenticating ? (
+      {hasError ? (
+        <View style={styles.centerContainer}>
+          <MaterialCommunityIcons name="alert-circle-outline" size={48} color="#ef4444" style={{ marginBottom: 12 }} />
+          <Text style={styles.errorText}>Failed to load Digital Vault registry</Text>
+          <Text style={styles.errorSubtitle}>Please verify your connection and try again</Text>
+          <TouchableOpacity style={styles.retryBtn} onPress={loadVaultData}>
+            <Text style={styles.retryBtnText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      ) : loading && !authenticating && !refreshing ? (
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={themeColors.primary} />
           <Text style={styles.infoText}>Querying Digital Vault Registry...</Text>
@@ -436,6 +517,9 @@ export const DigitalVaultScreen: React.FC = () => {
           data={libraryItems.filter(item => item.category === 'payslip')}
           keyExtractor={(item) => item.libraryId}
           contentContainerStyle={styles.listContent}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[themeColors.primary]} />
+          }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <MaterialCommunityIcons name="currency-usd-off" size={48} color={themeColors.textMuted} />
@@ -497,6 +581,9 @@ export const DigitalVaultScreen: React.FC = () => {
           data={issuedDocs}
           keyExtractor={(item) => item.documentId}
           contentContainerStyle={styles.listContent}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[themeColors.primary]} />
+          }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <MaterialCommunityIcons name="file-cancel-outline" size={48} color={themeColors.textMuted} />
@@ -558,6 +645,9 @@ export const DigitalVaultScreen: React.FC = () => {
           data={libraryItems.filter(item => item.category === 'policy')}
           keyExtractor={(item) => item.libraryId}
           contentContainerStyle={styles.listContent}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[themeColors.primary]} />
+          }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <MaterialCommunityIcons name="book-remove-outline" size={48} color={themeColors.textMuted} />
@@ -614,6 +704,61 @@ export const DigitalVaultScreen: React.FC = () => {
           )}
         />
       )}
+
+      {/* Password verification dialog fallback when biometrics are unconfigured */}
+      <Modal
+        visible={passwordVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => {
+          setPasswordVisible(false);
+          setPendingAction(null);
+          setPasswordInput('');
+        }}
+      >
+        <View style={styles.modalBg}>
+          <View style={styles.passwordContainer}>
+            <MaterialCommunityIcons name="shield-lock-outline" size={40} color={themeColors.primary} style={{ marginBottom: 12 }} />
+            <Text style={styles.passwordTitle}>Verify Identity</Text>
+            <Text style={styles.passwordSubtitle}>
+              Please enter your AuroraHR account password to access this secure document.
+            </Text>
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="Password"
+              placeholderTextColor="#9ca3af"
+              secureTextEntry={true}
+              value={passwordInput}
+              onChangeText={setPasswordInput}
+              autoCapitalize="none"
+              autoComplete="password"
+            />
+            <View style={styles.passwordBtnGroup}>
+              <TouchableOpacity
+                style={styles.passwordCancelBtn}
+                onPress={() => {
+                  setPasswordVisible(false);
+                  setPendingAction(null);
+                  setPasswordInput('');
+                }}
+              >
+                <Text style={styles.passwordCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.passwordConfirmBtn}
+                onPress={handleVerifyPassword}
+                disabled={verifyingPassword}
+              >
+                {verifyingPassword ? (
+                  <ActivityIndicator size="small" color="#ffffff" />
+                ) : (
+                  <Text style={styles.passwordConfirmText}>Verify</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* High-Fidelity Biometric Authenticating Pulse overlay */}
       {authenticating && (
@@ -943,5 +1088,120 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 6,
     fontWeight: '500',
+  },
+  warningBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fef9c3',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#fef08a',
+  },
+  warningBannerText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#854d0e',
+    marginLeft: 2,
+  },
+  errorText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  errorSubtitle: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginTop: 4,
+    marginBottom: 16,
+  },
+  retryBtn: {
+    backgroundColor: themeColors.primary,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  retryBtnText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  modalBg: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  passwordContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 24,
+    width: '100%',
+    maxWidth: 320,
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  passwordTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  passwordSubtitle: {
+    fontSize: 12,
+    color: '#4b5563',
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 16,
+  },
+  passwordInput: {
+    width: '100%',
+    height: 44,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    fontSize: 14,
+    color: '#111827',
+    marginBottom: 20,
+    backgroundColor: '#f9fafb',
+  },
+  passwordBtnGroup: {
+    flexDirection: 'row',
+    width: '100%',
+    gap: 12,
+  },
+  passwordCancelBtn: {
+    flex: 1,
+    height: 40,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+  },
+  passwordCancelText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#374151',
+  },
+  passwordConfirmBtn: {
+    flex: 1,
+    height: 40,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: themeColors.primary,
+  },
+  passwordConfirmText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#ffffff',
   },
 });

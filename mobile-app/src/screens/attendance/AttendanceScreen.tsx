@@ -43,7 +43,7 @@ export const AttendanceScreen: React.FC = () => {
   const [actionLoading, setActionLoading] = useState(false);
 
   // Geofencing & Location States
-  const [locationMode, setLocationMode] = useState<'office' | 'wfh' | 'gps'>('office');
+  const [locationMode, setLocationMode] = useState<'office' | 'wfh' | 'gps'>(__DEV__ ? 'office' : 'gps');
   const [_currentCoords, _setCurrentCoords] = useState<{ latitude: number; longitude: number } | null>(ACME_OFFICE_COORDS);
   const [distance, setDistance] = useState<number>(0);
 
@@ -267,36 +267,40 @@ export const AttendanceScreen: React.FC = () => {
               )}
 
               {/* Developer Coordinate Switchers */}
-              <View style={styles.mockSelectorTitleRow}>
-                <MaterialCommunityIcons name="xml" size={14} color="#6b7280" />
-                <Text style={styles.mockSelectorTitle}>QA LOCATION MOCK CONTROLS</Text>
-              </View>
-              
-              <View style={styles.mockContainer}>
-                <TouchableOpacity 
-                  style={[styles.mockTab, locationMode === 'office' && styles.mockTabActive]}
-                  onPress={() => setLocationMode('office')}
-                >
-                  <MaterialCommunityIcons name="office-building" size={14} color={locationMode === 'office' ? '#ffffff' : '#6b7280'} />
-                  <Text style={[styles.mockTabText, locationMode === 'office' && styles.mockTabTextActive]}>Office Desk</Text>
-                </TouchableOpacity>
+              {__DEV__ && (
+                <>
+                  <View style={styles.mockSelectorTitleRow}>
+                    <MaterialCommunityIcons name="xml" size={14} color="#6b7280" />
+                    <Text style={styles.mockSelectorTitle}>QA LOCATION MOCK CONTROLS</Text>
+                  </View>
+                  
+                  <View style={styles.mockContainer}>
+                    <TouchableOpacity 
+                      style={[styles.mockTab, locationMode === 'office' && styles.mockTabActive]}
+                      onPress={() => setLocationMode('office')}
+                    >
+                      <MaterialCommunityIcons name="office-building" size={14} color={locationMode === 'office' ? '#ffffff' : '#6b7280'} />
+                      <Text style={[styles.mockTabText, locationMode === 'office' && styles.mockTabTextActive]}>Office Desk</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity 
-                  style={[styles.mockTab, locationMode === 'wfh' && styles.mockTabActive]}
-                  onPress={() => setLocationMode('wfh')}
-                >
-                  <MaterialCommunityIcons name="home-outline" size={14} color={locationMode === 'wfh' ? '#ffffff' : '#6b7280'} />
-                  <Text style={[styles.mockTabText, locationMode === 'wfh' && styles.mockTabTextActive]}>WFH (5.2km)</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={[styles.mockTab, locationMode === 'wfh' && styles.mockTabActive]}
+                      onPress={() => setLocationMode('wfh')}
+                    >
+                      <MaterialCommunityIcons name="home-outline" size={14} color={locationMode === 'wfh' ? '#ffffff' : '#6b7280'} />
+                      <Text style={[styles.mockTabText, locationMode === 'wfh' && styles.mockTabTextActive]}>WFH (5.2km)</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity 
-                  style={[styles.mockTab, locationMode === 'gps' && styles.mockTabActive]}
-                  onPress={() => setLocationMode('gps')}
-                >
-                  <MaterialCommunityIcons name="crosshairs-gps" size={14} color={locationMode === 'gps' ? '#ffffff' : '#6b7280'} />
-                  <Text style={[styles.mockTabText, locationMode === 'gps' && styles.mockTabTextActive]}>Live GPS</Text>
-                </TouchableOpacity>
-              </View>
+                    <TouchableOpacity 
+                      style={[styles.mockTab, locationMode === 'gps' && styles.mockTabActive]}
+                      onPress={() => setLocationMode('gps')}
+                    >
+                      <MaterialCommunityIcons name="crosshairs-gps" size={14} color={locationMode === 'gps' ? '#ffffff' : '#6b7280'} />
+                      <Text style={[styles.mockTabText, locationMode === 'gps' && styles.mockTabTextActive]}>Live GPS</Text>
+                    </TouchableOpacity>
+                  </View>
+                </>
+              )}
             </View>
 
             {/* Remarks Input */}

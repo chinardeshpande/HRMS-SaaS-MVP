@@ -146,7 +146,7 @@ export const DashboardScreen: React.FC = () => {
       try {
         const [leavesRes, exitRes] = await Promise.all([
           endpoints.leaves.applications({ managerId: user.employeeId || 'e-current', status: 'pending' }).catch(() => null),
-          endpoints.exit.pending().catch(() => null)
+          __DEV__ ? endpoints.exit.pending().catch(() => null) : Promise.resolve(null)
         ]);
         
         const pendingItems: any[] = [];
@@ -166,7 +166,7 @@ export const DashboardScreen: React.FC = () => {
           });
         }
         
-        if (exitRes?.success && exitRes.data) {
+        if (__DEV__ && exitRes?.success && exitRes.data) {
           exitRes.data.forEach((e: any) => {
             if (e.status === 'pending') {
               pendingItems.push({
@@ -181,8 +181,8 @@ export const DashboardScreen: React.FC = () => {
           });
         }
         
-        // Seed high-fidelity mock approvals for beautiful demonstration if empty
-        if (pendingItems.length === 0) {
+        // Seed high-fidelity mock approvals for beautiful demonstration if empty in development mode
+        if (__DEV__ && pendingItems.length === 0) {
           pendingItems.push({
             id: 'mock-l-1',
             type: 'leave',
@@ -271,7 +271,9 @@ export const DashboardScreen: React.FC = () => {
       id: 'alert-approvals',
       type: 'approval',
       title: 'Action Required',
-      description: `${pendingApprovals.length} Pending Approval${pendingApprovals.length > 1 ? 's' : ''} (Leaves & Exit Clearances)`,
+      description: __DEV__
+        ? `${pendingApprovals.length} Pending Approval${pendingApprovals.length > 1 ? 's' : ''} (Leaves & Exit Clearances)`
+        : `${pendingApprovals.length} Pending Leave Approval${pendingApprovals.length > 1 ? 's' : ''}`,
       icon: 'star-circle',
       color: '#f59e0b',
       badge: pendingApprovals.length,
@@ -440,7 +442,7 @@ export const DashboardScreen: React.FC = () => {
           }
         >
           {/* HR Manager Command Center Portal Card */}
-          {isManagerOrAdmin && (
+          {isManagerOrAdmin && __DEV__ && (
             <TouchableOpacity
               style={[styles.commandCenterBanner, { marginTop: 8 }]}
               onPress={() => navigation.navigate('HRCommandCenter')}

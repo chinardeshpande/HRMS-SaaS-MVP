@@ -29,10 +29,10 @@
 | ACV-GAP-012 | Zoho WorkDrive | Future Enhancement | No document sync. | Add only after company document taxonomy is stable. | P3 |
 | ACV-GAP-013 | Payroll processing | Out of Scope | Tax/PF/ESI/TDS/statutory payroll processing is not built. | Remain out of scope; store payroll outputs only. | N/A |
 | ACV-GAP-014 | Recruitment/ATS | Out of Scope | Recruitment workflows are not part of ACV Customer Zero scope. | Keep out of scope. | N/A |
-| ACV-GAP-MOB-01 | Mobile HR Hub | Integration Gap | HR Command Center (Onboarding/PMS/Exits) is client-side mock-only. | Wire to real API routes or hide mockup elements to prevent invalid data display. | P1 |
-| ACV-GAP-MOB-02 | Mobile Chat | Integration Gap | Direct Chats tab under HR Connect runs entirely on mock seed arrays. | Disable/hide option for pilot launch or connect to chat API + WebSockets. | P1 |
+| ACV-GAP-MOB-01 | Mobile HR Hub | Integration Gap | HR Command Center (Onboarding/PMS/Exits) is client-side mock-only. | HR Hub tab, float portal items, and dashboard banner are hidden in production mode. Detail screens are gated with 'Access Restricted' layouts explaining pilot status. | P1 |
+| ACV-GAP-MOB-02 | Mobile Chat | Integration Gap | Direct Chats tab under HR Connect runs entirely on mock seed arrays. | Direct chats are disabled and show 'Direct Chats (Coming Soon)' card in production, routing to web app. | P1 |
 | ACV-GAP-MOB-03 | Mobile AI | Future Enhancement | Manu AI interface is absent from the mobile app. | Design and wire AI mobile shell with backend confirmation gates. | P3 |
-| ACV-GAP-MOB-04 | Mobile Security | UX Gap | Passcode bypass when local biometric hardware is not set up. | Require account password input if biometrics are unavailable instead of bypassing. | P1 |
+| ACV-GAP-MOB-04 | Mobile Security | UX Gap | Passcode bypass when local biometric hardware is not set up. | Bypass disabled. If biometrics are unconfigured/unavailable, user must input account password verified against /auth/login. | P1 |
 | ACV-GAP-MOB-05 | Mobile Auditing | Reporting Gap | Secure file views/downloads on mobile do not trigger backend audit logs. | Integrate `POST /audit-logs` endpoint when mobile documents are read/shared. | P1 |
 
 

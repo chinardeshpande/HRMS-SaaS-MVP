@@ -17,6 +17,19 @@ export const ExitDetailScreen: React.FC = () => {
   const navigation = useNavigation<ExitDetailNavProp>();
   const { exitId: _exitId } = route.params;
 
+  if (!__DEV__) {
+    return (
+      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 24 }]}>
+        <MaterialCommunityIcons name="alert-circle-outline" size={64} color="#EF4444" style={{ marginBottom: 16 }} />
+        <Text style={{ fontSize: 18, fontWeight: '800', color: '#111827', marginBottom: 8 }}>Access Restricted</Text>
+        <Text style={{ fontSize: 13, color: '#4B5563', textAlign: 'center', lineHeight: 18, marginBottom: 24 }}>
+          This feature is currently unavailable on mobile for pilot users. Please use the Web Application to perform HR administration.
+        </Text>
+        <CommonButton title="Go Back" onPress={() => navigation.goBack()} />
+      </SafeAreaView>
+    );
+  }
+
   // Premium State Engine reflecting high fidelity screenshot data
   const [employeeInfo, setEmployeeInfo] = useState({
     name: 'Pooja Raman',

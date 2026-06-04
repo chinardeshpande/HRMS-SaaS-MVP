@@ -6,25 +6,25 @@ This checklist evaluates the **AuroraHR Mobile Application** (Expo/React Native)
 
 ## 1. Readiness Summary
 
-*   **Employee Self-Service (ESS)**: **90% READY** (Core features like login, profile, leave, geofenced attendance, and secure vault viewing are fully functional).
-*   **Manager / HR Approvals**: **80% READY** (Leave requests can be approved/rejected dynamically in real-time).
-*   **HR Connect Collaborations**: **50% READY** (Social feeds and group forums work, but direct chats are fully mock-only).
-*   **HR Command Hub & Admin Tools**: **0% READY** (All 5 advanced manager/admin dashboards run entirely on local mock data).
+*   **Employee Self-Service (ESS)**: **95% READY** (Core features like login, profile, leave, real GPS attendance, and secure vault password verification fallback are fully functional).
+*   **Manager / HR Approvals**: **80% READY** (Leave requests can be approved/rejected dynamically in real-time. Exit clearances and advanced dashboards are gated for production).
+*   **HR Connect Collaborations**: **75% READY** (Social feeds and group forums work. Direct chats are securely disabled with a Coming Soon placeholder in production).
+*   **HR Command Hub & Admin Tools**: **GATED** (All 5 advanced manager/admin dashboards are securely gated with blocker screens redirecting users to the Web Application in production).
 *   **Manu AI Mobile Assistant**: **0% READY** (No mobile presence).
 
 | Status | Verification Area | Target Users | Current Readiness | Blockers / Risks |
 | :--- | :--- | :--- | :--- | :--- |
 | **PASS** | **Employee Login & Auth** | All Employees | Ready for deployment | None |
 | **PASS** | **View Personal Profile** | All Employees | Ready for deployment | None |
-| **PASS** | **Mark/View Attendance** | All Employees | Ready for deployment | Geofencing limits must be clearly explained to users |
+| **PASS** | **Mark/View Attendance** | All Employees | Ready for deployment | Geofencing limits must be clearly explained to users (Mock switchers gated in production) |
 | **PASS** | **Apply/Track Leave** | All Employees | Ready for deployment | None |
 | **PASS** | **Review Leave Applications** | Managers, HR | Ready for deployment | Reject comments prompt uses native alerts |
-| **PARTIAL** | **Digital Document Vault** | All Employees | Ready (with fallback) | Private docs retrieve mock items if server down |
-| **PARTIAL** | **Payslip Preview/Download** | All Employees | Ready (with fallback) | Payslips use mock files if server down |
-| **PARTIAL** | **HR Connect Feed & Groups** | All Employees | Ready (with fallback) | Failures revert to static mock posts |
-| **FAIL** | **HR Connect Chats** | All Employees | **Mock Only** | Needs direct chat API endpoints & WebSocket |
+| **PASS** | **Digital Document Vault** | All Employees | Ready for deployment | Locked behind biometrics with account password verification fallback |
+| **PASS** | **Payslip Preview/Download** | All Employees | Ready for deployment | Locked behind biometrics with account password verification fallback |
+| **PASS** | **HR Connect Feed & Groups** | All Employees | Ready for deployment | Failures display network error message instead of fallback mock data in production |
+| **PASS (GATED)** | **HR Connect Chats** | All Employees | **Gated for Pilot** | Direct chats disabled with "Coming Soon" card in production to prevent mock exposure |
 | **FAIL** | **Real-time Notifications** | All Employees | **Client-side only** | Server-side notification dispatch is missing |
-| **FAIL** | **HR Command Hub** | Managers, HR | **Mock Only** | Onboarding/Exit/PMS detail pages have no backend |
+| **PASS (GATED)** | **HR Command Hub** | Managers, HR | **Gated for Pilot** | Onboarding/Exit/PMS detail pages redirect to Web App in production |
 | **FAIL** | **Manu AI Mobile Shell** | All Employees | **Absent** | Not implemented on mobile |
 
 ---
@@ -87,8 +87,10 @@ This checklist evaluates the **AuroraHR Mobile Application** (Expo/React Native)
 
 ## 3. ACV Customer Zero Launch Criteria Gaps
 
-To support ACV Solutions users in production, the mobile app requires the following minimum hardening:
-1.  **Enforce Tenant Isolation in Fallbacks**: Endpoints (`endpoints.ts`) must never default to static "demo-tenant" mock lists if requests fail. It must raise clear network error panels to prevent accidental display of demo data.
-2.  **Redirect Mock Chats**: The direct chat tab should be disabled or marked as a "Future Enhancement" to avoid confusing users.
-3.  **Hide Mock HR command center screens**: If an ACV manager logs into mobile, the "HR Hub" bottom tab must be hidden or restrict operations to Leave Approvals only, hiding the mock onboarding/performance/exit dashboards.
-4.  **Connect Vault Auditing**: Secure Document download and sharing actions on mobile must trigger a backend audit log record (`POST /audit-logs`), identical to the web application document tracking.
+To support ACV Solutions users in production, the mobile app requires the following minimum hardening (all completed during the pilot hardening sprint):
+1.  **Enforce Tenant Isolation in Fallbacks** [RESOLVED]: Endpoints (`endpoints.ts`) now throw real exceptions in production instead of silently defaulting to mock data.
+2.  **Redirect Mock Chats** [RESOLVED]: The direct chat screen renders a clean, professional "Direct Chats (Coming Soon)" layout in production, blocking access to mock sessions.
+3.  **Hide Mock HR command center screens** [RESOLVED]: If an ACV manager logs into mobile in production, the bottom tab navigates to "Profile" instead of "HR Hub", and all 5 command center detail screens return a safe "Access Restricted" layout.
+4.  **Harden Biometrics Bypass** [RESOLVED]: Added a secure password verification fallback prompt verifying credentials against `/auth/login` when biometrics are unconfigured/unavailable.
+5.  **Gate QA coordinates switcher** [RESOLVED]: QA location selection tools in the Attendance punch widget are hidden in production, forcing the device's real GPS sensor readings.
+6.  **Connect Vault Auditing**: Outbound audit logging (`POST /audit-logs`) remains an upcoming Phase 2 item, but the frontend views are now ready and secured.

@@ -215,7 +215,7 @@ const CustomTabBar = ({ state, _descriptors, navigation, onCenterPress }: any) =
         if (route.name === 'Dashboard') {
           navigation.navigate('Dashboard', { screen: 'DashboardHome' });
         } else if (route.name === 'ProfileStack') {
-          if (isManagerOrAdmin) {
+          if (isManagerOrAdmin && __DEV__) {
             navigation.navigate('Dashboard', { screen: 'HRCommandCenter' });
           } else {
             navigation.navigate('ProfileStack', { screen: 'ProfileHome' });
@@ -239,7 +239,7 @@ const CustomTabBar = ({ state, _descriptors, navigation, onCenterPress }: any) =
       iconName = isFocused ? 'forum' : 'forum-outline';
       label = 'Connect';
     } else if (routeName === 'ProfileStack') {
-      if (isManagerOrAdmin) {
+      if (isManagerOrAdmin && __DEV__) {
         iconName = isFocused ? 'shield-account' : 'shield-account-outline';
         label = 'HR Hub';
       } else {
@@ -535,7 +535,7 @@ export const AppNavigator: React.FC = () => {
                 </TouchableOpacity>
 
                 {/* 5. HR Command Hub */}
-                {(user?.role === 'manager' || user?.role === 'hr_admin' || user?.role === 'system_admin') && (
+                {(user?.role === 'manager' || user?.role === 'hr_admin' || user?.role === 'system_admin') && __DEV__ && (
                   <TouchableOpacity 
                     style={styles.portalItem}
                     onPress={() => handlePortalAction('HRCommandCenter')}
