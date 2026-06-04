@@ -2,6 +2,9 @@
 
 This document lists and classifies the gaps, limitations, and missing integration points identified in the **AuroraHR Mobile Application** (Expo/React Native) in comparison to the web and backend capabilities during the **ACV Solutions Customer Zero** implementation review.
 
+> [!NOTE]
+> Refer to [ACV-Mobile-Limited-Pilot-Release-Notes.md](file:///Users/chinar.deshpande06/CD-THG/2025/THG-AI/MyCodingJourney/current-projects/HRMS-SaaS-MVP/docs/acv-implementation/ACV-Mobile-Limited-Pilot-Release-Notes.md) for the active pilot scope, allowed roles, and mitigation details.
+
 ---
 
 ## Classification Key

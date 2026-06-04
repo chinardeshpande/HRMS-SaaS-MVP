@@ -2,6 +2,9 @@
 
 This checklist evaluates the **AuroraHR Mobile Application** (Expo/React Native) against the core functional requirements for the **ACV Solutions Customer Zero** pilot launch. It determines what features are ready for production, what requires backend connection, and what is currently blocked.
 
+> [!NOTE]
+> Refer to [ACV-Mobile-Limited-Pilot-Release-Notes.md](file:///Users/chinar.deshpande06/CD-THG/2025/THG-AI/MyCodingJourney/current-projects/HRMS-SaaS-MVP/docs/acv-implementation/ACV-Mobile-Limited-Pilot-Release-Notes.md) and [ACV-Mobile-Pilot-User-Checklist.md](file:///Users/chinar.deshpande06/CD-THG/2025/THG-AI/MyCodingJourney/current-projects/HRMS-SaaS-MVP/docs/acv-implementation/ACV-Mobile-Pilot-User-Checklist.md) for the active pilot scope, allowed roles, and manual testing criteria.
+
 ---
 
 ## 1. Readiness Summary
