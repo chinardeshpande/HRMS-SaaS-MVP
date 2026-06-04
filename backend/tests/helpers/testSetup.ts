@@ -51,6 +51,13 @@ export const TEST_ACCOUNTS: Record<string, TestUser> = {
     expectedRole: 'system_admin',
     expectedTenantName: 'Orbit QA Isolation Ltd',
   },
+  SECOND_TENANT_EMPLOYEE: {
+    label: 'Second Tenant Employee',
+    email: TEST_USERS.SECOND_TENANT_EMPLOYEE,
+    password: TEST_PASSWORD,
+    expectedRole: 'employee',
+    expectedTenantName: 'Orbit QA Isolation Ltd',
+  },
 };
 
 export interface AuthContext {

@@ -114,11 +114,11 @@ export const login = async (req: Request, res: Response) => {
     }
 
     if (matchingUsers.length > 1) {
-      return res.status(409).json({
+      return res.status(401).json({
         success: false,
         error: {
-          code: 'AMBIGUOUS_ACCOUNT',
-          message: 'Multiple accounts use this email. Please contact support.',
+          code: 'INVALID_CREDENTIALS',
+          message: 'Invalid email or password',
         },
       });
     }
@@ -128,8 +128,8 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({
         success: false,
         error: {
-          code: 'ACCOUNT_INACTIVE',
-          message: 'Your account has been deactivated',
+          code: 'INVALID_CREDENTIALS',
+          message: 'Invalid email or password',
         },
       });
     }

@@ -30,6 +30,9 @@ export const TEST_USERS = {
   MANAGER: 'manager@acv.test',
   EMPLOYEE: 'employee@acv.test',
   SECOND_TENANT_ADMIN: 'admin@orbit.test',
+  SECOND_TENANT_EMPLOYEE: 'employee@orbit.test',
+  INACTIVE: 'inactive@acv.test',
+  DUPLICATE_EMAIL: 'duplicate@shared.test',
 };
 
 const makeDate = (value: string) => new Date(`${value}T00:00:00.000Z`);
@@ -57,7 +60,8 @@ const saveUser = async (
   email: string,
   fullName: string,
   role: UserRole,
-  employeeId?: string
+  employeeId?: string,
+  isActive = true
 ) => {
   const repo = AppDataSource.getRepository(User);
   const user = repo.create({
@@ -66,7 +70,7 @@ const saveUser = async (
     fullName,
     role,
     employeeId,
-    isActive: true,
+    isActive,
   }) as User;
   user.password = TEST_PASSWORD;
   return repo.save(user);
@@ -438,6 +442,8 @@ const seedAcvTenant = async () => {
   );
   await saveUser(acv.tenantId, TEST_USERS.MANAGER, 'Aniket Manager', UserRole.MANAGER, manager.employeeId);
   await saveUser(acv.tenantId, TEST_USERS.EMPLOYEE, 'Surekha Employee', UserRole.EMPLOYEE, employee.employeeId);
+  await saveUser(acv.tenantId, TEST_USERS.INACTIVE, 'Inactive QA User', UserRole.EMPLOYEE, employee.employeeId, false);
+  await saveUser(acv.tenantId, TEST_USERS.DUPLICATE_EMAIL, 'Duplicate ACV User', UserRole.EMPLOYEE, employee.employeeId);
 
   await seedDocumentCategories(acv.tenantId);
   await seedDocuments(acv.tenantId, employee, hrAdminUser);
@@ -451,7 +457,7 @@ const seedAcvTenant = async () => {
 const seedSecondTenant = async () => {
   const tenant = await seedTenant('Orbit QA Isolation Ltd', 'orbit-qa');
   const masters = await seedOrgMasters(tenant.tenantId);
-  const employee = await saveEmployee(tenant.tenantId, {
+  const adminEmployee = await saveEmployee(tenant.tenantId, {
     employeeCode: 'QA/ORB/0001',
     firstName: 'Orbit',
     lastName: 'Admin',
@@ -461,12 +467,37 @@ const seedSecondTenant = async () => {
     designationId: masters.director.designationId,
     dateOfJoining: makeDate('2025-01-01'),
   });
+  const orbitEmployee = await saveEmployee(tenant.tenantId, {
+    employeeCode: 'QA/ORB/0002',
+    firstName: 'Orbit',
+    lastName: 'Employee',
+    email: TEST_USERS.SECOND_TENANT_EMPLOYEE,
+    gender: 'female',
+    departmentId: masters.engineering.departmentId,
+    designationId: masters.engineer.designationId,
+    managerId: adminEmployee.employeeId,
+    dateOfJoining: makeDate('2025-02-01'),
+  });
   const user = await saveUser(
     tenant.tenantId,
     TEST_USERS.SECOND_TENANT_ADMIN,
     'Orbit Admin',
     UserRole.SYSTEM_ADMIN,
-    employee.employeeId
+    adminEmployee.employeeId
+  );
+  await saveUser(
+    tenant.tenantId,
+    TEST_USERS.SECOND_TENANT_EMPLOYEE,
+    'Orbit Employee',
+    UserRole.EMPLOYEE,
+    orbitEmployee.employeeId
+  );
+  await saveUser(
+    tenant.tenantId,
+    TEST_USERS.DUPLICATE_EMAIL,
+    'Duplicate Orbit User',
+    UserRole.EMPLOYEE,
+    orbitEmployee.employeeId
   );
   await seedDocumentCategories(tenant.tenantId);
 

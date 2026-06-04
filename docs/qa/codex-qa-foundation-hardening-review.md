@@ -212,3 +212,34 @@ Before the next QA sprint, Codex should address Finding #3 (silent-pass risk) to
 Claude is ready to start Playwright E2E implementation once Playwright can be installed.
 
 Codex should add document/file lifecycle API tests (upload → verify → download roundtrip) as the next API-layer expansion before the E2E sprint begins, since document access is a critical HRMS risk and the current tests only verify list/read endpoints.
+
+---
+
+## Codex Follow-Up Status — Document and Payslip Lifecycle API Tests
+
+**Date**: 2026-06-04  
+**Branch**: `codex/document-lifecycle-api-tests`  
+**Verification run**: 11/11 suites passed, 76/76 tests passed
+
+### Advisory Findings Resolved
+
+| Original finding | Status | Implementation |
+| --- | --- | --- |
+| Account enumeration through `ACCOUNT_INACTIVE` / `AMBIGUOUS_ACCOUNT` | Resolved | Login now returns generic 401 `INVALID_CREDENTIALS` for inactive, duplicate, nonexistent, and wrong-password failures. |
+| Missing second-tenant employee-role user | Resolved | Added `employee@orbit.test` under Orbit QA Isolation Ltd. |
+| Silent-pass risk from scaffold auth guards | Resolved for current API suite | Seed-dependent tests now use `requireAuth(...)` hard failures instead of `if (!ctx) return`. |
+
+### Additional Lifecycle Coverage Added
+
+- Employee document upload, list, download roundtrip, update, verify, archive, and audit checks.
+- Company document upload, list, download roundtrip, update, verify, archive, and audit checks.
+- Payslip create, attachment upload, HR/employee download roundtrip, missing attachment, missing file, and download audit checks.
+- Cross-tenant and role-boundary checks for employee documents, company documents, compensation, and payslip attachments.
+
+### New API Safety Fix
+
+Payslip attachment downloads now record `payslip_attachment.download` audit events using the existing audit service.
+
+### Remaining Recommendation
+
+Claude can start browser E2E implementation after this branch is reviewed. Recommended first Playwright slice: login, navigation shell, employee register, company document vault, employee documents, and payslip smoke flows.

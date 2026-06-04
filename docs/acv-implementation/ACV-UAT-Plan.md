@@ -173,28 +173,33 @@ Evidence folder:
 ## Automated Regression Foundation (2026-06-04)
 
 Original branch: `claude/acv-regression-test-foundation`  
-Hardened branch: `codex/qa-foundation-hardening`
+Hardened branch: `codex/qa-foundation-hardening`  
+Lifecycle expansion branch: `codex/document-lifecycle-api-tests`
 
-A Jest + supertest integration test suite now covers 68 automated API-level checks against a dedicated synthetic test database:
+A Jest + supertest integration test suite now covers 76 automated API-level checks against a dedicated synthetic test database:
 
 | Area | Tests | Status |
 |------|-------|--------|
 | Health/Smoke | 3 | Automated |
-| Auth (login/logout/me) | 13 | Automated |
+| Auth (login/logout/me) | 15 | Automated |
 | Tenant Isolation | 4 | Automated |
-| RBAC (role boundaries) | 11 | Automated |
+| RBAC (role boundaries) | 13 | Automated |
 | Employee Register | 4 | Automated |
 | Employee Detail | 4 | Automated |
 | Document Access | 6 | Automated |
 | Compensation/Payslip | 6 | Automated |
 | Attendance Flow | 7 | Automated |
 | Leave Flow | 9 | Automated |
+| Document and Payslip Lifecycle | 6 | Automated |
 
 Run: `cd backend && npm run test:qa`
 
 Test accounts: see `backend/tests/helpers/testSetup.ts` and `backend/tests/setup/seedTestData.ts`. The account matrix uses synthetic `*.test` emails and does not require real ACV production/development data.
 
-Full report: `docs/qa/acv-regression-foundation-2026-06-04/report.md`
+Full reports:
+
+- `docs/qa/acv-regression-foundation-2026-06-04/report.md`
+- `docs/qa/document-lifecycle-api-tests/report.md`
 
 ## Browser E2E Test Plan (2026-06-04)
 

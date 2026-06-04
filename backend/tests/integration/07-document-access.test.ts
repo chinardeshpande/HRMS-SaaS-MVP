@@ -1,4 +1,4 @@
-import { TEST_ACCOUNTS, loginAs, authGet } from '../helpers/testSetup';
+import { TEST_ACCOUNTS, loginAs, authGet, requireAuth } from '../helpers/testSetup';
 
 describe('Document Access', () => {
   /**
@@ -14,10 +14,7 @@ describe('Document Access', () => {
 
   it('HR admin can list company documents', async () => {
     const ctx = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
-    if (!ctx) {
-      console.warn('SCAFFOLD: hr_admin not in DB — skipping');
-      return;
-    }
+    requireAuth(ctx, TEST_ACCOUNTS.HR_ADMIN.label);
 
     const res = await authGet('/company-documents', ctx.token);
     expect(res.status).toBe(200);
@@ -39,10 +36,7 @@ describe('Document Access', () => {
 
   it('HR admin can list document categories', async () => {
     const ctx = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
-    if (!ctx) {
-      console.warn('SCAFFOLD: hr_admin not in DB — skipping');
-      return;
-    }
+    requireAuth(ctx, TEST_ACCOUNTS.HR_ADMIN.label);
 
     const res = await authGet('/document-categories', ctx.token);
     expect(res.status).toBe(200);
@@ -68,21 +62,17 @@ describe('Document Access', () => {
 
   it('document listing does not return documents from other tenants', async () => {
     const ctx = await loginAs(TEST_ACCOUNTS.SYSTEM_ADMIN);
-    if (!ctx) {
-      console.warn('SCAFFOLD: system_admin not in DB — skipping');
-      return;
-    }
+    requireAuth(ctx, TEST_ACCOUNTS.SYSTEM_ADMIN.label);
 
     const res = await authGet('/company-documents', ctx.token);
     expect(res.status).toBe(200);
 
     const docs = res.body.data?.documents || res.body.data || [];
     expect(docs.length).toBeGreaterThan(0);
-    if (Array.isArray(docs)) {
-      for (const doc of docs) {
-        if (doc.tenantId) {
-          expect(doc.tenantId).toBe(ctx.tenantId);
-        }
+    expect(Array.isArray(docs)).toBe(true);
+    for (const doc of docs) {
+      if (doc.tenantId) {
+        expect(doc.tenantId).toBe(ctx.tenantId);
       }
     }
   });

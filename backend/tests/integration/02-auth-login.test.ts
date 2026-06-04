@@ -1,4 +1,4 @@
-import { api, API_PREFIX, TEST_ACCOUNTS, loginAs, authGet } from '../helpers/testSetup';
+import { api, API_PREFIX, TEST_ACCOUNTS, loginAs, authGet, requireAuth } from '../helpers/testSetup';
 
 describe('Auth: Login / Logout / Me', () => {
   describe('POST /auth/login', () => {
@@ -28,6 +28,26 @@ describe('Auth: Login / Logout / Me', () => {
       expect(res.body.error.code).toBe('INVALID_CREDENTIALS');
     });
 
+    it('rejects inactive account with generic 401', async () => {
+      const res = await api.post(`${API_PREFIX}/auth/login`).send({
+        email: 'inactive@acv.test',
+        password: TEST_ACCOUNTS.EMPLOYEE.password,
+      });
+      expect(res.status).toBe(401);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error.code).toBe('INVALID_CREDENTIALS');
+    });
+
+    it('rejects duplicate email across tenants with generic 401', async () => {
+      const res = await api.post(`${API_PREFIX}/auth/login`).send({
+        email: 'duplicate@shared.test',
+        password: TEST_ACCOUNTS.EMPLOYEE.password,
+      });
+      expect(res.status).toBe(401);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error.code).toBe('INVALID_CREDENTIALS');
+    });
+
     it('rejects malformed email payload with 400', async () => {
       const res = await api.post(`${API_PREFIX}/auth/login`).send({
         email: 'not-an-email',
@@ -50,10 +70,7 @@ describe('Auth: Login / Logout / Me', () => {
 
     it('login as system_admin returns token and correct role', async () => {
       const ctx = await loginAs(TEST_ACCOUNTS.SYSTEM_ADMIN);
-      if (!ctx) {
-        console.warn('SCAFFOLD: system_admin account not in DB — skipping');
-        return;
-      }
+      requireAuth(ctx, TEST_ACCOUNTS.SYSTEM_ADMIN.label);
       expect(ctx.token).toBeTruthy();
       expect(ctx.role).toBe(TEST_ACCOUNTS.SYSTEM_ADMIN.expectedRole);
       expect(ctx.tenantId).toBeTruthy();
@@ -61,30 +78,21 @@ describe('Auth: Login / Logout / Me', () => {
 
     it('login as hr_admin returns token and correct role', async () => {
       const ctx = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
-      if (!ctx) {
-        console.warn('SCAFFOLD: hr_admin account not in DB — skipping');
-        return;
-      }
+      requireAuth(ctx, TEST_ACCOUNTS.HR_ADMIN.label);
       expect(ctx.token).toBeTruthy();
       expect(ctx.role).toBe(TEST_ACCOUNTS.HR_ADMIN.expectedRole);
     });
 
     it('login as manager returns token and correct role', async () => {
       const ctx = await loginAs(TEST_ACCOUNTS.MANAGER);
-      if (!ctx) {
-        console.warn('SCAFFOLD: manager account not in DB — skipping');
-        return;
-      }
+      requireAuth(ctx, TEST_ACCOUNTS.MANAGER.label);
       expect(ctx.token).toBeTruthy();
       expect(ctx.role).toBe(TEST_ACCOUNTS.MANAGER.expectedRole);
     });
 
     it('login as employee returns token and correct role', async () => {
       const ctx = await loginAs(TEST_ACCOUNTS.EMPLOYEE);
-      if (!ctx) {
-        console.warn('SCAFFOLD: employee account not in DB — skipping');
-        return;
-      }
+      requireAuth(ctx, TEST_ACCOUNTS.EMPLOYEE.label);
       expect(ctx.token).toBeTruthy();
       expect(ctx.role).toBe(TEST_ACCOUNTS.EMPLOYEE.expectedRole);
     });
@@ -111,10 +119,7 @@ describe('Auth: Login / Logout / Me', () => {
 
     it('returns user profile for valid token', async () => {
       const ctx = await loginAs(TEST_ACCOUNTS.SYSTEM_ADMIN);
-      if (!ctx) {
-        console.warn('SCAFFOLD: system_admin not in DB — skipping');
-        return;
-      }
+      requireAuth(ctx, TEST_ACCOUNTS.SYSTEM_ADMIN.label);
       const res = await authGet('/auth/me', ctx.token);
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);

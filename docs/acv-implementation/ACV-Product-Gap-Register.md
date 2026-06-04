@@ -21,7 +21,7 @@
 | ACV-GAP-004 | Documents | UX Gap | Employee/generated/company/compensation documents were not clearly separated for HR governance. | Company and employee document vaults now create clearer memory separation, Missing Documents reporting now uses durable employee documents, and key document surfaces now support view-in-modal plus list/card views. Remaining: generated-document and payslip linkage into one cross-module memory view. | P1 |
 | ACV-GAP-005 | Compensation | Reporting Gap | Payslip and salary transaction completeness was not visible at company level. | Initial readiness coverage now reports salary structure and payslip presence by employee. Remaining: employee/month matrix and missing payslip report. | P1 |
 | ACV-GAP-006 | Compensation | UX Gap | Share actions are logged but not yet fully connected to actual HR Connect/email delivery. | Share semantics clarified and eventually connected to outbound channels. | P2 |
-| ACV-GAP-007 | Audit | Configuration Gap | Audit model exists but sensitive operations are not systematically covered. | Company and employee document operations now audited. Remaining coverage needed for employee master, compensation, settings, role, import, and email operations. | P1 |
+| ACV-GAP-007 | Audit | Configuration Gap | Audit model exists but sensitive operations are not systematically covered. | Company and employee document operations are now API-tested for upload/download/update/verify/archive audit events. Payslip attachment download is now audited. Remaining coverage needed for employee master, salary structure/payslip mutations, settings, role, import, and email operations. | P1 |
 | ACV-GAP-008 | Data migration | Reporting Gap | Existing import scripts need ACV execution evidence and migration wave tracking. | Dry-run/execution reports, validation summaries, and rollback notes. | P1 |
 | ACV-GAP-009 | Dashboards | Reporting Gap | Generic dashboards existed but not ACV implementation readiness dashboards. | Initial Memory Readiness report now exists. Remaining: lifecycle, HR operations, leave/attendance, and tenant readiness dashboards. | P2 |
 | ACV-GAP-010 | HR Connect | Integration Gap | External communication aggregation is not built. | Start with outbound communication event logs; defer inbound sync. | P2 |
@@ -60,3 +60,11 @@
 | Salary tracking turns into payroll processing | Scope and liability risk | Store outputs only; do not compute statutory payroll. |
 | Real employee data is imported without rollback plan | Data quality and privacy risk | Dry-run, validate, execute in waves, record evidence. |
 | Email integration starts with inbound sync | Complexity and privacy risk | Start with outbound tenant SMTP and communication logs only. |
+
+## QA Advisory Status - 2026-06-04
+
+| Advisory | Previous Risk | Status | Evidence |
+| --- | --- | --- | --- |
+| Account enumeration through inactive/ambiguous login responses | Low | Resolved | Login now returns generic 401 `INVALID_CREDENTIALS` for inactive, duplicate, nonexistent, and wrong-password credential failures. |
+| Missing second-tenant employee-role fixture | Low | Resolved | `employee@orbit.test` is seeded under Orbit QA Isolation Ltd. |
+| Silent-pass patterns in seeded API tests | Medium | Resolved for current API suite | Seed-dependent integration tests now use `requireAuth(...)` hard failures instead of returning early. |

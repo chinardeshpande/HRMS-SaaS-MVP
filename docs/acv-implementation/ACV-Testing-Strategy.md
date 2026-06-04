@@ -206,24 +206,55 @@ Hardened branch: `codex/qa-foundation-hardening`
 | Employee | `employee@acv.test` | `employee` | Synthetic seed |
 | Second Tenant Admin | `admin@orbit.test` | `system_admin` | Synthetic seed |
 
-### Coverage (68 tests, all passing)
+### Coverage (76 tests, all passing on `codex/document-lifecycle-api-tests`)
 
 | Suite | Count | Critical Risk |
 |-------|-------|---------------|
 | Health/Smoke | 3 | Build health |
-| Auth login/me | 13 | Authentication |
+| Auth login/me | 15 | Authentication and account enumeration |
 | Tenant Isolation | 4 | Tenant leakage |
-| RBAC | 11 | Role leakage |
+| RBAC | 13 | Role leakage |
 | Employee Register | 4 | Data visibility |
 | Employee Detail | 4 | Data visibility |
 | Document Access | 6 | Document leakage |
 | Compensation/Payslip | 6 | Salary leakage |
 | Attendance | 7 | Role boundaries |
 | Leave | 9 | Role boundaries |
+| Document and Payslip Lifecycle | 6 | Upload/download/audit lifecycle |
 
 ### Bugs Found
 
 1. Login returned 500 instead of 401 for nonexistent email. Fixed in `authController.ts`.
+2. Inactive and ambiguous duplicate-account login paths returned distinguishable errors. Fixed to generic 401 `INVALID_CREDENTIALS` while preserving server-side diagnostic intent.
+3. Seed data lacked a second-tenant employee-role user. Added `employee@orbit.test` for cross-tenant employee tests.
+4. Several seeded-account tests could silently pass when auth setup failed. Replaced scaffold skips with hard `requireAuth(...)` failures.
+
+### Document and Payslip Lifecycle API Expansion (2026-06-04)
+
+Branch: `codex/document-lifecycle-api-tests`
+
+Additional backend API tests now cover:
+
+- Employee document upload, list, download roundtrip, update, verify, archive, and audit events.
+- Employee document self-access, cross-employee denial, missing-document handling, and cross-tenant denial.
+- Company document upload, list, download roundtrip, update, verify, archive, and audit events.
+- Company document HR-only access, cross-tenant denial, missing-document handling, and missing-file handling.
+- Payslip creation, payslip attachment upload, HR download, employee self-download, missing attachment handling, missing file handling, and download audit event.
+- Compensation/payslip access denial for manager and second-tenant employee roles.
+
+Audit coverage verified by API tests:
+
+- `employee_document.upload`
+- `employee_document.download`
+- `employee_document.update`
+- `employee_document.verify`
+- `employee_document.archive`
+- `company_document.upload`
+- `company_document.download`
+- `company_document.update`
+- `company_document.verify`
+- `company_document.archive`
+- `payslip_attachment.download`
 
 ### Run
 

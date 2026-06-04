@@ -23,7 +23,7 @@ describe('Compensation & Payslip Access', () => {
     expect(res.body.success).toBe(true);
     expect(res.body.data.salaryStructures.length).toBeGreaterThan(0);
     expect(res.body.data.payslips.length).toBeGreaterThan(0);
-    expect(Number(res.body.data.payslips[0].netPay)).toBe(52000);
+    expect(res.body.data.payslips.some((payslip: any) => Number(payslip.netPay) === 52000)).toBe(true);
   });
 
   it('employee can access own compensation only', async () => {

@@ -10,6 +10,7 @@ import { SalaryComponentType } from '../models/SalaryComponent';
 import { PayslipStatus } from '../models/Payslip';
 import { CompensationShareChannel } from '../models/CompensationShareLog';
 import { resolveUploadUrl, uploadDir } from '../utils/uploadPaths';
+import auditService from '../services/auditService';
 
 const router = Router();
 router.use(authenticate);
@@ -331,6 +332,23 @@ router.get('/attachments/:attachmentId/download', async (req: Request, res: Resp
     if (!fs.existsSync(absolutePath)) {
       return res.status(404).json({ success: false, error: { code: 'FILE_NOT_FOUND', message: 'File not found on server' } });
     }
+
+    await auditService.record({
+      tenantId: req.user!.tenantId,
+      userId: req.user!.userId,
+      action: 'payslip_attachment.download',
+      entityType: 'payslip_attachment',
+      entityId: attachment.attachmentId,
+      newValue: {
+        attachmentId: attachment.attachmentId,
+        payslipId: attachment.payslipId,
+        fileName: attachment.fileName,
+        fileSize: attachment.fileSize,
+      },
+      description: `Downloaded payslip attachment: ${attachment.fileName}`,
+      ipAddress: req.ip,
+      userAgent: req.get('user-agent'),
+    });
 
     res.download(absolutePath, attachment.fileName);
   } catch (error: any) {
