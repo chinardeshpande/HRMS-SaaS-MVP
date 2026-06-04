@@ -150,6 +150,31 @@ Coverage:
 - reports
 - settings
 
+### Track 10: Mobile Employee Self-Service
+
+- Employee logs in successfully with username and password.
+- Employee configures biometric preferences in settings.
+- Employee restarts the app and authenticates successfully using Face/Touch ID.
+- Employee views leave balances and submits a leave request.
+- Employee reviews, previews, and downloads own private payslips and NDAs in the Digital Vault.
+- Biometric auth triggers and blocks vault documents if validation fails.
+- Document preview appends valid JWT parameter to stream endpoints.
+
+### Track 11: Mobile Geofenced Attendance
+
+- Employee attempts to punch in from Acme HQ (Desk mode). Punch succeeds.
+- Employee attempts to punch in from home (WFH mode) with empty remarks. Punch is blocked.
+- Employee adds "WFH" to remarks in WFH mode. Punch succeeds.
+- Employee attempts to punch in outside geofence (Live GPS mode). Punch is blocked.
+- Elapsed time tracker ticks correctly during an active clock-in session.
+
+### Track 12: Mobile Manager Approvals
+
+- Manager logs in. Tab bar displays "HR Hub" (with badge notification counts) instead of "Profile".
+- Manager taps "HR Hub" and is redirected to the HR approvals interface.
+- Manager reviews, approves, and rejects team leave requests in real-time.
+- Manager rejection prompts for comments and updates the records on the backend.
+
 ## Evidence Requirements
 
 For each UAT run, capture:

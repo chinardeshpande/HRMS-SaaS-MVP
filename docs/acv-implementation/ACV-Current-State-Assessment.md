@@ -151,6 +151,24 @@ The first implementation-readiness report is in place. ACV still needs broader o
 - HR operations status
 - leave/attendance operational health
 
+## Mobile Application
+
+### Existing Implementation
+
+- Framework & version: Expo SDK 50, React Native 0.73.2, React 18.2.0, Zustand for state management, and Axios with custom interceptors for API requests.
+- Core self-service screens implemented and wired to endpoints: Login, Profile, Attendance punch (geofenced), and Leave Tracker (balances, history, apply leave).
+- Digital Vault: Includes tabs for Payslips, Issued Docs (e.g. NDAs), and Policies. Private files are gated by local biometric authentication (`expo-local-authentication`), downloaded via `expo-file-system`, and shared via `expo-sharing`.
+- HR Connect: Announcements feed and groups join/leave are connected to real backend routes with offline fallbacks.
+- HR Command Hub: Includes screens for Hiring Pipeline, Probation reviews, Performance rating details, and Exits.
+
+### Current Status
+
+The core employee self-service features and manager leave approvals are fully operational and connected to the backend. The custom Curved Bottom Floating Tab Bar dynamically swaps the profile tab to "HR Hub" (redirecting to the HR Command Center) for managers and administrators, matching role-based permission rules. Biometric locking and geofencing calculations function correctly.
+
+### Current Gap
+
+The HR Command Hub detail screens (Onboarding, Probation review, Performance appraisal, Exit checklists) and HR Connect direct chats are fully client-side mocked and lack database connections. Manu AI has no mobile interface. Device branding is hardcoded rather than resolving dynamically from the tenant organization settings. Outbound downloads do not create audit log entries in the backend databases.
+
 ## Production Readiness Interpretation
 
 AuroraHR is materially beyond a basic MVP. ACV implementation should focus on hardening, governance, evidence, and tenant-specific operational readiness before deeper integrations.
