@@ -79,6 +79,7 @@ export const ApplyLeaveModal = ({
     return base.map((option) => {
       const balance = balancesByType.get(option.value);
       const totalAllocated = Number(balance?.totalAllocated) || 0;
+      const genderEligible = balance?.genderEligible !== false;
       const available =
         balance?.available !== undefined
           ? Number(balance.available)
@@ -87,6 +88,7 @@ export const ApplyLeaveModal = ({
       return {
         ...option,
         available,
+        genderEligible,
         hasBalance: Boolean(balance),
         isPolicyActive: policiesByType.has(option.value),
       };
@@ -101,7 +103,8 @@ export const ApplyLeaveModal = ({
     if (!isOpen) return;
 
     const preferredOption =
-      leaveTypeOptions.find((option) => option.hasBalance && option.available > 0) ||
+      leaveTypeOptions.find((option) => option.hasBalance && option.genderEligible && option.available > 0) ||
+      leaveTypeOptions.find((option) => option.hasBalance && option.genderEligible) ||
       leaveTypeOptions.find((option) => option.hasBalance) ||
       leaveTypeOptions[0];
 
@@ -123,6 +126,11 @@ export const ApplyLeaveModal = ({
 
     if (!hasConfiguredLeave || !selectedOption?.hasBalance) {
       setError('Your leave balance is not initialized for this leave type. Please contact HR.');
+      return;
+    }
+
+    if (!selectedOption.genderEligible) {
+      setError('You are not eligible for this leave type based on employee profile gender.');
       return;
     }
 
@@ -223,14 +231,18 @@ export const ApplyLeaveModal = ({
               required
             >
               {leaveTypeOptions.map((option) => (
-                <option key={option.value} value={option.value} disabled={!option.hasBalance}>
+                <option key={option.value} value={option.value} disabled={!option.hasBalance || !option.genderEligible}>
                   {option.label}
-                  {option.hasBalance ? ` · ${option.available} days available` : ' · balance not initialized'}
+                  {!option.hasBalance
+                    ? ' · balance not initialized'
+                    : !option.genderEligible
+                      ? ' · not eligible'
+                      : ` · ${option.available} days available`}
                 </option>
               ))}
             </select>
             <p className="mt-2 text-xs text-gray-500">
-              Only active policies with initialized employee balances can be used for leave applications.
+              Only active policies with initialized and eligible employee balances can be used for leave applications.
             </p>
           </div>
 

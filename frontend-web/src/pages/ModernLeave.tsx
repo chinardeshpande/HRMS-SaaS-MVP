@@ -53,6 +53,7 @@ export default function ModernLeave() {
     code: string;
     name: string;
     department: string;
+    gender?: string;
   }>>([]);
   const [companyLeaveBalances, setCompanyLeaveBalances] = useState<CompanyLeaveBalanceReportRow[]>([]);
 
@@ -270,6 +271,7 @@ export default function ModernLeave() {
           code: employee.employeeCode,
           name: `${employee.firstName} ${employee.lastName}`.trim(),
           department: employee.department?.name || 'N/A',
+          gender: employee.gender,
         }));
       const activeEmployeeIds = new Set(activeEmployees.map((employee) => employee.id));
 
@@ -374,6 +376,18 @@ export default function ModernLeave() {
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
   const normalizeLeaveKey = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const normalizeGender = (value?: string) => {
+    const normalized = value?.trim().toLowerCase();
+    if (!normalized) return '';
+    if (normalized === 'm' || normalized === 'male') return 'male';
+    if (normalized === 'f' || normalized === 'female') return 'female';
+    return normalized;
+  };
+  const isGenderEligibleForPolicy = (employeeGender: string | undefined, policyGender: string | undefined) => {
+    const normalizedPolicyGender = normalizeGender(policyGender);
+    if (!normalizedPolicyGender || normalizedPolicyGender === 'all') return true;
+    return normalizeGender(employeeGender) === normalizedPolicyGender;
+  };
   const formatLeaveColumnLabel = (value: string) =>
     value
       .replace(/_/g, ' ')
@@ -385,6 +399,7 @@ export default function ModernLeave() {
         key: policy.policyName || policy.leaveType,
         label: formatLeaveColumnLabel(policy.leaveType || policy.policyName),
         fallbackTotal: Number(policy.totalLeaves) || 0,
+        applicableGender: policy.applicableGender || 'all',
         matchKeys: [
           normalizeLeaveKey(policy.policyName || ''),
           normalizeLeaveKey(policy.leaveType || ''),
@@ -394,6 +409,7 @@ export default function ModernLeave() {
         key: leaveType,
         label: formatLeaveColumnLabel(leaveType),
         fallbackTotal: 0,
+        applicableGender: 'all',
         matchKeys: [normalizeLeaveKey(leaveType)],
       }));
   const companyLeaveBalanceByEmployee = new Map<string, CompanyLeaveBalanceReportRow[]>();
@@ -442,9 +458,17 @@ export default function ModernLeave() {
       usedDays: used,
       pendingDays: pending,
       remainingDays: available,
+      genderEligible: balance.genderEligible !== false,
       icon,
       color,
     };
+  });
+  const visibleLeaveBalanceCards = formattedLeaveBalances.filter((balance) => {
+    const leaveType = balance.leaveType.toLowerCase();
+    if (leaveType === 'maternity' || leaveType === 'paternity') {
+      return balance.genderEligible === true && balance.totalDays > 0;
+    }
+    return true;
   });
 
   return (
@@ -657,7 +681,7 @@ export default function ModernLeave() {
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                {formattedLeaveBalances.map((balance) => {
+                {visibleLeaveBalanceCards.map((balance) => {
                   const Icon = balance.icon;
                   return (
                     <div
@@ -673,6 +697,11 @@ export default function ModernLeave() {
                             {balance.leaveType}
                           </span>
                         </div>
+                        {!balance.genderEligible && (
+                          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
+                            Not eligible
+                          </span>
+                        )}
                       </div>
                       <div className="mt-3 grid grid-cols-3 gap-2 border-t border-gray-100 pt-3 text-center">
                         <div className="rounded-lg bg-gray-50 px-2 py-1.5">
@@ -985,12 +1014,13 @@ export default function ModernLeave() {
                                 const key = normalizeLeaveKey(item.leaveType || '');
                                 return column.matchKeys.includes(key);
                               });
+                              const isEligible = isGenderEligibleForPolicy(employee.gender, column.applicableGender);
                               const used = Number(balance?.used) || 0;
-                              const total = Number(balance?.totalEntitlement) || column.fallbackTotal || 0;
+                              const total = isEligible ? (Number(balance?.totalEntitlement) || column.fallbackTotal || 0) : 0;
                               return (
                                 <td key={`${employee.id}-${column.key}`} className="px-3 py-2 text-center">
                                   <span className={`inline-flex min-w-[72px] justify-center rounded-lg px-3 py-1.5 text-sm font-bold ${
-                                    balance ? 'bg-purple-50 text-purple-800' : 'bg-gray-50 text-gray-500'
+                                    !isEligible ? 'bg-gray-100 text-gray-400' : balance ? 'bg-purple-50 text-purple-800' : 'bg-gray-50 text-gray-500'
                                   }`}>
                                     {used} / {total}
                                   </span>

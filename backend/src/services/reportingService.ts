@@ -61,6 +61,26 @@ export interface LeaveBalanceData {
   carriedForward?: number;
 }
 
+const normalizeGender = (gender?: string | null): string | undefined => {
+  const normalized = gender?.trim().toLowerCase();
+  if (!normalized) return undefined;
+  if (['m', 'male'].includes(normalized)) return 'male';
+  if (['f', 'female'].includes(normalized)) return 'female';
+  return normalized;
+};
+
+const requiredGenderForLeaveType = (leaveType?: string | null): 'male' | 'female' | undefined => {
+  if (leaveType === 'maternity') return 'female';
+  if (leaveType === 'paternity') return 'male';
+  return undefined;
+};
+
+const isGenderEligibleForLeaveType = (leaveType?: string | null, gender?: string | null): boolean => {
+  const requiredGender = requiredGenderForLeaveType(leaveType);
+  if (!requiredGender) return true;
+  return normalizeGender(gender) === requiredGender;
+};
+
 export interface HeadcountData {
   department: string;
   employmentType: string;
@@ -270,8 +290,10 @@ export class ReportingService {
         'employee.employeeId as "employeeId"',
         'employee.firstName || \' \' || employee.lastName as "employeeName"',
         'employee.employeeCode as "employeeCode"',
+        'employee.gender as "employeeGender"',
         'department.name as "department"',
         'policy.policyName as "leaveType"',
+        'policy.leaveType as "policyLeaveType"',
         'balance.totalAllocated as "totalEntitlement"',
         'balance.used as "used"',
         'balance.pending as "pending"',
@@ -285,7 +307,28 @@ export class ReportingService {
       });
     }
 
-    return query.getRawMany();
+    const rows = await query.getRawMany();
+
+    return rows.map((row) => {
+      const genderEligible = isGenderEligibleForLeaveType(row.policyLeaveType, row.employeeGender);
+      const totalEntitlement = genderEligible ? Number(row.totalEntitlement) || 0 : 0;
+      const carriedForward = genderEligible ? Number(row.carriedForward) || 0 : 0;
+      const used = Number(row.used) || 0;
+      const pending = Number(row.pending) || 0;
+
+      return {
+        employeeId: row.employeeId,
+        employeeName: row.employeeName,
+        employeeCode: row.employeeCode,
+        department: row.department,
+        leaveType: row.leaveType,
+        totalEntitlement,
+        used,
+        pending,
+        available: Math.max(0, totalEntitlement + carriedForward - used - pending),
+        carriedForward,
+      };
+    });
   }
 
   /**
@@ -316,6 +359,12 @@ export class ReportingService {
     if (filters.employmentTypes && filters.employmentTypes.length > 0) {
       query.andWhere('employee.employmentType IN (:...employmentTypes)', {
         employmentTypes: filters.employmentTypes,
+      });
+    }
+
+    if (filters.status && filters.status.length > 0) {
+      query.andWhere('employee.status IN (:...status)', {
+        status: filters.status,
       });
     }
 

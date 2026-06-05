@@ -133,7 +133,6 @@ const DEFAULT_COMPANY_DOCUMENT_FORM: CompanyDocumentPayload = {
 export default function ModernDocuments() {
   const { user } = useAuth();
   const [viewMode, setViewMode] = useState<ViewMode>('templates');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTemplate, setSelectedTemplate] = useState<DocumentTemplate | null>(null);
   const [showWizard, setShowWizard] = useState(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -144,7 +143,6 @@ export default function ModernDocuments() {
   const [companyDocuments, setCompanyDocuments] = useState<CompanyDocument[]>([]);
   const [companyDocumentStats, setCompanyDocumentStats] = useState<CompanyDocumentStats | null>(null);
   const [companyDocumentsLoading, setCompanyDocumentsLoading] = useState(false);
-  const [companyDocumentCategory, setCompanyDocumentCategory] = useState<CompanyDocumentCategory | 'all'>('all');
   const [showCompanyUpload, setShowCompanyUpload] = useState(false);
   const [companyDocumentForm, setCompanyDocumentForm] = useState<CompanyDocumentPayload>(DEFAULT_COMPANY_DOCUMENT_FORM);
   const [companyDocumentFile, setCompanyDocumentFile] = useState<File | null>(null);
@@ -209,7 +207,7 @@ export default function ModernDocuments() {
     if (user && viewMode === 'companyVault') {
       fetchCompanyDocuments();
     }
-  }, [user, viewMode, companyDocumentCategory]);
+  }, [user, viewMode]);
 
   const fetchHistory = async () => {
     try {
@@ -231,7 +229,7 @@ export default function ModernDocuments() {
     try {
       setCompanyDocumentsLoading(true);
       const [documents, stats] = await Promise.all([
-        companyDocumentService.list({ category: companyDocumentCategory }),
+        companyDocumentService.list(),
         companyDocumentService.stats(),
       ]);
       setCompanyDocuments(documents);
@@ -247,22 +245,7 @@ export default function ModernDocuments() {
     }
   };
 
-  // Calculate category counts dynamically
-  const categories = [
-    { id: 'all', name: 'All Documents', count: templates.length },
-    { id: 'offer', name: 'Offer', count: templates.filter(t => t.category === 'offer').length },
-    { id: 'appointment', name: 'Appointment', count: templates.filter(t => t.category === 'appointment').length },
-    { id: 'confirmation', name: 'Confirmation', count: templates.filter(t => t.category === 'confirmation').length },
-    { id: 'probation', name: 'Probation', count: templates.filter(t => t.category === 'probation').length },
-    { id: 'promotion', name: 'Promotion', count: templates.filter(t => t.category === 'promotion').length },
-    { id: 'transfer', name: 'Transfer', count: templates.filter(t => t.category === 'transfer').length },
-    { id: 'exit', name: 'Exit', count: templates.filter(t => t.category === 'exit').length },
-    { id: 'policy', name: 'Policy', count: templates.filter(t => t.category === 'policy').length },
-  ].filter(cat => cat.id === 'all' || cat.count > 0);
-
-  const filteredTemplates = selectedCategory === 'all'
-    ? templates
-    : templates.filter(t => t.category === selectedCategory);
+  const filteredTemplates = templates;
 
   const getColorClasses = (color: string) => {
     const colors: Record<string, { bg: string; text: string; border: string; hover: string }> = {
@@ -554,28 +537,6 @@ export default function ModernDocuments() {
         {/* Templates View */}
         {viewMode === 'templates' && (
           <>
-            {/* Category Filter */}
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    selectedCategory === category.id
-                      ? 'bg-primary-600 text-white shadow-md'
-                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  {category.name}
-                  {category.count > 0 && (
-                    <span className={`ml-2 ${selectedCategory === category.id ? 'text-white' : 'text-gray-500'}`}>
-                      ({category.count})
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-
             {/* Templates Grid */}
             {loading ? (
               <div className="flex items-center justify-center py-12">
@@ -773,36 +734,7 @@ export default function ModernDocuments() {
 
         {viewMode === 'companyVault' && (
           <div className="space-y-5">
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-              {[
-                { label: 'Total records', value: companyDocumentStats?.total || 0 },
-                { label: 'Active', value: companyDocumentStats?.active || 0 },
-                { label: 'Needs review', value: companyDocumentStats?.needsReview || 0 },
-                { label: 'Expiring in 60 days', value: companyDocumentStats?.expiringSoon || 0 },
-              ].map((item) => (
-                <div key={item.label} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{item.label}</p>
-                  <p className="mt-2 text-2xl font-bold text-gray-900">{item.value}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex flex-wrap gap-2">
-                {COMPANY_DOCUMENT_CATEGORIES.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => setCompanyDocumentCategory(category.id)}
-                    className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
-                      companyDocumentCategory === category.id
-                        ? 'bg-primary-600 text-white'
-                        : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    {category.name}
-                  </button>
-                ))}
-              </div>
+            <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-end">
               <div className="flex flex-wrap items-center gap-2">
                 <div className="inline-flex rounded-lg border border-gray-200 bg-white p-1">
                   <button

@@ -126,8 +126,11 @@ app.use(
       // Allow requests with no origin (like mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
 
-      // In development, allow any localhost origin
-      if (config.nodeEnv === 'development' && origin.startsWith('http://localhost:')) {
+      // In development, allow local browser testing through localhost or 127.0.0.1.
+      if (
+        config.nodeEnv === 'development' &&
+        (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'))
+      ) {
         return callback(null, true);
       }
 

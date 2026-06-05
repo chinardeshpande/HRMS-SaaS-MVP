@@ -57,6 +57,7 @@ export interface LeaveBalance {
   carriedForward: number;  // Backend uses carriedForward
   encashed: number;
   available?: number;  // Computed getter from backend
+  genderEligible?: boolean;
   createdAt: string;
   updatedAt: string;
 }

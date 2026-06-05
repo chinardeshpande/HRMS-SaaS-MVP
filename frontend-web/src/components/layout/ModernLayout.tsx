@@ -306,26 +306,69 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                   >
                     {isDemoMode ? 'Return to my account' : 'Switch to demo mode'}
                   </button>
-                  {navigation.map((item) => (
-                    <button
-                      key={item.name}
-                      onClick={() => {
-                        navigate(item.href);
-                        setSidebarOpen(false);
-                      }}
-                      className={`
-                        group flex items-center px-2 py-2 text-base font-medium rounded-md w-full
-                        ${
-                          isActive(item.href)
-                            ? 'bg-primary-50 text-primary-700'
-                            : 'text-gray-700 hover:bg-gray-50'
-                        }
-                      `}
-                    >
-                      <item.icon className="mr-4 h-6 w-6" />
-                      {item.name}
-                    </button>
-                  ))}
+                  {navigation.map((item) => {
+                    const hasChildren = item.children && item.children.length > 0;
+                    const isExpanded = expandedMenus.includes(item.name);
+                    const itemActive = isParentActive(item);
+
+                    return (
+                      <div key={item.name}>
+                        <button
+                          onClick={() => {
+                            if (hasChildren) {
+                              toggleMenu(item.name);
+                              return;
+                            }
+                            navigate(item.href);
+                            setSidebarOpen(false);
+                          }}
+                          className={`
+                            group flex items-center px-2 py-2 text-base font-medium rounded-md w-full
+                            ${
+                              itemActive
+                                ? 'bg-primary-50 text-primary-700'
+                                : 'text-gray-700 hover:bg-gray-50'
+                            }
+                          `}
+                        >
+                          <item.icon className="mr-4 h-6 w-6" />
+                          <span className="flex-1 text-left">{item.name}</span>
+                          {hasChildren && (
+                            <ChevronDownIcon
+                              className={`ml-auto h-4 w-4 transition-transform ${
+                                isExpanded ? 'transform rotate-180' : ''
+                              }`}
+                            />
+                          )}
+                        </button>
+
+                        {hasChildren && isExpanded && (
+                          <div className="ml-6 mt-1 space-y-1">
+                            {item.children?.map((child) => (
+                              <button
+                                key={child.name}
+                                onClick={() => {
+                                  navigate(child.href);
+                                  setSidebarOpen(false);
+                                }}
+                                className={`
+                                  group flex w-full items-center rounded-md px-2 py-2 text-sm font-medium
+                                  ${
+                                    isActive(child.href)
+                                      ? 'bg-primary-50 text-primary-700'
+                                      : 'text-gray-600 hover:bg-gray-50'
+                                  }
+                                `}
+                              >
+                                <child.icon className="mr-3 h-5 w-5" />
+                                {child.name}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </nav>
               </div>
             </div>

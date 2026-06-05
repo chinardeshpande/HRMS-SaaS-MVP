@@ -74,6 +74,19 @@ export default function BusinessRulesTab() {
   const [policyFormData, setPolicyFormData] = useState<Partial<LeavePolicy>>(defaultPolicyFormData);
   const [actionLoading, setActionLoading] = useState(false);
 
+  const getGenderApplicability = (leaveType?: LeavePolicy['leaveType'], configured?: string) => {
+    if (leaveType === 'maternity') return 'female';
+    if (leaveType === 'paternity') return 'male';
+    return configured || 'all';
+  };
+
+  const getGenderBadge = (applicableGender?: string | null) => {
+    if (!applicableGender || applicableGender === 'all') return null;
+    if (applicableGender.toLowerCase() === 'female') return { label: 'F', title: 'Female only' };
+    if (applicableGender.toLowerCase() === 'male') return { label: 'M', title: 'Male only' };
+    return { label: applicableGender.slice(0, 1).toUpperCase(), title: `${applicableGender} only` };
+  };
+
   useEffect(() => {
     loadRules();
   }, [categoryFilter]);
@@ -186,6 +199,7 @@ export default function BusinessRulesTab() {
     try {
       const payload = {
         ...policyFormData,
+        applicableGender: getGenderApplicability(policyFormData.leaveType, policyFormData.applicableGender),
         totalLeaves: Number(policyFormData.totalLeaves || 0),
         maxConsecutiveDays: Number(policyFormData.maxConsecutiveDays || 0),
         maxCarryForward: Number(policyFormData.maxCarryForward || 0),
@@ -306,27 +320,40 @@ export default function BusinessRulesTab() {
               No leave policies configured yet.
             </div>
           ) : (
-            leavePolicies.map((policy) => (
+            leavePolicies.map((policy) => {
+              const genderBadge = getGenderBadge(policy.applicableGender);
+
+              return (
               <div key={policy.policyId} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-semibold capitalize text-purple-700">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+                      <span className="max-w-[8rem] truncate rounded-full bg-purple-100 px-2 py-0.5 text-xs font-semibold capitalize text-purple-700">
                         {policy.leaveType}
                       </span>
-                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">
-                        Company-wide
+                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700" title="Company-wide">
+                        Company
                       </span>
+                      {genderBadge && (
+                        <span
+                          className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-pink-100 px-1.5 text-xs font-bold uppercase text-pink-700"
+                          title={genderBadge.title}
+                        >
+                          {genderBadge.label}
+                        </span>
+                      )}
                       {policy.isActive ? (
-                        <CheckCircleIcon className="h-4 w-4 text-green-500" title="Active" />
+                        <CheckCircleIcon className="h-4 w-4 shrink-0 text-green-500" title="Active" />
                       ) : (
-                        <XCircleIcon className="h-4 w-4 text-gray-400" title="Inactive" />
+                        <XCircleIcon className="h-4 w-4 shrink-0 text-gray-400" title="Inactive" />
                       )}
                     </div>
-                    <h5 className="mt-2 text-sm font-semibold text-gray-900">{policy.policyName}</h5>
+                    <h5 className="mt-2 truncate text-sm font-semibold text-gray-900" title={policy.policyName}>
+                      {policy.policyName}
+                    </h5>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xl font-bold text-gray-900">{policy.totalLeaves}</p>
+                  <div className="shrink-0 text-right">
+                    <p className="text-lg font-bold leading-6 text-gray-900">{policy.totalLeaves}</p>
                     <p className="text-xs text-gray-500">days/year</p>
                   </div>
                 </div>
@@ -362,7 +389,8 @@ export default function BusinessRulesTab() {
                   </button>
                 </div>
               </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
@@ -475,7 +503,14 @@ export default function BusinessRulesTab() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Leave Type *</label>
                     <select
                       value={policyFormData.leaveType || 'casual'}
-                      onChange={(e) => setPolicyFormData({ ...policyFormData, leaveType: e.target.value as LeavePolicy['leaveType'] })}
+                      onChange={(e) => {
+                        const leaveType = e.target.value as LeavePolicy['leaveType'];
+                        setPolicyFormData({
+                          ...policyFormData,
+                          leaveType,
+                          applicableGender: getGenderApplicability(leaveType, policyFormData.applicableGender),
+                        });
+                      }}
                       className="input w-full"
                     >
                       <option value="casual">Casual</option>
@@ -539,13 +574,20 @@ export default function BusinessRulesTab() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Applicability</label>
-                    <input
-                      type="text"
-                      value="Company-wide"
-                      readOnly
-                      className="input w-full bg-gray-50 text-gray-500"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Gender Applicability</label>
+                    <select
+                      value={getGenderApplicability(policyFormData.leaveType, policyFormData.applicableGender)}
+                      onChange={(e) => setPolicyFormData({ ...policyFormData, applicableGender: e.target.value })}
+                      disabled={policyFormData.leaveType === 'maternity' || policyFormData.leaveType === 'paternity'}
+                      className="input w-full disabled:bg-gray-50 disabled:text-gray-500"
+                    >
+                      <option value="all">All employees</option>
+                      <option value="female">Female employees only</option>
+                      <option value="male">Male employees only</option>
+                    </select>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Maternity and paternity applicability is enforced by the system.
+                    </p>
                   </div>
                 </div>
 
