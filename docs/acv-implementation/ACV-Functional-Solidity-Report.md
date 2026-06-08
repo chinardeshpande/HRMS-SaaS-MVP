@@ -71,17 +71,45 @@ Evidence:
 | Leave and attendance functional solidity | Green/Amber | Basic API lifecycle is green. Browser workflow, regularisation, and managerial UX remain amber. |
 | ACV production data readiness | Amber | Historical document restoration remains parked. Validation reports still show data/document completeness gaps. |
 | Browser UX and responsive quality | Amber | Not part of this sprint. Requires Playwright/visual QA. |
-| HR Analytics | Amber/Red | Known UI/query/chart defects remain outside this sprint. |
+| HR Analytics | Green/Amber | Backend/API analytics scoping and synthetic metric checks are now covered by `codex/hr-analytics-repair`. Browser column/group/chart behavior still needs Playwright evidence. |
 | Manu AI | Amber/Red | Explicitly out of scope for this sprint. |
 
 ## Historical Documents
 
 Historical document restoration is deliberately parked. This sprint validates that document APIs can handle synthetic upload/list/download/update/verify/archive flows safely. It does not attempt to recover or re-link missing historical backing files.
 
+## HR Analytics Repair Update - 2026-06-09
+
+Branch: `codex/hr-analytics-repair`
+
+Backend HR Analytics/reporting solidity improved from Amber/Red to Green/Amber.
+
+Changes:
+
+- Reporting service now accepts an access context instead of raw tenant ID for report execution.
+- Manager-accessible employee-based reports are scoped to manager self plus direct reports.
+- Saved report listing/execution now checks allowed report types for the current role.
+- Saved report execution handles missing filter config safely.
+- Leave analytics frontend column defaults now match backend response field `totalEntitlement`.
+- Added `12-reporting-analytics.test.ts` with tenant scoping, role scoping, manager scoping, core metrics, empty-state, saved-report guardrail, and semantic analytics coverage.
+
+Validation:
+
+- `npm --prefix backend run build`: Passed.
+- `npm --prefix backend run test:qa -- --runTestsByPath tests/integration/12-reporting-analytics.test.ts`: Passed, 11 tests.
+- `npm --prefix backend run test:qa`: Passed on rerun, 95 tests.
+- `npm --prefix frontend-web run build`: Passed after temporary local dependency symlink.
+
+Remaining:
+
+- Browser E2E for report UI interactions remains with Claude.
+- Chart rendering and export content need browser-level evidence.
+- Deeper manager hierarchy scoping is not implemented unless explicitly required by product policy.
+
 ## Remaining QA Blockers
 
 1. Browser E2E is still required for real user journeys.
-2. HR Analytics column/group/chart behavior needs a dedicated repair sprint.
+2. HR Analytics browser column/group/chart behavior still needs Playwright evidence.
 3. Attendance regularisation workflow is not yet covered by automated tests.
 4. Leave policy switching/active-policy UX is not yet hardened.
 5. Audit logging must be expanded for employee master, salary changes, leave actions, attendance actions, settings, roles, imports, and outbound communications.
@@ -90,10 +118,11 @@ Historical document restoration is deliberately parked. This sprint validates th
 
 ## Recommended Next QA Sprint
 
-`codex/acv-browser-e2e-critical-paths`
+`claude/hr-analytics-browser-e2e`, followed by `codex/acv-browser-e2e-critical-paths` if backend/API defects are found.
 
 Focus:
 
+- HR Analytics perspective selection, filters, grouping, column selector, table/summary/chart modes, saved reports, and exports.
 - Login and tenant shell.
 - Employee register/detail.
 - Document Library and company vault.
@@ -102,4 +131,3 @@ Focus:
 - Leave apply/approve/company view.
 - Basic dashboard integrity.
 - Responsive checks for desktop and iPhone widths.
-

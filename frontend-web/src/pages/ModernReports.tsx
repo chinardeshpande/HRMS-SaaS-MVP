@@ -106,7 +106,7 @@ const TOPICS: AnalyticsTopic[] = [
     category: 'leave',
     icon: FunnelIcon,
     tone: 'purple',
-    suggestedColumns: ['employeeName', 'department', 'leaveType', 'totalAllocated', 'used', 'available'],
+    suggestedColumns: ['employeeName', 'department', 'leaveType', 'totalEntitlement', 'used', 'available'],
     defaultGroupBy: 'leaveType',
     measureField: 'used',
     measureLabel: 'Leave used',

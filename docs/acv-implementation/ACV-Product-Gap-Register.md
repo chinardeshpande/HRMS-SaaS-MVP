@@ -78,6 +78,7 @@ New/confirmed gaps:
 | ID | Area | Classification | Gap | Required Outcome | Priority |
 | --- | --- | --- | --- | --- | --- |
 | ACV-GAP-015 | Employee master | Reporting Gap | Every employee has at least one missing/risky master field in the generated validation report. | Complete active employee master first, then historical records. | P1 |
+| ACV-GAP-016 | HR Analytics | Reporting Gap | Reporting routes previously lacked access-aware service scoping for manager-visible reports and saved report execution. | Backend analytics/reporting now enforces tenant scope, role scope, manager/direct-report scope, and saved-report guardrails with synthetic QA coverage. Remaining: browser E2E and visual/chart validation. | P1 |
 | ACV-GAP-016 | Employee documents | Reporting Gap | All 21 employees are missing one or more key document classes by current taxonomy/title detection. | Upload/classify PAN, Aadhaar, address proof, employment letters, compensation letters, and exit documents. | P1 |
 | ACV-GAP-017 | Company documents | Reporting Gap | TAN, POSH, HR templates, and optional EPF/ESIC are not detected in the company vault. | Upload or reclassify company documents before UAT sign-off. | P1 |
 | ACV-GAP-018 | Compensation | Reporting Gap | 100 payslip records have no file attachment; 7 employees have no active salary structure. | Attach payslip files where available and complete current salary structure coverage. | P1 |

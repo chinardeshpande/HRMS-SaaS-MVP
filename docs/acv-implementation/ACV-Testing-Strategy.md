@@ -279,7 +279,7 @@ Detailed local setup is documented in `backend/TESTING.md`.
 - Attendance: My Attendance and Company Attendance current/date-range views.
 - Leave: My Leaves, Company Leaves, Team Approvals, gender-specific maternity/paternity logic.
 - Dashboard: data cards, HR Connect feed, calendar reminders.
-- HR Analytics: acknowledge current defects; do not promote as complete until repaired.
+- HR Analytics: backend/API sanity is covered by `codex/hr-analytics-repair`; do not promote as complete until Playwright validates column selection, grouping, charts, saved reports, export behavior, and responsive UI.
 - Manu: ensure assistant does not claim unsupported capabilities.
 
 ### P1 Implementation-Grade Tests

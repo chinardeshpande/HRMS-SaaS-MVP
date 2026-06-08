@@ -24,6 +24,7 @@ import { SalaryStructure, SalaryStructureStatus } from '../models/SalaryStructur
 import { Payslip } from '../models/Payslip';
 import { SavedReport, ReportType } from '../models/SavedReport';
 import logger from '../utils/logger';
+import { UserRole } from '../../../shared/types';
 
 export interface ReportFilters {
   startDate?: Date;
@@ -32,6 +33,12 @@ export interface ReportFilters {
   employmentTypes?: string[];
   status?: string[];
   locations?: string[];
+}
+
+export interface ReportAccessContext {
+  tenantId: string;
+  userRole: UserRole;
+  employeeId?: string;
 }
 
 export interface AttendanceSummaryData {
@@ -226,13 +233,50 @@ export class ReportingService {
     this.savedReportRepo = AppDataSource.getRepository(SavedReport);
   }
 
+  private getAllowedReportTypes(userRole: UserRole): ReportType[] {
+    if (userRole === UserRole.SYSTEM_ADMIN || userRole === UserRole.HR_ADMIN) {
+      return Object.values(ReportType);
+    }
+
+    if (userRole === UserRole.MANAGER) {
+      return [
+        ReportType.ATTENDANCE_SUMMARY,
+        ReportType.LEAVE_BALANCE,
+        ReportType.HEADCOUNT,
+        ReportType.CONFIRMATION_DUE,
+        ReportType.REVIEW_COMPLETION,
+      ];
+    }
+
+    return [];
+  }
+
+  canAccessReportType(userRole: UserRole, reportType: ReportType): boolean {
+    return this.getAllowedReportTypes(userRole).includes(reportType);
+  }
+
+  private applyEmployeeScope(query: any, employeeAlias: string, access: ReportAccessContext): void {
+    if (access.userRole !== UserRole.MANAGER) return;
+
+    if (!access.employeeId) {
+      query.andWhere('1 = 0');
+      return;
+    }
+
+    query.andWhere(
+      `(${employeeAlias}."employeeId" = :scopeEmployeeId OR ${employeeAlias}."managerId" = :scopeEmployeeId)`,
+      { scopeEmployeeId: access.employeeId }
+    );
+  }
+
   /**
    * Report 1: Attendance Summary
    */
   async getAttendanceSummary(
-    tenantId: string,
+    access: ReportAccessContext,
     filters: ReportFilters
   ): Promise<AttendanceSummaryData[]> {
+    const { tenantId } = access;
     const { startDate, endDate, departmentIds } = filters;
 
     if (!startDate || !endDate) {
@@ -263,6 +307,8 @@ export class ReportingService {
       query.andWhere('employee.departmentId IN (:...departmentIds)', { departmentIds });
     }
 
+    this.applyEmployeeScope(query, 'employee', access);
+
     const results = await query.getRawMany();
 
     return results.map((row) => ({
@@ -277,9 +323,10 @@ export class ReportingService {
    * Report 2: Leave Balance & Usage
    */
   async getLeaveBalanceReport(
-    tenantId: string,
+    access: ReportAccessContext,
     filters: ReportFilters
   ): Promise<LeaveBalanceData[]> {
+    const { tenantId } = access;
     const query = this.leaveBalanceRepo
       .createQueryBuilder('balance')
       .innerJoin('balance.employee', 'employee')
@@ -306,6 +353,8 @@ export class ReportingService {
         departmentIds: filters.departmentIds,
       });
     }
+
+    this.applyEmployeeScope(query, 'employee', access);
 
     const rows = await query.getRawMany();
 
@@ -335,9 +384,10 @@ export class ReportingService {
    * Report 3: Headcount Report
    */
   async getHeadcountReport(
-    tenantId: string,
+    access: ReportAccessContext,
     filters: ReportFilters
   ): Promise<HeadcountData[]> {
+    const { tenantId } = access;
     const query = this.employeeRepo
       .createQueryBuilder('employee')
       .leftJoin('employee.department', 'department')
@@ -368,6 +418,8 @@ export class ReportingService {
       });
     }
 
+    this.applyEmployeeScope(query, 'employee', access);
+
     const results = await query.getRawMany();
 
     // Calculate total for percentage
@@ -384,9 +436,10 @@ export class ReportingService {
    * Report 4: Joiners/Leavers Report
    */
   async getJoinersLeaversReport(
-    tenantId: string,
+    access: ReportAccessContext,
     filters: ReportFilters
   ): Promise<JoinersLeaversData[]> {
+    const { tenantId } = access;
     const { startDate, endDate } = filters;
 
     if (!startDate || !endDate) {
@@ -452,9 +505,10 @@ export class ReportingService {
    * Report 5: Confirmation Due Report
    */
   async getConfirmationDueReport(
-    tenantId: string,
+    access: ReportAccessContext,
     filters: ReportFilters
   ): Promise<ConfirmationDueData[]> {
+    const { tenantId } = access;
     const daysAhead = 60; // Look ahead 60 days
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + daysAhead);
@@ -490,6 +544,8 @@ export class ReportingService {
       });
     }
 
+    this.applyEmployeeScope(query, 'employee', access);
+
     return query.getRawMany();
   }
 
@@ -497,9 +553,10 @@ export class ReportingService {
    * Report 6: Attrition Report
    */
   async getAttritionReport(
-    tenantId: string,
+    access: ReportAccessContext,
     filters: ReportFilters
   ): Promise<AttritionData[]> {
+    const { tenantId } = access;
     const { startDate, endDate } = filters;
 
     if (!startDate || !endDate) {
@@ -553,9 +610,10 @@ export class ReportingService {
    * Report 7: PMS Completion Report
    */
   async getPMSCompletionReport(
-    tenantId: string,
+    access: ReportAccessContext,
     filters: ReportFilters
   ): Promise<PMSCompletionData[]> {
+    const { tenantId } = access;
     const query = this.performanceReviewRepo
       .createQueryBuilder('review')
       .innerJoin('review.employee', 'employee')
@@ -589,6 +647,8 @@ export class ReportingService {
       });
     }
 
+    this.applyEmployeeScope(query, 'employee', access);
+
     return query.getRawMany();
   }
 
@@ -596,9 +656,10 @@ export class ReportingService {
    * Report 8: Missing Documents Report
    */
   async getMissingDocumentsReport(
-    tenantId: string,
+    access: ReportAccessContext,
     filters: ReportFilters
   ): Promise<MissingDocumentsData[]> {
+    const { tenantId } = access;
     // Define mandatory documents
     const mandatoryDocuments = [
       EmployeeDocumentCategory.IDENTITY,
@@ -617,6 +678,12 @@ export class ReportingService {
       relations: ['department'],
       order: { employeeCode: 'ASC' },
     });
+    const scopedEmployees = access.userRole === UserRole.MANAGER
+      ? employees.filter((employee) => (
+          Boolean(access.employeeId) &&
+          (employee.employeeId === access.employeeId || employee.managerId === access.employeeId)
+        ))
+      : employees;
 
     const employeeDocuments = await this.employeeDocumentRepo.find({
       where: {
@@ -634,7 +701,7 @@ export class ReportingService {
 
     const results: MissingDocumentsData[] = [];
 
-    for (const employee of employees) {
+    for (const employee of scopedEmployees) {
       const uploadedTypes = (documentsByEmployee.get(employee.employeeId) || []).map((document) => document.category);
       const missingDocuments = mandatoryDocuments.filter(
         (doc) => !uploadedTypes.includes(doc)
@@ -662,7 +729,8 @@ export class ReportingService {
    * Implementation-grade readiness view for tenant memory: employee master data,
    * employee documents, company HR/compliance records, and compensation history.
    */
-  async getMemoryReadinessReport(tenantId: string): Promise<MemoryReadinessReport> {
+  async getMemoryReadinessReport(access: ReportAccessContext): Promise<MemoryReadinessReport> {
+    const { tenantId } = access;
     const requiredEmployeeDocuments = [
       EmployeeDocumentCategory.IDENTITY,
       EmployeeDocumentCategory.EMPLOYMENT_LETTER,
@@ -681,11 +749,17 @@ export class ReportingService {
       CompanyDocumentCategory.HR_POLICY,
     ];
 
-    const employees = await this.employeeRepo.find({
+    const allEmployees = await this.employeeRepo.find({
       where: { tenantId },
       relations: ['department', 'designation'],
       order: { employeeCode: 'ASC' },
     });
+    const employees = access.userRole === UserRole.MANAGER
+      ? allEmployees.filter((employee) => (
+          Boolean(access.employeeId) &&
+          (employee.employeeId === access.employeeId || employee.managerId === access.employeeId)
+        ))
+      : allEmployees;
 
     const [employeeDocuments, companyDocuments, salaryStructures, payslips] = await Promise.all([
       this.employeeDocumentRepo.find({
@@ -951,16 +1025,42 @@ export class ReportingService {
     return await query.orderBy('report.createdAt', 'DESC').getMany();
   }
 
+  async getSavedReportsForAccess(access: ReportAccessContext, userId?: string): Promise<SavedReport[]> {
+    const allowedReportTypes = this.getAllowedReportTypes(access.userRole);
+    if (allowedReportTypes.length === 0) return [];
+
+    const query = this.savedReportRepo
+      .createQueryBuilder('report')
+      .where('report.tenantId = :tenantId', { tenantId: access.tenantId })
+      .andWhere('report.isActive = :isActive', { isActive: true })
+      .andWhere('report.reportType IN (:...allowedReportTypes)', { allowedReportTypes });
+
+    if (userId) {
+      query.andWhere('(report.createdBy = :userId OR report.isPublic = :isPublic)', {
+        userId,
+        isPublic: true,
+      });
+    }
+
+    return query.orderBy('report.createdAt', 'DESC').getMany();
+  }
+
   /**
    * Execute a saved report
    */
-  async executeSavedReport(reportId: string, tenantId: string): Promise<any> {
+  async executeSavedReport(reportId: string, access: ReportAccessContext): Promise<any> {
     const report = await this.savedReportRepo.findOne({
-      where: { reportId, tenantId },
+      where: { reportId, tenantId: access.tenantId },
     });
 
     if (!report) {
       throw new Error('Report not found');
+    }
+
+    if (!this.canAccessReportType(access.userRole, report.reportType)) {
+      const error = new Error('Report type is not permitted for current role');
+      (error as any).statusCode = 403;
+      throw error;
     }
 
     // Update execution count and timestamp
@@ -970,30 +1070,30 @@ export class ReportingService {
 
     // Execute the appropriate report based on type
     const filters: ReportFilters = {
-      startDate: report.filterConfig.dateRange?.startDate ? new Date(report.filterConfig.dateRange.startDate) : undefined,
-      endDate: report.filterConfig.dateRange?.endDate ? new Date(report.filterConfig.dateRange.endDate) : undefined,
-      departmentIds: report.filterConfig.departments,
-      employmentTypes: report.filterConfig.employmentTypes,
-      status: report.filterConfig.status,
+      startDate: report.filterConfig?.dateRange?.startDate ? new Date(report.filterConfig.dateRange.startDate) : undefined,
+      endDate: report.filterConfig?.dateRange?.endDate ? new Date(report.filterConfig.dateRange.endDate) : undefined,
+      departmentIds: report.filterConfig?.departments,
+      employmentTypes: report.filterConfig?.employmentTypes,
+      status: report.filterConfig?.status,
     };
 
     switch (report.reportType) {
       case ReportType.ATTENDANCE_SUMMARY:
-        return await this.getAttendanceSummary(tenantId, filters);
+        return await this.getAttendanceSummary(access, filters);
       case ReportType.LEAVE_BALANCE:
-        return await this.getLeaveBalanceReport(tenantId, filters);
+        return await this.getLeaveBalanceReport(access, filters);
       case ReportType.HEADCOUNT:
-        return await this.getHeadcountReport(tenantId, filters);
+        return await this.getHeadcountReport(access, filters);
       case ReportType.JOINERS_LEAVERS:
-        return await this.getJoinersLeaversReport(tenantId, filters);
+        return await this.getJoinersLeaversReport(access, filters);
       case ReportType.CONFIRMATION_DUE:
-        return await this.getConfirmationDueReport(tenantId, filters);
+        return await this.getConfirmationDueReport(access, filters);
       case ReportType.ATTRITION:
-        return await this.getAttritionReport(tenantId, filters);
+        return await this.getAttritionReport(access, filters);
       case ReportType.REVIEW_COMPLETION:
-        return await this.getPMSCompletionReport(tenantId, filters);
+        return await this.getPMSCompletionReport(access, filters);
       case ReportType.MISSING_DOCUMENTS:
-        return await this.getMissingDocumentsReport(tenantId, filters);
+        return await this.getMissingDocumentsReport(access, filters);
       default:
         throw new Error(`Unsupported report type: ${report.reportType}`);
     }
