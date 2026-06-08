@@ -244,22 +244,22 @@ Employee documents,Cleanup,ACV/EMP/0021,,missingEducationdocuments,Education doc
 Employee documents,Cleanup,ACV/EMP/0021,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
 Employee documents,Important,ACV/EMP/0021,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
 Employee documents,Blocker,ACV/EMP/0021,,documentFileMissingOnDisk,Employee document record ending 869aad is not reachable in configured storage.,Repair file path/storage or re-upload document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""Attendance and Leave Policy"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""Attendance and Leave Policy"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""Maternity Benefit Act Reference"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""MOA"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""AOA"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""Certificate of Incorporation"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""Form INC-20A Declaration"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""Company Registration Acknowledgement"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""Udyam Registration Certificate"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""Government Form"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""LTE Bill"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""Gumasta / Shops and Establishment License"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""GST Certificate"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""ACV PTEC Certificate"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""PTRC Certificate"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
-Company documents,Blocker,,,companyDocumentFileMissingOnDisk,"Company document ""PAN Card"" is not reachable in configured storage.",Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 44f824 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending b02eb3 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending cc99bc is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 15e90e is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 82890a is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 6c827f is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 18a412 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 260c08 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending a0478f is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending eea3ac is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 468034 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 84acf9 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending d1e79b is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 3ae646 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 7b61be is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending b827bd is not reachable in configured storage.,Repair file path/storage or re-upload company document.
 Company documents,Important,,,missing TAN,TAN not detected in company document vault.,Upload or correctly classify company document.
 Company documents,Optional,,,missing EPF/ESIC,EPF/ESIC not detected in company document vault.,Upload or correctly classify company document.
 Company documents,Important,,,missing POSH,POSH not detected in company document vault.,Upload or correctly classify company document.

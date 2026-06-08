@@ -1,6 +1,6 @@
 # ACV Validation Reports
 
-Generated: 2026-06-08T10:24:20.119Z
+Generated: 2026-06-08T12:48:07.189Z
 
 Tenant: ACV Solutions (f5ed3bd0-d89f-4762-b212-c3b41d358fe8)
 
@@ -22,6 +22,7 @@ npm --prefix backend run acv:validation-reports -- --company-name="ACV Solutions
 - `acv-audit-coverage.json`
 - `acv-hr-connect-coverage.json`
 - `acv-dashboard-readiness.json`
+- `document-storage-diagnostics.json` / `.csv`
 - `acv-employee-completeness.csv`
 - `acv-manager-mapping.csv`
 - `acv-document-coverage.csv`

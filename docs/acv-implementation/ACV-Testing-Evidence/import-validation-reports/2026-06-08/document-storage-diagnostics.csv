@@ -1,0 +1,52 @@
+source,recordRef,employeeCode,category,fileKind,fileUrlPattern,storageStatus,storageRoot,recommendedAction
+employee_document,employee-document ending 680b28,ACV/EMP/0014,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending ca6416,ACV/EMP/0014,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 1a5787,ACV/EMP/0014,other,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending c97493,ACV/EMP/0020,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 1f175c,ACV/EMP/0017,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending e91c9a,ACV/EMP/0013,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 3b6806,ACV/EMP/0013,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending fba0f9,ACV/EMP/0013,other,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending af11cc,ACV/EMP/0011,exit,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 869aad,ACV/EMP/0021,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending a46632,ACV/EMP/0018,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 52f036,ACV/EMP/0019,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 865a5c,ACV/EMP/0016,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 2ab314,ACV/EMP/0012,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 452a70,ACV/EMP/0012,other,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending be75f7,ACV/EMP/0007,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending c00045,ACV/EMP/0008,compensation,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 630b0d,ACV/EMP/0008,compensation,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 805acd,ACV/EMP/0008,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending d677de,ACV/EMP/0008,other,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 23ab7a,ACV/EMP/0002,compensation,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending ac0089,ACV/EMP/0002,compensation,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 5db7d7,ACV/EMP/0002,compensation,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending eea3cc,ACV/EMP/0002,compensation,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 36fdd4,ACV/EMP/0002,compensation,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 6288ca,ACV/EMP/0002,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 4d3443,ACV/EMP/0002,other,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 8cf85f,ACV/EMP/0003,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending fbc7e4,ACV/EMP/0010,exit,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 0ca783,ACV/EMP/0015,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+employee_document,employee-document ending 909574,ACV/EMP/0015,employment_letter,pdf,/uploads/employee-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending 44f824,,hr_policy,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending b02eb3,,hr_policy,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending cc99bc,,hr_policy,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending 15e90e,,incorporation_identity,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending 82890a,,incorporation_identity,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending 6c827f,,incorporation_identity,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending 18a412,,incorporation_identity,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending 260c08,,incorporation_identity,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending a0478f,,incorporation_identity,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending eea3ac,,labor_hr_compliance,doc,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending 468034,,labor_hr_compliance,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending 84acf9,,labor_hr_compliance,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending d1e79b,,tax_registration,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending 3ae646,,tax_registration,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending 7b61be,,tax_registration,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+company_document,company-document ending b827bd,,tax_registration,pdf,/uploads/company-documents/<file>,missing,,Repair file path/storage mapping or re-upload this document.
+payslip_attachment,payslip-attachment ending 5f3e29,,payslip,pdf,/uploads/compensation/<file>,missing,,Repair file path/storage mapping or re-upload this payslip attachment.
+payslip_attachment,payslip-attachment ending cd94d0,,payslip,pdf,/uploads/compensation/<file>,missing,,Repair file path/storage mapping or re-upload this payslip attachment.
+payslip_attachment,payslip-attachment ending 3d5687,,payslip,pdf,/uploads/compensation/<file>,missing,,Repair file path/storage mapping or re-upload this payslip attachment.
+payslip_attachment,payslip-attachment ending afe57c,,payslip,pdf,/uploads/compensation/<file>,missing,,Repair file path/storage mapping or re-upload this payslip attachment.

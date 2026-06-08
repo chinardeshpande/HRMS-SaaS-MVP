@@ -43,6 +43,7 @@ import documentCategoryRoutes from './routes/documentCategoryRoutes';
 import companyDocumentRoutes from './routes/companyDocumentRoutes';
 import employeeDocumentRoutes from './routes/employeeDocumentRoutes';
 import demoRoutes from './routes/demoRoutes';
+import { uploadRoots } from './utils/uploadPaths';
 // import pmsRoutes from './routes/pmsRoutes';
 // import transferRoutes from './routes/transferRoutes';
 // import confirmationRoutes from './routes/confirmationRoutes';
@@ -174,7 +175,9 @@ app.use('/uploads', (_req, res, next) => {
   res.header('Cross-Origin-Resource-Policy', 'cross-origin');
   next();
 });
-app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
+uploadRoots.forEach((root) => {
+  app.use('/uploads', express.static(root));
+});
 
 // Request logging
 app.use(requestLogger);

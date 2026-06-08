@@ -28,6 +28,7 @@ import { ChatConversation } from '../models/ChatConversation';
 import { ChatMessage } from '../models/ChatMessage';
 import { SavedReport } from '../models/SavedReport';
 import { EmploymentStatus } from '../../../shared/types';
+import { findUploadPath, uploadPathExists, uploadRoots } from '../utils/uploadPaths';
 
 type Severity = 'Blocker' | 'Important' | 'Cleanup' | 'Optional';
 type ScoreStatus = 'Green' | 'Amber' | 'Red' | 'Grey';
@@ -149,11 +150,29 @@ const copyFile = (sourcePath: string, targetPath: string) => {
   fs.copyFileSync(sourcePath, targetPath);
 };
 
-const fileExists = (fileUrl?: string | null): boolean => {
-  if (!fileUrl) return false;
-  if (/^https?:\/\//.test(fileUrl)) return true;
-  const relative = fileUrl.replace(/^\//, '');
-  return fs.existsSync(path.resolve(process.cwd(), relative));
+const fileExists = (fileUrl?: string | null): boolean => uploadPathExists(fileUrl);
+
+const fileKind = (fileName?: string | null): string => {
+  const ext = path.extname(fileName || '').replace('.', '').toLowerCase();
+  return ext || 'unknown';
+};
+
+const fileUrlPattern = (fileUrl?: string | null): string => (fileUrl ? fileUrl.replace(/\/[^/]+$/, '/<file>') : '');
+
+const storageStatus = (fileUrl?: string | null): 'remote' | 'reachable' | 'missing' | 'not_provided' => {
+  if (!fileUrl) return 'not_provided';
+  if (/^https?:\/\//i.test(fileUrl)) return 'remote';
+  return findUploadPath(fileUrl) ? 'reachable' : 'missing';
+};
+
+const storageRootLabel = (fileUrl?: string | null): string => {
+  const found = findUploadPath(fileUrl);
+  if (!found || /^https?:\/\//i.test(found)) return found ? 'remote-url' : '';
+  const index = uploadRoots.findIndex((root) => {
+    const relative = path.relative(root, found);
+    return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+  });
+  return index >= 0 ? `upload-root-${index + 1}` : 'absolute-path';
 };
 
 const score = (missing: number, total: number, blocker = false): ScoreStatus => {
@@ -319,6 +338,48 @@ async function main() {
     const inactiveEmployees = employees.filter((employee) => !isActive(employee));
     const employeeById = new Map(employees.map((employee) => [employee.employeeId, employee]));
     const activeEmployeeIds = new Set(activeEmployees.map((employee) => employee.employeeId));
+
+    const documentStorageDiagnostics = [
+      ...employeeDocuments.map((doc) => ({
+        source: 'employee_document',
+        recordRef: safeDocumentRef('employee-document', doc.documentId),
+        employeeCode: doc.employee?.employeeCode || '',
+        category: doc.category,
+        fileKind: fileKind(doc.fileName || doc.originalFileName),
+        fileUrlPattern: fileUrlPattern(doc.fileUrl),
+        storageStatus: storageStatus(doc.fileUrl),
+        storageRoot: storageRootLabel(doc.fileUrl),
+        recommendedAction: fileExists(doc.fileUrl)
+          ? 'No action needed.'
+          : 'Repair file path/storage mapping or re-upload this document.',
+      })),
+      ...companyDocuments.map((doc) => ({
+        source: 'company_document',
+        recordRef: safeDocumentRef('company-document', doc.documentId),
+        employeeCode: '',
+        category: doc.category,
+        fileKind: fileKind(doc.fileName || doc.originalFileName),
+        fileUrlPattern: fileUrlPattern(doc.fileUrl),
+        storageStatus: storageStatus(doc.fileUrl),
+        storageRoot: storageRootLabel(doc.fileUrl),
+        recommendedAction: fileExists(doc.fileUrl)
+          ? 'No action needed.'
+          : 'Repair file path/storage mapping or re-upload this document.',
+      })),
+      ...payslipAttachments.map((attachment) => ({
+        source: 'payslip_attachment',
+        recordRef: safeDocumentRef('payslip-attachment', attachment.attachmentId),
+        employeeCode: '',
+        category: 'payslip',
+        fileKind: fileKind(attachment.fileName),
+        fileUrlPattern: fileUrlPattern(attachment.fileUrl),
+        storageStatus: storageStatus(attachment.fileUrl),
+        storageRoot: storageRootLabel(attachment.fileUrl),
+        recommendedAction: fileExists(attachment.fileUrl)
+          ? 'No action needed.'
+          : 'Repair file path/storage mapping or re-upload this payslip attachment.',
+      })),
+    ];
 
     const duplicateCodeCounts = groupCount(employees.filter((employee) => !isBlank(employee.employeeCode)), (employee) => normalize(employee.employeeCode));
     const duplicateEmailCounts = groupCount(employees.filter((employee) => !isBlank(employee.email)), (employee) => normalize(employee.email));
@@ -603,7 +664,7 @@ async function main() {
           'Company documents',
           'Blocker',
           'companyDocumentFileMissingOnDisk',
-          `Company document "${doc.title}" is not reachable in configured storage.`,
+          `${safeDocumentRef('Company document record', doc.documentId)} is not reachable in configured storage.`,
           'Repair file path/storage or re-upload company document.'
         );
       }
@@ -1070,6 +1131,7 @@ async function main() {
       auditCoverage,
       hrConnectCoverage,
       dashboardReadiness,
+      documentStorageDiagnostics,
       missingDataRegister: missingItems,
     };
 
@@ -1086,6 +1148,11 @@ async function main() {
     writeJson(path.join(options.outputDir, 'acv-audit-coverage.json'), auditCoverage);
     writeJson(path.join(options.outputDir, 'acv-hr-connect-coverage.json'), hrConnectCoverage);
     writeJson(path.join(options.outputDir, 'acv-dashboard-readiness.json'), dashboardReadiness);
+    writeJson(path.join(options.outputDir, 'document-storage-diagnostics.json'), {
+      uploadRootsChecked: uploadRoots.map((_root, index) => `upload-root-${index + 1}`),
+      rows: documentStorageDiagnostics,
+      byStatus: groupCount(documentStorageDiagnostics, (row) => row.storageStatus),
+    });
 
     const employeeMasterPath = path.join(options.outputDir, 'employee-master-completeness.csv');
     const managerMappingPath = path.join(options.outputDir, 'manager-mapping-coverage.csv');
@@ -1107,6 +1174,7 @@ async function main() {
     writeCsv(path.join(options.outputDir, 'tenant-setup-completeness.csv'), tenantSetupRows);
     writeCsv(path.join(options.outputDir, 'acv-readiness-scorecard.csv'), scorecard);
     writeCsv(path.join(options.outputDir, 'acv-missing-data-register.csv'), missingItems);
+    writeCsv(path.join(options.outputDir, 'document-storage-diagnostics.csv'), documentStorageDiagnostics);
     copyFile(employeeMasterPath, path.join(options.outputDir, 'acv-employee-completeness.csv'));
     copyFile(managerMappingPath, path.join(options.outputDir, 'acv-manager-mapping.csv'));
     copyFile(employeeDocumentPath, path.join(options.outputDir, 'acv-document-coverage.csv'));
@@ -1141,6 +1209,7 @@ npm --prefix backend run acv:validation-reports -- --company-name="ACV Solutions
 - \`acv-audit-coverage.json\`
 - \`acv-hr-connect-coverage.json\`
 - \`acv-dashboard-readiness.json\`
+- \`document-storage-diagnostics.json\` / \`.csv\`
 - \`acv-employee-completeness.csv\`
 - \`acv-manager-mapping.csv\`
 - \`acv-document-coverage.csv\`
