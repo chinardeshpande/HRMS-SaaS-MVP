@@ -97,9 +97,11 @@ Evidence:
 ### Layer 3: Role-Based Browser Tests (Playwright E2E)
 
 **Plan**: `docs/acv-implementation/ACV-E2E-Test-Plan.md`
-**Status**: Plan complete, implementation pending Playwright installation.
-**Framework**: Playwright (recommended)
-**Estimated tests**: ~60 across 11 spec files
+**Scaffold**: `e2e/` directory with 6 spec files, fixtures, and config
+**Status**: Scaffold complete (38 tests written). Playwright installation blocked by corp registry (403). Tests ready to run once Playwright is installed on a personal machine or CI.
+**Framework**: Playwright
+**First pack**: 38 tests (36 active + 2 skipped) across 6 spec files
+**Full target**: ~60 across 11 spec files
 
 Required roles:
 
