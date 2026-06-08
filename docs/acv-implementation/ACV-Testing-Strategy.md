@@ -325,3 +325,21 @@ A production release should not be approved only on build success. Minimum gate:
 4. No migration script pending without idempotency report.
 5. No known P0/P1 regression in employee master, documents, compensation, attendance, leave.
 6. Rollback notes exist for data-affecting changes.
+
+## Functional Solidity Baseline - 2026-06-08
+
+Branch: `codex/acv-functional-solidity-sprint`
+
+The functional solidity sprint keeps historical document restoration parked and validates core backend behavior using the dedicated synthetic QA database.
+
+| Area | Status | Notes |
+| --- | --- | --- |
+| Build | Passing | `npm --prefix backend run build` |
+| Full backend QA | Passing | `npm --prefix backend run test:qa`: 11 suites, 84 tests |
+| Attendance | Expanded | Clock-in, duplicate clock-in rejection, and clock-out are now covered. |
+| Leave | Expanded | Apply, manager approval, insufficient-balance rejection, and gender mismatch rejection are now covered. |
+| Documents | Existing API baseline | Employee documents, company documents, and payslip attachments remain covered with synthetic files. |
+
+Defect captured by QA: leave insufficient-balance validation was relying on the raw `LeaveBalance.available` getter. The service now uses normalized effective balance logic before accepting leave applications.
+
+Next required layer: browser E2E critical paths for login/session/tenant shell, employee register/detail, document library, compensation/payslips, attendance, leave, dashboard sanity, and responsive screenshots.

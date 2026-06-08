@@ -252,3 +252,23 @@ UAT sequencing:
 2. Regenerate validation reports and confirm Blocker count is zero.
 3. Run role-based document access and download/preview tests.
 4. Then proceed to broader ACV UAT across employee master, compensation, attendance, leave, HR Connect, analytics, and Manu.
+
+## Functional Solidity UAT Gate - 2026-06-08
+
+Branch: `codex/acv-functional-solidity-sprint`
+
+Backend functional solidity is currently green for the synthetic API baseline:
+
+- build passed
+- full backend QA passed: 11 suites, 84 tests
+- attendance clock-in/duplicate/clock-out added
+- leave apply/approve added
+- leave insufficient-balance rejection added
+- gender-restricted leave mismatch rejection added
+
+UAT interpretation:
+
+- API foundation is strong enough to proceed to browser critical-path testing.
+- Do not treat this as full ACV sign-off.
+- Historical document restoration is parked.
+- Browser UX, responsive behavior, dashboard/report correctness, collaboration surfaces, and expanded audit coverage remain UAT blockers.

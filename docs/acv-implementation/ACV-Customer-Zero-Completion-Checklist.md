@@ -218,6 +218,22 @@ The validation report was generated from the local ACV tenant database and found
 - 31 employee documents.
 - 14 salary structures.
 - 104 payslip records and 4 payslip attachments.
+
+## Functional Solidity Sprint Update - 2026-06-08
+
+Branch: `codex/acv-functional-solidity-sprint`
+
+| Item | Status | Evidence required / current evidence |
+| --- | --- | --- |
+| Backend build health | Done | `npm --prefix backend run build` passed. |
+| Backend QA regression | Done | `npm --prefix backend run test:qa` passed: 11 suites, 84 tests. |
+| Attendance basic self-service API | Done | Synthetic test covers clock-in, duplicate clock-in rejection, and clock-out. |
+| Leave apply/approval API | Done | Synthetic test covers employee leave apply and manager approval. |
+| Leave insufficient-balance protection | Done | Bug fixed and covered by synthetic regression. |
+| Maternity/paternity gender eligibility API | Partial | Synthetic mismatch rejection covered. Additional female/male/unknown/null matrix still recommended. |
+| Historical document restoration | Parked | Explicitly out of scope for this sprint. |
+| Browser E2E readiness | Pending | Backend is green; browser UAT/Playwright remains separate. |
+| Full ACV sign-off | Partial | Functional solidity improved, but real ACV data completeness, UI E2E, audit coverage, and analytics repairs remain. |
 - 1745 attendance rows.
 - 30 leave balances and 5 active leave policies.
 - 2011 audit rows.

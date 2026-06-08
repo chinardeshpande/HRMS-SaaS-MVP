@@ -87,3 +87,20 @@ New/confirmed gaps:
 | ACV-GAP-022 | Audit | Reporting Gap | Audit logs exist, but expected audit coverage is partial across key lifecycle areas. | Add/verify audit hooks for missing lifecycle-sensitive actions. | P1 |
 
 Current validation verdict: **Not ready due to blockers**. The generated register has 47 Blocker-class items, all related to document file reachability.
+
+## Functional Solidity Sprint Update - 2026-06-08
+
+Branch: `codex/acv-functional-solidity-sprint`
+
+The sprint deliberately parked historical document restoration and focused on backend functional solidity with synthetic QA data.
+
+New/updated gaps:
+
+| ID | Area | Classification | Gap | Required Outcome | Priority |
+| --- | --- | --- | --- | --- | --- |
+| ACV-GAP-023 | Leave | Bug | Leave application used the raw `LeaveBalance.available` getter instead of normalized effective balance logic, allowing over-balance requests in QA. | Fixed in `LeaveService.applyLeave`; insufficient-balance requests now return controlled 400 responses. | Resolved |
+| ACV-GAP-024 | Attendance | Reporting Gap | Attendance self-service clock-in/out had limited automated lifecycle coverage. | Added synthetic API regression for clock-in, duplicate clock-in rejection, and clock-out. | Resolved for API baseline |
+| ACV-GAP-025 | Leave | Reporting Gap | Leave apply/approve, insufficient-balance, and gender-restricted leave behavior had limited automated lifecycle coverage. | Added synthetic API regression for apply/approve, insufficient balance, and gender mismatch. | Resolved for API baseline |
+| ACV-GAP-026 | Audit | Reporting Gap | Leave and attendance mutation audit coverage is not yet proven. | Add audit hooks/tests for leave apply/approve/reject/cancel and attendance clock/regularisation/mass update. | P1 |
+| ACV-GAP-027 | Browser QA | Reporting Gap | Backend API is green, but role-based browser journeys are not yet automated for this sprint. | Add Playwright critical-path suite before claiming full UI readiness. | P1 |
+| ACV-GAP-028 | Historical documents | Data Integrity Gap | Missing historical document backing files remain unresolved. | Parked by product decision; restore only in a dedicated document restoration sprint. | Parked |
