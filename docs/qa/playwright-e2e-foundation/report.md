@@ -160,7 +160,7 @@ cd backend && npm run test:qa
 | CX03: Employee cannot see salary data on denied page | PASS |
 | CX04: Manager denied compensation via API from browser | PASS |
 
-### leave.spec.ts (7 tests, 6 passed + 1 skipped)
+### leave.spec.ts (6 tests, all passed)
 
 | Test | Status |
 |------|--------|
@@ -168,13 +168,41 @@ cd backend && npm run test:qa
 | L04: Apply Leave button visible | PASS |
 | L05: Apply Leave modal opens | PASS |
 | L06: Leave balance shows leave types | PASS |
-| L07: Full apply→approve workflow | SKIPPED (manual/UAT) |
+
+### leave-workflow.spec.ts (8 tests, all passed) — NEW
+
+Full multi-context leave lifecycle automation:
+
+| Test | Status | Time |
+|------|--------|------|
+| LW01: Employee sees Apply Leave button | PASS | 869ms |
+| LW02: Employee fills and submits leave application | PASS | 4.8s |
+| LW03: Employee sees pending status | PASS | 1.7s |
+| LW04: Manager opens Team Approvals | PASS | 2.3s |
+| LW05: Manager approves pending request | PASS | 6.9s |
+| LW06: Employee sees approved status | PASS | 1.7s |
+| LW07: Employee cannot see Team Approvals tab | PASS | 707ms |
+| LW08: No cross-tenant data on leave page | PASS | 685ms |
+
+## Updated Totals (as of 2026-06-08)
+
+| Metric | Value |
+|--------|-------|
+| Spec files | **10** |
+| Total tests | **62** |
+| Passed | **60** |
+| Failed | **0** |
+| Skipped | **2** (conditional compensation tab skips) |
+| Run time | **1.5m** |
+| CI Run | [#27136492427](https://github.com/chinardeshpande/HRMS-SaaS-MVP/actions/runs/27136492427) — **GREEN** |
 
 ## Recommended Next E2E Sprint
 
-1. Full leave apply → approve → status update workflow (un-skip L07)
+1. ~~Full leave apply → approve → status update~~ **DONE** (LW01-LW08)
 2. Document upload/download roundtrip through browser
-3. Employee detail compensation tab with seed data verification
+3. Employee detail compensation tab with seed data value verification
 4. Responsive viewport tests (mobile/tablet/desktop)
-5. Visual regression baseline screenshots
-6. HR Connect feed visibility
+5. HR Connect feed visibility
+6. Visual regression baseline screenshots
+7. Leave reject workflow (manager rejects → employee sees rejected)
+8. Onboarding/probation page access tests
