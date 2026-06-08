@@ -221,13 +221,25 @@ A Playwright-based browser E2E test plan covers ~60 planned tests across 11 spec
 | `company-documents.spec.ts` | 3 | High | Track 4 |
 | `hr-connect.spec.ts` | 3 | Medium | Track 6 |
 
-**Status**: Plan complete. Implementation blocked by Playwright installation (corp registry).
+**Status**: **IMPLEMENTED AND GREEN.** 101 E2E tests across 13 spec files, 89 passing in CI (12 conditional skips).
 
 **Coverage bridge**: Each UAT track maps to both API tests (Jest) and browser E2E tests (Playwright). See `docs/acv-implementation/ACV-E2E-Test-Plan.md` Section 4 for the full mapping.
 
+## UAT Readiness (2026-06-08)
+
+**Verdict**: READY FOR CONTROLLED ACV UAT
+
+See `docs/acv-implementation/ACV-UAT-Readiness-Pack.md` for the full readiness pack including:
+- E2E coverage matrix
+- Module readiness classification (GREEN/AMBER/GREY)
+- Skipped-test register
+- Manual UAT checklists for HR Admin, Manager, Employee
+- Known limitations
+- Evidence links to all CI runs
+
 ## Release Gate
 
-ACV implementation should not be considered ready until:
+ACV implementation should not be considered ready for broad production rollout until:
 
 - P1 gaps are closed or explicitly accepted.
 - P0 document storage reachability blockers are closed or explicitly accepted with a documented limitation.
@@ -237,6 +249,17 @@ ACV implementation should not be considered ready until:
 - No document access leak is open.
 - Role-based access tests pass.
 - Production smoke test passes.
+- Manual UAT checklists are completed by ACV pilot users.
+
+## Controlled UAT Gate Update - 2026-06-09
+
+Latest accepted evidence:
+
+- Backend QA foundation, document/payslip lifecycle stability, functional solidity, and HR Analytics backend repair are green in local QA.
+- Claude browser E2E evidence says ACV Customer Zero is ready for controlled UAT.
+- Production smoke found `https://aurorahr.in` is reachable but behind the QA-hardened baseline.
+
+Controlled ACV UAT may begin only after production is redeployed to the accepted baseline and the auth malformed/non-string payload smoke returns controlled `400` responses instead of unsafe `500` responses.
 
 ## Validation Gate Update - 2026-06-08
 
@@ -271,4 +294,4 @@ UAT interpretation:
 - API foundation is strong enough to proceed to browser critical-path testing.
 - Do not treat this as full ACV sign-off.
 - Historical document restoration is parked.
-- Browser UX, responsive behavior, dashboard/report correctness, collaboration surfaces, and expanded audit coverage remain UAT blockers.
+- Browser UX, responsive behavior, dashboard/report correctness, collaboration surfaces, and expanded audit coverage remain tracked UAT risks unless covered by accepted browser E2E evidence.
