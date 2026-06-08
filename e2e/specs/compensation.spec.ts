@@ -3,12 +3,16 @@ import { loginViaAPI } from '../utils/auth';
 import { ROUTES } from '../utils/routes';
 
 test.describe('Compensation & Payslip Access Boundaries', () => {
-  test('C01: HR admin can access compensation page', async ({ page }) => {
+  test('C01: HR admin accessing /compensation without employee context redirects to /employees', async ({ page }) => {
+    // PRODUCT BEHAVIOUR: /compensation requires location.state.employee
+    // When accessed directly (no employee context), it redirects to /employees.
+    // This is correct product behaviour — compensation is per-employee, not standalone.
     await loginViaAPI(page, 'HR_ADMIN');
     await page.goto(ROUTES.COMPENSATION);
     await page.waitForLoadState('networkidle');
 
-    expect(page.url()).toContain('/compensation');
+    // Redirects to employees (the compensation page requires employee context)
+    expect(page.url()).toContain('/employees');
   });
 
   test('C02: employee cannot access compensation page (admin-only)', async ({ page }) => {

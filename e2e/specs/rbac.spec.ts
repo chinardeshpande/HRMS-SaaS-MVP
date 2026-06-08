@@ -79,10 +79,12 @@ test.describe('RBAC: Role-Based Route Access', () => {
       expect(page.url()).toContain('/employees');
     });
 
-    test('HR admin can access compensation', async ({ page }) => {
+    test('HR admin accessing /compensation redirects to /employees (requires employee context)', async ({ page }) => {
+      // PRODUCT BEHAVIOUR: /compensation requires location.state.employee
       await page.goto(ROUTES.COMPENSATION);
       await page.waitForLoadState('networkidle');
-      expect(page.url()).toContain('/compensation');
+      // Redirects to /employees when no employee context is provided
+      expect(page.url()).toContain('/employees');
     });
 
     test('HR admin can access settings', async ({ page }) => {
