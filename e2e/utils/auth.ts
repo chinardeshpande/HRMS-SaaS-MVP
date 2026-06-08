@@ -1,7 +1,7 @@
 import { Page, expect } from '@playwright/test';
 import { USERS, UserKey } from '../fixtures/users';
 
-const API_BASE = 'http://localhost:3000/api/v1';
+const API_BASE = process.env.API_BASE_URL || 'http://localhost:3000/api/v1';
 
 /**
  * Log in via the UI login page.
@@ -39,12 +39,13 @@ export async function loginViaAPI(page: Page, userKey: UserKey): Promise<string>
   const token = body.data.tokens.token;
   const refreshToken = body.data.tokens.refreshToken;
 
-  // Inject tokens into localStorage (matches frontend AuthContext pattern)
+  // Inject tokens into localStorage matching frontend AuthContext keys:
+  //   localStorage.user = JSON.stringify(userData)
+  //   localStorage.tokens = JSON.stringify({ token, refreshToken })
   await page.goto('/login'); // need a page loaded to access localStorage
   await page.evaluate(({ token, refreshToken, user: userData }) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('refreshToken', refreshToken);
     localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('tokens', JSON.stringify({ token, refreshToken }));
   }, { token, refreshToken, user: body.data.user });
 
   return token;
@@ -55,9 +56,10 @@ export async function loginViaAPI(page: Page, userKey: UserKey): Promise<string>
  */
 export async function logout(page: Page): Promise<void> {
   await page.evaluate(() => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
+    localStorage.removeItem('tokens');
+    localStorage.removeItem('preDemoSession');
+    localStorage.removeItem('demoSession');
   });
   await page.goto('/login');
 }
