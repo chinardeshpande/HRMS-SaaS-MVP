@@ -52,6 +52,25 @@
 - [x] Attendance clock-in works
 - [x] Document upload works
 
+## Production Smoke Test (2026-06-08)
+
+| Category | Pass | Fail | Advisory | Not tested |
+|----------|------|------|----------|------------|
+| Infrastructure | 4 | 0 | 0 | 0 |
+| Auth gate (unauthenticated rejection) | 8 | 0 | 0 | 0 |
+| Security headers | 6 | 0 | 2 | 0 |
+| Login error handling | 2 | 1 | 1 | 0 |
+| Authenticated flows | 0 | 0 | 0 | 11 |
+
+**Result**: Infrastructure PASS. Authenticated smoke BLOCKED — needs ACV credentials.
+
+**Action required before UAT**:
+1. Deploy auth hardening branch to production (fixes DG1: non-string payload 500)
+2. Chinar runs manual UAT checklists OR provides credentials for Claude smoke check
+
+See: `docs/qa/acv-pilot-smoke-test/report.md`
+
 ## Full Details
 
-See: `docs/qa/playwright-e2e-uat-readiness-pack/report.md`
+- UAT readiness pack: `docs/qa/playwright-e2e-uat-readiness-pack/report.md`
+- Production smoke test: `docs/qa/acv-pilot-smoke-test/report.md`
