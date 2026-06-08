@@ -1,86 +1,138 @@
 # Playwright E2E Foundation Report
 
 **Date**: 2026-06-08
-**Branch**: `claude/playwright-e2e-foundation`
-**Status**: Scaffold complete. Tests NOT run. Playwright installation blocked.
+**Branch**: `claude/playwright-e2e-ci-execution`
+**Commit**: `89f3f95`
+**CI Run**: [#27124324638](https://github.com/chinardeshpande/HRMS-SaaS-MVP/actions/runs/27124324638) — **GREEN**
+**Status**: All E2E tests passing in GitHub Actions CI
 
 ---
 
-## Summary
+## Results
 
 | Metric | Value |
 |--------|-------|
 | Spec files | 6 |
-| Test cases | 38 (36 active + 2 skipped) |
-| Tests run | 0 (Playwright not installed) |
-| Framework | Playwright (proposed) |
-| Browser | Chromium (proposed) |
+| Total tests | 38 |
+| Passed | **36** |
+| Failed | **0** |
+| Skipped | 2 (intentional — leave apply/approve marked manual/UAT) |
+| Run time | 46.7s |
+| Browser | Chromium |
+| Environment | GitHub Actions, ubuntu-latest, Node 20 |
 
-## Blocker
+## CI Workflow
 
-```
-npm error 403 403 Forbidden - GET https://registry.npmjs.org/playwright
-```
+**File**: `.github/workflows/e2e-tests.yml`
 
-The corporate network blocks npm registry access. Playwright cannot be installed on this machine.
+Steps (all green):
+1. PostgreSQL 15 service with `hrms_saas_test` DB
+2. Backend: `npm ci` → seed E2E DB → start server (port 3000)
+3. Frontend: `npm install` → start Vite dev server (port 5173, VITE_API_URL=localhost:3000)
+4. Playwright: `npm install` → install Chromium → run tests
 
-### Unblock options
+Triggers: push to main/claude/codex branches, PRs modifying e2e/frontend/backend
 
-1. **Personal machine**: Install Playwright on a personal M5 Max (no corp proxy)
-2. **CI only**: Add Playwright to GitHub Actions workflow (npm ci works in CI)
-3. **VPN bypass**: If corp allows selective npm registry access via VPN
-4. **Offline install**: Download Playwright .tgz from another machine, `npm install ./playwright-test-*.tgz`
+## Test Breakdown
 
-## What Was Created
+### auth.spec.ts (7/7 passed)
 
-### E2E infrastructure
+| Test | Status | Time |
+|------|--------|------|
+| A01: HR admin login succeeds | PASS | 872ms |
+| A02: wrong password error | PASS | 2.5s |
+| A03: nonexistent email error | PASS | 2.4s |
+| A04: logout redirects | PASS | 711ms |
+| A05: /dashboard protected | PASS | 458ms |
+| A06: /employees protected | PASS | 452ms |
+| A07: /settings protected | PASS | 437ms |
 
-| File | Purpose |
-|------|---------|
-| `e2e/playwright.config.ts` | Playwright configuration (Chromium, screenshots on failure, traces on retry) |
-| `e2e/fixtures/users.ts` | Test account matrix (mirrors backend seed data) |
-| `e2e/fixtures/test-data.ts` | Expected data constants, route role mappings |
-| `e2e/utils/auth.ts` | Login via UI, login via API + localStorage injection, logout, redirect assertion |
-| `e2e/utils/routes.ts` | Route constants |
-| `e2e/README.md` | Setup instructions, test structure, account matrix |
+### rbac.spec.ts (16/16 passed)
 
-### Test specs (38 tests)
+| Test | Status |
+|------|--------|
+| Employee sees dashboard | PASS |
+| Employee denied 8 admin-only routes | PASS |
+| Employee denied 5 manager-plus routes | PASS |
+| Employee CAN access /my-hr-documents | PASS |
+| Employee CAN access /attendance | PASS |
+| Employee CAN access /leave | PASS |
+| HR admin: employees, settings, reports, documents | PASS |
+| HR admin: /compensation redirects to /employees (requires employee context) | PASS |
+| Manager: employees, denied settings, denied compensation | PASS |
 
-| Spec | Tests | Active | Skipped | Coverage |
-|------|-------|--------|---------|----------|
-| `auth.spec.ts` | 7 | 7 | 0 | Login success, wrong password, bad email, logout, protected routes |
-| `rbac.spec.ts` | 16 | 16 | 0 | Employee denied admin/manager routes, HR admin full access, manager restrictions |
-| `employees.spec.ts` | 4 | 4 | 0 | HR opens list, HR clicks detail, employee denied register, employee opens profile |
-| `documents.spec.ts` | 4 | 4 | 0 | Employee own docs, employee denied library, HR/manager access library |
-| `compensation.spec.ts` | 4 | 4 | 0 | HR access, employee denied, manager denied, no salary leak on denial |
-| `leave.spec.ts` | 5 | 3 | 2 | Page access (3 roles), apply/approve skipped (manual/UAT) |
+### employees.spec.ts (4/4 passed)
 
-### Critical HRMS risks covered by E2E specs
+| Test | Status |
+|------|--------|
+| E01: HR admin opens employee list | PASS |
+| E02: HR admin clicks into detail | PASS |
+| E03: Employee denied register | PASS |
+| E04: Employee opens own profile | PASS |
 
-| Risk | Spec | Test IDs |
-|------|------|----------|
-| Tenant leakage | (not in first pack — needs multi-context Playwright tests) | Future |
-| Role leakage | `rbac.spec.ts` | 16 tests across all ADMIN_ONLY and MANAGER_PLUS routes |
-| Document leakage | `documents.spec.ts` | DC01-DC04 |
-| Salary leakage | `compensation.spec.ts` | C01-C04 (including no-salary-in-denial check) |
-| Auth bypass | `auth.spec.ts` | A05-A07 (protected routes redirect) |
+### documents.spec.ts (4/4 passed)
 
-## Backend QA Command Verification
+| Test | Status |
+|------|--------|
+| DC01: Employee accesses own HR documents | PASS |
+| DC02: Employee denied document library | PASS |
+| DC03: HR admin accesses document library | PASS |
+| DC04: Manager accesses document library | PASS |
+
+### compensation.spec.ts (4/4 passed)
+
+| Test | Status |
+|------|--------|
+| C01: /compensation redirects to /employees (product behaviour) | PASS |
+| C02: Employee denied compensation | PASS |
+| C03: Manager denied compensation | PASS |
+| C04: No salary data in denied page | PASS |
+
+### leave.spec.ts (3/3 passed + 2 skipped)
+
+| Test | Status |
+|------|--------|
+| L01: Employee opens leave page | PASS |
+| L02: Manager opens leave page | PASS |
+| L03: HR admin opens leave page | PASS |
+| L04: Leave apply (manual/UAT) | SKIPPED |
+| L05: Leave approve (manual/UAT) | SKIPPED |
+
+## Product Findings
+
+| # | Finding | Severity |
+|---|---------|----------|
+| 1 | `/compensation` is not a standalone page — requires `location.state.employee` from employee detail. Without context, redirects to `/employees`. | Low — design choice, not a bug |
+| 2 | Frontend API base URL defaults to `localhost:5000` not `localhost:3000` — requires `VITE_API_URL` override in CI | Medium — should align default with backend port |
+
+## Bugs Fixed During E2E Development
+
+| # | Bug | Fix |
+|---|-----|-----|
+| 1 | `loginViaAPI` stored tokens as separate `token`/`refreshToken` keys but frontend reads `tokens` (JSON object) | Fixed localStorage key names to match AuthContext |
+| 2 | Frontend has no `package-lock.json` so `npm ci` fails in CI | Changed CI to use `npm install` for frontend |
+| 3 | Frontend API URL mismatched backend port in CI | Set `VITE_API_URL` env var in CI workflow |
+
+## Commands
 
 ```bash
+# Local (requires Playwright installed):
+cd e2e && npx playwright test
+
+# CI (automated):
+# Triggered on push to main/claude/codex branches
+# See .github/workflows/e2e-tests.yml
+
+# Backend QA (unchanged):
 cd backend && npm run test:qa
-# Test Suites: 11 passed, 11 total
-# Tests: 80 passed, 80 total
+# 80/80 tests passing
 ```
 
-Backend tests remain green and unaffected.
+## Recommended Next E2E Sprint
 
-## Recommended Next Steps
-
-1. **Install Playwright** on personal machine or CI
-2. **Run the 36 active tests** — fix any selector/timing issues against the live UI
-3. **Add tenant isolation E2E** — multi-context test with ACV + Orbit simultaneous logins
-4. **Add leave workflow E2E** — apply → approve → verify status change
-5. **Add document upload/download E2E** — file interaction through the browser
-6. **Add CI workflow** for E2E tests (separate from backend tests due to browser download size)
-7. **Add screenshot baseline** for visual regression (optional)
+1. Add tenant isolation E2E — multi-context with ACV + Orbit simultaneous logins
+2. Add leave apply/approve workflow (un-skip L04/L05)
+3. Add document upload/download E2E through browser
+4. Add compensation access via employee detail page flow
+5. Add responsive viewport tests
+6. Add visual regression baseline screenshots
