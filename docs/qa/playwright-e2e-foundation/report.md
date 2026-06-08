@@ -1,25 +1,25 @@
 # Playwright E2E Foundation Report
 
 **Date**: 2026-06-08
-**Branch**: `claude/playwright-e2e-ci-execution`
-**Commit**: `89f3f95`
-**CI Run**: [#27124324638](https://github.com/chinardeshpande/HRMS-SaaS-MVP/actions/runs/27124324638) — **GREEN**
+**Foundation branch**: `claude/playwright-e2e-ci-execution` (commit `89f3f95`)
+**Expansion branch**: `claude/playwright-e2e-tenant-document-expansion` (commit `1c37136`)
+**Latest CI Run**: [#27131075774](https://github.com/chinardeshpande/HRMS-SaaS-MVP/actions/runs/27131075774) — **GREEN**
 **Status**: All E2E tests passing in GitHub Actions CI
 
 ---
 
 ## Results
 
-| Metric | Value |
-|--------|-------|
-| Spec files | 6 |
-| Total tests | 38 |
-| Passed | **36** |
-| Failed | **0** |
-| Skipped | 2 (intentional — leave apply/approve marked manual/UAT) |
-| Run time | 46.7s |
-| Browser | Chromium |
-| Environment | GitHub Actions, ubuntu-latest, Node 20 |
+| Metric | Foundation | Expansion |
+|--------|-----------|-----------|
+| Spec files | 6 | **9** |
+| Total tests | 38 | **55** |
+| Passed | 36 | **52** |
+| Failed | 0 | **0** |
+| Skipped | 2 | **3** |
+| Run time | 46.7s | **1.1m** |
+| Browser | Chromium | Chromium |
+| Environment | GitHub Actions | GitHub Actions |
 
 ## CI Workflow
 
@@ -128,11 +128,53 @@ cd backend && npm run test:qa
 # 80/80 tests passing
 ```
 
+## Expansion Sprint (2026-06-08)
+
+### tenant-isolation.spec.ts (6 tests, all passed)
+
+| Test | Status |
+|------|--------|
+| TI01: ACV and Orbit separate dashboards | PASS |
+| TI02: ACV list has no Orbit employees | PASS |
+| TI03: Orbit list has no ACV employees | PASS |
+| TI04: ACV documents has no Orbit documents | PASS |
+| TI05: No cross-tenant salary data visible | PASS |
+| TI06: Direct URL to ACV employee from Orbit denied | PASS |
+
+### documents-expanded.spec.ts (5 tests, all passed)
+
+| Test | Status |
+|------|--------|
+| DX01: HR admin navigates to employee detail documents tab | PASS |
+| DX02: Denied access does not expose file paths | PASS |
+| DX03: Employee sees denial, not another employee's data | PASS |
+| DX04: Employee cannot access company documents area | PASS |
+| DX05: HR admin document library loads without crash | PASS |
+
+### compensation-expanded.spec.ts (4 tests, 2 passed + 2 conditional skip)
+
+| Test | Status |
+|------|--------|
+| CX01: HR admin navigates to employee detail compensation tab | PASS (conditional skip if no employee link) |
+| CX02: HR admin navigates to payslips tab | PASS (conditional skip if no employee link) |
+| CX03: Employee cannot see salary data on denied page | PASS |
+| CX04: Manager denied compensation via API from browser | PASS |
+
+### leave.spec.ts (7 tests, 6 passed + 1 skipped)
+
+| Test | Status |
+|------|--------|
+| L01-L03: Page access for 3 roles | PASS |
+| L04: Apply Leave button visible | PASS |
+| L05: Apply Leave modal opens | PASS |
+| L06: Leave balance shows leave types | PASS |
+| L07: Full apply→approve workflow | SKIPPED (manual/UAT) |
+
 ## Recommended Next E2E Sprint
 
-1. Add tenant isolation E2E — multi-context with ACV + Orbit simultaneous logins
-2. Add leave apply/approve workflow (un-skip L04/L05)
-3. Add document upload/download E2E through browser
-4. Add compensation access via employee detail page flow
-5. Add responsive viewport tests
-6. Add visual regression baseline screenshots
+1. Full leave apply → approve → status update workflow (un-skip L07)
+2. Document upload/download roundtrip through browser
+3. Employee detail compensation tab with seed data verification
+4. Responsive viewport tests (mobile/tablet/desktop)
+5. Visual regression baseline screenshots
+6. HR Connect feed visibility
