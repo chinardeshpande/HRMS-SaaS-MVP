@@ -91,7 +91,7 @@ jobs:
       # --- Frontend setup ---
       - name: Install frontend dependencies
         working-directory: frontend-web
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Start frontend dev server
         working-directory: frontend-web
