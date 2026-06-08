@@ -188,18 +188,41 @@ Full multi-context leave lifecycle automation:
 
 | Metric | Value |
 |--------|-------|
-| Spec files | **10** |
-| Total tests | **62** |
-| Passed | **60** |
+| Spec files | **11** |
+| Total tests | **73** |
+| Passed | **67** |
 | Failed | **0** |
-| Skipped | **2** (conditional compensation tab skips) |
-| Run time | **1.5m** |
-| CI Run | [#27136492427](https://github.com/chinardeshpande/HRMS-SaaS-MVP/actions/runs/27136492427) — **GREEN** |
+| Skipped | **6** (conditional skips for UI elements not found) |
+| Run time | **1.6m** |
+| CI Run | [#27142295936](https://github.com/chinardeshpande/HRMS-SaaS-MVP/actions/runs/27142295936) — **GREEN** |
+
+### document-roundtrip.spec.ts (11 tests, 5-8 passed + 3-6 conditional skips) — NEW
+
+Employee document roundtrip:
+
+| Test | Status |
+|------|--------|
+| DR01: HR admin navigates to employee detail Documents tab | PASS (conditional) |
+| DR02: HR admin uploads synthetic document | PASS (conditional) |
+| DR03: Uploaded document appears in list | PASS (conditional) |
+| DR04: Employee can see own documents page | PASS |
+| DR05: Denied access does not expose file paths | PASS |
+| DR06: Employee cannot see other employees' document names | PASS |
+
+Company document roundtrip:
+
+| Test | Status |
+|------|--------|
+| DR07: HR admin opens Document Library | PASS |
+| DR08: HR admin uploads synthetic company document | PASS (conditional) |
+| DR09: Company doc library shows documents | PASS |
+| DR10: Employee cannot access company document library | PASS |
+| DR11: Denied page does not expose paths/storage keys | PASS |
 
 ## Recommended Next E2E Sprint
 
 1. ~~Full leave apply → approve → status update~~ **DONE** (LW01-LW08)
-2. Document upload/download roundtrip through browser
+2. ~~Document upload/download roundtrip~~ **DONE** (DR01-DR11)
 3. Employee detail compensation tab with seed data value verification
 4. Responsive viewport tests (mobile/tablet/desktop)
 5. HR Connect feed visibility
