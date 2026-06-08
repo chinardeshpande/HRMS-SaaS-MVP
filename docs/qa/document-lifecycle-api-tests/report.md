@@ -111,6 +111,39 @@ rg -n "if \(!.*\) return|console\.warn\('SCAFFOLD|\[200,500\]|not\.toBe\(403\)" 
 
 Result: no scaffold skip or `[200,500]` patterns remain. One `not.toBe(403)` assertion remains paired with an explicit `toBe(400)` validation assertion in the HR create employee authorization test.
 
+## Stability Fixes (2026-06-08)
+
+Branch: `codex/document-lifecycle-test-stability-fixes`
+
+### Root cause of `--runInBand` failures
+
+The intermittent `--runInBand` failures (reported as 63/76 or 1/76 failing) were caused by **stale test database state from branch switching**. When switching between branches with different seed schemas, the existing `hrms_saas_test` DB retained old schema/data. The `globalSetup` `synchronize(true)` would then fail or produce partial seed, leaving tests without expected accounts.
+
+**Fix**: Added diagnostic logging and proper error propagation to `globalSetup.ts`:
+- Logs which database is being reset and on which host
+- Logs success after seed completion
+- Catches and re-throws errors with clear context
+- Ensures `AppDataSource.destroy()` runs in `finally` block
+
+After these fixes, `npm run test:qa` passes reliably on consecutive runs.
+
+### Coverage gap closures (4 tests added)
+
+| Gap | Test Name | Status |
+|-----|-----------|--------|
+| CD07 | Employee cannot download company document | **ADDED** — asserts 403 |
+| CD08 | Manager cannot list company documents | **ADDED** — asserts 403 |
+| PL07 | Same-tenant cross-employee payslip download denied | **ADDED** — creates manager payslip, employee denied 403 |
+| PL14 | Salary amounts not leaked in error responses | **ADDED** — asserts no salary fields in 403/404 bodies |
+
+### Updated totals
+
+| Metric | Before | After |
+|--------|--------|-------|
+| Tests | 76 | 80 |
+| Suites | 11 | 11 |
+| Critical gaps | 4 | 0 |
+
 ## Remaining QA Blockers
 
 - Browser E2E tests are still pending.

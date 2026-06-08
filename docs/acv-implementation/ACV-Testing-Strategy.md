@@ -220,7 +220,7 @@ Hardened branch: `codex/qa-foundation-hardening`
 | Compensation/Payslip | 6 | Salary leakage |
 | Attendance | 7 | Role boundaries |
 | Leave | 9 | Role boundaries |
-| Document and Payslip Lifecycle | 6 | Upload/download/audit lifecycle |
+| Document and Payslip Lifecycle | 10 | Upload/download/audit lifecycle + gap closures |
 
 ### Bugs Found
 

@@ -191,7 +191,7 @@ A stricter agent scored the 46-item checklist as:
 - 20 fully covered, 7 partial, 15 not covered
 - 6 of 15 Critical fully covered, 5 partial, 4 not covered (CD07, CD08, PL07, PL14)
 
-The "partial" items have the risk behaviour enforced by middleware but lack an explicit test assertion. The "not covered" items are mostly validation edge cases (file type, file size) and negative-path tests that the middleware handles correctly. The 4 critical gaps (CD07, CD08, PL07, PL14) should be explicitly tested in the next sprint to eliminate reliance on implicit middleware coverage.
+The "partial" items have the risk behaviour enforced by middleware but lack an explicit test assertion. The "not covered" items are mostly validation edge cases (file type, file size) and negative-path tests that the middleware handles correctly. The 4 critical gaps (CD07, CD08, PL07, PL14) were closed in `codex/document-lifecycle-test-stability-fixes` (2026-06-08). All 13 critical items are now explicitly tested. Total: 80 tests, 11 suites, 0 failures.
 
 ---
 

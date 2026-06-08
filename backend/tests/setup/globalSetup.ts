@@ -19,11 +19,25 @@ const assertSafeTestDatabase = () => {
 export default async function globalSetup() {
   assertSafeTestDatabase();
 
-  if (!AppDataSource.isInitialized) {
-    await AppDataSource.initialize();
-  }
+  const dbName = config.database.name;
+  const dbHost = config.database.host;
+  console.log(`[globalSetup] Resetting test database: ${dbName} on ${dbHost}`);
 
-  await AppDataSource.synchronize(true);
-  await seedQaFoundationData();
-  await AppDataSource.destroy();
+  try {
+    if (!AppDataSource.isInitialized) {
+      await AppDataSource.initialize();
+    }
+
+    await AppDataSource.synchronize(true);
+    await seedQaFoundationData();
+
+    console.log(`[globalSetup] Seed complete. Database ${dbName} is ready.`);
+  } catch (error: any) {
+    console.error(`[globalSetup] FATAL: Failed to initialize test database ${dbName}:`, error.message);
+    throw error;
+  } finally {
+    if (AppDataSource.isInitialized) {
+      await AppDataSource.destroy();
+    }
+  }
 }

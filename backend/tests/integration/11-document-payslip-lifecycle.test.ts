@@ -319,4 +319,102 @@ describe('Document and Payslip Lifecycle API', () => {
     expect(missingFile.status).toBe(404);
     expect(missingFile.body.error.code).toBe('FILE_NOT_FOUND');
   });
+
+  // --- Coverage gap fixes (CD07, CD08, PL07, PL14) ---
+
+  it('CD07: employee cannot download a company document', async () => {
+    const hr = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
+    const employee = await loginAs(TEST_ACCOUNTS.EMPLOYEE);
+    requireAuth(hr, TEST_ACCOUNTS.HR_ADMIN.label);
+    requireAuth(employee, TEST_ACCOUNTS.EMPLOYEE.label);
+
+    // Find a seeded company document
+    const list = await authGet('/company-documents', hr.token);
+    expect(list.status).toBe(200);
+    expect(list.body.data.documents.length).toBeGreaterThan(0);
+    const docId = list.body.data.documents[0].documentId;
+
+    // Employee attempts download — should be denied by hrOnly middleware
+    const denied = await authGet(`/company-documents/${docId}/download`, employee.token);
+    expect(denied.status).toBe(403);
+  });
+
+  it('CD08: manager cannot list company documents', async () => {
+    const manager = await loginAs(TEST_ACCOUNTS.MANAGER);
+    requireAuth(manager, TEST_ACCOUNTS.MANAGER.label);
+
+    const denied = await authGet('/company-documents', manager.token);
+    expect(denied.status).toBe(403);
+  });
+
+  it('PL07: same-tenant employee cannot download another employees payslip attachment', async () => {
+    const employee = await loginAs(TEST_ACCOUNTS.EMPLOYEE);
+    const hr = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
+    requireAuth(employee, TEST_ACCOUNTS.EMPLOYEE.label);
+    requireAuth(hr, TEST_ACCOUNTS.HR_ADMIN.label);
+
+    // HR admin lists employees to find the manager (a different employee in same tenant)
+    const managerCtx = await loginAs(TEST_ACCOUNTS.MANAGER);
+    requireAuth(managerCtx, TEST_ACCOUNTS.MANAGER.label);
+
+    // Create a payslip for the manager so we have an attachment to test against
+    const payslip = await authPost(`/compensation/employees/${managerCtx.employeeId}/payslips`, hr.token).send({
+      month: 7,
+      year: 2026,
+      grossEarnings: 80000,
+      totalDeductions: 12000,
+      netPay: 68000,
+      paidDays: 31,
+      lopDays: 0,
+      paymentDate: '2026-07-31',
+      status: 'final',
+      employeeVisible: true,
+    });
+    expect(payslip.status).toBe(201);
+
+    const temp = makeTempPdf('qa-manager-payslip.pdf', 'manager payslip content');
+    try {
+      const attachment = await api
+        .post(`${API_PREFIX}/compensation/payslips/${payslip.body.data.payslipId}/attachments`)
+        .set('Authorization', `Bearer ${hr.token}`)
+        .attach('file', temp.filePath, { contentType: 'application/pdf' });
+      expect(attachment.status).toBe(201);
+
+      // Employee (Surekha) tries to download manager's (Aniket) payslip — same tenant, must be denied
+      const denied = await authGet(
+        `/compensation/attachments/${attachment.body.data.attachmentId}/download`,
+        employee.token
+      );
+      expect(denied.status).toBe(403);
+      expect(denied.body.success).toBe(false);
+    } finally {
+      fs.rmSync(temp.dir, { recursive: true, force: true });
+    }
+  });
+
+  it('PL14: denied payslip responses do not leak salary amounts', async () => {
+    const employee = await loginAs(TEST_ACCOUNTS.EMPLOYEE);
+    const managerCtx = await loginAs(TEST_ACCOUNTS.MANAGER);
+    requireAuth(employee, TEST_ACCOUNTS.EMPLOYEE.label);
+    requireAuth(managerCtx, TEST_ACCOUNTS.MANAGER.label);
+
+    // Employee tries to view manager's compensation — should be denied
+    const denied = await authGet(`/compensation/employees/${managerCtx.employeeId}`, employee.token);
+    expect(denied.status).toBe(403);
+    expect(denied.body.success).toBe(false);
+
+    // Verify the error response contains NO salary data
+    const responseText = JSON.stringify(denied.body);
+    expect(responseText).not.toMatch(/grossEarnings|totalDeductions|netPay|monthlyGross|annualCtc|salaryStructure/i);
+    expect(responseText).not.toMatch(/\d{5,}/); // No 5+ digit numbers (salary amounts)
+
+    // Also verify nonexistent attachment returns clean error
+    const missingAttachment = await authGet(
+      '/compensation/attachments/00000000-0000-0000-0000-000000000000/download',
+      employee.token
+    );
+    expect(missingAttachment.status).toBe(404);
+    const missingText = JSON.stringify(missingAttachment.body);
+    expect(missingText).not.toMatch(/grossEarnings|totalDeductions|netPay|monthlyGross|annualCtc/i);
+  });
 });
