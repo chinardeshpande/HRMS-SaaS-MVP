@@ -1,0 +1,13 @@
+{
+  "postCount": 0,
+  "commentCount": 0,
+  "chatConversationCount": 8,
+  "chatMessageCount": 0,
+  "postsByType": {},
+  "postsByVisibility": {},
+  "conversationsByType": {
+    "direct": 8
+  },
+  "verdict": "No ACV HR Connect or chat activity found",
+  "redaction": "Counts and classifications only. Post, comment, and message content is not exported."
+}

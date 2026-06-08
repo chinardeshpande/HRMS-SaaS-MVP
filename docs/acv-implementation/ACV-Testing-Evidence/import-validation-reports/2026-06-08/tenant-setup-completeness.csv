@@ -1,0 +1,9 @@
+item,status,evidence
+Tenant logo,present,/images/tenant-logos/acv-solutions.svg
+Tenant primary color,present,#244aa8
+Organization settings,present,c7b1613c-a49e-41e6-96ef-0d0e6f2cf00f
+Registered address,missing,
+HR/company email,missing,
+PAN/TAN/GST/CIN references,missing,registrationNumber=; taxId=
+SMTP config,not_configured,tenant smtp not enabled
+Branding settings,present,branding json configured

@@ -1,0 +1,22 @@
+employeeCode,employeeName,status,documentCount,categories,unverifiedCount,missingRequired,missingFileCount
+ACV/EMP/0001,,active,0,,0,PAN|Aadhaar|Address proof|Education documents|Offer/appointment letter|Salary/revision letters,0
+ACV/EMP/0002,,active,7,compensation|employment_letter|other,7,PAN|Aadhaar|Address proof|Education documents,7
+ACV/EMP/0003,,exited,1,employment_letter,1,PAN|Aadhaar|Address proof|Education documents|Salary/revision letters|Exit documents,1
+ACV/EMP/0004,,exited,0,,0,PAN|Aadhaar|Address proof|Education documents|Offer/appointment letter|Salary/revision letters|Exit documents,0
+ACV/EMP/0005,,exited,0,,0,PAN|Aadhaar|Address proof|Education documents|Offer/appointment letter|Salary/revision letters|Exit documents,0
+ACV/EMP/0006,,exited,0,,0,PAN|Aadhaar|Address proof|Education documents|Offer/appointment letter|Salary/revision letters|Exit documents,0
+ACV/EMP/0007,,exited,1,employment_letter,1,PAN|Aadhaar|Address proof|Education documents|Salary/revision letters|Exit documents,1
+ACV/EMP/0008,,active,4,compensation|employment_letter|other,4,PAN|Aadhaar|Address proof|Education documents,4
+ACV/EMP/0009,,exited,0,,0,PAN|Aadhaar|Address proof|Education documents|Offer/appointment letter|Salary/revision letters|Exit documents,0
+ACV/EMP/0010,,exited,1,exit,1,PAN|Aadhaar|Address proof|Education documents|Offer/appointment letter|Salary/revision letters,1
+ACV/EMP/0011,,exited,1,exit,1,PAN|Aadhaar|Address proof|Education documents|Offer/appointment letter|Salary/revision letters,1
+ACV/EMP/0012,,active,2,employment_letter|other,2,PAN|Aadhaar|Address proof|Education documents|Salary/revision letters,2
+ACV/EMP/0013,,active,3,employment_letter|other,3,PAN|Aadhaar|Address proof|Education documents|Salary/revision letters,3
+ACV/EMP/0014,,active,3,employment_letter|other,3,PAN|Aadhaar|Address proof|Education documents|Salary/revision letters,3
+ACV/EMP/0015,,exited,2,employment_letter,2,Aadhaar|Address proof|Education documents|Exit documents,2
+ACV/EMP/0016,,exited,1,employment_letter,1,PAN|Aadhaar|Address proof|Education documents|Salary/revision letters|Exit documents,1
+ACV/EMP/0017,,exited,1,employment_letter,1,Aadhaar|Address proof|Education documents|Salary/revision letters|Exit documents,1
+ACV/EMP/0018,,exited,1,employment_letter,1,Aadhaar|Address proof|Education documents|Salary/revision letters|Exit documents,1
+ACV/EMP/0019,,exited,1,employment_letter,1,PAN|Aadhaar|Address proof|Education documents|Salary/revision letters|Exit documents,1
+ACV/EMP/0020,,exited,1,employment_letter,1,PAN|Aadhaar|Address proof|Education documents|Salary/revision letters|Exit documents,1
+ACV/EMP/0021,,exited,1,employment_letter,1,PAN|Aadhaar|Address proof|Education documents|Salary/revision letters|Exit documents,1

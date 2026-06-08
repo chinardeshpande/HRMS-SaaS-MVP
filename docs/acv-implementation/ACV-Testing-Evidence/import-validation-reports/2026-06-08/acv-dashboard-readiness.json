@@ -1,0 +1,35 @@
+{
+  "savedReportCount": 0,
+  "savedReportsByCategory": {},
+  "savedReportsByType": {},
+  "readinessSignals": [
+    {
+      "area": "Employee master",
+      "ready": true
+    },
+    {
+      "area": "Documents",
+      "ready": true
+    },
+    {
+      "area": "Compensation",
+      "ready": true
+    },
+    {
+      "area": "Attendance",
+      "ready": true
+    },
+    {
+      "area": "Leave",
+      "ready": true
+    },
+    {
+      "area": "HR Connect",
+      "ready": false
+    },
+    {
+      "area": "Audit logs",
+      "ready": true
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+[
+  {
+    "area": "Employee master",
+    "status": "Red",
+    "evidence": "21/21 employees have missing/risky fields"
+  },
+  {
+    "area": "Manager mapping",
+    "status": "Amber",
+    "evidence": "16 without manager; 0 circular risks"
+  },
+  {
+    "area": "Lifecycle history",
+    "status": "Amber",
+    "evidence": "0 with no timeline; 3 inactive/exited without exit case"
+  },
+  {
+    "area": "Employee documents",
+    "status": "Red",
+    "evidence": "21/21 employees missing one or more key document classes"
+  },
+  {
+    "area": "Company document vault",
+    "status": "Red",
+    "evidence": "16 company documents; 4 expected categories not detected"
+  },
+  {
+    "area": "Compensation and payslips",
+    "status": "Red",
+    "evidence": "7 without active structures; 13 with unattached payslips"
+  },
+  {
+    "area": "Attendance",
+    "status": "Green",
+    "evidence": "1745 rows; date range 2024-01-01 to 2026-07-26"
+  },
+  {
+    "area": "Leave",
+    "status": "Green",
+    "evidence": "30 balances; 5 active policies"
+  },
+  {
+    "area": "Tenant setup",
+    "status": "Red",
+    "evidence": "5/8 tenant setup items configured"
+  },
+  {
+    "area": "HR Connect and communication trail",
+    "status": "Amber",
+    "evidence": "0 posts; 0 comments; 0 chat messages"
+  },
+  {
+    "area": "Audit logs",
+    "status": "Amber",
+    "evidence": "2011 audit rows; 3/5 expected areas covered"
+  },
+  {
+    "area": "Dashboard/reporting readiness",
+    "status": "Green",
+    "evidence": "0 saved reports; 6/7 data readiness signals present"
+  },
+  {
+    "area": "Zoho/SMTP integration",
+    "status": "Grey",
+    "evidence": "Explicitly out of scope for this branch"
+  }
+]

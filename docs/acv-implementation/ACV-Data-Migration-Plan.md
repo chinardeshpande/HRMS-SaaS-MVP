@@ -156,3 +156,29 @@ Evidence can include:
 - Do not run destructive import scripts without a dry run.
 - Do not import documents until document taxonomy is finalized.
 - Do not create payroll computation records.
+
+## Validation Sprint Update - 2026-06-08
+
+Generated evidence folder:
+
+`docs/acv-implementation/ACV-Testing-Evidence/import-validation-reports/2026-06-08/`
+
+Repeatable command:
+
+```bash
+NODE_ENV=test npm --prefix backend run acv:validation-reports -- --company-name="ACV Solutions" --output-dir="../docs/acv-implementation/ACV-Testing-Evidence/import-validation-reports/2026-06-08"
+```
+
+The validation script reads the ACV tenant from the database and creates redacted coverage reports. It does not export salary amounts and does not mutate database records.
+
+Migration wave implications:
+
+- Wave 1 and Wave 2 need cleanup for employee master completeness, especially address, work location, DOB, phone, gender, and one active reporting-manager gap.
+- Wave 4 has a P0 storage integrity issue: employee/company document records exist, but uploaded files are not reachable in the current environment. Repair storage path mapping or re-upload files before UAT.
+- Wave 4 also needs another employee-document pass for Aadhaar, PAN, address proof, education, employment letters, salary/revision letters, and exit documents.
+- Wave 4 company documents need TAN, POSH, HR templates, and optional EPF/ESIC review.
+- Wave 5 needs payslip attachment linkage. Payslip records exist in volume, but file attachment coverage is low.
+- Wave 6 needs exit case creation/verification for three inactive/exited employees.
+- HR Connect has no post/comment/message trail yet; do not use it as evidence of real ACV operating communications.
+
+Current migration readiness: **Not ready due to blockers**.

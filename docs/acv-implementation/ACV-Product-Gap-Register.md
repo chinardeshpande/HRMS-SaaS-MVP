@@ -68,3 +68,22 @@
 | Account enumeration through inactive/ambiguous login responses | Low | Resolved | Login now returns generic 401 `INVALID_CREDENTIALS` for inactive, duplicate, nonexistent, and wrong-password credential failures. |
 | Missing second-tenant employee-role fixture | Low | Resolved | `employee@orbit.test` is seeded under Orbit QA Isolation Ltd. |
 | Silent-pass patterns in seeded API tests | Medium | Resolved for current API suite | Seed-dependent integration tests now use `requireAuth(...)` hard failures instead of returning early. |
+
+## Validation Sprint Update - 2026-06-08
+
+The `codex/acv-validation-reports` branch created a repeatable, read-only validation script and generated an ACV missing-data register.
+
+New/confirmed gaps:
+
+| ID | Area | Classification | Gap | Required Outcome | Priority |
+| --- | --- | --- | --- | --- | --- |
+| ACV-GAP-015 | Employee master | Reporting Gap | Every employee has at least one missing/risky master field in the generated validation report. | Complete active employee master first, then historical records. | P1 |
+| ACV-GAP-016 | Employee documents | Reporting Gap | All 21 employees are missing one or more key document classes by current taxonomy/title detection. | Upload/classify PAN, Aadhaar, address proof, employment letters, compensation letters, and exit documents. | P1 |
+| ACV-GAP-017 | Company documents | Reporting Gap | TAN, POSH, HR templates, and optional EPF/ESIC are not detected in the company vault. | Upload or reclassify company documents before UAT sign-off. | P1 |
+| ACV-GAP-018 | Compensation | Reporting Gap | 100 payslip records have no file attachment; 7 employees have no active salary structure. | Attach payslip files where available and complete current salary structure coverage. | P1 |
+| ACV-GAP-019 | Tenant setup | Configuration Gap | Registered address, HR/company email, and registration/tax references are missing from organization settings. | Complete organization profile before Zoho SMTP and formal UAT. | P1 |
+| ACV-GAP-020 | Document storage | Bug / Data Integrity Gap | Employee and company document records exist, but uploaded files are not reachable from configured storage in the current environment. | Repair storage path mapping or re-upload documents; then regenerate validation reports. | P0 |
+| ACV-GAP-021 | HR Connect | Reporting Gap | No ACV HR Connect posts, comments, or chat messages were found in the validation data. | Seed/use real HR Connect communication trails before testing operating-memory scenarios. | P2 |
+| ACV-GAP-022 | Audit | Reporting Gap | Audit logs exist, but expected audit coverage is partial across key lifecycle areas. | Add/verify audit hooks for missing lifecycle-sensitive actions. | P1 |
+
+Current validation verdict: **Not ready due to blockers**. The generated register has 47 Blocker-class items, all related to document file reachability.

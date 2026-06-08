@@ -230,9 +230,25 @@ A Playwright-based browser E2E test plan covers ~60 planned tests across 11 spec
 ACV implementation should not be considered ready until:
 
 - P1 gaps are closed or explicitly accepted.
+- P0 document storage reachability blockers are closed or explicitly accepted with a documented limitation.
 - No tenant-isolation issue is open.
 - No employee data-loss issue is open.
 - No compensation data corruption issue is open.
 - No document access leak is open.
 - Role-based access tests pass.
 - Production smoke test passes.
+
+## Validation Gate Update - 2026-06-08
+
+Latest evidence:
+
+`docs/acv-implementation/ACV-Testing-Evidence/import-validation-reports/2026-06-08/`
+
+Current validation verdict: **Not ready due to blockers**.
+
+UAT sequencing:
+
+1. Fix document storage reachability or re-upload affected employee/company documents.
+2. Regenerate validation reports and confirm Blocker count is zero.
+3. Run role-based document access and download/preview tests.
+4. Then proceed to broader ACV UAT across employee master, compensation, attendance, leave, HR Connect, analytics, and Manu.

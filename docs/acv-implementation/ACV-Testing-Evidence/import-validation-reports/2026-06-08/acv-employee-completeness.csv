@@ -1,0 +1,22 @@
+employeeCode,employeeName,status,department,designation,managerCode,managerName,missingFields,missingCount
+ACV/EMP/0001,,active,Management,Director,,,dateOfBirth|phone|address|reportingManager|workLocation,5
+ACV/EMP/0002,,active,IT,Sr. Software Developer,ACV/EMP/0001,,address|workLocation,2
+ACV/EMP/0003,,exited,IT,Software Developer,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0004,,exited,IT,Software Developer,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0005,,exited,IT,Software Developer,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0006,,exited,IT,Mobile Developer,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0007,,exited,IT,Sr. Mobile Developer,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0008,,active,IT,Technical Lead,ACV/EMP/0001,,address|workLocation,2
+ACV/EMP/0009,,exited,IT,Tester- Intern,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0010,,exited,IT,Mobile Developer,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0011,,exited,IT,Software Developer,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0012,,active,IT,Software Developer,ACV/EMP/0008,,address|workLocation,2
+ACV/EMP/0013,,active,IT,Software Developer,ACV/EMP/0008,,address|workLocation,2
+ACV/EMP/0014,,active,IT,Software Developer,ACV/EMP/0008,,address|workLocation,2
+ACV/EMP/0015,,exited,IT,Business Analyst,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0016,,exited,IT,Employee,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0017,,exited,IT,Employee,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0018,,exited,IT,Employee,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0019,,exited,IT,Employee,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0020,,exited,IT,Employee,,,dateOfBirth|gender|phone|address|workLocation,5
+ACV/EMP/0021,,exited,IT,Employee,,,dateOfBirth|gender|phone|address|workLocation,5
