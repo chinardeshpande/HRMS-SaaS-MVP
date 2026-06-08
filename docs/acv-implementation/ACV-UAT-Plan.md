@@ -221,18 +221,31 @@ A Playwright-based browser E2E test plan covers ~60 planned tests across 11 spec
 | `company-documents.spec.ts` | 3 | High | Track 4 |
 | `hr-connect.spec.ts` | 3 | Medium | Track 6 |
 
-**Status**: Plan complete. Implementation blocked by Playwright installation (corp registry).
+**Status**: **IMPLEMENTED AND GREEN.** 101 E2E tests across 13 spec files, 89 passing in CI (12 conditional skips).
 
 **Coverage bridge**: Each UAT track maps to both API tests (Jest) and browser E2E tests (Playwright). See `docs/acv-implementation/ACV-E2E-Test-Plan.md` Section 4 for the full mapping.
+
+## UAT Readiness (2026-06-08)
+
+**Verdict**: READY FOR CONTROLLED ACV UAT
+
+See `docs/acv-implementation/ACV-UAT-Readiness-Pack.md` for the full readiness pack including:
+- E2E coverage matrix
+- Module readiness classification (GREEN/AMBER/GREY)
+- Skipped-test register
+- Manual UAT checklists for HR Admin, Manager, Employee
+- Known limitations
+- Evidence links to all CI runs
 
 ## Release Gate
 
 ACV implementation should not be considered ready until:
 
-- P1 gaps are closed or explicitly accepted.
-- No tenant-isolation issue is open.
-- No employee data-loss issue is open.
-- No compensation data corruption issue is open.
-- No document access leak is open.
-- Role-based access tests pass.
-- Production smoke test passes.
+- [x] P1 gaps are closed or explicitly accepted.
+- [x] No tenant-isolation issue is open.
+- [x] No employee data-loss issue is open.
+- [x] No compensation data corruption issue is open.
+- [x] No document access leak is open.
+- [x] Role-based access tests pass.
+- [ ] Production smoke test passes.
+- [ ] Manual UAT checklists completed by ACV pilot users.
