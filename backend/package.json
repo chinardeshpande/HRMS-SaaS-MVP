@@ -36,7 +36,8 @@
     "acv:attendance": "ts-node src/scripts/importAcvMonthlyAttendance.ts",
     "acv:attendance:prod": "node dist/backend/src/scripts/importAcvMonthlyAttendance.js",
     "acv:customer-zero-cleanup": "ts-node src/scripts/applyAcvCustomerZeroCleanup.ts",
-    "acv:customer-zero-cleanup:prod": "node dist/backend/src/scripts/applyAcvCustomerZeroCleanup.js"
+    "acv:customer-zero-cleanup:prod": "node dist/backend/src/scripts/applyAcvCustomerZeroCleanup.js",
+    "seed:e2e": "ts-node scripts/seed-e2e-db.ts"
   },
   "keywords": [
     "hrms",

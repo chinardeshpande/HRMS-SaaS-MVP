@@ -1,0 +1,15 @@
+{
+  "name": "aurorahr-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AuroraHR Playwright E2E tests",
+  "scripts": {
+    "test": "playwright test",
+    "test:ci": "playwright test --reporter=list,json",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0"
+  }
+}
