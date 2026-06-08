@@ -188,13 +188,13 @@ Full multi-context leave lifecycle automation:
 
 | Metric | Value |
 |--------|-------|
-| Spec files | **11** |
-| Total tests | **73** |
-| Passed | **67** |
+| Spec files | **12** |
+| Total tests | **85** |
+| Passed | **73** |
 | Failed | **0** |
-| Skipped | **6** (conditional skips for UI elements not found) |
-| Run time | **1.6m** |
-| CI Run | [#27142295936](https://github.com/chinardeshpande/HRMS-SaaS-MVP/actions/runs/27142295936) — **GREEN** |
+| Skipped | **12** (conditional UI element skips) |
+| Run time | **1.8m** |
+| CI Run | [#27154026372](https://github.com/chinardeshpande/HRMS-SaaS-MVP/actions/runs/27154026372) — **GREEN** |
 
 ### document-roundtrip.spec.ts (11 tests, 5-8 passed + 3-6 conditional skips) — NEW
 
@@ -223,9 +223,9 @@ Company document roundtrip:
 
 1. ~~Full leave apply → approve → status update~~ **DONE** (LW01-LW08)
 2. ~~Document upload/download roundtrip~~ **DONE** (DR01-DR11)
-3. Employee detail compensation tab with seed data value verification
+3. ~~Compensation/payslip depth through employee detail~~ **DONE** (CD01-CD12)
 4. Responsive viewport tests (mobile/tablet/desktop)
 5. HR Connect feed visibility
-6. Visual regression baseline screenshots
-7. Leave reject workflow (manager rejects → employee sees rejected)
+6. Leave reject workflow (manager rejects → employee sees rejected)
+7. Visual regression baseline screenshots
 8. Onboarding/probation page access tests
