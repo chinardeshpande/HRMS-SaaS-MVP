@@ -89,12 +89,6 @@ test.describe('Leave Page Access', () => {
     expect(page.url()).toContain('/leave');
   });
 
-  // Full leave apply → approve workflow requires stable seed data, deterministic
-  // leave type selection, and date picker interaction. Kept as manual/UAT until
-  // the form UI is verified stable across environments.
-  test.skip('L07: full leave apply → manager approve → status update (manual/UAT)', async () => {
-    // Blocked: requires date picker interaction, leave type dropdown,
-    // seed balance verification, and cross-role session switching.
-    // Implement after L04/L05 are confirmed stable in CI.
-  });
+  // Full leave apply → approve workflow is implemented in leave-workflow.spec.ts
+  // See tests LW01-LW08 for the complete multi-context browser workflow.
 });
