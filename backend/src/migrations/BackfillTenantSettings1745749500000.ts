@@ -29,13 +29,13 @@ export class BackfillTenantSettings1745749500000 implements MigrationInterface {
         CASE
           WHEN lower(t."planType") IN ('starter', 'professional', 'enterprise') THEN lower(t."planType")
           ELSE 'free'
-        END,
+        END::"subscriptions_plan_enum",
         CASE
           WHEN t."status" = 'active' AND COALESCE(t."isTrialActive", true) THEN 'trial'
           WHEN t."status" = 'active' THEN 'active'
           ELSE 'suspended'
-        END,
-        'monthly',
+        END::"subscriptions_status_enum",
+        'monthly'::"subscriptions_billingCycle_enum",
         CASE
           WHEN lower(t."planType") = 'starter' THEN 29
           WHEN lower(t."planType") = 'professional' THEN 79
