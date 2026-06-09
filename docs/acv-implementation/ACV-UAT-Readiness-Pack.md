@@ -1,7 +1,7 @@
 # ACV Customer Zero UAT Readiness Pack
 
 **Date**: 2026-06-09
-**Verdict**: READY FOR CONTROLLED ACV UAT AFTER PRODUCTION ALIGNMENT SMOKE
+**Verdict**: READY FOR CONTROLLED ACV UAT
 
 ## Automated Test Summary
 
@@ -64,10 +64,9 @@
 
 **Result**: Infrastructure PASS. Authenticated smoke BLOCKED — needs ACV credentials.
 
-**Action required before controlled UAT**:
-1. Deploy `codex/production-deployment-alignment` through the existing production workflow.
-2. Re-run safe production smoke and confirm malformed/non-string login payloads return controlled `400` responses, not unsafe `500` responses.
-3. Chinar runs manual UAT checklists OR provides credentials for authenticated smoke check.
+**Action required for authenticated smoke**:
+1. Chinar runs manual UAT with approved credentials, OR
+2. provide a disposable ACV UAT credential for non-destructive authenticated smoke.
 
 See: `docs/qa/acv-pilot-smoke-test/report.md`
 
@@ -79,7 +78,7 @@ Branch `codex/production-deployment-alignment` consolidates the accepted QA-hard
 - backend QA: 12 suites, 95 tests
 - frontend build
 
-Production remains gated until the deployed commit matches this baseline and post-deployment smoke passes. See `docs/qa/production-deployment-alignment/report.md`.
+Production is aligned with the accepted baseline at deployed commit `dce3779775f43c68978442434c7f27652d9b5a15`. Post-deployment safe smoke passed, including malformed/non-string login payloads returning controlled `400` responses. See `docs/qa/production-deployment-alignment/report.md`.
 
 ## Full Details
 

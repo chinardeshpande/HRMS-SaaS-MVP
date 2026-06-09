@@ -121,6 +121,6 @@ New/updated deployment gap:
 
 | ID | Area | Classification | Gap | Required Outcome | Priority |
 | --- | --- | --- | --- | --- | --- |
-| ACV-GAP-029 | Production deployment | Configuration Gap | Current production is reachable but behind the QA-hardened baseline; malformed/non-string login payloads still return unsafe `500` on production until deployment alignment is completed. | Deploy the accepted baseline through the existing production workflow, then verify auth smoke returns controlled `400`/`401` responses. | P0 |
+| ACV-GAP-029 | Production deployment | Configuration Gap | Production was reachable but behind the QA-hardened baseline; malformed/non-string login payloads returned unsafe `500` before deployment alignment. | Resolved: deployment run `27226832082` deployed commit `dce3779775f43c68978442434c7f27652d9b5a15`; post-deployment smoke confirmed controlled `400`/`401` auth responses. | Resolved |
 
-Controlled ACV UAT should not start until `ACV-GAP-029` is closed by post-deployment smoke evidence.
+`ACV-GAP-029` is closed. Controlled ACV manual UAT may begin; automated authenticated production smoke awaits a disposable or explicitly approved ACV production UAT credential.

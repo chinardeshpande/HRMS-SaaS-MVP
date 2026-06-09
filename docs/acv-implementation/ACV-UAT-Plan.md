@@ -257,10 +257,12 @@ Latest accepted evidence:
 
 - Backend QA foundation, document/payslip lifecycle stability, functional solidity, and HR Analytics backend repair are green in local QA.
 - Claude browser E2E evidence says ACV Customer Zero is ready for controlled UAT.
-- Production smoke found `https://aurorahr.in` is reachable but behind the QA-hardened baseline.
+- Production deployment alignment completed successfully.
+- Production smoke confirmed `https://aurorahr.in` is aligned with deployed commit `dce3779775f43c68978442434c7f27652d9b5a15`.
+- Production auth hardening is live: malformed/non-string login payloads return controlled `400` responses and nonexistent login returns controlled `401`.
 - Production deployment alignment evidence is tracked in `docs/qa/production-deployment-alignment/report.md`.
 
-Controlled ACV UAT may begin only after production is redeployed to the accepted baseline and the auth malformed/non-string payload smoke returns controlled `400` responses instead of unsafe `500` responses.
+Controlled ACV manual UAT may begin. Automated authenticated production smoke remains pending until a disposable or explicitly approved ACV production UAT credential is available.
 
 ## Validation Gate Update - 2026-06-08
 

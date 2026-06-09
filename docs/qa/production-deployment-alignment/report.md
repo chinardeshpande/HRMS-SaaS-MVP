@@ -90,25 +90,69 @@ After deployment, run safe smoke against `https://aurorahr.in`:
 | Non-string login payload | `400`; no unsafe `500` |
 | Security headers | Acceptable; no regression from prior smoke |
 
+## Deployment Execution Update - 2026-06-09
+
+PR #59 was merged first, then production deployment exposed existing production schema drift in pending TypeORM migrations. The deployment workflow rolled back cleanly after each failed migration attempt. The following follow-up migration-hardening PRs were merged to make pending migrations compatible with the current production schema without destructive database changes:
+
+| PR | Purpose | Merge commit |
+| --- | --- | --- |
+| #60 | Harden digital library migration indexes/foreign keys | `e447f5e748e17279ad6f6f55026fe653f7fd51e9` |
+| #61 | Harden remaining operational tables migration table/index creation | `85c3b996b3a7af55aef052f76ee97738677a941c` |
+| #62 | Harden tenant settings backfill enum casts | `015a0165f28f3b4cdcccd9fc9c6ad1d685051752` |
+| #63 | Use production billing-cycle enum name | `6b3ac4e7e0e8d7dc824012ab97485dcc61a073bf` |
+| #64 | Harden company documents migration indexes/foreign keys | `9b7a797715367d13528009a981b4e0526347d9a9` |
+| #65 | Harden employee documents migration indexes/foreign keys | `dce3779775f43c68978442434c7f27652d9b5a15` |
+
+Final deployment workflow:
+
+| Item | Result |
+| --- | --- |
+| Workflow run | `27226832082` |
+| Deployed commit | `dce3779775f43c68978442434c7f27652d9b5a15` |
+| Backend build | Passed |
+| Frontend build | Passed |
+| Server deploy | Passed |
+| Workflow health check | Passed |
+| Workflow authenticated API smoke | Passed |
+| Workflow frontend smoke | Passed |
+| Rollback | Not triggered |
+
+## Independent Production Smoke - 2026-06-09
+
+Safe unauthenticated smoke was run against `https://aurorahr.in` after deployment.
+
+| Smoke item | Result |
+| --- | --- |
+| Frontend `/` | `200` |
+| Health `/health` | `200` |
+| Protected `/api/v1/auth/me` without token | `401` |
+| Protected `/api/v1/employees` without token | `401` |
+| Nonexistent email login | `401 INVALID_CREDENTIALS` |
+| Malformed email login payload | `400 VALIDATION_ERROR` |
+| Non-string email/password login payload | `400 VALIDATION_ERROR` |
+| Security headers on `/health` | Present: CSP, HSTS, X-Frame-Options, no-sniff, Referrer-Policy |
+
+Wrong-password smoke for an existing account was not run because no disposable production test credential was provided for this deployment-verification task. Do not use real employee credentials for automated smoke unless explicitly approved.
+
 ## Deployment Gate Verdict
 
-**Ready to deploy via the existing production workflow.**
+**Production aligned with the accepted QA-hardened baseline.**
 
-**ACV authenticated smoke:** Not yet. Begin only after production is deployed to this commit and unauthenticated/auth smoke passes.
+**ACV authenticated smoke:** May begin after a disposable ACV production UAT credential is provided or Chinar personally tests with approved credentials.
 
-**ACV controlled UAT:** Not yet. Begin after production alignment smoke passes and ACV credentials are available for authenticated smoke/manual UAT.
+**ACV controlled UAT:** May begin for controlled/manual UAT. Remaining non-blocking risks below should stay visible during UAT.
 
 ## Remaining Blockers
 
 | Blocker | Status |
 | --- | --- |
-| Production currently behind QA-hardened baseline | Open until deployment completes |
-| Auth malformed/non-string payload unsafe `500` on current production | Open until deployment completes and smoke proves `400` |
-| ACV authenticated smoke | Pending ACV credentials and deployed baseline |
+| Production currently behind QA-hardened baseline | Closed: deployed commit `dce3779775f43c68978442434c7f27652d9b5a15` |
+| Auth malformed/non-string payload unsafe `500` on current production | Closed: post-deployment smoke returns controlled `400` |
+| ACV authenticated smoke | Pending disposable/approved ACV credentials |
 | Historical document restoration | Parked by product decision |
 | HR Connect/collaboration expanded QA | Pending later QA sprint |
 | Responsive/browser E2E expansion | Claude-owned, ongoing/pending as separate stream |
 
 ## Recommended Next Step
 
-Merge this branch into the production deployment path (`main`) or open a deployment PR. After the GitHub Actions deployment succeeds, run the post-deployment safe smoke and update this report with deployed commit and smoke evidence.
+Start ACV controlled manual UAT on production. If automated authenticated production smoke is needed, first create a disposable UAT user and run only non-destructive checks.
