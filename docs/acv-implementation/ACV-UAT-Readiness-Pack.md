@@ -1,15 +1,15 @@
 # ACV Customer Zero UAT Readiness Pack
 
-**Date**: 2026-06-08
-**Verdict**: READY FOR CONTROLLED ACV UAT
+**Date**: 2026-06-09
+**Verdict**: READY FOR CONTROLLED ACV UAT AFTER PRODUCTION ALIGNMENT SMOKE
 
 ## Automated Test Summary
 
 | Layer | Tests | Passed | Failed | Status |
 |-------|-------|--------|--------|--------|
-| Backend API (Jest) | 80 | 80 | 0 | GREEN |
+| Backend API (Jest) | 95 | 95 | 0 | GREEN |
 | Browser E2E (Playwright) | 101 | 89 | 0 | GREEN (12 conditional skip) |
-| **Total** | **181** | **169** | **0** | **GREEN** |
+| **Total** | **196** | **184** | **0** | **GREEN** |
 
 ## Module Readiness
 
@@ -40,7 +40,7 @@
 
 ## UAT Entry Criteria — Met
 
-- [x] Backend tests pass (80/80)
+- [x] Backend tests pass (95/95)
 - [x] Browser E2E tests pass (89/101, 12 conditional)
 - [x] CI pipelines green (backend + E2E)
 - [x] No tenant-isolation issue open
@@ -64,11 +64,22 @@
 
 **Result**: Infrastructure PASS. Authenticated smoke BLOCKED — needs ACV credentials.
 
-**Action required before UAT**:
-1. Deploy auth hardening branch to production (fixes DG1: non-string payload 500)
-2. Chinar runs manual UAT checklists OR provides credentials for Claude smoke check
+**Action required before controlled UAT**:
+1. Deploy `codex/production-deployment-alignment` through the existing production workflow.
+2. Re-run safe production smoke and confirm malformed/non-string login payloads return controlled `400` responses, not unsafe `500` responses.
+3. Chinar runs manual UAT checklists OR provides credentials for authenticated smoke check.
 
 See: `docs/qa/acv-pilot-smoke-test/report.md`
+
+## Production Alignment Update (2026-06-09)
+
+Branch `codex/production-deployment-alignment` consolidates the accepted QA-hardened baseline and passes:
+
+- backend build
+- backend QA: 12 suites, 95 tests
+- frontend build
+
+Production remains gated until the deployed commit matches this baseline and post-deployment smoke passes. See `docs/qa/production-deployment-alignment/report.md`.
 
 ## Full Details
 

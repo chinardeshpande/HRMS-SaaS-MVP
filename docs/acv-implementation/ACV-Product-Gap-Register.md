@@ -105,3 +105,22 @@ New/updated gaps:
 | ACV-GAP-026 | Audit | Reporting Gap | Leave and attendance mutation audit coverage is not yet proven. | Add audit hooks/tests for leave apply/approve/reject/cancel and attendance clock/regularisation/mass update. | P1 |
 | ACV-GAP-027 | Browser QA | Reporting Gap | Backend API is green, but role-based browser journeys are not yet automated for this sprint. | Add Playwright critical-path suite before claiming full UI readiness. | P1 |
 | ACV-GAP-028 | Historical documents | Data Integrity Gap | Missing historical document backing files remain unresolved. | Parked by product decision; restore only in a dedicated document restoration sprint. | Parked |
+
+## Production Deployment Alignment Update - 2026-06-09
+
+Branch: `codex/production-deployment-alignment`
+
+The accepted QA-hardened baseline is locally ready for production deployment:
+
+- backend build passed
+- backend QA passed: 12 suites, 95 tests
+- frontend build passed
+- auth hardening is present for nonexistent email, wrong password, malformed login payloads, and non-string login payloads
+
+New/updated deployment gap:
+
+| ID | Area | Classification | Gap | Required Outcome | Priority |
+| --- | --- | --- | --- | --- | --- |
+| ACV-GAP-029 | Production deployment | Configuration Gap | Current production is reachable but behind the QA-hardened baseline; malformed/non-string login payloads still return unsafe `500` on production until deployment alignment is completed. | Deploy the accepted baseline through the existing production workflow, then verify auth smoke returns controlled `400`/`401` responses. | P0 |
+
+Controlled ACV UAT should not start until `ACV-GAP-029` is closed by post-deployment smoke evidence.
