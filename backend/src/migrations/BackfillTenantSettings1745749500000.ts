@@ -35,7 +35,7 @@ export class BackfillTenantSettings1745749500000 implements MigrationInterface {
           WHEN t."status" = 'active' THEN 'active'
           ELSE 'suspended'
         END::"subscriptions_status_enum",
-        'monthly'::"subscriptions_billingCycle_enum",
+        'monthly'::"subscriptions_billingcycle_enum",
         CASE
           WHEN lower(t."planType") = 'starter' THEN 29
           WHEN lower(t."planType") = 'professional' THEN 79
