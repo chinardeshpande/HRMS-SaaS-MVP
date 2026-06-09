@@ -1,6 +1,37 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey, TableIndex } from 'typeorm';
 
 export class AddDigitalLibraryTables1745746500000 implements MigrationInterface {
+  private async createForeignKeyIfMissing(
+    queryRunner: QueryRunner,
+    tableName: string,
+    foreignKey: TableForeignKey
+  ): Promise<void> {
+    const table = await queryRunner.getTable(tableName);
+    const existing = table?.foreignKeys.find(
+      key =>
+        key.columnNames.join(',') === foreignKey.columnNames.join(',') &&
+        key.referencedTableName === foreignKey.referencedTableName &&
+        key.referencedColumnNames.join(',') === foreignKey.referencedColumnNames.join(',')
+    );
+
+    if (!existing) {
+      await queryRunner.createForeignKey(tableName, foreignKey);
+    }
+  }
+
+  private async createIndexIfMissing(
+    queryRunner: QueryRunner,
+    tableName: string,
+    index: TableIndex
+  ): Promise<void> {
+    const table = await queryRunner.getTable(tableName);
+    const existing = table?.indices.find(existingIndex => existingIndex.name === index.name);
+
+    if (!existing) {
+      await queryRunner.createIndex(tableName, index);
+    }
+  }
+
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
@@ -211,7 +242,8 @@ export class AddDigitalLibraryTables1745746500000 implements MigrationInterface 
       true
     );
 
-    await queryRunner.createForeignKey(
+    await this.createForeignKeyIfMissing(
+      queryRunner,
       'document_category',
       new TableForeignKey({
         columnNames: ['tenantId'],
@@ -221,7 +253,8 @@ export class AddDigitalLibraryTables1745746500000 implements MigrationInterface 
       })
     );
 
-    await queryRunner.createForeignKey(
+    await this.createForeignKeyIfMissing(
+      queryRunner,
       'digital_library',
       new TableForeignKey({
         columnNames: ['tenantId'],
@@ -231,7 +264,8 @@ export class AddDigitalLibraryTables1745746500000 implements MigrationInterface 
       })
     );
 
-    await queryRunner.createForeignKey(
+    await this.createForeignKeyIfMissing(
+      queryRunner,
       'digital_library',
       new TableForeignKey({
         columnNames: ['employeeId'],
@@ -241,7 +275,8 @@ export class AddDigitalLibraryTables1745746500000 implements MigrationInterface 
       })
     );
 
-    await queryRunner.createForeignKey(
+    await this.createForeignKeyIfMissing(
+      queryRunner,
       'digital_library',
       new TableForeignKey({
         columnNames: ['originalOwnerId'],
@@ -251,7 +286,8 @@ export class AddDigitalLibraryTables1745746500000 implements MigrationInterface 
       })
     );
 
-    await queryRunner.createIndex(
+    await this.createIndexIfMissing(
+      queryRunner,
       'document_category',
       new TableIndex({
         name: 'idx_document_category_tenant',
@@ -259,7 +295,8 @@ export class AddDigitalLibraryTables1745746500000 implements MigrationInterface 
       })
     );
 
-    await queryRunner.createIndex(
+    await this.createIndexIfMissing(
+      queryRunner,
       'document_category',
       new TableIndex({
         name: 'idx_document_category_tenant_name',
@@ -268,7 +305,8 @@ export class AddDigitalLibraryTables1745746500000 implements MigrationInterface 
       })
     );
 
-    await queryRunner.createIndex(
+    await this.createIndexIfMissing(
+      queryRunner,
       'digital_library',
       new TableIndex({
         name: 'idx_digital_library_tenant_employee',
@@ -276,7 +314,8 @@ export class AddDigitalLibraryTables1745746500000 implements MigrationInterface 
       })
     );
 
-    await queryRunner.createIndex(
+    await this.createIndexIfMissing(
+      queryRunner,
       'digital_library',
       new TableIndex({
         name: 'idx_digital_library_tenant_resource_type',
@@ -284,7 +323,8 @@ export class AddDigitalLibraryTables1745746500000 implements MigrationInterface 
       })
     );
 
-    await queryRunner.createIndex(
+    await this.createIndexIfMissing(
+      queryRunner,
       'digital_library',
       new TableIndex({
         name: 'idx_digital_library_tenant_access_level',
