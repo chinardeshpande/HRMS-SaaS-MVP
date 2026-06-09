@@ -1,0 +1,122 @@
+{
+  "departments": [
+    {
+      "name": "Accounts",
+      "employeeCount": 0
+    },
+    {
+      "name": "Engineering",
+      "employeeCount": 0
+    },
+    {
+      "name": "Human Resource",
+      "employeeCount": 0
+    },
+    {
+      "name": "IT",
+      "employeeCount": 20
+    },
+    {
+      "name": "Management",
+      "employeeCount": 1
+    },
+    {
+      "name": "Sales & Marketing",
+      "employeeCount": 0
+    }
+  ],
+  "designations": [
+    {
+      "name": "Business Analyst",
+      "employeeCount": 1
+    },
+    {
+      "name": "Director",
+      "employeeCount": 1
+    },
+    {
+      "name": "Employee",
+      "employeeCount": 6
+    },
+    {
+      "name": "Engineering Manager",
+      "employeeCount": 0
+    },
+    {
+      "name": "Head of HR",
+      "employeeCount": 0
+    },
+    {
+      "name": "HR Executive",
+      "employeeCount": 0
+    },
+    {
+      "name": "HR Manager",
+      "employeeCount": 0
+    },
+    {
+      "name": "Mobile Developer",
+      "employeeCount": 2
+    },
+    {
+      "name": "Senior Software Engineer",
+      "employeeCount": 0
+    },
+    {
+      "name": "Software Developer",
+      "employeeCount": 7
+    },
+    {
+      "name": "Software Engineer",
+      "employeeCount": 0
+    },
+    {
+      "name": "Sr. Mobile Developer",
+      "employeeCount": 1
+    },
+    {
+      "name": "Sr. Software Developer",
+      "employeeCount": 1
+    },
+    {
+      "name": "Technical Lead",
+      "employeeCount": 1
+    },
+    {
+      "name": "Tester- Intern",
+      "employeeCount": 1
+    }
+  ],
+  "activeLeavePolicies": [
+    {
+      "policyName": "Sick Leave",
+      "leaveType": "sick",
+      "totalLeaves": 12,
+      "applicableGender": "all"
+    },
+    {
+      "policyName": "Casual Leave",
+      "leaveType": "casual",
+      "totalLeaves": 12,
+      "applicableGender": "all"
+    },
+    {
+      "policyName": "Earned Leave",
+      "leaveType": "earned",
+      "totalLeaves": 21,
+      "applicableGender": "all"
+    },
+    {
+      "policyName": "Maternity Leave",
+      "leaveType": "maternity",
+      "totalLeaves": 180,
+      "applicableGender": "female"
+    },
+    {
+      "policyName": "Paternity Leave",
+      "leaveType": "paternity",
+      "totalLeaves": 15,
+      "applicableGender": "male"
+    }
+  ]
+}

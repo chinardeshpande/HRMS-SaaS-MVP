@@ -1,14 +1,23 @@
 import { Request, Response } from 'express';
-import reportingService, { ReportFilters } from '../services/reportingService';
+import reportingService, { ReportAccessContext, ReportFilters } from '../services/reportingService';
 import logger from '../utils/logger';
 
 export class ReportingController {
+  private getAccessContext(req: Request): ReportAccessContext {
+    const { tenantId, role, employeeId } = req.user!;
+    return {
+      tenantId,
+      userRole: role,
+      employeeId,
+    };
+  }
+
   /**
    * GET /api/reports/attendance-summary
    */
   async getAttendanceSummary(req: Request, res: Response) {
     try {
-      const { tenantId } = req.user!;
+      const access = this.getAccessContext(req);
       const { startDate, endDate, departmentIds, employmentTypes } = req.query;
 
       if (!startDate || !endDate) {
@@ -25,7 +34,7 @@ export class ReportingController {
         employmentTypes: employmentTypes ? (employmentTypes as string).split(',') : undefined,
       };
 
-      const data = await reportingService.getAttendanceSummary(tenantId, filters);
+      const data = await reportingService.getAttendanceSummary(access, filters);
 
       res.json({
         success: true,
@@ -50,7 +59,7 @@ export class ReportingController {
    */
   async getLeaveBalance(req: Request, res: Response) {
     try {
-      const { tenantId } = req.user!;
+      const access = this.getAccessContext(req);
       const { departmentIds, employmentTypes } = req.query;
 
       const filters: ReportFilters = {
@@ -58,7 +67,7 @@ export class ReportingController {
         employmentTypes: employmentTypes ? (employmentTypes as string).split(',') : undefined,
       };
 
-      const data = await reportingService.getLeaveBalanceReport(tenantId, filters);
+      const data = await reportingService.getLeaveBalanceReport(access, filters);
 
       res.json({
         success: true,
@@ -83,7 +92,7 @@ export class ReportingController {
    */
   async getHeadcount(req: Request, res: Response) {
     try {
-      const { tenantId } = req.user!;
+      const access = this.getAccessContext(req);
       const { departmentIds, employmentTypes, status } = req.query;
 
       const filters: ReportFilters = {
@@ -92,7 +101,7 @@ export class ReportingController {
         status: status ? (status as string).split(',') : undefined,
       };
 
-      const data = await reportingService.getHeadcountReport(tenantId, filters);
+      const data = await reportingService.getHeadcountReport(access, filters);
 
       const summary = {
         totalHeadcount: data.reduce((sum, row) => sum + row.count, 0),
@@ -125,7 +134,7 @@ export class ReportingController {
    */
   async getJoinersLeavers(req: Request, res: Response) {
     try {
-      const { tenantId } = req.user!;
+      const access = this.getAccessContext(req);
       const { startDate, endDate } = req.query;
 
       if (!startDate || !endDate) {
@@ -140,7 +149,7 @@ export class ReportingController {
         endDate: new Date(endDate as string),
       };
 
-      const data = await reportingService.getJoinersLeaversReport(tenantId, filters);
+      const data = await reportingService.getJoinersLeaversReport(access, filters);
 
       const summary = {
         totalJoiners: data.reduce((sum, row) => sum + row.joiners, 0),
@@ -178,14 +187,14 @@ export class ReportingController {
    */
   async getConfirmationDue(req: Request, res: Response) {
     try {
-      const { tenantId } = req.user!;
+      const access = this.getAccessContext(req);
       const { departmentIds } = req.query;
 
       const filters: ReportFilters = {
         departmentIds: departmentIds ? (departmentIds as string).split(',') : undefined,
       };
 
-      const data = await reportingService.getConfirmationDueReport(tenantId, filters);
+      const data = await reportingService.getConfirmationDueReport(access, filters);
 
       const summary = {
         totalPending: data.length,
@@ -218,7 +227,7 @@ export class ReportingController {
    */
   async getAttrition(req: Request, res: Response) {
     try {
-      const { tenantId } = req.user!;
+      const access = this.getAccessContext(req);
       const { startDate, endDate, departmentIds } = req.query;
 
       if (!startDate || !endDate) {
@@ -234,7 +243,7 @@ export class ReportingController {
         departmentIds: departmentIds ? (departmentIds as string).split(',') : undefined,
       };
 
-      const data = await reportingService.getAttritionReport(tenantId, filters);
+      const data = await reportingService.getAttritionReport(access, filters);
 
       const summary = {
         totalExits: data.reduce((sum, row) => sum + row.exits, 0),
@@ -272,7 +281,7 @@ export class ReportingController {
    */
   async getPMSCompletion(req: Request, res: Response) {
     try {
-      const { tenantId } = req.user!;
+      const access = this.getAccessContext(req);
       const { startDate, endDate, departmentIds } = req.query;
 
       const filters: ReportFilters = {
@@ -281,7 +290,7 @@ export class ReportingController {
         departmentIds: departmentIds ? (departmentIds as string).split(',') : undefined,
       };
 
-      const data = await reportingService.getPMSCompletionReport(tenantId, filters);
+      const data = await reportingService.getPMSCompletionReport(access, filters);
 
       const summary = {
         totalReviews: data.length,
@@ -317,14 +326,14 @@ export class ReportingController {
    */
   async getMissingDocuments(req: Request, res: Response) {
     try {
-      const { tenantId } = req.user!;
+      const access = this.getAccessContext(req);
       const { departmentIds } = req.query;
 
       const filters: ReportFilters = {
         departmentIds: departmentIds ? (departmentIds as string).split(',') : undefined,
       };
 
-      const data = await reportingService.getMissingDocumentsReport(tenantId, filters);
+      const data = await reportingService.getMissingDocumentsReport(access, filters);
 
       const summary = {
         totalEmployees: data.length,
@@ -358,8 +367,8 @@ export class ReportingController {
    */
   async getMemoryReadiness(req: Request, res: Response) {
     try {
-      const { tenantId } = req.user!;
-      const data = await reportingService.getMemoryReadinessReport(tenantId);
+      const access = this.getAccessContext(req);
+      const data = await reportingService.getMemoryReadinessReport(access);
 
       res.json({
         success: true,
@@ -385,9 +394,10 @@ export class ReportingController {
    */
   async getSavedReports(req: Request, res: Response) {
     try {
-      const { tenantId, userId } = req.user!;
+      const { userId } = req.user!;
+      const access = this.getAccessContext(req);
 
-      const reports = await reportingService.getSavedReports(tenantId, userId);
+      const reports = await reportingService.getSavedReportsForAccess(access, userId);
 
       res.json({
         success: true,
@@ -408,6 +418,15 @@ export class ReportingController {
   async saveReport(req: Request, res: Response) {
     try {
       const { tenantId, userId } = req.user!;
+      const access = this.getAccessContext(req);
+
+      if (!reportingService.canAccessReportType(access.userRole, req.body.reportType)) {
+        return res.status(403).json({
+          success: false,
+          error: { message: 'Report type is not permitted for current role' },
+        });
+      }
+
       const reportData = {
         ...req.body,
         tenantId,
@@ -434,10 +453,10 @@ export class ReportingController {
    */
   async executeSavedReport(req: Request, res: Response) {
     try {
-      const { tenantId } = req.user!;
+      const access = this.getAccessContext(req);
       const { reportId } = req.params;
 
-      const data = await reportingService.executeSavedReport(reportId, tenantId);
+      const data = await reportingService.executeSavedReport(reportId, access);
 
       res.json({
         success: true,
@@ -445,7 +464,7 @@ export class ReportingController {
       });
     } catch (error: any) {
       logger.error('Error executing saved report:', error);
-      res.status(500).json({
+      res.status(error.statusCode || 500).json({
         success: false,
         error: { message: error.message || 'Failed to execute saved report' },
       });

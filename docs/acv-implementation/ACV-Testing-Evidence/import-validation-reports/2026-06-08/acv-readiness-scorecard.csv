@@ -1,0 +1,14 @@
+area,status,evidence
+Employee master,Red,21/21 employees have missing/risky fields
+Manager mapping,Amber,16 without manager; 0 circular risks
+Lifecycle history,Amber,0 with no timeline; 3 inactive/exited without exit case
+Employee documents,Red,21/21 employees missing one or more key document classes
+Company document vault,Red,16 company documents; 4 expected categories not detected
+Compensation and payslips,Red,7 without active structures; 13 with unattached payslips
+Attendance,Green,1745 rows; date range 2024-01-01 to 2026-07-26
+Leave,Green,30 balances; 5 active policies
+Tenant setup,Red,5/8 tenant setup items configured
+HR Connect and communication trail,Amber,0 posts; 0 comments; 0 chat messages
+Audit logs,Amber,2011 audit rows; 3/5 expected areas covered
+Dashboard/reporting readiness,Green,0 saved reports; 6/7 data readiness signals present
+Zoho/SMTP integration,Grey,Explicitly out of scope for this branch

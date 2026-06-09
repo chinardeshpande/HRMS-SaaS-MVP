@@ -1,0 +1,17 @@
+title,category,status,verificationStatus,expiryDate,hasExpiryDate,fileExists
+Attendance and Leave Policy,hr_policy,active,unverified,,false,false
+Attendance and Leave Policy,hr_policy,active,unverified,,false,false
+Maternity Benefit Act Reference,hr_policy,active,unverified,,false,false
+MOA,incorporation_identity,active,unverified,,false,false
+AOA,incorporation_identity,active,unverified,,false,false
+Certificate of Incorporation,incorporation_identity,active,verified,,false,false
+Form INC-20A Declaration,incorporation_identity,active,unverified,,false,false
+Company Registration Acknowledgement,incorporation_identity,active,verified,,false,false
+Udyam Registration Certificate,incorporation_identity,active,verified,,false,false
+Government Form,labor_hr_compliance,active,unverified,,false,false
+LTE Bill,labor_hr_compliance,active,verified,2026-10-30,true,false
+Gumasta / Shops and Establishment License,labor_hr_compliance,active,verified,,false,false
+GST Certificate,tax_registration,active,verified,,false,false
+ACV PTEC Certificate,tax_registration,active,unverified,,false,false
+PTRC Certificate,tax_registration,active,unverified,,false,false
+PAN Card,tax_registration,active,verified,,false,false

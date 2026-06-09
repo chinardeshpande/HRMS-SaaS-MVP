@@ -170,14 +170,129 @@ Evidence folder:
 
 `docs/acv-implementation/ACV-Testing-Evidence/`
 
+## Automated Regression Foundation (2026-06-04)
+
+Original branch: `claude/acv-regression-test-foundation`  
+Hardened branch: `codex/qa-foundation-hardening`  
+Lifecycle expansion branch: `codex/document-lifecycle-api-tests`
+
+A Jest + supertest integration test suite now covers 76 automated API-level checks against a dedicated synthetic test database:
+
+| Area | Tests | Status |
+|------|-------|--------|
+| Health/Smoke | 3 | Automated |
+| Auth (login/logout/me) | 15 | Automated |
+| Tenant Isolation | 4 | Automated |
+| RBAC (role boundaries) | 13 | Automated |
+| Employee Register | 4 | Automated |
+| Employee Detail | 4 | Automated |
+| Document Access | 6 | Automated |
+| Compensation/Payslip | 6 | Automated |
+| Attendance Flow | 7 | Automated |
+| Leave Flow | 9 | Automated |
+| Document and Payslip Lifecycle | 6 | Automated |
+
+Run: `cd backend && npm run test:qa`
+
+Test accounts: see `backend/tests/helpers/testSetup.ts` and `backend/tests/setup/seedTestData.ts`. The account matrix uses synthetic `*.test` emails and does not require real ACV production/development data.
+
+Full reports:
+
+- `docs/qa/acv-regression-foundation-2026-06-04/report.md`
+- `docs/qa/document-lifecycle-api-tests/report.md`
+
+## Browser E2E Test Plan (2026-06-04)
+
+Branch: `claude/acv-e2e-test-plan`
+
+A Playwright-based browser E2E test plan covers ~60 planned tests across 11 spec files:
+
+| Spec | Tests | Priority | UAT Track |
+|------|-------|----------|-----------|
+| `auth.spec.ts` | 7 | Critical | Track 1 |
+| `rbac.spec.ts` | 10+ | Critical | Track 3 |
+| `tenant-isolation.spec.ts` | 4 | Critical | Track 3 |
+| `employees.spec.ts` | 6 | Critical | Track 2 |
+| `documents.spec.ts` | 6 | Critical | Track 4 |
+| `compensation.spec.ts` | 5 | Critical | Track 5 |
+| `dashboard.spec.ts` | 6 | High | Track 8 |
+| `leave.spec.ts` | 6 | High | Track 7 |
+| `attendance.spec.ts` | 4 | High | Track 7 |
+| `company-documents.spec.ts` | 3 | High | Track 4 |
+| `hr-connect.spec.ts` | 3 | Medium | Track 6 |
+
+**Status**: **IMPLEMENTED AND GREEN.** 101 E2E tests across 13 spec files, 89 passing in CI (12 conditional skips).
+
+**Coverage bridge**: Each UAT track maps to both API tests (Jest) and browser E2E tests (Playwright). See `docs/acv-implementation/ACV-E2E-Test-Plan.md` Section 4 for the full mapping.
+
+## UAT Readiness (2026-06-08)
+
+**Verdict**: READY FOR CONTROLLED ACV UAT
+
+See `docs/acv-implementation/ACV-UAT-Readiness-Pack.md` for the full readiness pack including:
+- E2E coverage matrix
+- Module readiness classification (GREEN/AMBER/GREY)
+- Skipped-test register
+- Manual UAT checklists for HR Admin, Manager, Employee
+- Known limitations
+- Evidence links to all CI runs
+
 ## Release Gate
 
-ACV implementation should not be considered ready until:
+ACV implementation should not be considered ready for broad production rollout until:
 
 - P1 gaps are closed or explicitly accepted.
+- P0 document storage reachability blockers are closed or explicitly accepted with a documented limitation.
 - No tenant-isolation issue is open.
 - No employee data-loss issue is open.
 - No compensation data corruption issue is open.
 - No document access leak is open.
 - Role-based access tests pass.
 - Production smoke test passes.
+- Manual UAT checklists are completed by ACV pilot users.
+
+## Controlled UAT Gate Update - 2026-06-09
+
+Latest accepted evidence:
+
+- Backend QA foundation, document/payslip lifecycle stability, functional solidity, and HR Analytics backend repair are green in local QA.
+- Claude browser E2E evidence says ACV Customer Zero is ready for controlled UAT.
+- Production smoke found `https://aurorahr.in` is reachable but behind the QA-hardened baseline.
+- Production deployment alignment evidence is tracked in `docs/qa/production-deployment-alignment/report.md`.
+
+Controlled ACV UAT may begin only after production is redeployed to the accepted baseline and the auth malformed/non-string payload smoke returns controlled `400` responses instead of unsafe `500` responses.
+
+## Validation Gate Update - 2026-06-08
+
+Latest evidence:
+
+`docs/acv-implementation/ACV-Testing-Evidence/import-validation-reports/2026-06-08/`
+
+Current validation verdict: **Not ready due to blockers**.
+
+UAT sequencing:
+
+1. Fix document storage reachability or re-upload affected employee/company documents.
+2. Regenerate validation reports and confirm Blocker count is zero.
+3. Run role-based document access and download/preview tests.
+4. Then proceed to broader ACV UAT across employee master, compensation, attendance, leave, HR Connect, analytics, and Manu.
+
+## Functional Solidity UAT Gate - 2026-06-08
+
+Branch: `codex/acv-functional-solidity-sprint`
+
+Backend functional solidity is currently green for the synthetic API baseline:
+
+- build passed
+- full backend QA passed: 11 suites, 84 tests
+- attendance clock-in/duplicate/clock-out added
+- leave apply/approve added
+- leave insufficient-balance rejection added
+- gender-restricted leave mismatch rejection added
+
+UAT interpretation:
+
+- API foundation is strong enough to proceed to browser critical-path testing.
+- Do not treat this as full ACV sign-off.
+- Historical document restoration is parked.
+- Browser UX, responsive behavior, dashboard/report correctness, collaboration surfaces, and expanded audit coverage remain tracked UAT risks unless covered by accepted browser E2E evidence.

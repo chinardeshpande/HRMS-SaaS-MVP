@@ -71,8 +71,10 @@ const serializeUser = (user: User) => ({
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+    const normalizedPassword = typeof password === 'string' ? password : '';
 
-    if (!email || !password) {
+    if (!normalizedEmail || !normalizedPassword) {
       return res.status(400).json({
         success: false,
         error: {
@@ -82,11 +84,21 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'A valid email address is required',
+        },
+      });
+    }
+
     // Find user by email. Login is email-only, so duplicate emails across tenants
     // would make identity resolution ambiguous.
     const userRepository = AppDataSource.getRepository(User);
     const matchingUsers = await userRepository.find({
-      where: { email: email.toLowerCase() },
+      where: { email: normalizedEmail },
       relations: ['tenant', 'employee', 'employee.department', 'employee.designation'],
     });
     const user = matchingUsers[0];
@@ -102,11 +114,11 @@ export const login = async (req: Request, res: Response) => {
     }
 
     if (matchingUsers.length > 1) {
-      return res.status(409).json({
+      return res.status(401).json({
         success: false,
         error: {
-          code: 'AMBIGUOUS_ACCOUNT',
-          message: 'Multiple accounts use this email. Please contact support.',
+          code: 'INVALID_CREDENTIALS',
+          message: 'Invalid email or password',
         },
       });
     }
@@ -116,14 +128,14 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({
         success: false,
         error: {
-          code: 'ACCOUNT_INACTIVE',
-          message: 'Your account has been deactivated',
+          code: 'INVALID_CREDENTIALS',
+          message: 'Invalid email or password',
         },
       });
     }
 
     // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    const isPasswordValid = await bcrypt.compare(normalizedPassword, user.passwordHash);
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,

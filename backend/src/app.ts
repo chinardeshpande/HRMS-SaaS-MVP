@@ -43,6 +43,7 @@ import documentCategoryRoutes from './routes/documentCategoryRoutes';
 import companyDocumentRoutes from './routes/companyDocumentRoutes';
 import employeeDocumentRoutes from './routes/employeeDocumentRoutes';
 import demoRoutes from './routes/demoRoutes';
+import { uploadRoots } from './utils/uploadPaths';
 // import pmsRoutes from './routes/pmsRoutes';
 // import transferRoutes from './routes/transferRoutes';
 // import confirmationRoutes from './routes/confirmationRoutes';
@@ -146,8 +147,8 @@ app.use(
   })
 );
 
-// Rate limiting (disabled in development for easier testing)
-if (config.nodeEnv !== 'development') {
+// Rate limiting (disabled in development/test for easier local and CI testing)
+if (config.nodeEnv !== 'development' && config.nodeEnv !== 'test') {
   const limiter = rateLimit({
     windowMs: config.rateLimitWindowMs,
     max: config.rateLimitMaxRequests,
@@ -156,7 +157,7 @@ if (config.nodeEnv !== 'development') {
   app.use('/api/', limiter);
   console.log(`⚠️  Rate limiting enabled: ${config.rateLimitMaxRequests} requests per ${config.rateLimitWindowMs / 1000}s`);
 } else {
-  console.log('✅ Rate limiting DISABLED in development mode');
+  console.log(`✅ Rate limiting DISABLED in ${config.nodeEnv} mode`);
 }
 
 // Body parsing middleware
@@ -174,7 +175,9 @@ app.use('/uploads', (_req, res, next) => {
   res.header('Cross-Origin-Resource-Policy', 'cross-origin');
   next();
 });
-app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
+uploadRoots.forEach((root) => {
+  app.use('/uploads', express.static(root));
+});
 
 // Request logging
 app.use(requestLogger);

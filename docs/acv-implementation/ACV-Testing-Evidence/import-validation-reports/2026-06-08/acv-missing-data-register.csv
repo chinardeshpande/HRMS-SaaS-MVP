@@ -1,0 +1,372 @@
+area,severity,employeeCode,employeeName,item,evidence,recommendedAction
+Employee master,Cleanup,ACV/EMP/0001,,dateOfBirth,Employee ACV/EMP/0001 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0001,,phone,Employee ACV/EMP/0001 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0001,,address,Employee ACV/EMP/0001 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0001,,reportingManager,Employee ACV/EMP/0001 has missing/risky reportingManager,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0001,,workLocation,Employee ACV/EMP/0001 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0002,,address,Employee ACV/EMP/0002 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0002,,workLocation,Employee ACV/EMP/0002 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0003,,dateOfBirth,Employee ACV/EMP/0003 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0003,,gender,Employee ACV/EMP/0003 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0003,,phone,Employee ACV/EMP/0003 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0003,,address,Employee ACV/EMP/0003 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0003,,workLocation,Employee ACV/EMP/0003 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0004,,dateOfBirth,Employee ACV/EMP/0004 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0004,,gender,Employee ACV/EMP/0004 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0004,,phone,Employee ACV/EMP/0004 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0004,,address,Employee ACV/EMP/0004 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0004,,workLocation,Employee ACV/EMP/0004 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0005,,dateOfBirth,Employee ACV/EMP/0005 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0005,,gender,Employee ACV/EMP/0005 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0005,,phone,Employee ACV/EMP/0005 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0005,,address,Employee ACV/EMP/0005 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0005,,workLocation,Employee ACV/EMP/0005 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0006,,dateOfBirth,Employee ACV/EMP/0006 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0006,,gender,Employee ACV/EMP/0006 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0006,,phone,Employee ACV/EMP/0006 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0006,,address,Employee ACV/EMP/0006 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0006,,workLocation,Employee ACV/EMP/0006 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0007,,dateOfBirth,Employee ACV/EMP/0007 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0007,,gender,Employee ACV/EMP/0007 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0007,,phone,Employee ACV/EMP/0007 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0007,,address,Employee ACV/EMP/0007 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0007,,workLocation,Employee ACV/EMP/0007 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0008,,address,Employee ACV/EMP/0008 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0008,,workLocation,Employee ACV/EMP/0008 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0009,,dateOfBirth,Employee ACV/EMP/0009 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0009,,gender,Employee ACV/EMP/0009 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0009,,phone,Employee ACV/EMP/0009 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0009,,address,Employee ACV/EMP/0009 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0009,,workLocation,Employee ACV/EMP/0009 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0010,,dateOfBirth,Employee ACV/EMP/0010 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0010,,gender,Employee ACV/EMP/0010 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0010,,phone,Employee ACV/EMP/0010 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0010,,address,Employee ACV/EMP/0010 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0010,,workLocation,Employee ACV/EMP/0010 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0011,,dateOfBirth,Employee ACV/EMP/0011 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0011,,gender,Employee ACV/EMP/0011 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0011,,phone,Employee ACV/EMP/0011 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0011,,address,Employee ACV/EMP/0011 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0011,,workLocation,Employee ACV/EMP/0011 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0012,,address,Employee ACV/EMP/0012 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0012,,workLocation,Employee ACV/EMP/0012 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0013,,address,Employee ACV/EMP/0013 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0013,,workLocation,Employee ACV/EMP/0013 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0014,,address,Employee ACV/EMP/0014 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0014,,workLocation,Employee ACV/EMP/0014 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0015,,dateOfBirth,Employee ACV/EMP/0015 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0015,,gender,Employee ACV/EMP/0015 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0015,,phone,Employee ACV/EMP/0015 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0015,,address,Employee ACV/EMP/0015 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0015,,workLocation,Employee ACV/EMP/0015 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0016,,dateOfBirth,Employee ACV/EMP/0016 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0016,,gender,Employee ACV/EMP/0016 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0016,,phone,Employee ACV/EMP/0016 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0016,,address,Employee ACV/EMP/0016 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0016,,workLocation,Employee ACV/EMP/0016 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0017,,dateOfBirth,Employee ACV/EMP/0017 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0017,,gender,Employee ACV/EMP/0017 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0017,,phone,Employee ACV/EMP/0017 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0017,,address,Employee ACV/EMP/0017 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0017,,workLocation,Employee ACV/EMP/0017 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0018,,dateOfBirth,Employee ACV/EMP/0018 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0018,,gender,Employee ACV/EMP/0018 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0018,,phone,Employee ACV/EMP/0018 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0018,,address,Employee ACV/EMP/0018 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0018,,workLocation,Employee ACV/EMP/0018 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0019,,dateOfBirth,Employee ACV/EMP/0019 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0019,,gender,Employee ACV/EMP/0019 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0019,,phone,Employee ACV/EMP/0019 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0019,,address,Employee ACV/EMP/0019 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0019,,workLocation,Employee ACV/EMP/0019 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0020,,dateOfBirth,Employee ACV/EMP/0020 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0020,,gender,Employee ACV/EMP/0020 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0020,,phone,Employee ACV/EMP/0020 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0020,,address,Employee ACV/EMP/0020 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0020,,workLocation,Employee ACV/EMP/0020 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0021,,dateOfBirth,Employee ACV/EMP/0021 has missing/risky dateOfBirth,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0021,,gender,Employee ACV/EMP/0021 has missing/risky gender,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0021,,phone,Employee ACV/EMP/0021 has missing/risky phone,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0021,,address,Employee ACV/EMP/0021 has missing/risky address,Update employee master through Employee Register or import correction.
+Employee master,Cleanup,ACV/EMP/0021,,workLocation,Employee ACV/EMP/0021 has missing/risky workLocation,Update employee master through Employee Register or import correction.
+Employee master,Important,,,personalEmailModelGap,Employee model has one email field; no distinct personal email field exists.,Decide whether AuroraHR needs separate workEmail/personalEmail fields before validating personal email coverage.
+Manager mapping,Important,ACV/EMP/0001,,missingReportingManager,Active employee has no reporting manager.,Assign reporting manager in Employee Register.
+Lifecycle history,Important,ACV/EMP/0004,,missingExitCase,Inactive/exited employee has no exit case.,Create exit case or manually record exit event.
+Lifecycle history,Important,ACV/EMP/0010,,missingExitCase,Inactive/exited employee has no exit case.,Create exit case or manually record exit event.
+Lifecycle history,Important,ACV/EMP/0011,,missingExitCase,Inactive/exited employee has no exit case.,Create exit case or manually record exit event.
+Employee documents,Important,ACV/EMP/0001,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0001,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0001,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0001,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0001,,missingOfferappointmentletter,Offer/appointment letter not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0001,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0002,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0002,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0002,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0002,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0002,,documentFileMissingOnDisk,Employee document record ending 23ab7a is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0002,,documentFileMissingOnDisk,Employee document record ending ac0089 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0002,,documentFileMissingOnDisk,Employee document record ending 5db7d7 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0002,,documentFileMissingOnDisk,Employee document record ending eea3cc is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0002,,documentFileMissingOnDisk,Employee document record ending 36fdd4 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0002,,documentFileMissingOnDisk,Employee document record ending 6288ca is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0002,,documentFileMissingOnDisk,Employee document record ending 4d3443 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0003,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0003,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0003,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0003,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0003,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0003,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0003,,documentFileMissingOnDisk,Employee document record ending 8cf85f is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0004,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0004,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0004,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0004,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0004,,missingOfferappointmentletter,Offer/appointment letter not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0004,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0004,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0005,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0005,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0005,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0005,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0005,,missingOfferappointmentletter,Offer/appointment letter not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0005,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0005,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0006,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0006,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0006,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0006,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0006,,missingOfferappointmentletter,Offer/appointment letter not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0006,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0006,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0007,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0007,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0007,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0007,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0007,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0007,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0007,,documentFileMissingOnDisk,Employee document record ending be75f7 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0008,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0008,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0008,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0008,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0008,,documentFileMissingOnDisk,Employee document record ending c00045 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0008,,documentFileMissingOnDisk,Employee document record ending 630b0d is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0008,,documentFileMissingOnDisk,Employee document record ending 805acd is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0008,,documentFileMissingOnDisk,Employee document record ending d677de is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0009,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0009,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0009,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0009,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0009,,missingOfferappointmentletter,Offer/appointment letter not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0009,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0009,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0010,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0010,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0010,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0010,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0010,,missingOfferappointmentletter,Offer/appointment letter not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0010,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0010,,documentFileMissingOnDisk,Employee document record ending fbc7e4 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0011,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0011,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0011,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0011,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0011,,missingOfferappointmentletter,Offer/appointment letter not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0011,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0011,,documentFileMissingOnDisk,Employee document record ending af11cc is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0012,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0012,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0012,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0012,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0012,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0012,,documentFileMissingOnDisk,Employee document record ending 2ab314 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0012,,documentFileMissingOnDisk,Employee document record ending 452a70 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0013,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0013,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0013,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0013,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0013,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0013,,documentFileMissingOnDisk,Employee document record ending e91c9a is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0013,,documentFileMissingOnDisk,Employee document record ending 3b6806 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0013,,documentFileMissingOnDisk,Employee document record ending fba0f9 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0014,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0014,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0014,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0014,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0014,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0014,,documentFileMissingOnDisk,Employee document record ending 680b28 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0014,,documentFileMissingOnDisk,Employee document record ending ca6416 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0014,,documentFileMissingOnDisk,Employee document record ending 1a5787 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0015,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0015,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0015,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0015,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0015,,documentFileMissingOnDisk,Employee document record ending 0ca783 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Blocker,ACV/EMP/0015,,documentFileMissingOnDisk,Employee document record ending 909574 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0016,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0016,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0016,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0016,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0016,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0016,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0016,,documentFileMissingOnDisk,Employee document record ending 865a5c is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0017,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0017,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0017,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0017,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0017,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0017,,documentFileMissingOnDisk,Employee document record ending 1f175c is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0018,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0018,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0018,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0018,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0018,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0018,,documentFileMissingOnDisk,Employee document record ending a46632 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0019,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0019,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0019,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0019,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0019,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0019,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0019,,documentFileMissingOnDisk,Employee document record ending 52f036 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0020,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0020,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0020,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0020,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0020,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0020,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0020,,documentFileMissingOnDisk,Employee document record ending c97493 is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Employee documents,Important,ACV/EMP/0021,,missingPAN,PAN not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0021,,missingAadhaar,Aadhaar not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0021,,missingAddressproof,Address proof not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0021,,missingEducationdocuments,Education documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Cleanup,ACV/EMP/0021,,missingSalaryrevisionletters,Salary/revision letters not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Important,ACV/EMP/0021,,missingExitdocuments,Exit documents not found in employee document categories/titles.,Upload or classify available document in employee document vault.
+Employee documents,Blocker,ACV/EMP/0021,,documentFileMissingOnDisk,Employee document record ending 869aad is not reachable in configured storage.,Repair file path/storage or re-upload document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 44f824 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending b02eb3 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending cc99bc is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 15e90e is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 82890a is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 6c827f is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 18a412 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 260c08 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending a0478f is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending eea3ac is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 468034 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 84acf9 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending d1e79b is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 3ae646 is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending 7b61be is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Blocker,,,companyDocumentFileMissingOnDisk,Company document record ending b827bd is not reachable in configured storage.,Repair file path/storage or re-upload company document.
+Company documents,Important,,,missing TAN,TAN not detected in company document vault.,Upload or correctly classify company document.
+Company documents,Optional,,,missing EPF/ESIC,EPF/ESIC not detected in company document vault.,Upload or correctly classify company document.
+Company documents,Important,,,missing POSH,POSH not detected in company document vault.,Upload or correctly classify company document.
+Company documents,Cleanup,,,missing HR templates,HR templates not detected in company document vault.,Upload or correctly classify company document.
+Compensation,Important,ACV/EMP/0001,,missingActiveSalaryStructure,Active employee has no active salary structure.,Create or import current salary structure.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2026-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2024-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2025-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2024-08 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2025-08 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2024-12 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2025-12 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2025-01 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2026-01 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2024-07 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2025-07 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2024-06 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2025-06 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2024-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2025-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2026-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2024-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2025-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2026-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2025-11 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2024-09 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0002,,payslipAttachmentMissing,Payslip 2025-09 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0003,,payslipAttachmentMissing,Payslip 2024-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0003,,payslipAttachmentMissing,Payslip 2024-08 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0003,,payslipAttachmentMissing,Payslip 2024-07 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0003,,payslipAttachmentMissing,Payslip 2024-06 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0003,,payslipAttachmentMissing,Payslip 2024-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0003,,payslipAttachmentMissing,Payslip 2024-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0003,,payslipAttachmentMissing,Payslip 2024-09 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0004,,payslipAttachmentMissing,Payslip 2024-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0004,,payslipAttachmentMissing,Payslip 2024-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0004,,payslipAttachmentMissing,Payslip 2024-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0005,,payslipAttachmentMissing,Payslip 2024-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0005,,payslipAttachmentMissing,Payslip 2024-08 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0005,,payslipAttachmentMissing,Payslip 2024-12 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0005,,payslipAttachmentMissing,Payslip 2024-07 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0005,,payslipAttachmentMissing,Payslip 2024-06 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0005,,payslipAttachmentMissing,Payslip 2024-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0005,,payslipAttachmentMissing,Payslip 2024-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0005,,payslipAttachmentMissing,Payslip 2024-09 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0006,,payslipAttachmentMissing,Payslip 2024-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0007,,payslipAttachmentMissing,Payslip 2024-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0007,,payslipAttachmentMissing,Payslip 2025-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0007,,payslipAttachmentMissing,Payslip 2024-08 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0007,,payslipAttachmentMissing,Payslip 2024-07 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0007,,payslipAttachmentMissing,Payslip 2024-06 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0007,,payslipAttachmentMissing,Payslip 2025-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0007,,payslipAttachmentMissing,Payslip 2024-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0007,,payslipAttachmentMissing,Payslip 2024-09 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2026-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2025-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2024-08 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2025-08 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2024-12 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2025-12 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2025-01 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2026-01 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2025-07 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2025-06 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2025-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2026-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2025-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2026-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2025-11 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2024-09 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0008,,payslipAttachmentMissing,Payslip 2025-09 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0009,,payslipAttachmentMissing,Payslip 2025-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0009,,payslipAttachmentMissing,Payslip 2025-08 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0009,,payslipAttachmentMissing,Payslip 2024-12 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0009,,payslipAttachmentMissing,Payslip 2025-01 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0009,,payslipAttachmentMissing,Payslip 2025-07 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0009,,payslipAttachmentMissing,Payslip 2025-06 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0009,,payslipAttachmentMissing,Payslip 2025-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0009,,payslipAttachmentMissing,Payslip 2025-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0010,,payslipAttachmentMissing,Payslip 2025-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0010,,payslipAttachmentMissing,Payslip 2025-08 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0010,,payslipAttachmentMissing,Payslip 2025-07 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0010,,payslipAttachmentMissing,Payslip 2025-06 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0010,,payslipAttachmentMissing,Payslip 2025-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0010,,payslipAttachmentMissing,Payslip 2025-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0011,,payslipAttachmentMissing,Payslip 2025-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0011,,payslipAttachmentMissing,Payslip 2026-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0011,,payslipAttachmentMissing,Payslip 2025-08 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0011,,payslipAttachmentMissing,Payslip 2025-12 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0011,,payslipAttachmentMissing,Payslip 2026-01 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0011,,payslipAttachmentMissing,Payslip 2025-07 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0011,,payslipAttachmentMissing,Payslip 2025-06 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0011,,payslipAttachmentMissing,Payslip 2026-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0011,,payslipAttachmentMissing,Payslip 2025-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0011,,payslipAttachmentMissing,Payslip 2025-11 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0011,,payslipAttachmentMissing,Payslip 2025-09 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0012,,payslipAttachmentMissing,Payslip 2026-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0012,,payslipAttachmentMissing,Payslip 2025-12 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0012,,payslipAttachmentMissing,Payslip 2026-01 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0012,,payslipAttachmentMissing,Payslip 2026-03 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0012,,payslipAttachmentMissing,Payslip 2026-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0013,,payslipAttachmentMissing,Payslip 2026-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0013,,payslipAttachmentMissing,Payslip 2026-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0014,,payslipAttachmentMissing,Payslip 2026-04 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Compensation,Important,ACV/EMP/0014,,payslipAttachmentMissing,Payslip 2026-05 has no attachment.,Attach payslip PDF/image or mark record as payroll-output-only.
+Tenant setup,Cleanup,,,Registered address,Registered address is missing,Complete organization settings after HR/legal verification.
+Tenant setup,Cleanup,,,HR/company email,HR/company email is missing,Complete organization settings after HR/legal verification.
+Tenant setup,Cleanup,,,PAN/TAN/GST/CIN references,registrationNumber=; taxId=,Complete organization settings after HR/legal verification.
+Audit logs,Cleanup,,,missingAuditCoverage:probation_case,No audit rows found for probation_case.,Confirm whether the workflow has been used after audit coverage was added; otherwise add audit hooks.
+Audit logs,Cleanup,,,missingAuditCoverage:exit_case,No audit rows found for exit_case.,Confirm whether the workflow has been used after audit coverage was added; otherwise add audit hooks.

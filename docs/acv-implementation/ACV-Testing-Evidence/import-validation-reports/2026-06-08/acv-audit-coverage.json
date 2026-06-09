@@ -1,0 +1,51 @@
+{
+  "totalAuditRows": 2011,
+  "byEntityType": {
+    "candidate": 9,
+    "company_document": 31,
+    "employee_document": 8,
+    "assistant": 208,
+    "Attendance": 1744,
+    "LeaveBalance": 10,
+    "assistant_artifact": 1
+  },
+  "byAction": {
+    "STATE_TRANSITION": 9,
+    "company_document.download": 14,
+    "employee_document.download": 8,
+    "company_document.verify": 7,
+    "assistant.query": 186,
+    "company_document.upload": 1,
+    "company_document.import_create": 8,
+    "company_document.import_update_metadata": 1,
+    "ACV_ATTENDANCE_CREATED": 1744,
+    "ACV_LEAVE_BALANCE_CREATED": 10,
+    "assistant.proposal.confirmation_preview": 11,
+    "assistant.proposal.execution_requested": 11,
+    "assistant.proposal.execution_completed": 1
+  },
+  "expectedAreaCoverage": [
+    {
+      "key": "employee_document",
+      "evidence": 8
+    },
+    {
+      "key": "company_document",
+      "evidence": 31
+    },
+    {
+      "key": "candidate",
+      "evidence": 9
+    },
+    {
+      "key": "probation_case",
+      "evidence": 0
+    },
+    {
+      "key": "exit_case",
+      "evidence": 0
+    }
+  ],
+  "verdict": "Partial audit coverage",
+  "redaction": "Only aggregate action/entity counts are exported. User ids, old values, new values, IP addresses, and user agents are not exported."
+}

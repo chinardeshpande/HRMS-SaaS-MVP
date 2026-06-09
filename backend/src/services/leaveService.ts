@@ -124,9 +124,11 @@ export class LeaveService {
       throw new Error('Leave balance not found for this leave type');
     }
 
-    if (balance.available < numberOfDays) {
+    const effectiveBalance = this.toEffectiveLeaveBalance(balance, employee);
+
+    if (effectiveBalance.available < numberOfDays) {
       throw new Error(
-        `Insufficient leave balance. Available: ${balance.available}, Requested: ${numberOfDays}`
+        `Insufficient leave balance. Available: ${effectiveBalance.available}, Requested: ${numberOfDays}`
       );
     }
 

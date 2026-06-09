@@ -1,0 +1,2944 @@
+[
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0001",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0001 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0001",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0001 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0001",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0001 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0001",
+    "item": "reportingManager",
+    "evidence": "Employee ACV/EMP/0001 has missing/risky reportingManager",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0001",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0001 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0002 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0002 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0003 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0003 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0003 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0003 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0003 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0004 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0004 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0004 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0004 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0004 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0005 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0005 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0005 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0005 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0005 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0006",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0006 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0006",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0006 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0006",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0006 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0006",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0006 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0006",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0006 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0007 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0007 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0007 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0007 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0007 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0008 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0008 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0009 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0009 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0009 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0009 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0009 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0010 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0010 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0010 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0010 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0010 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0011 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0011 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0011 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0011 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0011 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0012 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0012 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0013",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0013 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0013",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0013 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0014",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0014 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0014",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0014 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0015",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0015 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0015",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0015 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0015",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0015 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0015",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0015 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0015",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0015 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0016",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0016 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0016",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0016 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0016",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0016 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0016",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0016 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0016",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0016 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0017",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0017 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0017",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0017 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0017",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0017 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0017",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0017 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0017",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0017 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0018",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0018 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0018",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0018 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0018",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0018 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0018",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0018 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0018",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0018 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0019",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0019 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0019",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0019 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0019",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0019 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0019",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0019 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0019",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0019 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0020",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0020 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0020",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0020 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0020",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0020 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0020",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0020 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0020",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0020 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0021",
+    "item": "dateOfBirth",
+    "evidence": "Employee ACV/EMP/0021 has missing/risky dateOfBirth",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0021",
+    "item": "gender",
+    "evidence": "Employee ACV/EMP/0021 has missing/risky gender",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0021",
+    "item": "phone",
+    "evidence": "Employee ACV/EMP/0021 has missing/risky phone",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0021",
+    "item": "address",
+    "evidence": "Employee ACV/EMP/0021 has missing/risky address",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0021",
+    "item": "workLocation",
+    "evidence": "Employee ACV/EMP/0021 has missing/risky workLocation",
+    "recommendedAction": "Update employee master through Employee Register or import correction."
+  },
+  {
+    "area": "Employee master",
+    "severity": "Important",
+    "item": "personalEmailModelGap",
+    "evidence": "Employee model has one email field; no distinct personal email field exists.",
+    "recommendedAction": "Decide whether AuroraHR needs separate workEmail/personalEmail fields before validating personal email coverage."
+  },
+  {
+    "area": "Manager mapping",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0001",
+    "item": "missingReportingManager",
+    "evidence": "Active employee has no reporting manager.",
+    "recommendedAction": "Assign reporting manager in Employee Register."
+  },
+  {
+    "area": "Lifecycle history",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "missingExitCase",
+    "evidence": "Inactive/exited employee has no exit case.",
+    "recommendedAction": "Create exit case or manually record exit event."
+  },
+  {
+    "area": "Lifecycle history",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "missingExitCase",
+    "evidence": "Inactive/exited employee has no exit case.",
+    "recommendedAction": "Create exit case or manually record exit event."
+  },
+  {
+    "area": "Lifecycle history",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "missingExitCase",
+    "evidence": "Inactive/exited employee has no exit case.",
+    "recommendedAction": "Create exit case or manually record exit event."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0001",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0001",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0001",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0001",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0001",
+    "item": "missingOfferappointmentletter",
+    "evidence": "Offer/appointment letter not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0001",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 23ab7a is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending ac0089 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 5db7d7 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending eea3cc is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 36fdd4 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 6288ca is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 4d3443 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "missingExitdocuments",
+    "evidence": "Exit documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 8cf85f is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "missingOfferappointmentletter",
+    "evidence": "Offer/appointment letter not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "missingExitdocuments",
+    "evidence": "Exit documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "missingOfferappointmentletter",
+    "evidence": "Offer/appointment letter not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "missingExitdocuments",
+    "evidence": "Exit documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0006",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0006",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0006",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0006",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0006",
+    "item": "missingOfferappointmentletter",
+    "evidence": "Offer/appointment letter not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0006",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0006",
+    "item": "missingExitdocuments",
+    "evidence": "Exit documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "missingExitdocuments",
+    "evidence": "Exit documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending be75f7 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending c00045 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 630b0d is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 805acd is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending d677de is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "missingOfferappointmentletter",
+    "evidence": "Offer/appointment letter not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "missingExitdocuments",
+    "evidence": "Exit documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "missingOfferappointmentletter",
+    "evidence": "Offer/appointment letter not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending fbc7e4 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "missingOfferappointmentletter",
+    "evidence": "Offer/appointment letter not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending af11cc is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 2ab314 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 452a70 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0013",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0013",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0013",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0013",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0013",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0013",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending e91c9a is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0013",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 3b6806 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0013",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending fba0f9 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0014",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0014",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0014",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0014",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0014",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0014",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 680b28 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0014",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending ca6416 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0014",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 1a5787 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0015",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0015",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0015",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0015",
+    "item": "missingExitdocuments",
+    "evidence": "Exit documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0015",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 0ca783 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0015",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 909574 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0016",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0016",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0016",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0016",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0016",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0016",
+    "item": "missingExitdocuments",
+    "evidence": "Exit documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0016",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 865a5c is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0017",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0017",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0017",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0017",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0017",
+    "item": "missingExitdocuments",
+    "evidence": "Exit documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0017",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 1f175c is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0018",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0018",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0018",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0018",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0018",
+    "item": "missingExitdocuments",
+    "evidence": "Exit documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0018",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending a46632 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0019",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0019",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0019",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0019",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0019",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0019",
+    "item": "missingExitdocuments",
+    "evidence": "Exit documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0019",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 52f036 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0020",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0020",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0020",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0020",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0020",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0020",
+    "item": "missingExitdocuments",
+    "evidence": "Exit documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0020",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending c97493 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0021",
+    "item": "missingPAN",
+    "evidence": "PAN not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0021",
+    "item": "missingAadhaar",
+    "evidence": "Aadhaar not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0021",
+    "item": "missingAddressproof",
+    "evidence": "Address proof not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0021",
+    "item": "missingEducationdocuments",
+    "evidence": "Education documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Cleanup",
+    "employeeCode": "ACV/EMP/0021",
+    "item": "missingSalaryrevisionletters",
+    "evidence": "Salary/revision letters not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0021",
+    "item": "missingExitdocuments",
+    "evidence": "Exit documents not found in employee document categories/titles.",
+    "recommendedAction": "Upload or classify available document in employee document vault."
+  },
+  {
+    "area": "Employee documents",
+    "severity": "Blocker",
+    "employeeCode": "ACV/EMP/0021",
+    "item": "documentFileMissingOnDisk",
+    "evidence": "Employee document record ending 869aad is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending 44f824 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending b02eb3 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending cc99bc is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending 15e90e is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending 82890a is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending 6c827f is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending 18a412 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending 260c08 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending a0478f is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending eea3ac is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending 468034 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending 84acf9 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending d1e79b is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending 3ae646 is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending 7b61be is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Blocker",
+    "item": "companyDocumentFileMissingOnDisk",
+    "evidence": "Company document record ending b827bd is not reachable in configured storage.",
+    "recommendedAction": "Repair file path/storage or re-upload company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Important",
+    "item": "missing TAN",
+    "evidence": "TAN not detected in company document vault.",
+    "recommendedAction": "Upload or correctly classify company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Optional",
+    "item": "missing EPF/ESIC",
+    "evidence": "EPF/ESIC not detected in company document vault.",
+    "recommendedAction": "Upload or correctly classify company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Important",
+    "item": "missing POSH",
+    "evidence": "POSH not detected in company document vault.",
+    "recommendedAction": "Upload or correctly classify company document."
+  },
+  {
+    "area": "Company documents",
+    "severity": "Cleanup",
+    "item": "missing HR templates",
+    "evidence": "HR templates not detected in company document vault.",
+    "recommendedAction": "Upload or correctly classify company document."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0001",
+    "item": "missingActiveSalaryStructure",
+    "evidence": "Active employee has no active salary structure.",
+    "recommendedAction": "Create or import current salary structure."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-08 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-08 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-12 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-12 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-01 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-01 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-07 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-07 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-06 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-06 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-11 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-09 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0002",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-09 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-08 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-07 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-06 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0003",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-09 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0004",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-08 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-12 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-07 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-06 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0005",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-09 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0006",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-08 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-07 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-06 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0007",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-09 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-08 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-08 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-12 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-12 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-01 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-01 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-07 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-06 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-11 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-09 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0008",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-09 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-08 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2024-12 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-01 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-07 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-06 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0009",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-08 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-07 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-06 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0010",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-08 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-12 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-01 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-07 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-06 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-11 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0011",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-09 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2025-12 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-01 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-03 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0012",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0013",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0013",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0014",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-04 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Compensation",
+    "severity": "Important",
+    "employeeCode": "ACV/EMP/0014",
+    "item": "payslipAttachmentMissing",
+    "evidence": "Payslip 2026-05 has no attachment.",
+    "recommendedAction": "Attach payslip PDF/image or mark record as payroll-output-only."
+  },
+  {
+    "area": "Tenant setup",
+    "severity": "Cleanup",
+    "item": "Registered address",
+    "evidence": "Registered address is missing",
+    "recommendedAction": "Complete organization settings after HR/legal verification."
+  },
+  {
+    "area": "Tenant setup",
+    "severity": "Cleanup",
+    "item": "HR/company email",
+    "evidence": "HR/company email is missing",
+    "recommendedAction": "Complete organization settings after HR/legal verification."
+  },
+  {
+    "area": "Tenant setup",
+    "severity": "Cleanup",
+    "item": "PAN/TAN/GST/CIN references",
+    "evidence": "registrationNumber=; taxId=",
+    "recommendedAction": "Complete organization settings after HR/legal verification."
+  },
+  {
+    "area": "Audit logs",
+    "severity": "Cleanup",
+    "item": "missingAuditCoverage:probation_case",
+    "evidence": "No audit rows found for probation_case.",
+    "recommendedAction": "Confirm whether the workflow has been used after audit coverage was added; otherwise add audit hooks."
+  },
+  {
+    "area": "Audit logs",
+    "severity": "Cleanup",
+    "item": "missingAuditCoverage:exit_case",
+    "evidence": "No audit rows found for exit_case.",
+    "recommendedAction": "Confirm whether the workflow has been used after audit coverage was added; otherwise add audit hooks."
+  }
+]
