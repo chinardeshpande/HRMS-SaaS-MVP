@@ -5,7 +5,7 @@ export class AddRemainingOperationalTables1745747500000 implements MigrationInte
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-      CREATE TABLE "compensation_history" (
+      CREATE TABLE IF NOT EXISTS "compensation_history" (
         "historyId" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         "tenantId" uuid NOT NULL,
         "employeeId" uuid NOT NULL,
@@ -31,7 +31,7 @@ export class AddRemainingOperationalTables1745747500000 implements MigrationInte
     `);
 
     await queryRunner.query(`
-      CREATE TABLE "position_history" (
+      CREATE TABLE IF NOT EXISTS "position_history" (
         "historyId" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         "tenantId" uuid NOT NULL,
         "employeeId" uuid NOT NULL,
@@ -59,7 +59,7 @@ export class AddRemainingOperationalTables1745747500000 implements MigrationInte
     `);
 
     await queryRunner.query(`
-      CREATE TABLE "training_records" (
+      CREATE TABLE IF NOT EXISTS "training_records" (
         "trainingRecordId" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         "tenantId" uuid NOT NULL,
         "employeeId" uuid,
@@ -98,7 +98,7 @@ export class AddRemainingOperationalTables1745747500000 implements MigrationInte
     `);
 
     await queryRunner.query(`
-      CREATE TABLE "asset_records" (
+      CREATE TABLE IF NOT EXISTS "asset_records" (
         "assetRecordId" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         "tenantId" uuid NOT NULL,
         "employeeId" uuid,
@@ -143,7 +143,7 @@ export class AddRemainingOperationalTables1745747500000 implements MigrationInte
     `);
 
     await queryRunner.query(`
-      CREATE TABLE "payroll_setups" (
+      CREATE TABLE IF NOT EXISTS "payroll_setups" (
         "payrollSetupId" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         "tenantId" uuid NOT NULL,
         "employeeId" uuid,
@@ -206,7 +206,7 @@ export class AddRemainingOperationalTables1745747500000 implements MigrationInte
     `);
 
     await queryRunner.query(`
-      CREATE TABLE "company_registrations" (
+      CREATE TABLE IF NOT EXISTS "company_registrations" (
         "registrationId" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         "companyName" varchar(255) NOT NULL,
         "adminEmail" varchar(255) NOT NULL UNIQUE,
@@ -230,7 +230,7 @@ export class AddRemainingOperationalTables1745747500000 implements MigrationInte
     `);
 
     await queryRunner.query(`
-      CREATE TABLE "onboarding_progress" (
+      CREATE TABLE IF NOT EXISTS "onboarding_progress" (
         "progressId" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         "tenantId" uuid NOT NULL,
         "currentStep" integer NOT NULL DEFAULT 1,
@@ -246,7 +246,7 @@ export class AddRemainingOperationalTables1745747500000 implements MigrationInte
     `);
 
     await queryRunner.query(`
-      CREATE TABLE "user_invitations" (
+      CREATE TABLE IF NOT EXISTS "user_invitations" (
         "invitationId" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         "tenantId" uuid NOT NULL,
         "email" varchar(255) NOT NULL,
@@ -265,21 +265,21 @@ export class AddRemainingOperationalTables1745747500000 implements MigrationInte
       )
     `);
 
-    await queryRunner.query(`CREATE INDEX "idx_compensation_history_tenant_employee_effective" ON "compensation_history" ("tenantId", "employeeId", "effectiveDate")`);
-    await queryRunner.query(`CREATE INDEX "idx_position_history_tenant_employee_effective" ON "position_history" ("tenantId", "employeeId", "effectiveDate")`);
-    await queryRunner.query(`CREATE INDEX "idx_training_records_tenant_employee" ON "training_records" ("tenantId", "employeeId")`);
-    await queryRunner.query(`CREATE INDEX "idx_training_records_tenant_candidate" ON "training_records" ("tenantId", "candidateId")`);
-    await queryRunner.query(`CREATE INDEX "idx_training_records_type_status" ON "training_records" ("tenantId", "trainingType", "status")`);
-    await queryRunner.query(`CREATE INDEX "idx_training_records_completion" ON "training_records" ("tenantId", "completionDate")`);
-    await queryRunner.query(`CREATE INDEX "idx_asset_records_tenant_employee" ON "asset_records" ("tenantId", "employeeId")`);
-    await queryRunner.query(`CREATE INDEX "idx_asset_records_tenant_candidate" ON "asset_records" ("tenantId", "candidateId")`);
-    await queryRunner.query(`CREATE INDEX "idx_asset_records_type_status" ON "asset_records" ("tenantId", "assetType", "status")`);
-    await queryRunner.query(`CREATE UNIQUE INDEX "idx_asset_records_serial" ON "asset_records" ("tenantId", "serialNumber")`);
-    await queryRunner.query(`CREATE INDEX "idx_asset_records_assigned" ON "asset_records" ("tenantId", "assignedDate")`);
-    await queryRunner.query(`CREATE UNIQUE INDEX "idx_payroll_setups_employee" ON "payroll_setups" ("tenantId", "employeeId") WHERE "employeeId" IS NOT NULL`);
-    await queryRunner.query(`CREATE INDEX "idx_payroll_setups_candidate" ON "payroll_setups" ("tenantId", "candidateId")`);
-    await queryRunner.query(`CREATE INDEX "idx_payroll_setups_status" ON "payroll_setups" ("tenantId", "verificationStatus")`);
-    await queryRunner.query(`CREATE UNIQUE INDEX "idx_payroll_setups_pan" ON "payroll_setups" ("tenantId", "panNumber")`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "idx_compensation_history_tenant_employee_effective" ON "compensation_history" ("tenantId", "employeeId", "effectiveDate")`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "idx_position_history_tenant_employee_effective" ON "position_history" ("tenantId", "employeeId", "effectiveDate")`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "idx_training_records_tenant_employee" ON "training_records" ("tenantId", "employeeId")`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "idx_training_records_tenant_candidate" ON "training_records" ("tenantId", "candidateId")`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "idx_training_records_type_status" ON "training_records" ("tenantId", "trainingType", "status")`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "idx_training_records_completion" ON "training_records" ("tenantId", "completionDate")`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "idx_asset_records_tenant_employee" ON "asset_records" ("tenantId", "employeeId")`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "idx_asset_records_tenant_candidate" ON "asset_records" ("tenantId", "candidateId")`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "idx_asset_records_type_status" ON "asset_records" ("tenantId", "assetType", "status")`);
+    await queryRunner.query(`CREATE UNIQUE INDEX IF NOT EXISTS "idx_asset_records_serial" ON "asset_records" ("tenantId", "serialNumber")`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "idx_asset_records_assigned" ON "asset_records" ("tenantId", "assignedDate")`);
+    await queryRunner.query(`CREATE UNIQUE INDEX IF NOT EXISTS "idx_payroll_setups_employee" ON "payroll_setups" ("tenantId", "employeeId") WHERE "employeeId" IS NOT NULL`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "idx_payroll_setups_candidate" ON "payroll_setups" ("tenantId", "candidateId")`);
+    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "idx_payroll_setups_status" ON "payroll_setups" ("tenantId", "verificationStatus")`);
+    await queryRunner.query(`CREATE UNIQUE INDEX IF NOT EXISTS "idx_payroll_setups_pan" ON "payroll_setups" ("tenantId", "panNumber")`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
