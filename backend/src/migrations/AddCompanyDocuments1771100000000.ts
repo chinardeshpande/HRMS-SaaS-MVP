@@ -35,42 +35,82 @@ export class AddCompanyDocuments1771100000000 implements MigrationInterface {
       true
     );
 
-    await queryRunner.createIndex('company_documents', new TableIndex({ columnNames: ['tenantId'] }));
-    await queryRunner.createIndex('company_documents', new TableIndex({ columnNames: ['tenantId', 'category'] }));
-    await queryRunner.createIndex('company_documents', new TableIndex({ columnNames: ['tenantId', 'status'] }));
-    await queryRunner.createIndex('company_documents', new TableIndex({ columnNames: ['tenantId', 'expiryDate'] }));
+    const table = await queryRunner.getTable('company_documents');
+    const hasIndex = (columnNames: string[]) =>
+      table?.indices.some(
+        (index) =>
+          index.columnNames.length === columnNames.length &&
+          columnNames.every((columnName) => index.columnNames.includes(columnName))
+      );
+    const hasForeignKey = (columnNames: string[], referencedTableName: string) =>
+      table?.foreignKeys.some(
+        (foreignKey) =>
+          foreignKey.referencedTableName === referencedTableName &&
+          foreignKey.columnNames.length === columnNames.length &&
+          columnNames.every((columnName) => foreignKey.columnNames.includes(columnName))
+      );
 
-    await queryRunner.createForeignKey(
-      'company_documents',
-      new TableForeignKey({
-        columnNames: ['tenantId'],
-        referencedTableName: 'tenants',
-        referencedColumnNames: ['tenantId'],
-        onDelete: 'CASCADE',
-      })
-    );
+    if (!hasIndex(['tenantId'])) {
+      await queryRunner.createIndex(
+        'company_documents',
+        new TableIndex({ name: 'IDX_company_documents_tenant', columnNames: ['tenantId'] })
+      );
+    }
+    if (!hasIndex(['tenantId', 'category'])) {
+      await queryRunner.createIndex(
+        'company_documents',
+        new TableIndex({ name: 'IDX_company_documents_tenant_category', columnNames: ['tenantId', 'category'] })
+      );
+    }
+    if (!hasIndex(['tenantId', 'status'])) {
+      await queryRunner.createIndex(
+        'company_documents',
+        new TableIndex({ name: 'IDX_company_documents_tenant_status', columnNames: ['tenantId', 'status'] })
+      );
+    }
+    if (!hasIndex(['tenantId', 'expiryDate'])) {
+      await queryRunner.createIndex(
+        'company_documents',
+        new TableIndex({ name: 'IDX_company_documents_tenant_expiry', columnNames: ['tenantId', 'expiryDate'] })
+      );
+    }
 
-    await queryRunner.createForeignKey(
-      'company_documents',
-      new TableForeignKey({
-        columnNames: ['uploadedBy'],
-        referencedTableName: 'users',
-        referencedColumnNames: ['userId'],
-      })
-    );
+    if (!hasForeignKey(['tenantId'], 'tenants')) {
+      await queryRunner.createForeignKey(
+        'company_documents',
+        new TableForeignKey({
+          columnNames: ['tenantId'],
+          referencedTableName: 'tenants',
+          referencedColumnNames: ['tenantId'],
+          onDelete: 'CASCADE',
+        })
+      );
+    }
 
-    await queryRunner.createForeignKey(
-      'company_documents',
-      new TableForeignKey({
-        columnNames: ['verifiedBy'],
-        referencedTableName: 'users',
-        referencedColumnNames: ['userId'],
-      })
-    );
+    if (!hasForeignKey(['uploadedBy'], 'users')) {
+      await queryRunner.createForeignKey(
+        'company_documents',
+        new TableForeignKey({
+          columnNames: ['uploadedBy'],
+          referencedTableName: 'users',
+          referencedColumnNames: ['userId'],
+        })
+      );
+    }
+
+    if (!hasForeignKey(['verifiedBy'], 'users')) {
+      await queryRunner.createForeignKey(
+        'company_documents',
+        new TableForeignKey({
+          columnNames: ['verifiedBy'],
+          referencedTableName: 'users',
+          referencedColumnNames: ['userId'],
+        })
+      );
+    }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.dropTable('company_documents', true);
   }
 }
-
