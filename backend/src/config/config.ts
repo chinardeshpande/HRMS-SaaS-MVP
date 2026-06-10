@@ -61,6 +61,14 @@ interface Config {
   // Feature Flags
   enableSwagger: boolean;
   enableAuditLog: boolean;
+
+  // AI Assistant
+  openai: {
+    enabled: boolean;
+    apiKey: string;
+    model: string;
+    timeoutMs: number;
+  };
 }
 
 export const config: Config = {
@@ -120,6 +128,14 @@ export const config: Config = {
   // Feature Flags
   enableSwagger: process.env.ENABLE_SWAGGER !== 'false',
   enableAuditLog: process.env.ENABLE_AUDIT_LOG !== 'false',
+
+  // AI Assistant
+  openai: {
+    enabled: process.env.OPENAI_ASSISTANT_ENABLED === 'true',
+    apiKey: process.env.OPENAI_API_KEY || '',
+    model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
+    timeoutMs: parseInt(process.env.OPENAI_TIMEOUT_MS || '12000', 10),
+  },
 };
 
 // Validate critical configuration
