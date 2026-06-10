@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import ManuAssistant from '../assistant/ManuAssistant';
 import DemoJourneyPanel from '../demo/DemoJourneyPanel';
 import { filterNavItemsForRole, navigationItems, NavItemConfig } from '../../config/accessControl';
 import settingsService, { OrganizationSettings } from '../../services/settingsService';
@@ -128,10 +129,10 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
     item.children?.some((child) => isActive(child.href)) || isActive(item.href);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="aurora-ui-experiment min-h-screen bg-gray-50">
       {/* Sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
+        <div className="ui-experiment-sidebar flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
           {/* Logo */}
           <div className="flex items-center flex-shrink-0 px-6">
             <img
@@ -148,7 +149,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
               <button
                 onClick={handleDemoToggle}
                 disabled={demoSwitching}
-                className={`w-full rounded-lg border px-3 py-2 text-left text-xs font-semibold transition-colors ${
+                className={`ui-experiment-demo-toggle w-full rounded-lg border px-3 py-2 text-left text-xs font-semibold transition-colors ${
                   isDemoMode
                     ? 'border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100'
                     : 'border-primary-200 bg-primary-50 text-primary-700 hover:bg-primary-100'
@@ -178,10 +179,11 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                       }
                     }}
                     className={`
+                      ui-experiment-nav-item
                       group flex items-center w-full px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-150
                       ${
                         itemActive
-                          ? 'bg-primary-50 text-primary-700'
+                          ? 'ui-experiment-nav-item-active bg-primary-50 text-primary-700'
                           : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                       }
                     `}
@@ -212,10 +214,11 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                           key={child.name}
                           onClick={() => navigate(child.href)}
                           className={`
+                            ui-experiment-nav-child
                             group flex items-center w-full px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150
                             ${
                               isActive(child.href)
-                                ? 'bg-primary-50 text-primary-700'
+                                ? 'ui-experiment-nav-item-active bg-primary-50 text-primary-700'
                                 : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                             }
                           `}
@@ -272,7 +275,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
         <div className="lg:hidden">
           <div className="fixed inset-0 flex z-40">
             <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
-            <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white">
+            <div className="ui-experiment-sidebar relative flex-1 flex flex-col max-w-xs w-full bg-white">
               <div className="absolute top-0 right-0 -mr-12 pt-2">
                 <button
                   onClick={() => setSidebarOpen(false)}
@@ -298,7 +301,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                       setSidebarOpen(false);
                     }}
                     disabled={demoSwitching}
-                    className={`mb-3 w-full rounded-lg border px-3 py-2 text-left text-sm font-semibold ${
+                    className={`ui-experiment-demo-toggle mb-3 w-full rounded-lg border px-3 py-2 text-left text-sm font-semibold ${
                       isDemoMode
                         ? 'border-amber-300 bg-amber-50 text-amber-800'
                         : 'border-primary-200 bg-primary-50 text-primary-700'
@@ -323,10 +326,11 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                             setSidebarOpen(false);
                           }}
                           className={`
+                            ui-experiment-nav-item
                             group flex items-center px-2 py-2 text-base font-medium rounded-md w-full
                             ${
                               itemActive
-                                ? 'bg-primary-50 text-primary-700'
+                                ? 'ui-experiment-nav-item-active bg-primary-50 text-primary-700'
                                 : 'text-gray-700 hover:bg-gray-50'
                             }
                           `}
@@ -352,10 +356,11 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                                   setSidebarOpen(false);
                                 }}
                                 className={`
+                                  ui-experiment-nav-child
                                   group flex w-full items-center rounded-md px-2 py-2 text-sm font-medium
                                   ${
                                     isActive(child.href)
-                                      ? 'bg-primary-50 text-primary-700'
+                                      ? 'ui-experiment-nav-item-active bg-primary-50 text-primary-700'
                                       : 'text-gray-600 hover:bg-gray-50'
                                   }
                                 `}
@@ -479,6 +484,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
           </div>
         </main>
       </div>
+      <ManuAssistant user={user} tenantName={tenantBrand.companyName} />
     </div>
   );
 };

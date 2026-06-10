@@ -455,7 +455,7 @@ export default function ModernDashboard() {
         onClick: () => navigate('/employees'),
       },
       {
-        title: "Today's Attendance",
+        title: 'Attendance',
         value: stats.presentToday,
         hideValue: true,
         changeLabel: `Absent ${stats.absentToday}`,
@@ -492,7 +492,7 @@ export default function ModernDashboard() {
         onClick: () => navigate('/calendar'),
       },
       {
-        title: 'Upcoming Salary Date',
+        title: 'Salary Date',
         value: salaryDateThisMonth,
         changeLabel: 'this month',
         icon: CreditCardIcon,
@@ -514,7 +514,7 @@ export default function ModernDashboard() {
         onClick: () => navigate('/employees'),
       },
       {
-        title: "Today's Attendance",
+        title: 'Attendance',
         value: stats.presentToday,
         hideValue: true,
         changeLabel: `Absent ${stats.absentToday}`,
@@ -551,7 +551,7 @@ export default function ModernDashboard() {
         onClick: () => navigate('/calendar'),
       },
       {
-        title: 'Upcoming Salary Date',
+        title: 'Salary Date',
         value: salaryDateThisMonth,
         changeLabel: 'this month',
         icon: CreditCardIcon,
@@ -726,6 +726,52 @@ export default function ModernDashboard() {
           </div>
         </div>
       )}
+
+      <section className="ui-experiment-hero mb-5 p-5 sm:p-6">
+        <div className="relative z-10 grid gap-5 lg:grid-cols-[1.25fr_0.75fr] lg:items-center">
+          <div>
+            <div className="mb-3 flex flex-wrap gap-2">
+              <span className="ui-experiment-pill">
+                <BriefcaseIcon className="h-4 w-4 text-indigo-600" />
+                {dashboardTitle}
+              </span>
+              <span className="ui-experiment-pill">
+                <ClockIcon className="h-4 w-4 text-teal-600" />
+                Live operations
+              </span>
+            </div>
+            <h1 className="max-w-3xl text-2xl font-extrabold tracking-tight text-gray-950 sm:text-3xl">
+              Run HR operations from one focused command surface.
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-gray-600">
+              {dashboardSubtitle}
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-[1fr_1.05fr]">
+            <div className="ui-hr-illustration hidden sm:block" aria-hidden="true">
+              <span className="person-a" />
+              <span className="person-b" />
+              <span className="task-card" />
+              <span className="spark-one" />
+              <span className="spark-two" />
+            </div>
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-1">
+            <div className="ui-visual-tile p-3">
+              <p className="text-xs font-bold text-gray-500">People</p>
+              <p className="mt-2 text-2xl font-extrabold text-gray-950">{stats?.activeEmployees ?? 0}</p>
+            </div>
+            <div className="ui-visual-tile p-3">
+              <p className="text-xs font-bold text-gray-500">Present</p>
+              <p className="mt-2 text-2xl font-extrabold text-teal-600">{stats?.presentToday ?? 0}</p>
+            </div>
+            <div className="ui-visual-tile p-3">
+              <p className="text-xs font-bold text-gray-500">Actions</p>
+              <p className="mt-2 text-2xl font-extrabold text-indigo-600">{stats?.pendingApprovals ?? 0}</p>
+            </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Stats Grid - Narrower cards */}
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-5">

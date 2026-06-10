@@ -1006,8 +1006,8 @@ export default function ModernEmployeeDetail() {
       </button>
 
       {/* Compact Header Card */}
-      <div className="card mb-4 overflow-hidden">
-        <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-4 sm:px-6">
+      <div className="ui-experiment-profile-card card mb-4 overflow-hidden">
+        <div className="ui-experiment-profile-hero px-4 py-4 sm:px-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:space-x-4">
             <div className="h-16 w-16 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/50 flex items-center justify-center shadow-lg">
               {employee.photoUrl ? (
@@ -1021,7 +1021,7 @@ export default function ModernEmployeeDetail() {
               <p className="text-white/90 text-sm font-medium">{employee.positionTitle} • {employee.departmentName}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="badge bg-white/95 text-primary-700 font-semibold text-xs px-3 py-1">{employee.employeeCode}</span>
+              <span className="badge bg-white/95 text-violet-700 font-semibold text-xs px-3 py-1">{employee.employeeCode}</span>
               <span className={`badge ${getStatusBadge(employee.status)} text-xs px-3 py-1`}>{employee.status.toUpperCase()}</span>
             </div>
           </div>
@@ -1031,19 +1031,19 @@ export default function ModernEmployeeDetail() {
         <div className="grid grid-cols-2 divide-x divide-y divide-gray-200 bg-gray-50 sm:grid-cols-4 sm:divide-y-0">
           <div className="px-4 py-3 text-center">
             <p className="text-xs text-gray-600 font-semibold mb-1">TENURE</p>
-            <p className="text-lg font-bold text-primary-600">{calculateTenure(employee.dateOfJoining)}</p>
+            <p className="text-lg font-bold text-violet-700">{calculateTenure(employee.dateOfJoining)}</p>
           </div>
           <div className="px-4 py-3 text-center">
             <p className="text-xs text-gray-600 font-semibold mb-1">EXPERIENCE</p>
-            <p className="text-lg font-bold text-primary-600">{employee.yearsOfExperience || 'N/A'}y</p>
+            <p className="text-lg font-bold text-violet-700">{employee.yearsOfExperience || 'N/A'}y</p>
           </div>
           <div className="px-4 py-3 text-center">
             <p className="text-xs text-gray-600 font-semibold mb-1">TYPE</p>
-            <p className="text-sm font-bold text-primary-600">{employee.employmentType || 'Full-time'}</p>
+            <p className="text-sm font-bold text-violet-700">{employee.employmentType || 'Full-time'}</p>
           </div>
           <div className="px-4 py-3 text-center">
             <p className="text-xs text-gray-600 font-semibold mb-1">LOCATION</p>
-            <p className="text-sm font-bold text-primary-600">{employee.workLocation || 'Remote'}</p>
+            <p className="text-sm font-bold text-violet-700">{employee.workLocation || 'Remote'}</p>
           </div>
         </div>
       </div>
@@ -1060,13 +1060,13 @@ export default function ModernEmployeeDetail() {
 
       {/* Tabs & Actions */}
       <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex w-full max-w-full flex-wrap gap-1 rounded-lg bg-gray-100 p-1 lg:w-auto">
+        <div className="ui-experiment-tab-strip flex w-full max-w-full flex-wrap gap-1 rounded-lg bg-gray-100 p-1 lg:w-auto">
           <button
             onClick={() => setActiveTab('personal')}
             disabled={isEditingPersonal || isEditingProfessional}
             className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
               activeTab === 'personal'
-                ? 'bg-white text-primary-600 shadow-sm'
+                ? 'ui-experiment-tab-active bg-white text-primary-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -1078,7 +1078,7 @@ export default function ModernEmployeeDetail() {
             disabled={isEditingPersonal || isEditingProfessional}
             className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
               activeTab === 'professional'
-                ? 'bg-white text-primary-600 shadow-sm'
+                ? 'ui-experiment-tab-active bg-white text-primary-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -1090,7 +1090,7 @@ export default function ModernEmployeeDetail() {
             disabled={isEditingPersonal || isEditingProfessional}
             className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
               activeTab === 'history'
-                ? 'bg-white text-primary-600 shadow-sm'
+                ? 'ui-experiment-tab-active bg-white text-primary-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -1102,7 +1102,7 @@ export default function ModernEmployeeDetail() {
             disabled={isEditingPersonal || isEditingProfessional}
             className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
               activeTab === 'documents'
-                ? 'bg-white text-primary-600 shadow-sm'
+                ? 'ui-experiment-tab-active bg-white text-primary-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -1114,7 +1114,7 @@ export default function ModernEmployeeDetail() {
             disabled={isEditingPersonal || isEditingProfessional}
             className={`flex items-center px-3 py-1.5 text-sm font-semibold rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
               activeTab === 'compensation'
-                ? 'bg-white text-primary-600 shadow-sm'
+                ? 'ui-experiment-tab-active bg-white text-primary-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -1131,7 +1131,7 @@ export default function ModernEmployeeDetail() {
               <button
                 onClick={isEditingPersonal ? handleSavePersonal : handleSaveProfessional}
                 disabled={saving}
-                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn btn-primary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
@@ -1149,7 +1149,7 @@ export default function ModernEmployeeDetail() {
               {activeTab === 'history' ? (
                 <button
                   onClick={() => openManualHistoryPrompt('create')}
-                  className="px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm flex items-center"
+                  className="btn btn-primary px-3 py-2 text-sm flex items-center"
                   title="Add manual employment history"
                 >
                   <PlusIcon className="h-4 w-4 mr-1.5" />
@@ -1158,7 +1158,7 @@ export default function ModernEmployeeDetail() {
               ) : activeTab === 'documents' && canManageEmployeeDocuments ? (
                 <button
                   onClick={() => setShowEmployeeDocumentUpload((value) => !value)}
-                  className="px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm flex items-center"
+                  className="btn btn-primary px-3 py-2 text-sm flex items-center"
                   title="Add employee document"
                 >
                   <CloudArrowUpIcon className="h-4 w-4 mr-1.5" />
@@ -1639,7 +1639,7 @@ export default function ModernEmployeeDetail() {
                   <p className="text-sm text-gray-400">Organizational history will appear here as events occur</p>
                   <button
                     onClick={() => openManualHistoryPrompt('create')}
-                    className="mt-5 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm inline-flex items-center"
+                  className="btn btn-primary mt-5 px-4 py-2 text-sm inline-flex items-center"
                   >
                     <PlusIcon className="h-4 w-4 mr-1.5" />
                     Add Manual Entry
@@ -1651,12 +1651,12 @@ export default function ModernEmployeeDetail() {
 
           {activeTab === 'documents' && (
             <div className="space-y-5">
-              <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-end">
-                <div className="inline-flex self-start rounded-lg border border-gray-200 bg-white p-1 lg:self-auto">
+              <div className="flex flex-col gap-3 rounded-2xl border border-white/70 bg-white/70 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-end">
+                <div className="ui-experiment-segmented-control inline-flex self-start rounded-lg border border-gray-200 bg-white p-1 lg:self-auto">
                   <button
                     type="button"
                     onClick={() => setEmployeeDocumentDisplayMode('list')}
-                    className={`rounded-md px-3 py-1.5 text-xs font-bold ${employeeDocumentDisplayMode === 'list' ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+                    className={`rounded-md px-3 py-1.5 text-xs font-bold ${employeeDocumentDisplayMode === 'list' ? 'ui-experiment-segment-active bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
                   >
                     <ListBulletIcon className="mr-1 inline h-4 w-4" />
                     List
@@ -1664,7 +1664,7 @@ export default function ModernEmployeeDetail() {
                   <button
                     type="button"
                     onClick={() => setEmployeeDocumentDisplayMode('cards')}
-                    className={`rounded-md px-3 py-1.5 text-xs font-bold ${employeeDocumentDisplayMode === 'cards' ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+                    className={`rounded-md px-3 py-1.5 text-xs font-bold ${employeeDocumentDisplayMode === 'cards' ? 'ui-experiment-segment-active bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
                   >
                     <Squares2X2Icon className="mr-1 inline h-4 w-4" />
                     Cards

@@ -841,16 +841,16 @@ export default function ModernAttendance() {
 
       <div className="max-w-7xl mx-auto">
         {/* Compact Header */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 mb-4">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="ui-experiment-hero p-4 mb-4">
+          <div className="relative z-10 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             {/* Left: Title with Icon */}
-            <div className="flex items-center space-x-2 min-w-0">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-md">
+            <div className="flex items-center space-x-3 min-w-0">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-md">
                 <CalendarDaysIcon className="h-5 w-5 text-white" />
               </div>
               <div className="min-w-0">
-                <h1 className="text-lg font-bold text-gray-900">Attendance</h1>
-                <p className="text-xs text-gray-500">
+                <h1 className="text-xl font-extrabold text-gray-950">Attendance command desk</h1>
+                <p className="text-xs font-semibold text-gray-500">
                   {activeView === 'my-attendance' ? 'My records' :
                    activeView === 'team' ? `${peopleViewLabel} overview` :
                    activeView === 'requests' ? 'Attendance regularisation approvals' : 'Attendance workspace'}
@@ -859,7 +859,17 @@ export default function ModernAttendance() {
             </div>
 
             {/* Center: Tab Navigation */}
-            <div className="grid w-full max-w-full grid-cols-2 gap-1 bg-gray-100 p-1 rounded-lg sm:flex sm:w-auto sm:items-center sm:space-x-1 sm:gap-0 sm:overflow-x-auto">
+            <div className="hidden xl:block w-48">
+              <div className="ui-hr-illustration ui-hr-illustration-compact" aria-hidden="true">
+                <span className="person-a" />
+                <span className="person-b" />
+                <span className="task-card" />
+                <span className="spark-one" />
+                <span className="spark-two" />
+              </div>
+            </div>
+
+            <div className="grid w-full max-w-full grid-cols-2 gap-1 rounded-2xl border border-white/70 bg-white/60 p-1 shadow-sm sm:flex sm:w-auto sm:items-center sm:space-x-1 sm:gap-0 sm:overflow-x-auto">
               <button
                 onClick={() => {
                   setActiveView('my-attendance');
@@ -912,7 +922,7 @@ export default function ModernAttendance() {
             </div>
 
             {/* Right: Actions */}
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="relative z-10 flex flex-wrap items-center gap-2">
               {/* Compact Actions */}
               {activeView === 'team' && (['HR_ADMIN', 'SYSTEM_ADMIN'].includes(user?.role?.toString().toUpperCase() || '')) && (
                 <div className="flex items-center space-x-1.5">
