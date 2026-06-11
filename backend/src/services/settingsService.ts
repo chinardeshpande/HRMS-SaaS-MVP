@@ -224,10 +224,14 @@ export class SettingsService {
 
   async updatePaymentStatus(
     paymentId: string,
+    tenantId: string,
     status: PaymentStatus,
     metadata?: any
   ): Promise<PaymentHistory | null> {
-    const payment = await this.paymentRepo.findOne({ where: { paymentId } });
+    // Scope by tenantId so a payment from another tenant is never found.
+    // Returning null here surfaces as a 404 in the controller, which avoids
+    // leaking the existence of another tenant's payment record.
+    const payment = await this.paymentRepo.findOne({ where: { paymentId, tenantId } });
     if (!payment) return null;
 
     payment.status = status;

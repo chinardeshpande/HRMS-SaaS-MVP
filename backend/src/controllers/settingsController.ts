@@ -397,6 +397,7 @@ export const createPayment = async (req: Request, res: Response) => {
 
 export const updatePaymentStatus = async (req: Request, res: Response) => {
   try {
+    const { tenantId } = req as any;
     const { paymentId } = req.params;
     const { status, metadata } = req.body;
 
@@ -412,6 +413,7 @@ export const updatePaymentStatus = async (req: Request, res: Response) => {
 
     const payment = await settingsService.updatePaymentStatus(
       paymentId,
+      tenantId,
       status as PaymentStatus,
       metadata
     );
