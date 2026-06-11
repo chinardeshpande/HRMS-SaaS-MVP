@@ -1,3 +1,5 @@
+> **⚠️ FROZEN / ARCHIVED (2026-06-11).** Legacy "antigravity" mirror of HRMS-SaaS-MVP. Canonical repo: github.com/chinardeshpande/HRMS-SaaS-MVP (working branch `hardening`). Verified clean before freeze: 0 commits and 0 edits unique to this mirror; its only unique file (AURORAHR-LAUNCH-READINESS.md) was consolidated into canonical. Reference only — do not develop here.
+
 # HRMS SaaS MVP
 
 A modern, multi-tenant HRMS (Human Resource Management System) SaaS platform built to cover the entire employee lifecycle from onboarding to exit.
