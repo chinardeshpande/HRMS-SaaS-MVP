@@ -8,6 +8,7 @@ import * as path from 'path';
 import { config } from './config/config';
 import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
+import { tenantContextMiddleware } from './middleware/tenantContext';
 
 // Import routes (to be created)
 import authRoutes from './routes/authRoutes';
@@ -204,6 +205,11 @@ app.get('/health', (req: Request, res: Response) => {
 
 // API routes
 const apiRouter = express.Router();
+
+// Tenant context (Mission 2, Phase A0): every API request runs inside an
+// AsyncLocalStorage store. `authenticate` populates it after JWT verification;
+// the scoped-repository and RLS session-var layers read from it.
+apiRouter.use(tenantContextMiddleware);
 
 // Mount routes (uncomment as you create them)
 apiRouter.use('/auth', authRoutes);

@@ -1,10 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from './errorHandler';
 import { config } from '../config/config';
+import { getTenantId } from './tenantContext';
 
 /**
- * Tenant isolation middleware
- * Ensures all database queries are scoped to the authenticated user's tenant
+ * Tenant isolation middleware (Mission 2, Phase A1)
+ * Asserts that the request carries a verified tenant identity in BOTH places
+ * downstream code reads it from: `req.tenantId` (set by `authenticate`) and
+ * the AsyncLocalStorage tenant context (populated by `authenticate`, entered
+ * by `tenantContextMiddleware` on the apiRouter). Wire after `authenticate`
+ * on every authenticated route.
  */
 export const tenantIsolation = (
   req: Request,
@@ -20,9 +25,16 @@ export const tenantIsolation = (
     );
   }
 
-  // Set tenant ID in request context for database queries
-  // This will be used by TypeORM to filter queries
-  // You can also set it as a PostgreSQL session variable for Row-Level Security
+  // The ALS store backs the scoped-repository and RLS session-var layers.
+  // A mismatch here means a middleware-ordering bug — fail closed.
+  const contextTenantId = getTenantId();
+  if (contextTenantId !== req.tenantId) {
+    throw new AppError(
+      'Tenant context integrity check failed.',
+      500,
+      'TENANT_CONTEXT_MISMATCH'
+    );
+  }
 
   next();
 };

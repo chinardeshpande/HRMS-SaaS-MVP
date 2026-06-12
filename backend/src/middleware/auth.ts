@@ -6,6 +6,7 @@ import { UserRole } from '../../../shared/types';
 import { AppDataSource } from '../config/database';
 import { User } from '../models/User';
 import { Tenant } from '../models/Tenant';
+import { setTenantContext } from './tenantContext';
 
 // Extend Express Request type to include user and tenant
 declare global {
@@ -89,6 +90,15 @@ export const authenticate = async (
     // Also set tenantId separately for easier access
     req.tenantId = user.tenantId;
 
+    // Populate the AsyncLocalStorage tenant context (Mission 2, Phase A0).
+    // Provenance: tenantId comes from the signature-verified JWT cross-checked
+    // against the active-user row above — never from client-supplied params.
+    setTenantContext({
+      userId: user.userId,
+      tenantId: user.tenantId,
+      role: user.role,
+    });
+
     next();
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
@@ -122,37 +132,10 @@ export const authorize = (...allowedRoles: UserRole[]) => {
   };
 };
 
-/**
- * Optional authentication - doesn't fail if no token provided
- */
-export const optionalAuth = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const authHeader = req.headers.authorization;
-
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      const decoded = jwt.verify(token, config.jwt.secret) as JWTPayload;
-
-      req.user = {
-        userId: decoded.userId,
-        tenantId: decoded.tenantId,
-        email: decoded.email,
-        role: decoded.role,
-        employeeId: decoded.employeeId,
-      };
-
-      req.tenantId = decoded.tenantId;
-    }
-
-    next();
-  } catch (error) {
-    // Ignore errors for optional auth
-    next();
-  }
-};
+// NOTE (Mission 2): the former `optionalAuth` middleware was removed. It was
+// dead code (zero route uses) that set req.tenantId from a decoded JWT without
+// the active-user/active-tenant DB checks — a latent tenant-spoofing hazard.
+// If optional authentication is ever needed, build it on `authenticate`'s
+// verification path and populate the tenant context the same way.
 
 export default authenticate;
