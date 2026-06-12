@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import authController from '../controllers/authController';
 import { authenticate } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -67,12 +68,12 @@ router.post('/forgot-password', authController.requestPasswordReset);
 router.post('/reset-password', authController.resetPassword);
 
 // Protected routes
-router.get('/me', authenticate, authController.getCurrentUser);
-router.patch('/me', authenticate, authController.updateCurrentUserProfile);
-router.post('/change-password', authenticate, authController.changePassword);
+router.get('/me', authenticate, tenantIsolation, authController.getCurrentUser);
+router.patch('/me', authenticate, tenantIsolation, authController.updateCurrentUserProfile);
+router.post('/change-password', authenticate, tenantIsolation, authController.changePassword);
 router.post(
   '/profile-photo',
-  authenticate,
+  authenticate, tenantIsolation,
   handleProfilePhotoUpload,
   authController.uploadProfilePhoto
 );

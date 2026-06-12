@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authenticate, authorize } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { UserRole } from '../../../shared/types';
 import {
   getAllProbationCases,
@@ -19,6 +20,7 @@ const router = Router();
 
 // All routes require authentication
 router.use(authenticate);
+router.use(tenantIsolation);
 
 // Statistics and lists
 router.get('/statistics', authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), getProbationStatistics);

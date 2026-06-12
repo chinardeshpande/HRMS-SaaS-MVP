@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import compensationService from '../services/compensationService';
 import { authenticate, authorize } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { UserRole } from '../../../shared/types';
 import { SalaryApprovalStatus, SalaryStructureStatus } from '../models/SalaryStructure';
 import { SalaryComponentType } from '../models/SalaryComponent';
@@ -14,6 +15,7 @@ import auditService from '../services/auditService';
 
 const router = Router();
 router.use(authenticate);
+router.use(tenantIsolation);
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {

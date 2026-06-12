@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authenticate, authorize } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { UserRole } from '../../../shared/types';
 import multer from 'multer';
 import {
@@ -33,15 +34,15 @@ const upload = multer({
 const router = Router();
 
 // GET /api/v1/employees/template - Download CSV template for bulk upload
-router.get('/template', authenticate, authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), downloadEmployeeTemplate);
+router.get('/template', authenticate, tenantIsolation, authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), downloadEmployeeTemplate);
 
 // GET /api/v1/employees/stats - Get employee statistics (all authenticated users, role-based in controller)
-router.get('/stats', authenticate, getEmployeeStats);
+router.get('/stats', authenticate, tenantIsolation, getEmployeeStats);
 
 // POST /api/v1/employees/bulk-upload - Bulk upload employees via CSV (HR and Admin only)
 router.post(
   '/bulk-upload',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   upload.single('file') as any,
   bulkUploadEmployees
@@ -49,18 +50,18 @@ router.post(
 
 // GET /api/v1/employees - Get all employees (role-based filtering in controller)
 // Managers, HR, and Admins can access. Employees can technically call this but will only see themselves.
-router.get('/', authenticate, getEmployees);
+router.get('/', authenticate, tenantIsolation, getEmployees);
 
 // GET /api/v1/employees/:id - Get employee by ID (role-based access check in controller)
-router.get('/:id', authenticate, getEmployeeById);
+router.get('/:id', authenticate, tenantIsolation, getEmployeeById);
 
 // POST /api/v1/employees - Create new employee (HR and Admin only)
-router.post('/', authenticate, authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), createEmployee);
+router.post('/', authenticate, tenantIsolation, authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), createEmployee);
 
 // PUT /api/v1/employees/:id - Update employee (HR and Admin only)
-router.put('/:id', authenticate, authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), updateEmployee);
+router.put('/:id', authenticate, tenantIsolation, authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), updateEmployee);
 
 // DELETE /api/v1/employees/:id - Soft delete employee (HR and Admin only)
-router.delete('/:id', authenticate, authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), deleteEmployee);
+router.delete('/:id', authenticate, tenantIsolation, authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN), deleteEmployee);
 
 export default router;

@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { AppDataSource } from '../config/database';
 import { OnboardingCase } from '../models/OnboardingCase';
 import { ExitCase } from '../models/ExitCase';
@@ -11,6 +12,7 @@ const router = Router();
 
 // All routes require authentication
 router.use(authenticate);
+router.use(tenantIsolation);
 
 interface Activity {
   activityId: string;

@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import reportingController from '../controllers/reportingController';
 import { authenticate, authorize } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { UserRole } from '../../../shared/types';
 
 const router = Router();
 
 // All routes require authentication
 router.use(authenticate);
+router.use(tenantIsolation);
 
 /**
  * @route   GET /api/reports/attendance-summary

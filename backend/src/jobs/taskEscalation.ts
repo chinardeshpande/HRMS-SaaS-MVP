@@ -5,13 +5,21 @@ import notificationService from '../services/notificationService';
 import { ProbationReview } from '../models/ProbationReview';
 import { ReviewStatus } from '../models/enums/ReviewType';
 import logger from '../utils/logger';
+import { withoutTenantScope } from '../middleware/tenantContext';
+
+// Mission 2 (A1): cron jobs legitimately operate across all tenants, so each
+// run is wrapped in the explicit, logged withoutTenantScope() escape hatch —
+// the only sanctioned unscoped path. Under the app-side scope and (Phase B)
+// RLS, an unwrapped cross-tenant query would otherwise fail or return nothing.
 
 export function initializeScheduledJobs() {
   // Run daily at 9 AM - Check for overdue tasks
   schedule.scheduleJob('0 9 * * *', async () => {
     try {
       logger.info('🕐 Running daily task escalation job...');
-      await taskAutomationService.checkOverdueTasks();
+      await withoutTenantScope('cron: daily task escalation', () =>
+        taskAutomationService.checkOverdueTasks()
+      );
       logger.info('✅ Daily task escalation job completed');
     } catch (error: any) {
       logger.error('❌ Task escalation job failed:', error);
@@ -22,7 +30,9 @@ export function initializeScheduledJobs() {
   schedule.scheduleJob('0 10 * * *', async () => {
     try {
       logger.info('🕐 Running daily review reminder job...');
-      await sendReviewReminders();
+      await withoutTenantScope('cron: daily review reminders', () =>
+        sendReviewReminders()
+      );
       logger.info('✅ Daily review reminder job completed');
     } catch (error: any) {
       logger.error('❌ Review reminder job failed:', error);
@@ -33,7 +43,9 @@ export function initializeScheduledJobs() {
   schedule.scheduleJob('0 * * * *', async () => {
     try {
       logger.info('🕐 Running hourly deadline check...');
-      await checkImminentDeadlines();
+      await withoutTenantScope('cron: hourly deadline check', () =>
+        checkImminentDeadlines()
+      );
       logger.info('✅ Hourly deadline check completed');
     } catch (error: any) {
       logger.error('❌ Deadline check failed:', error);

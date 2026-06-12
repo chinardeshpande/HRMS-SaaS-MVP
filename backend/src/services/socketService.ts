@@ -5,6 +5,10 @@ import { config } from '../config/config';
 import { chatService } from './chatService';
 import { logger } from '../utils/logger';
 import { JWTPayload } from '../middleware/auth';
+import { AppDataSource } from '../config/database';
+import { User } from '../models/User';
+import { Tenant } from '../models/Tenant';
+import { runWithTenant } from '../middleware/tenantContext';
 
 interface AuthenticatedSocket extends Socket {
   userId?: string;
@@ -68,18 +72,59 @@ export class SocketService {
 
         const decoded = jwt.verify(token, config.jwt.secret) as JWTPayload;
 
-        socket.userId = decoded.userId;
-        socket.tenantId = decoded.tenantId;
-        socket.employeeId = decoded.employeeId;
-        socket.email = decoded.email;
+        // Mission 2 (A1): same provenance checks as the HTTP `authenticate`
+        // middleware — a signed JWT alone is not enough; the user must still
+        // be active and the tenant must still be active.
+        const user = await AppDataSource.getRepository(User).findOne({
+          where: {
+            userId: decoded.userId,
+            tenantId: decoded.tenantId,
+            isActive: true,
+          },
+        });
+        if (!user) {
+          return next(new Error('Authentication failed'));
+        }
+        const tenant = await AppDataSource.getRepository(Tenant).findOne({
+          where: { tenantId: decoded.tenantId },
+        });
+        if (!tenant || tenant.status !== 'active') {
+          return next(new Error('Authentication failed'));
+        }
 
-        logger.info(`🔐 Socket authenticated: ${decoded.email} (${socket.id})`);
+        socket.userId = user.userId;
+        socket.tenantId = user.tenantId;
+        socket.employeeId = user.employeeId;
+        socket.email = user.email;
+
+        logger.info(`🔐 Socket authenticated: ${user.email} (${socket.id})`);
         next();
       } catch (error) {
         logger.error('Socket authentication error:', error);
         next(new Error('Authentication failed'));
       }
     });
+  }
+
+  /**
+   * Mission 2 (A1): socket event handlers run outside the Express middleware
+   * chain, so they must enter the AsyncLocalStorage tenant context themselves
+   * — the scoped-repository and RLS session-var layers read from it.
+   */
+  private withTenantContext<T extends unknown[]>(
+    socket: AuthenticatedSocket,
+    handler: (...args: T) => void | Promise<void>
+  ): (...args: T) => void {
+    return (...args: T) => {
+      if (!socket.tenantId) {
+        socket.emit('error', { message: 'Not authenticated' });
+        return;
+      }
+      void runWithTenant(socket.tenantId, () => handler(...args), {
+        userId: socket.userId,
+        source: 'socket',
+      });
+    };
   }
 
   private setupEventHandlers(): void {
@@ -94,6 +139,12 @@ export class SocketService {
       });
       logger.info(`🔌 Client connected: ${socket.id} (${socket.email})`);
 
+      // Mission 2 (A1): every socket joins its tenant room so broadcasts
+      // (presence etc.) never cross tenant boundaries.
+      if (socket.tenantId) {
+        socket.join(`tenant:${socket.tenantId}`);
+      }
+
       // Track user's socket
       if (socket.employeeId) {
         if (!this.userSockets.has(socket.employeeId)) {
@@ -106,11 +157,11 @@ export class SocketService {
         });
 
         // Notify online status
-        this.broadcastUserStatus(socket.employeeId, 'online');
+        this.broadcastUserStatus(socket.employeeId, 'online', socket.tenantId);
       }
 
       // Join conversation rooms
-      socket.on('join_conversation', async (conversationId: string) => {
+      socket.on('join_conversation', this.withTenantContext(socket, async (conversationId: string) => {
         try {
           console.log('📥 [WEBSOCKET] Join conversation request:', {
             conversationId,
@@ -155,7 +206,7 @@ export class SocketService {
           logger.error('Error joining conversation:', error);
           socket.emit('error', { message: 'Failed to join conversation' });
         }
-      });
+      }));
 
       // Leave conversation rooms
       socket.on('leave_conversation', (conversationId: string) => {
@@ -164,7 +215,7 @@ export class SocketService {
       });
 
       // Send message
-      socket.on('send_message', async (data: {
+      socket.on('send_message', this.withTenantContext(socket, async (data: {
         conversationId: string;
         content: string;
         replyToMessageId?: string;
@@ -233,7 +284,7 @@ export class SocketService {
           logger.error('Error sending message:', error);
           socket.emit('error', { message: 'Failed to send message' });
         }
-      });
+      }));
 
       // Typing indicator
       socket.on('typing_start', (conversationId: string) => {
@@ -254,7 +305,7 @@ export class SocketService {
       });
 
       // Edit message
-      socket.on('edit_message', async (data: {
+      socket.on('edit_message', this.withTenantContext(socket, async (data: {
         messageId: string;
         content: string;
       }) => {
@@ -278,10 +329,10 @@ export class SocketService {
           logger.error('Error editing message:', error);
           socket.emit('error', { message: 'Failed to edit message' });
         }
-      });
+      }));
 
       // Delete message
-      socket.on('delete_message', async (data: {
+      socket.on('delete_message', this.withTenantContext(socket, async (data: {
         messageId: string;
         conversationId: string;
       }) => {
@@ -307,10 +358,10 @@ export class SocketService {
           logger.error('Error deleting message:', error);
           socket.emit('error', { message: 'Failed to delete message' });
         }
-      });
+      }));
 
       // WebRTC Call Signaling
-      socket.on('call_initiate', async (data: {
+      socket.on('call_initiate', this.withTenantContext(socket, async (data: {
         conversationId: string;
         targetEmployeeId: string;
         callType: 'audio' | 'video';
@@ -350,7 +401,7 @@ export class SocketService {
           logger.error('Error initiating call:', error);
           socket.emit('error', { message: 'Failed to initiate call' });
         }
-      });
+      }));
 
       socket.on('call_answer', (data: {
         callerId: string;
@@ -436,7 +487,7 @@ export class SocketService {
             if (userSocketSet.size === 0) {
               this.userSockets.delete(socket.employeeId);
               // Notify offline status
-              this.broadcastUserStatus(socket.employeeId, 'offline');
+              this.broadcastUserStatus(socket.employeeId, 'offline', socket.tenantId);
             }
           }
         }
@@ -444,10 +495,23 @@ export class SocketService {
     });
   }
 
-  private broadcastUserStatus(employeeId: string, status: 'online' | 'offline'): void {
+  /**
+   * Mission 2 (A1): presence is tenant-scoped. The previous implementation
+   * used `io.emit(...)` which broadcast employee ids + presence to every
+   * connected client of every tenant — a cross-tenant information leak.
+   */
+  private broadcastUserStatus(
+    employeeId: string,
+    status: 'online' | 'offline',
+    tenantId?: string
+  ): void {
     if (!this.io) return;
+    if (!tenantId) {
+      logger.warn('broadcastUserStatus called without tenantId — dropping broadcast');
+      return;
+    }
 
-    this.io.emit('user_status_change', {
+    this.io.to(`tenant:${tenantId}`).emit('user_status_change', {
       employeeId,
       status,
       timestamp: new Date(),

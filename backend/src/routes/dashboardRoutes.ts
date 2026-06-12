@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import dashboardService from '../services/dashboardService';
 import { authenticate } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { UserRole } from '../../../shared/types';
 
 const router = Router();
@@ -15,7 +16,7 @@ const router = Router();
  * - MANAGER: Team stats (direct reports)
  * - HR_ADMIN/SYSTEM_ADMIN: Organization-wide stats
  */
-router.get('/stats', authenticate, async (req, res) => {
+router.get('/stats', authenticate, tenantIsolation, async (req, res) => {
   try {
     const tenantId = req.user!.tenantId;
     const userRole = req.user!.role as UserRole;

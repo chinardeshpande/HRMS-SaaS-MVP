@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authenticate, authorize } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { uploadSingle } from '../middleware/upload';
 import { UserRole } from '../../../shared/types';
 import {
@@ -37,6 +38,7 @@ const router = Router();
 
 // All routes require authentication
 router.use(authenticate);
+router.use(tenantIsolation);
 router.use(authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN));
 
 // Pipeline stats

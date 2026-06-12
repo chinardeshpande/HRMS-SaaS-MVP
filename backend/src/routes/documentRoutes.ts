@@ -3,6 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { authenticate, authorize } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { UserRole } from '../../../shared/types';
 import documentController from '../controllers/documentController';
 
@@ -61,7 +62,7 @@ const upload = multer({
 // Upload document
 router.post(
   '/upload',
-  authenticate,
+  authenticate, tenantIsolation,
   upload.single('file') as any,
   documentController.uploadDocument
 );
@@ -69,7 +70,7 @@ router.post(
 // Upload multiple documents
 router.post(
   '/upload-multiple',
-  authenticate,
+  authenticate, tenantIsolation,
   upload.array('files', 10) as any, // Max 10 files
   documentController.uploadMultipleDocuments
 );
@@ -77,28 +78,28 @@ router.post(
 // Get document by ID
 router.get(
   '/:documentId',
-  authenticate,
+  authenticate, tenantIsolation,
   documentController.getDocument
 );
 
 // Download document
 router.get(
   '/:documentId/download',
-  authenticate,
+  authenticate, tenantIsolation,
   documentController.downloadDocument
 );
 
 // Get all documents for an entity
 router.get(
   '/entity/:entityType/:entityId',
-  authenticate,
+  authenticate, tenantIsolation,
   documentController.getEntityDocuments
 );
 
 // Update document metadata
 router.patch(
   '/:documentId',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   documentController.updateDocument
 );
@@ -106,7 +107,7 @@ router.patch(
 // Verify document (HR only)
 router.post(
   '/:documentId/verify',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   documentController.verifyDocument
 );
@@ -114,7 +115,7 @@ router.post(
 // Reject document (HR only)
 router.post(
   '/:documentId/reject',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   documentController.rejectDocument
 );
@@ -122,7 +123,7 @@ router.post(
 // Delete document
 router.delete(
   '/:documentId',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   documentController.deleteDocument
 );

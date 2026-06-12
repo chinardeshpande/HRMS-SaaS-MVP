@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { authenticate } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { authorize } from '../middleware/auth';
 import professionalHistoryService from '../services/professionalHistoryService';
 import managerTeamService from '../services/managerTeamService';
@@ -10,6 +11,7 @@ const router = Router();
 
 // All routes require authentication
 router.use(authenticate);
+router.use(tenantIsolation);
 
 const canReadPositionHistory = async (req: Request, targetEmployeeId: string): Promise<boolean> => {
   const user = req.user!;

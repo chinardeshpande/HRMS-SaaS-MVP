@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authenticate, authorize } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { UserRole } from '../../../shared/types';
 import analyticsService from '../services/analyticsService';
 import logger from '../utils/logger';
@@ -8,7 +9,7 @@ const router = Router();
 
 router.get(
   '/metrics',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
   async (req, res) => {
     try {
@@ -42,7 +43,7 @@ router.get(
 
 router.post(
   '/query',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
   async (req, res) => {
     try {

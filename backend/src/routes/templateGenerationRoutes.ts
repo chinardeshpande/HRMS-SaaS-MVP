@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authenticate, authorize } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { UserRole } from '../../../shared/types';
 import templateGenerationController from '../controllers/templateGenerationController';
 
@@ -12,7 +13,7 @@ const router = Router();
  */
 router.get(
   '/',
-  authenticate,
+  authenticate, tenantIsolation,
   templateGenerationController.getTemplates
 );
 
@@ -23,7 +24,7 @@ router.get(
  */
 router.post(
   '/generate/preview',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
   templateGenerationController.previewGeneratedDocument
 );
@@ -35,7 +36,7 @@ router.post(
  */
 router.post(
   '/generate',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
   templateGenerationController.generateDocument
 );
@@ -47,7 +48,7 @@ router.post(
  */
 router.get(
   '/history',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   templateGenerationController.getHistory
 );
@@ -59,7 +60,7 @@ router.get(
  */
 router.get(
   '/generated/:documentId/download',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
   templateGenerationController.downloadGeneratedDocument
 );
@@ -71,7 +72,7 @@ router.get(
  */
 router.delete(
   '/generated/:documentId',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   templateGenerationController.deleteGeneratedDocument
 );
@@ -83,7 +84,7 @@ router.delete(
  */
 router.get(
   '/:templateId',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
   templateGenerationController.getTemplateById
 );
@@ -95,7 +96,7 @@ router.get(
  */
 router.put(
   '/:templateId',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   templateGenerationController.updateTemplate
 );
@@ -107,7 +108,7 @@ router.put(
  */
 router.post(
   '/:templateId/preview',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
   templateGenerationController.previewTemplate
 );

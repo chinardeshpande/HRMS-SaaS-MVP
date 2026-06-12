@@ -1,69 +1,70 @@
 import { Router } from 'express';
 import attendanceController from '../controllers/attendanceController';
 import { authenticate, authorize } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { UserRole } from '../../../shared/types';
 
 const router = Router();
 
 // Employee routes - All authenticated employees can access
-router.post('/clock-in', authenticate, attendanceController.clockIn);
-router.post('/clock-out', authenticate, attendanceController.clockOut);
-router.get('/my-attendance', authenticate, attendanceController.getMyAttendance);
+router.post('/clock-in', authenticate, tenantIsolation, attendanceController.clockIn);
+router.post('/clock-out', authenticate, tenantIsolation, attendanceController.clockOut);
+router.get('/my-attendance', authenticate, tenantIsolation, attendanceController.getMyAttendance);
 
 // HR-only routes - Requires HR role
 router.post(
   '/bulk-update',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   attendanceController.bulkUpdate
 );
 
 router.put(
   '/override/:attendanceId',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   attendanceController.overrideAttendance
 );
 
 router.get(
   '/company-wide',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
   attendanceController.getCompanyWide
 );
 
 router.get(
   '/statistics',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   attendanceController.getStatistics
 );
 
 router.get(
   '/by-department',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   attendanceController.getByDepartment
 );
 
 // Time Entry Edit (Regularization) routes
-router.post('/regularization/request', authenticate, attendanceController.requestRegularization);
-router.get('/regularization/my-requests', authenticate, attendanceController.getMyRegularizationRequests);
+router.post('/regularization/request', authenticate, tenantIsolation, attendanceController.requestRegularization);
+router.get('/regularization/my-requests', authenticate, tenantIsolation, attendanceController.getMyRegularizationRequests);
 router.get(
   '/regularization/pending',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
   attendanceController.getPendingRegularizations
 );
 router.put(
   '/regularization/:editId/approve',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
   attendanceController.approveRegularization
 );
 router.put(
   '/regularization/:editId/reject',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
   attendanceController.rejectRegularization
 );
@@ -71,7 +72,7 @@ router.put(
 // Team attendance (for managers)
 router.get(
   '/team',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.MANAGER, UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   attendanceController.getTeamAttendance
 );

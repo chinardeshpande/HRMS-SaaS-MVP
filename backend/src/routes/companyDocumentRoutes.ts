@@ -3,6 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { authenticate, authorize } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { UserRole } from '../../../shared/types';
 import companyDocumentService from '../services/companyDocumentService';
 import { uploadDir } from '../utils/uploadPaths';
@@ -14,6 +15,7 @@ import {
 
 const router = Router();
 router.use(authenticate);
+router.use(tenantIsolation);
 
 const hrOnly = authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN);
 

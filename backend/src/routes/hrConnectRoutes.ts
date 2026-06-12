@@ -2,10 +2,12 @@ import { Router } from 'express';
 import * as hrConnectController from '../controllers/hrConnectController';
 import { authenticate } from '../middleware/auth';
 
+import { tenantIsolation } from '../middleware/tenant';
 const router = Router();
 
 // All routes require authentication
 router.use(authenticate);
+router.use(tenantIsolation);
 
 // Post routes
 router.get('/posts', hrConnectController.getAllPosts);

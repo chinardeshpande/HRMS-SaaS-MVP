@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import * as chatController from '../controllers/chatController';
 import { authenticate } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { uploadSingle } from '../middleware/upload';
 
 const router = Router();
 
 // All routes require authentication
 router.use(authenticate);
+router.use(tenantIsolation);
 
 // Conversation routes
 router.get('/conversations', chatController.getAllConversations);

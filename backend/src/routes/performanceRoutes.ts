@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authenticate, authorize } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { UserRole } from '../../../shared/types';
 import performanceController from '../controllers/performanceController';
 
@@ -10,7 +11,7 @@ const router = Router();
 // Get all performance reviews (HR, Manager)
 router.get(
   '/reviews',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
   performanceController.getAllReviews
 );
@@ -18,21 +19,21 @@ router.get(
 // Get reviews for the logged-in employee
 router.get(
   '/my-reviews',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.getMyReviews
 );
 
 // Get review by ID
 router.get(
   '/reviews/:reviewId',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.getReviewById
 );
 
 // Create performance review (HR only)
 router.post(
   '/reviews',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   performanceController.createReview
 );
@@ -40,7 +41,7 @@ router.post(
 // Update performance review
 router.put(
   '/reviews/:reviewId',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER),
   performanceController.updateReview
 );
@@ -48,7 +49,7 @@ router.put(
 // Delete performance review (HR only)
 router.delete(
   '/reviews/:reviewId',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   performanceController.deleteReview
 );
@@ -58,42 +59,42 @@ router.delete(
 // Get all goals for a review
 router.get(
   '/reviews/:reviewId/goals',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.getGoalsByReviewId
 );
 
 // Create goal
 router.post(
   '/reviews/:reviewId/goals',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.createGoal
 );
 
 // Update goal
 router.patch(
   '/goals/:goalId',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.updateGoal
 );
 
 // Delete goal
 router.delete(
   '/goals/:goalId',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.deleteGoal
 );
 
 // Submit goals for approval
 router.post(
   '/reviews/:reviewId/goals/submit',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.submitGoals
 );
 
 // Approve goals (Manager/HR)
 router.post(
   '/reviews/:reviewId/goals/approve',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.MANAGER, UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   performanceController.approveGoals
 );
@@ -103,21 +104,21 @@ router.post(
 // Create KPI
 router.post(
   '/goals/:goalId/kpis',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.createKPI
 );
 
 // Update KPI
 router.put(
   '/kpis/:kpiId',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.updateKPI
 );
 
 // Delete KPI
 router.delete(
   '/kpis/:kpiId',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.deleteKPI
 );
 
@@ -126,14 +127,14 @@ router.delete(
 // Submit mid-year review
 router.post(
   '/reviews/:reviewId/mid-year',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.submitMidYearReview
 );
 
 // Complete mid-year review (Manager/HR)
 router.post(
   '/reviews/:reviewId/mid-year/complete',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.MANAGER, UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   performanceController.completeMidYearReview
 );
@@ -143,7 +144,7 @@ router.post(
 // Submit final rating (Manager/HR only)
 router.post(
   '/reviews/:reviewId/final-rating',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.MANAGER, UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   performanceController.submitFinalRating
 );
@@ -153,14 +154,14 @@ router.post(
 // Get action items for a review
 router.get(
   '/reviews/:reviewId/action-items',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.getActionItemsByReviewId
 );
 
 // Create development plan with action items
 router.post(
   '/reviews/:reviewId/development-plan',
-  authenticate,
+  authenticate, tenantIsolation,
   authorize(UserRole.MANAGER, UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   performanceController.createDevelopmentPlan
 );
@@ -168,21 +169,21 @@ router.post(
 // Create action item
 router.post(
   '/reviews/:reviewId/action-items',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.createActionItem
 );
 
 // Update action item
 router.put(
   '/action-items/:actionItemId',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.updateActionItem
 );
 
 // Delete action item
 router.delete(
   '/action-items/:actionItemId',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.deleteActionItem
 );
 
@@ -191,28 +192,28 @@ router.delete(
 // Get 360 feedback for a review
 router.get(
   '/reviews/:reviewId/feedback-360',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.getFeedbackByReviewId
 );
 
 // Submit 360 feedback
 router.post(
   '/reviews/:reviewId/feedback-360',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.submit360Feedback
 );
 
 // Update 360 feedback
 router.put(
   '/feedback-360/:feedbackId',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.updateFeedback360
 );
 
 // Delete 360 feedback
 router.delete(
   '/feedback-360/:feedbackId',
-  authenticate,
+  authenticate, tenantIsolation,
   performanceController.deleteFeedback360
 );
 

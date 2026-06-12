@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import invitationService from '../services/invitationService';
 import { authenticate, authorize } from '../middleware/auth';
+import { tenantIsolation } from '../middleware/tenant';
 import { UserRole } from '../../../shared/types';
 
 const router = Router();
@@ -86,6 +87,7 @@ router.get('/verify/:token', async (req: Request, res: Response) => {
  * All routes below require authentication
  */
 router.use(authenticate);
+router.use(tenantIsolation);
 
 /**
  * POST /api/v1/invitations
