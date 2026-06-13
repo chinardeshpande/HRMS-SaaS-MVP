@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import invitationService from '../services/invitationService';
 import { authenticate, authorize } from '../middleware/auth';
 import { tenantIsolation } from '../middleware/tenant';
+import { withoutTenantScope } from '../middleware/tenantContext';
 import { UserRole } from '../../../shared/types';
 
 const router = Router();
@@ -34,7 +35,10 @@ router.post('/accept/:token', async (req: Request, res: Response) => {
       });
     }
 
-    const result = await invitationService.acceptInvitation(token, password);
+    // Pre-auth, token-addressed flow — the invitation token IS the credential.
+    const result = await withoutTenantScope('invitation: accept by token', () =>
+      invitationService.acceptInvitation(token, password)
+    );
 
     res.status(200).json({
       success: true,
@@ -61,7 +65,10 @@ router.get('/verify/:token', async (req: Request, res: Response) => {
   try {
     const { token } = req.params;
 
-    const invitation = await invitationService.getInvitationByToken(token);
+    // Pre-auth, token-addressed flow — the invitation token IS the credential.
+    const invitation = await withoutTenantScope('invitation: verify token', () =>
+      invitationService.getInvitationByToken(token)
+    );
 
     res.status(200).json({
       success: true,

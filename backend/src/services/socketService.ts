@@ -74,20 +74,32 @@ export class SocketService {
 
         // Mission 2 (A1): same provenance checks as the HTTP `authenticate`
         // middleware — a signed JWT alone is not enough; the user must still
-        // be active and the tenant must still be active.
-        const user = await AppDataSource.getRepository(User).findOne({
-          where: {
-            userId: decoded.userId,
-            tenantId: decoded.tenantId,
-            isActive: true,
-          },
-        });
+        // be active and the tenant must still be active. The lookups run
+        // inside the tenant context of the signature-verified JWT so they are
+        // themselves tenant-scoped.
+        const user = await runWithTenant(
+          decoded.tenantId,
+          () =>
+            AppDataSource.getRepository(User).findOne({
+              where: {
+                userId: decoded.userId,
+                tenantId: decoded.tenantId,
+                isActive: true,
+              },
+            }),
+          { userId: decoded.userId, source: 'socket' }
+        );
         if (!user) {
           return next(new Error('Authentication failed'));
         }
-        const tenant = await AppDataSource.getRepository(Tenant).findOne({
-          where: { tenantId: decoded.tenantId },
-        });
+        const tenant = await runWithTenant(
+          decoded.tenantId,
+          () =>
+            AppDataSource.getRepository(Tenant).findOne({
+              where: { tenantId: decoded.tenantId },
+            }),
+          { userId: decoded.userId, source: 'socket' }
+        );
         if (!tenant || tenant.status !== 'active') {
           return next(new Error('Authentication failed'));
         }

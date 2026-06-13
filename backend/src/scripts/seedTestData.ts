@@ -9,6 +9,7 @@ import { LeaveBalance } from '../models/LeaveBalance';
 import { AttendancePolicy } from '../models/AttendancePolicy';
 import { UserRole, EmploymentStatus } from '../../../shared/types';
 import bcrypt from 'bcrypt';
+import { withoutTenantScope } from '../middleware/tenantContext';
 
 async function seedTestData() {
   try {
@@ -652,4 +653,4 @@ async function seedTestData() {
   }
 }
 
-seedTestData();
+withoutTenantScope('script: seedTestData (dev seed)', () => seedTestData());

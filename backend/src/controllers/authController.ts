@@ -7,6 +7,7 @@ import { User } from '../models/User';
 import { Employee } from '../models/Employee';
 import { config } from '../config/config';
 import emailService from '../services/emailService';
+import { withoutTenantScope } from '../middleware/tenantContext';
 
 const serializeUser = (user: User) => ({
   userId: user.userId,
@@ -95,12 +96,15 @@ export const login = async (req: Request, res: Response) => {
     }
 
     // Find user by email. Login is email-only, so duplicate emails across tenants
-    // would make identity resolution ambiguous.
+    // would make identity resolution ambiguous. Pre-auth system query: no tenant
+    // context exists yet, hence the logged escape hatch (Mission 2 A2a).
     const userRepository = AppDataSource.getRepository(User);
-    const matchingUsers = await userRepository.find({
-      where: { email: normalizedEmail },
-      relations: ['tenant', 'employee', 'employee.department', 'employee.designation'],
-    });
+    const matchingUsers = await withoutTenantScope('auth: login identity resolution', () =>
+      userRepository.find({
+        where: { email: normalizedEmail },
+        relations: ['tenant', 'employee', 'employee.department', 'employee.designation'],
+      })
+    );
     const user = matchingUsers[0];
 
     if (!user) {
@@ -466,7 +470,9 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
     }
 
     const userRepository = AppDataSource.getRepository(User);
-    const matchingUsers = await userRepository.find({ where: { email } });
+    const matchingUsers = await withoutTenantScope('auth: password reset request', () =>
+      userRepository.find({ where: { email } })
+    );
 
     if (matchingUsers.length !== 1 || !matchingUsers[0].isActive) {
       return res.json({
@@ -581,7 +587,9 @@ export const resetPassword = async (req: Request, res: Response) => {
     }
 
     const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOne({ where: { userId: payload.userId } });
+    const user = await withoutTenantScope('auth: password reset token redemption', () =>
+      userRepository.findOne({ where: { userId: payload.userId } })
+    );
 
     if (!user || !user.isActive) {
       return res.status(400).json({

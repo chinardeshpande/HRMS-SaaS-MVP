@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { AppDataSource } from '../config/database';
 import { config } from '../config/config';
 import { User } from '../models/User';
+import { withoutTenantScope } from '../middleware/tenantContext';
 
 export type DemoPersonaKey = 'admin' | 'hr' | 'manager' | 'employee' | 'finance';
 
@@ -61,10 +62,15 @@ const getPersona = (personaKey?: string): DemoPersona => {
 export const createDemoSession = async (personaKey?: string) => {
   const persona = getPersona(personaKey);
 
-  const user = await AppDataSource.getRepository(User).findOne({
-    where: { email: persona.email, isActive: true },
-    relations: ['tenant', 'employee', 'employee.department', 'employee.designation'],
-  });
+  // Demo sessions deliberately hop into the demo tenant — both the pre-auth
+  // /demo/login path and an authenticated user switching from their own
+  // tenant. Sanctioned cross-tenant access => logged escape hatch (A2a).
+  const user = await withoutTenantScope('demo: resolve demo persona user', () =>
+    AppDataSource.getRepository(User).findOne({
+      where: { email: persona.email, isActive: true },
+      relations: ['tenant', 'employee', 'employee.department', 'employee.designation'],
+    })
+  );
 
   if (!user || user.tenant?.subdomain !== DEMO_TENANT_SUBDOMAIN) {
     const error: any = new Error('Demo data is not available. Please run the demo seed first.');
@@ -95,7 +101,9 @@ export const createDemoSession = async (personaKey?: string) => {
   );
 
   user.lastLogin = new Date();
-  await AppDataSource.getRepository(User).save(user);
+  await withoutTenantScope('demo: stamp demo user lastLogin', () =>
+    AppDataSource.getRepository(User).save(user)
+  );
 
   return {
     user: {

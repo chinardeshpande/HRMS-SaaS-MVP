@@ -1,6 +1,8 @@
 import { DataSource } from 'typeorm';
 import { config } from './config';
 import { logger } from '../utils/logger';
+import { installTenantScope } from '../database/tenantScope';
+import { currentSessionStamp, withStampedManager } from '../database/tenantSession';
 
 // Import entities
 import { Tenant } from '../models/Tenant';
@@ -184,6 +186,31 @@ export const AppDataSource = new DataSource({
     connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
   },
 });
+
+// Mission 2 (A2a): app-side global tenant scope. Patches Repository.prototype
+// once, before any query can run — every repository (including those obtained
+// inside transactions) is tenant-filtered by default.
+installTenantScope();
+
+// Mission 2 (A2b): raw SQL through AppDataSource.query() cannot be app-side
+// scoped, but it can still carry the tenant/bypass session vars for the RLS
+// layer. With tenant context the statement runs inside a short stamped
+// transaction; context-free calls (health checks) pass through untouched.
+{
+  const originalQuery = AppDataSource.query.bind(AppDataSource);
+  (AppDataSource as { query: typeof AppDataSource.query }).query = (async (
+    query: string,
+    parameters?: unknown[]
+  ) => {
+    const stamp = currentSessionStamp();
+    if (!stamp) return originalQuery(query, parameters);
+    return withStampedManager(AppDataSource, AppDataSource.manager, stamp, (manager) =>
+      manager.queryRunner
+        ? manager.queryRunner.query(query, parameters as unknown[])
+        : originalQuery(query, parameters)
+    );
+  }) as typeof AppDataSource.query;
+}
 
 export const initializeDatabase = async (): Promise<void> => {
   try {

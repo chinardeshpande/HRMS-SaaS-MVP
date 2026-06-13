@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import registrationService from '../services/registrationService';
+import { withoutTenantScope } from '../middleware/tenantContext';
 import { PlanType } from '../models/CompanyRegistration';
 
 const router = Router();
@@ -43,7 +44,8 @@ router.post('/signup', async (req: Request, res: Response) => {
       });
     }
 
-    const result = await registrationService.initiateSignup({
+    const result = await withoutTenantScope('registration: pre-tenant signup', () =>
+      registrationService.initiateSignup({
       companyName,
       adminEmail,
       adminFullName,
@@ -53,7 +55,8 @@ router.post('/signup', async (req: Request, res: Response) => {
       selectedPlan: selectedPlan as PlanType,
       utmSource,
       utmCampaign,
-    });
+      })
+    );
 
     res.status(201).json({
       success: true,
@@ -86,7 +89,9 @@ router.post('/verify-email', async (req: Request, res: Response) => {
       });
     }
 
-    const result = await registrationService.verifyEmail(token);
+    const result = await withoutTenantScope('registration: email verification', () =>
+      registrationService.verifyEmail(token)
+    );
 
     res.status(200).json({
       success: true,
@@ -129,7 +134,9 @@ router.post('/complete', async (req: Request, res: Response) => {
       });
     }
 
-    const result = await registrationService.completeRegistration(registrationId, password);
+    const result = await withoutTenantScope('registration: tenant creation', () =>
+      registrationService.completeRegistration(registrationId, password)
+    );
 
     res.status(200).json({
       success: true,
@@ -162,7 +169,9 @@ router.post('/resend-verification', async (req: Request, res: Response) => {
       });
     }
 
-    const result = await registrationService.resendVerification(email);
+    const result = await withoutTenantScope('registration: resend verification', () =>
+      registrationService.resendVerification(email)
+    );
 
     res.status(200).json({
       success: true,
@@ -186,7 +195,9 @@ router.get('/check-email/:email', async (req: Request, res: Response) => {
   try {
     const { email } = req.params;
 
-    const result = await registrationService.checkEmailAvailability(email);
+    const result = await withoutTenantScope('registration: email availability check', () =>
+      registrationService.checkEmailAvailability(email)
+    );
 
     res.status(200).json({
       success: true,

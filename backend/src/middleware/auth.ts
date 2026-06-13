@@ -58,6 +58,18 @@ export const authenticate = async (
     // Verify token
     const decoded = jwt.verify(token, config.jwt.secret) as JWTPayload;
 
+    // Populate the AsyncLocalStorage tenant context (Mission 2, Phase A0)
+    // BEFORE the lookups below, so they run tenant-scoped themselves (and,
+    // with RLS, on a connection with the tenant session var set). Provenance:
+    // tenantId comes from the signature-verified JWT — never from
+    // client-supplied params — and the scoped lookups below then confirm the
+    // user is active in exactly that tenant.
+    setTenantContext({
+      userId: decoded.userId,
+      tenantId: decoded.tenantId,
+      role: decoded.role,
+    });
+
     const user = await AppDataSource.getRepository(User).findOne({
       where: {
         userId: decoded.userId,
@@ -89,15 +101,6 @@ export const authenticate = async (
 
     // Also set tenantId separately for easier access
     req.tenantId = user.tenantId;
-
-    // Populate the AsyncLocalStorage tenant context (Mission 2, Phase A0).
-    // Provenance: tenantId comes from the signature-verified JWT cross-checked
-    // against the active-user row above — never from client-supplied params.
-    setTenantContext({
-      userId: user.userId,
-      tenantId: user.tenantId,
-      role: user.role,
-    });
 
     next();
   } catch (error) {
