@@ -86,7 +86,7 @@ explicitly to `0.0.0.0`.
 
 **Per R8.** With `max-instances > 1`, every cold-starting instance races the same migration.
 
-**Fix:** build a Cloud Run **Job** `aurorahr-migrate` from the same image, invoked in the
+**Fix:** build a Cloud Run **Job** `aurahrms-migrate` from the same image, invoked in the
 pipeline between push and deploy. Confirm no entrypoint/`CMD`/start script calls
 `npm run migrate`. (Note: git history shows a `codex/production-migration-idempotency` branch
 was merged — good; re-verify idempotency holds rather than assuming.)

@@ -42,7 +42,7 @@ synchronize: false,   // good — migrations only
 ```
 
 This is **good news** for Cloud SQL: `pg` treats a `host` beginning with `/` as a Unix socket
-directory, so `DB_HOST=/cloudsql/<PROJECT>:<REGION>:<INSTANCE>` works directly. AuroraHR
+directory, so `DB_HOST=/cloudsql/<PROJECT>:<REGION>:<INSTANCE>` works directly. AuraHRMS
 therefore **avoids** the postgres-js URL-parsing gotcha that bit the CCC pilot.
 
 **[verified]** Health endpoint already exists: `backend/src/app.ts:194` → `GET /health`
@@ -157,9 +157,9 @@ ccc-pilot-25459      (CCC pilot — the proven Cloud Run reference)
 chinar-portfolio     (portfolio — Cloud Run + LB reference)
 ```
 
-**There is no AuroraHR project yet.** Per the platform standard, AuroraHR gets its own
-projects, one per environment (`aurorahr-staging`, `aurorahr-prod`) — see
-`02-GOLDEN-PATH-SOP.md` §7. Do **not** deploy AuroraHR into `ccc-pilot-25459` or
+**There is no AuraHRMS project yet.** Per the platform standard, AuraHRMS gets its own
+projects, one per environment (`aurahrms-staging`, `aurahrms-prod`) — see
+`02-GOLDEN-PATH-SOP.md` §7. Do **not** deploy AuraHRMS into `ccc-pilot-25459` or
 `acv-solutions-63915` without an explicit decision from Chinar; `acv-solutions-63915` in
 particular may already hold unrelated ACV resources.
 

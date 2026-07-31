@@ -1,6 +1,6 @@
-# 08 — `aurorahr.in` domain cutover
+# 08 — `aurahrms.com` domain cutover
 
-Moving `aurorahr.in` off the dead DigitalOcean IP (`64.227.173.175`) onto a Global External
+Moving `aurahrms.com` off the dead DigitalOcean IP (`64.227.173.175`) onto a Global External
 HTTPS Load Balancer in front of Cloud Run.
 
 This exact procedure resolved a 20-day outage on `chinardeshpande.tech` in June 2026: managed
@@ -20,7 +20,7 @@ redirect.
 - It is pure `gcloud` — no extra CLI to install, works from any machine.
 
 **Cost:** ~$18/month for the forwarding rule + static IP. Per **R1a this must be the shared
-portfolio LB**, with `aurorahr.in` added as a host — never a new AuroraHR-only LB. If no
+portfolio LB**, with `aurahrms.com` added as a host — never a new AuraHRMS-only LB. If no
 shared LB exists yet, this one becomes it, and future products join as additional hosts.
 
 ---
@@ -28,17 +28,17 @@ shared LB exists yet, this one becomes it, and future products join as additiona
 ## 2. Build the load balancer
 
 ```bash
-P=aurorahr-prod; REGION=asia-south1; N=aurorahr
-APEX=aurorahr.in; WWW=www.aurorahr.in
+P=aurahrms-prod; REGION=asia-south1; N=aurahrms
+APEX=aurahrms.com; WWW=www.aurahrms.com
 
 # 1. static global IP
 gcloud compute addresses create ${N}-lb-ip --global --project=$P
 
 # 2. serverless NEGs -> the two Cloud Run services
 gcloud compute network-endpoint-groups create ${N}-api-neg --region=$REGION \
-  --network-endpoint-type=serverless --cloud-run-service=aurorahr-api --project=$P
+  --network-endpoint-type=serverless --cloud-run-service=aurahrms-api --project=$P
 gcloud compute network-endpoint-groups create ${N}-web-neg --region=$REGION \
-  --network-endpoint-type=serverless --cloud-run-service=aurorahr-web --project=$P
+  --network-endpoint-type=serverless --cloud-run-service=aurahrms-web --project=$P
 
 # 3. backend services
 gcloud compute backend-services create ${N}-api-backend --global \
@@ -114,8 +114,8 @@ Point **both** apex and www at the LB IP as **A records**, replacing the dead
 `64.227.173.175`:
 
 ```
-aurorahr.in        A   <LB_IP>
-www.aurorahr.in    A   <LB_IP>
+aurahrms.com        A   <LB_IP>
+www.aurahrms.com    A   <LB_IP>
 ```
 
 Both must resolve to the LB or the managed certificate will not validate.
@@ -129,16 +129,16 @@ registrar's current TTL is long, that is a constraint to know *before* cutover, 
 
 ```bash
 # authoritative nameserver, bypassing caches:
-dig +short @<registrar-ns> aurorahr.in A          # expect <LB_IP>
-dig +short @<registrar-ns> www.aurorahr.in A      # expect <LB_IP>
+dig +short @<registrar-ns> aurahrms.com A          # expect <LB_IP>
+dig +short @<registrar-ns> www.aurahrms.com A      # expect <LB_IP>
 
 # certificate:
 gcloud compute ssl-certificates describe ${N}-cert --global --project=$P \
   --format='value(managed.status)'                # want ACTIVE
 
 # live:
-curl -s -o /dev/null -w "%{http_code}\n" https://aurorahr.in/health          # 200
-curl -s -o /dev/null -w "%{http_code} %{redirect_url}\n" http://aurorahr.in/ # 301 -> https
+curl -s -o /dev/null -w "%{http_code}\n" https://aurahrms.com/health          # 200
+curl -s -o /dev/null -w "%{http_code} %{redirect_url}\n" http://aurahrms.com/ # 301 -> https
 ```
 
 The certificate sits in `PROVISIONING` until DNS resolves, then flips to `ACTIVE` — often
@@ -150,12 +150,12 @@ concluding anything is wrong.**
 
 ## 6. App-side checklist
 
-- `CORS_ORIGIN=https://aurorahr.in` (or drop CORS entirely — the LB makes it same-origin).
-- `BACKEND_URL` / `FRONTEND_URL` set to `https://aurorahr.in`.
+- `CORS_ORIGIN=https://aurahrms.com` (or drop CORS entirely — the LB makes it same-origin).
+- `BACKEND_URL` / `FRONTEND_URL` set to `https://aurahrms.com`.
 - The web image is rebuilt with `VITE_API_URL=/api` and `VITE_SOCKET_URL=/` (relative, so the
   bundle is domain-agnostic).
 - Cookies: `Secure`, `HttpOnly`, `SameSite=Lax` — the app is now HTTPS-only.
-- No OAuth redirect-URI change is needed: AuroraHR uses JWT credentials login, not a Google
+- No OAuth redirect-URI change is needed: AuraHRMS uses JWT credentials login, not a Google
   OAuth login flow. **Verify** this before telling anyone otherwise.
 
 ---
@@ -164,7 +164,7 @@ concluding anything is wrong.**
 
 | Situation | Action |
 |---|---|
-| Bad app revision | `gcloud run services update-traffic aurorahr-api --to-revisions=<PREV>=100 --region=$REGION --project=$P` |
+| Bad app revision | `gcloud run services update-traffic aurahrms-api --to-revisions=<PREV>=100 --region=$REGION --project=$P` |
 | Bad LB routing | Re-import the previous url-map YAML |
 | Cutover must be abandoned | Repoint DNS back — but note the **droplet is dead**, so there is nothing to roll back *to*. Forward-only. |
 

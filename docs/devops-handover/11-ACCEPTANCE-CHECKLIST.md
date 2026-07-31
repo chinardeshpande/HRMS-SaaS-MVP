@@ -14,7 +14,7 @@ status code, a screenshot. Per `10-CODEX-OPERATING-RULES.md` §4.
 
 ## Gate 1 — Decisions recorded
 - [ ] `hardening` branch decision made and written down
-- [ ] `aurorahr-staging` + `aurorahr-prod` created, billing enabled and **verified**
+- [ ] `aurahrms-staging` + `aurahrms-prod` created, billing enabled and **verified**
 - [ ] Shared-LB question resolved (join existing, or this becomes the shared one)
 - [ ] Socket.IO `max-instances=1` ceiling explicitly accepted and documented
 - [ ] ADR written under `docs/adr/`
@@ -54,11 +54,11 @@ status code, a screenshot. Per `10-CODEX-OPERATING-RULES.md` §4.
 - [ ] Local dumps and tarballs deleted; deletion recorded
 
 ## Gate 6 — Production live
-- [ ] Gates 3–5 repeated against `aurorahr-prod`
+- [ ] Gates 3–5 repeated against `aurahrms-prod`
 - [ ] LB tested via `--resolve` **before** any DNS change (both 200)
 - [ ] DNS moved; `dig` at the authoritative NS confirms both apex and www → LB IP
 - [ ] Managed certificate `ACTIVE`
-- [ ] `https://aurorahr.in/health` → 200; `http://` → 301 → https
+- [ ] `https://aurahrms.com/health` → 200; `http://` → 301 → https
 - [ ] Full functional pass on the real domain (login, upload, download, sockets)
 - [ ] Previous revision names noted, and the rollback command rehearsed
 

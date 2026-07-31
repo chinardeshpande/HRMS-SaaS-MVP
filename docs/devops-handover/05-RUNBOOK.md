@@ -41,20 +41,20 @@ unreachable (`01-CURRENT-STATE.md` §2).
 | Decision | Recommendation |
 |---|---|
 | Merge `hardening` now, or ship `main` first? | **Ship `main` first**; `hardening` after |
-| Reuse `acv-solutions-63915` or create new projects? | **Create `aurorahr-staging` + `aurorahr-prod`** (R7) |
-| Is there an existing shared LB to join? | If not, AuroraHR's becomes the shared one (R1a) |
+| Reuse `acv-solutions-63915` or create new projects? | **Create `aurahrms-staging` + `aurahrms-prod`** (R7) |
+| Is there an existing shared LB to join? | If not, AuraHRMS's becomes the shared one (R1a) |
 | Accept the `max-instances=1` Socket.IO ceiling for v1? | **Yes** for single-tenant ACV; record it |
 | Billing account + current trial status? | Verify before assuming free headroom |
 
 Then create the projects and link billing:
 
 ```bash
-gcloud projects create aurorahr-staging --name="AuroraHR Staging"
-gcloud projects create aurorahr-prod    --name="AuroraHR Production"
-gcloud billing projects link aurorahr-staging --billing-account=<BILLING_ACCOUNT_ID>
-gcloud billing projects link aurorahr-prod    --billing-account=<BILLING_ACCOUNT_ID>
+gcloud projects create aurahrms-staging --name="AuraHRMS Staging"
+gcloud projects create aurahrms-prod    --name="AuraHRMS Production"
+gcloud billing projects link aurahrms-staging --billing-account=<BILLING_ACCOUNT_ID>
+gcloud billing projects link aurahrms-prod    --billing-account=<BILLING_ACCOUNT_ID>
 # confirm:
-gcloud billing projects describe aurorahr-staging   # expect billingEnabled: True
+gcloud billing projects describe aurahrms-staging   # expect billingEnabled: True
 ```
 
 **Exit criteria:** both projects exist, billing enabled, decisions recorded in an ADR at
@@ -108,7 +108,7 @@ serves `/health` on `PORT=8080`.
 
 ```bash
 chmod +x docs/devops-handover/scripts/setup-gcp-pipeline.sh
-docs/devops-handover/scripts/setup-gcp-pipeline.sh aurorahr-staging <REPO> asia-south1
+docs/devops-handover/scripts/setup-gcp-pipeline.sh aurahrms-staging <REPO> asia-south1
 ```
 
 Idempotent (R10). It enables APIs, creates the Artifact Registry `containers` repo, creates
@@ -120,16 +120,16 @@ Then set the GitHub **Variables** (Variables, not Secrets — R14):
 
 ```bash
 R=<REPO>
-gh variable set GCP_PROJECT_ID   --repo $R --body "aurorahr-staging"
+gh variable set GCP_PROJECT_ID   --repo $R --body "aurahrms-staging"
 gh variable set GCP_REGION       --repo $R --body "asia-south1"
 gh variable set GCP_WIF_PROVIDER --repo $R --body "<provider resource name printed by script>"
-gh variable set GCP_DEPLOYER_SA  --repo $R --body "gha-deployer@aurorahr-staging.iam.gserviceaccount.com"
+gh variable set GCP_DEPLOYER_SA  --repo $R --body "gha-deployer@aurahrms-staging.iam.gserviceaccount.com"
 ```
 
-Additional grants AuroraHR needs beyond the script's defaults:
+Additional grants AuraHRMS needs beyond the script's defaults:
 
 ```bash
-PID=aurorahr-staging
+PID=aurahrms-staging
 PNUM=$(gcloud projects describe $PID --format='value(projectNumber)')
 COMPUTE="${PNUM}-compute@developer.gserviceaccount.com"
 gcloud services enable sqladmin.googleapis.com storage.googleapis.com --project=$PID
@@ -149,7 +149,7 @@ repo Variables are set.
 
 **Cloud SQL:**
 ```bash
-PID=aurorahr-staging; REGION=asia-south1; INST=aurorahr-pg
+PID=aurahrms-staging; REGION=asia-south1; INST=aurahrms-pg
 gcloud sql instances create $INST --project=$PID --region=$REGION \
   --database-version=POSTGRES_16 --tier=db-custom-1-3840 \
   --storage-auto-increase --backup --enable-point-in-time-recovery \
@@ -161,10 +161,10 @@ CONN="${PID}:${REGION}:${INST}"     # ⚠️ braces — zsh mangles "$PID:$REGIO
 
 **GCS bucket** (private; bucket-scoped IAM, not project-wide):
 ```bash
-gcloud storage buckets create gs://aurorahr-staging-documents \
+gcloud storage buckets create gs://aurahrms-staging-documents \
   --project=$PID --location=$REGION --uniform-bucket-level-access
-gcloud storage buckets update gs://aurorahr-staging-documents --versioning
-gcloud storage buckets add-iam-policy-binding gs://aurorahr-staging-documents \
+gcloud storage buckets update gs://aurahrms-staging-documents --versioning
+gcloud storage buckets add-iam-policy-binding gs://aurahrms-staging-documents \
   --member="serviceAccount:${COMPUTE}" --role="roles/storage.objectAdmin"
 ```
 
@@ -184,7 +184,7 @@ Only when Phase 0 recovered a dump.
 2. Import: `gcloud sql import sql` from a GCS staging bucket, or `pg_restore` through the
    Cloud SQL Auth Proxy.
 3. Copy documents into the bucket preserving the paths the database records:
-   `gcloud storage rsync -r ./uploads gs://aurorahr-staging-documents/…`
+   `gcloud storage rsync -r ./uploads gs://aurahrms-staging-documents/…`
 4. **Reconcile.** Row counts per table before/after; object count vs document rows; then spot-
    check that a sample of DB-referenced documents actually resolves in the bucket. A count
    match with broken paths is a silent failure.
@@ -209,9 +209,9 @@ gh run watch "$(gh run list --repo $R --limit 1 --json databaseId -q '.[0].datab
 Then verify by HTTP, because green ≠ working (R5):
 
 ```bash
-PID=aurorahr-staging; REGION=asia-south1
-API=$(gcloud run services describe aurorahr-api --project=$PID --region=$REGION --format='value(status.url)')
-WEB=$(gcloud run services describe aurorahr-web --project=$PID --region=$REGION --format='value(status.url)')
+PID=aurahrms-staging; REGION=asia-south1
+API=$(gcloud run services describe aurahrms-api --project=$PID --region=$REGION --format='value(status.url)')
+WEB=$(gcloud run services describe aurahrms-web --project=$PID --region=$REGION --format='value(status.url)')
 curl -s -o /dev/null -w "api health %{http_code}\n" "$API/health"
 curl -s -o /dev/null -w "web root   %{http_code}\n" "$WEB/"
 curl -s "$WEB/" | grep -oiE "<title>[^<]*</title>" | head -1
@@ -230,8 +230,9 @@ Then the functional gates that only matter for **this** app:
 
 ## Phase 8 — Production and domain cutover
 
-Repeat Phases 4–7 against `aurorahr-prod`, then follow `08-DOMAIN-CUTOVER.md` to move
-`aurorahr.in` off the dead droplet IP onto the load balancer.
+Repeat Phases 4–7 against `aurahrms-prod`, then follow `08-DOMAIN-CUTOVER.md` to move
+`aurahrms.com` onto the load balancer. The legacy `aurorahr.in` domain remains historical
+context only and is not part of this cutover.
 
 **Do not** cut DNS until the production Cloud Run URL passes every Phase 7 gate.
 

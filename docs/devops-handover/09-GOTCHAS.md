@@ -1,6 +1,6 @@
 # 09 — Gotchas
 
-Every item below cost real hours on a real deploy. Items marked **[AuroraHR]** are specific to
+Every item below cost real hours on a real deploy. Items marked **[AuraHRMS]** are specific to
 this stack; the rest are portfolio-wide and were learned on the Next.js apps.
 
 ---
@@ -30,7 +30,7 @@ braces, or build the string into a variable first.
 
 ## B. Build / application
 
-**B1. [AuroraHR] The compiled entrypoint path is ambiguous — resolve it, do not guess.**
+**B1. [AuraHRMS] The compiled entrypoint path is ambiguous — resolve it, do not guess.**
 `package.json` `main` and the legacy Dockerfile both say `dist/backend/src/server.js`, but
 `backend/tsconfig.json` (`outDir: "./dist"`, `include: ["src/**/*"]`) implies
 `dist/src/server.js`. They disagree. Run:
@@ -40,7 +40,7 @@ cd backend && npm ci && npm run build && find dist -name server.js
 and set `CMD` from the observed output. A wrong path fails at container start with a bare
 `Cannot find module`.
 
-**B2. [AuroraHR] `VITE_*` variables are inlined at BUILD time.**
+**B2. [AuraHRMS] `VITE_*` variables are inlined at BUILD time.**
 Exactly like `NEXT_PUBLIC_*`. Pass them as Docker `--build-arg`s. Supplied only at runtime,
 the client bundle ships `undefined` and the SPA cannot reach the API — with no build error.
 Corollary: **anything in a `VITE_*` var is public**; never put a secret in one.
@@ -58,7 +58,7 @@ succeed and serve an error page.
 
 ---
 
-## C. Cloud SQL / TypeORM **[AuroraHR]**
+## C. Cloud SQL / TypeORM **[AuraHRMS]**
 
 **C1. Enable `sqladmin.googleapis.com` before creating the instance** — it is separate from
 `run`/`artifactregistry`/`secretmanager`/`cloudbuild`/`iam`.
@@ -73,9 +73,9 @@ The droplet's `.env` very likely has `DB_SSL=true` — **do not copy it forward 
 `roles/cloudsql.client` on the runtime SA. Missing any one gives a connection timeout that
 looks like a network problem.
 
-**C4. AuroraHR dodges the postgres-js URL bug** — worth knowing why. On the CCC pilot,
+**C4. AuraHRMS dodges the postgres-js URL bug** — worth knowing why. On the CCC pilot,
 `new URL()` (used by postgres-js) *rejects* `postgresql://u:p@/db?host=/cloudsql/INSTANCE`,
-requiring structured options instead. AuroraHR's `data-source.ts` already uses discrete
+requiring structured options instead. AuraHRMS's `data-source.ts` already uses discrete
 `host`/`port`/`username`/`password` fields, so this does not apply. **Do not "helpfully"
 refactor it to a `DATABASE_URL` string** — that would import the bug.
 
@@ -89,13 +89,13 @@ Keep it that way; it will silently restructure a production schema.
 **D1. The filesystem is ephemeral and per-instance.** Anything written locally vanishes on
 recycle and is invisible to other instances. See `04-BLOCKERS.md` §1 and §5.
 
-**D2. [AuroraHR] Socket.IO broadcasts do not cross instances without a shared adapter.**
+**D2. [AuraHRMS] Socket.IO broadcasts do not cross instances without a shared adapter.**
 With `max-instances > 1` and no Redis adapter, an event emitted on instance A never reaches
 clients on instance B. Symptom: notifications reach *some* users, intermittently. Either pin
 `max-instances=1` (documented ceiling) or add the Redis adapter. See
 `03-TARGET-ARCHITECTURE.md` §5.
 
-**D3. [AuroraHR] Socket.IO also needs `--session-affinity` and `--timeout=3600`.** Without
+**D3. [AuraHRMS] Socket.IO also needs `--session-affinity` and `--timeout=3600`.** Without
 them, the upgrade handshake and long-lived connections break in ways that look like flaky
 client code.
 
@@ -130,7 +130,7 @@ flow and may hit GitHub's sudo-mode passkey prompt.
 **F2. No SSH key on the machine?** Set the remote to HTTPS and run `gh auth setup-git` so the
 `gh` token is used for pushes.
 
-**F3. [AuroraHR] Multiple deploy workflows will fight each other.** The repo currently has
+**F3. [AuraHRMS] Multiple deploy workflows will fight each other.** The repo currently has
 `deploy-aurorahr.yml`, `deploy-staging.yml`, plus two `.disabled` files. Retire them in the
 same commit that adds the Cloud Run workflow, or a droplet-era deploy will silently contend
 with the new one.

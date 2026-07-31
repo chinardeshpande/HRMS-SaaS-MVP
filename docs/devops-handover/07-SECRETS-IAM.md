@@ -7,7 +7,7 @@
 Three buckets. Getting this wrong is the most common cause of "it works locally but the
 deployed app is broken".
 
-| Bucket | Where it goes | AuroraHR examples |
+| Bucket | Where it goes | AuraHRMS examples |
 |---|---|---|
 | **Runtime secret** | Secret Manager → `--set-secrets` | `DB_PASSWORD`, `JWT_SECRET`, `JWT_REFRESH_SECRET`, `SMTP_PASSWORD` |
 | **Runtime config** (not sensitive) | `--set-env-vars` | `NODE_ENV`, `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_SSL`, `STORAGE_TYPE`, `GCS_BUCKET`, `CORS_ORIGIN`, `LOG_LEVEL` |
@@ -27,10 +27,10 @@ deployed app is broken".
 `<prefix>-<env-var-in-kebab-case>` — mechanical, so it is derivable rather than remembered:
 
 ```
-JWT_SECRET          -> aurorahr-jwt-secret
-JWT_REFRESH_SECRET  -> aurorahr-jwt-refresh-secret
-DB_PASSWORD         -> aurorahr-db-password
-SMTP_PASSWORD       -> aurorahr-smtp-password
+JWT_SECRET          -> aurahrms-jwt-secret
+JWT_REFRESH_SECRET  -> aurahrms-jwt-refresh-secret
+DB_PASSWORD         -> aurahrms-db-password
+SMTP_PASSWORD       -> aurahrms-smtp-password
 ```
 
 Secrets live in the **same project** as the service that reads them, so staging and prod
@@ -43,7 +43,7 @@ secrets are naturally separate and cannot be confused.
 **Never type, echo, or paste a secret value into a chat, a log, or a command line that gets
 recorded.** Use a local fill-file, consumed by a pipe.
 
-**Step 1 — write the template** (`/tmp/aurorahr-secrets.env`, keys only):
+**Step 1 — write the template** (`/tmp/aurahrms-secrets.env`, keys only):
 
 ```
 DB_PASSWORD=
@@ -60,14 +60,14 @@ existing sessions; plan for that).
 **Step 3 — create secrets, piping so nothing prints:**
 
 ```bash
-PID=aurorahr-staging; FILE=/tmp/aurorahr-secrets.env
+PID=aurahrms-staging; FILE=/tmp/aurahrms-secrets.env
 while IFS= read -r line || [ -n "$line" ]; do
   case "$line" in ''|\#*) continue;; esac
   key=${line%%=*}; val=${line#*=}
   key=$(printf '%s' "$key" | tr -d '[:space:]'); val=${val%$'\r'}
   [ -z "$key" ] && continue
   [ -z "$val" ] && { echo "  BLANK (skipped): $key"; continue; }
-  sname="aurorahr-$(printf '%s' "$key" | tr 'A-Z_' 'a-z-')"
+  sname="aurahrms-$(printf '%s' "$key" | tr 'A-Z_' 'a-z-')"
   if gcloud secrets describe "$sname" --project=$PID >/dev/null 2>&1; then
     printf '%s' "$val" | gcloud secrets versions add "$sname" --project=$PID --data-file=- >/dev/null \
       && echo "  updated $key -> $sname"
@@ -95,9 +95,9 @@ consumes it tells you whether it is live. Never `echo` it to check.
 Adding a version does not restart anything — `:latest` is resolved **at deploy time**:
 
 ```bash
-printf '%s' "$NEW" | gcloud secrets versions add aurorahr-jwt-secret --project=$PID --data-file=-
-gcloud run services update aurorahr-api --project=$PID --region=asia-south1 \
-  --update-secrets=JWT_SECRET=aurorahr-jwt-secret:latest      # forces a new revision
+printf '%s' "$NEW" | gcloud secrets versions add aurahrms-jwt-secret --project=$PID --data-file=-
+gcloud run services update aurahrms-api --project=$PID --region=asia-south1 \
+  --update-secrets=JWT_SECRET=aurahrms-jwt-secret:latest      # forces a new revision
 ```
 
 **Rotate immediately (Phase 9):** everything that lived on the lost droplet. A host you no
@@ -132,7 +132,7 @@ plus `iam.serviceAccountUser` on the runtime SA.
 
 **Runtime/compute SA** — what the build and the service run as:
 `run.admin`, `artifactregistry.writer`, `secretmanager.secretAccessor`, `logging.logWriter`,
-`cloudbuild.builds.builder`, `iam.serviceAccountUser` **on itself**, plus for AuroraHR:
+`cloudbuild.builds.builder`, `iam.serviceAccountUser` **on itself**, plus for AuraHRMS:
 `cloudsql.client` (project-level) and `storage.objectAdmin` (**bucket-scoped**, not
 project-wide).
 

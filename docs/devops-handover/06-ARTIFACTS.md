@@ -145,12 +145,12 @@ server {
 substitutions:
   _REGION: asia-south1
   _REPO: containers
-  _API: aurorahr-api
-  _WEB: aurorahr-web
-  _JOB: aurorahr-migrate
+  _API: aurahrms-api
+  _WEB: aurahrms-web
+  _JOB: aurahrms-migrate
   _RUNTIME_SA: <PNUM>-compute@developer.gserviceaccount.com
   _SQL_CONN: <PID>:asia-south1:<INSTANCE>   # spell out fully — see gotcha C1
-  _BUCKET: aurorahr-staging-documents
+  _BUCKET: aurahrms-staging-documents
   _TAG: latest                              # GitHub Actions overrides with the commit SHA
 
 steps:
@@ -189,7 +189,7 @@ steps:
           --image=$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_API:$_TAG \
           --region=$_REGION --service-account=$_RUNTIME_SA \
           --set-cloudsql-instances=$_SQL_CONN \
-          --set-secrets=DB_PASSWORD=aurorahr-db-password:latest \
+          --set-secrets=DB_PASSWORD=aurahrms-db-password:latest \
           --set-env-vars=NODE_ENV=production,DB_HOST=/cloudsql/$_SQL_CONN,DB_NAME=aurorahr,DB_USER=aurorahr_app,DB_SSL=false \
           --command=npm --args=run,migrate \
           --max-retries=0 --task-timeout=900s
@@ -218,7 +218,7 @@ steps:
       - --service-account=$_RUNTIME_SA
       - --add-cloudsql-instances=$_SQL_CONN
       - --set-env-vars=NODE_ENV=production,DB_HOST=/cloudsql/$_SQL_CONN,DB_NAME=aurorahr,DB_USER=aurorahr_app,DB_SSL=false,STORAGE_TYPE=gcs,GCS_BUCKET=$_BUCKET
-      - --set-secrets=DB_PASSWORD=aurorahr-db-password:latest,JWT_SECRET=aurorahr-jwt-secret:latest,JWT_REFRESH_SECRET=aurorahr-jwt-refresh-secret:latest,SMTP_PASSWORD=aurorahr-smtp-password:latest
+      - --set-secrets=DB_PASSWORD=aurahrms-db-password:latest,JWT_SECRET=aurahrms-jwt-secret:latest,JWT_REFRESH_SECRET=aurahrms-jwt-refresh-secret:latest,SMTP_PASSWORD=aurahrms-smtp-password:latest
 
   # ---- deploy WEB ----
   - id: deploy-web
@@ -323,10 +323,10 @@ jobs:
       - name: Verify live (green pipeline != working app)
         run: |
           set -euo pipefail
-          API=$(gcloud run services describe aurorahr-api \
+          API=$(gcloud run services describe aurahrms-api \
             --project="${{ vars.GCP_PROJECT_ID }}" --region="${{ vars.GCP_REGION }}" \
             --format='value(status.url)')
-          WEB=$(gcloud run services describe aurorahr-web \
+          WEB=$(gcloud run services describe aurahrms-web \
             --project="${{ vars.GCP_PROJECT_ID }}" --region="${{ vars.GCP_REGION }}" \
             --format='value(status.url)')
           code=$(curl -s -o /dev/null -w '%{http_code}' "$API/health")

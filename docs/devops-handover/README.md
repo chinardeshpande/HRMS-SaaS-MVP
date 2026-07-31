@@ -1,15 +1,15 @@
-# AuroraHR — Hosting & DevOps Handover Kit
+# AuraHRMS — Hosting & DevOps Handover Kit
 
 **Version:** 1.0 · **Written:** 2026-07-23 · **Author:** Claude Code (Opus 4.8), from a proven
 GCP Cloud Run recipe shipped on two live production apps.
-**Audience:** ChatGPT Codex (or any agent/engineer) restarting the AuroraHR HRMS MVP with the
+**Audience:** ChatGPT Codex (or any agent/engineer) restarting the AuraHRMS HRMS MVP with the
 ACV Solutions implementation.
 
 ---
 
 ## 0. Read this first
 
-This kit is the **canonical hosting and DevOps standard** for AuroraHR. It exists because the
+This kit is the **canonical hosting and DevOps standard** for AuraHRMS. It exists because the
 repo currently contains ~20 conflicting deployment markdown files at root, most of them stale
 and describing a DigitalOcean droplet architecture that is **no longer running**.
 
@@ -64,12 +64,12 @@ This reframes the project: it is **not** "improve hosting on a running system." 
 |---|---|---|
 | `01-CURRENT-STATE.md` | Verified facts: repo, stack, branches, hosting, outage | First. Always. |
 | `02-GOLDEN-PATH-SOP.md` | **The doctrine.** Product-agnostic standing rules | First. Always. |
-| `03-TARGET-ARCHITECTURE.md` | The AuroraHR target design + the decisions behind it | Before planning |
+| `03-TARGET-ARCHITECTURE.md` | The AuraHRMS target design + the decisions behind it | Before planning |
 | `04-BLOCKERS.md` | 5 things that must be fixed before Cloud Run works at all | Before coding |
 | `05-RUNBOOK.md` | Phase-by-phase execution, Phase 0 → Phase 9 | During execution |
 | `06-ARTIFACTS.md` | Copy-ready Dockerfile / cloudbuild.yaml / workflow / health route | Phase 3 |
 | `07-SECRETS-IAM.md` | Secret Manager map, WIF/keyless CI, no-leak intake pattern | Phase 4–5 |
-| `08-DOMAIN-CUTOVER.md` | `aurorahr.in` DNS cutover, LB vs Firebase, rollback | Phase 8 |
+| `08-DOMAIN-CUTOVER.md` | `aurahrms.com` DNS cutover, LB vs Firebase, rollback | Phase 8 |
 | `09-GOTCHAS.md` | Hard-won failures. Each one cost real hours | Continuously |
 | `10-CODEX-OPERATING-RULES.md` | **Guardrails.** What Codex may and may not do | First. Always. |
 | `11-ACCEPTANCE-CHECKLIST.md` | Definition of done + verification gates | Before claiming done |
@@ -82,7 +82,7 @@ This reframes the project: it is **not** "improve hosting on a running system." 
 Paste this to start the engagement:
 
 ```text
-You are restarting the AuroraHR HRMS MVP (repo: HRMS-SaaS-MVP) and moving it to
+You are restarting the AuraHRMS HRMS MVP (repo: HRMS-SaaS-MVP) and moving it to
 Google Cloud Run, replacing the dead DigitalOcean droplet.
 
 Before doing ANYTHING, read these files in order and treat them as authoritative:
@@ -118,8 +118,8 @@ This is not theory. Every pattern here was executed end-to-end and verified live
 - The `gcp-cloud-run-deploy` skill distilled from both, including the gotchas file that is
   reproduced (and extended for Express/TypeORM) in `09-GOTCHAS.md`.
 
-**AuroraHR is materially different from both**, and this kit says exactly where: those were
-Next.js apps with no file uploads and no WebSockets. AuroraHR is an Express + TypeORM API
+**AuraHRMS is materially different from both**, and this kit says exactly where: those were
+Next.js apps with no file uploads and no WebSockets. AuraHRMS is an Express + TypeORM API
 with a separate Vite SPA, Socket.IO, local-disk document storage, and live client PII. The
 adaptations are documented rather than hand-waved — see `03-TARGET-ARCHITECTURE.md` and
 `04-BLOCKERS.md`.

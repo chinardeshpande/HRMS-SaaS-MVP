@@ -111,13 +111,13 @@ disappears when the instance recycles and is invisible to every other instance.
 - Sessions/queues/caches → an external store, never in-process memory, once
   `max-instances > 1`.
 
-This rule is the single largest blocker for AuroraHR. See `04-BLOCKERS.md` §1.
+This rule is the single largest blocker for AuraHRMS. See `04-BLOCKERS.md` §1.
 
 ---
 
 ## R7 — One GCP project per product, per environment.
 
-`aurorahr-staging` and `aurorahr-prod` are **separate projects**, not separate namespaces in
+`aurahrms-staging` and `aurahrms-prod` are **separate projects**, not separate namespaces in
 one project. Separate projects give you a hard IAM boundary, independent billing visibility,
 independent quota, and a blast radius that stops at the boundary.
 
@@ -135,7 +135,7 @@ before the new revision receives traffic. Migrations must be **idempotent** and
 **expand-and-contract** (add the new column → backfill → switch reads → drop the old), so
 that the previous revision keeps working during rollout and rollback stays possible.
 
-**Never** enable TypeORM `synchronize: true` outside local development. (AuroraHR correctly
+**Never** enable TypeORM `synchronize: true` outside local development. (AuraHRMS correctly
 has `synchronize: false` — keep it that way.)
 
 ---
@@ -219,4 +219,4 @@ No production dumps on laptops. No prod PII in staging, test fixtures, seed scri
 Staging uses synthetic or anonymised data. Any dump taken for migration is encrypted,
 minimally scoped, used, and deleted — and its handling is written down.
 
-For AuroraHR this is not a nicety: it is a real client's employee records.
+For AuraHRMS this is not a nicety: it is a real client's employee records.
