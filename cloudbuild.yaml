@@ -6,6 +6,9 @@ substitutions:
   _JOB: aurahrms-migrate
   _SQL_INSTANCE: aurahrms-pg
   _TAG: latest
+  _APP_ENV: staging
+  _API_MIN_INSTANCES: "0"
+  _WEB_MIN_INSTANCES: "0"
 
 steps:
   - id: build-api
@@ -68,7 +71,7 @@ steps:
           --port=8080 \
           --cpu=1 \
           --memory=1Gi \
-          --min-instances=0 \
+          --min-instances="$_API_MIN_INSTANCES" \
           --max-instances=1 \
           --concurrency=250 \
           --session-affinity \
@@ -105,7 +108,7 @@ steps:
           -f Dockerfile.web \
           --build-arg "VITE_API_URL=$$API_URL/api/v1" \
           --build-arg "VITE_SOCKET_URL=$$API_URL" \
-          --build-arg VITE_APP_ENV=staging \
+          --build-arg "VITE_APP_ENV=$_APP_ENV" \
           -t "$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_WEB:$_TAG" \
           .
 
@@ -132,7 +135,7 @@ steps:
           --port=8080 \
           --cpu=1 \
           --memory=256Mi \
-          --min-instances=0 \
+          --min-instances="$_WEB_MIN_INSTANCES" \
           --max-instances=4 \
           --concurrency=200 \
           --service-account="$$RUNTIME_SA"
