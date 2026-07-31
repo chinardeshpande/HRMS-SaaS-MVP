@@ -26,7 +26,7 @@ const startServer = async () => {
     logger.info('WebSocket server initialized');
 
     // Start the server
-    const server = httpServer.listen(config.port, () => {
+    const server = httpServer.listen(config.port, '0.0.0.0', () => {
       logger.info(`
         ╔════════════════════════════════════════════════════════╗
         ║                                                        ║

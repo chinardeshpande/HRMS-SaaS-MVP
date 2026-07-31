@@ -4,15 +4,24 @@ import {
   ArrowPathIcon,
   ChatBubbleLeftRightIcon,
   ClipboardDocumentCheckIcon,
+  BookOpenIcon,
   DocumentTextIcon,
-  LightBulbIcon,
   PaperAirplaneIcon,
   ShieldCheckIcon,
   SparklesIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { User } from '../../types';
-import assistantService, { ManuAskResponse, ManuConfirmationPreview, ManuExecutionResult } from '../../services/assistantService';
+import assistantService, {
+  ManuAskResponse,
+  ManuAnswerPlan,
+  ManuAnswerPresentation,
+  ManuConfirmationPreview,
+  ManuDraftArtifact,
+  ManuExecutionResult,
+  ManuKnowledgeCitation,
+} from '../../services/assistantService';
+import { collectManuScreenContext } from '../../utils/manuScreenContext';
 
 interface ManuAssistantProps {
   user?: User | null;
@@ -44,6 +53,11 @@ interface AssistantMessage {
   outputMode?: ManuAskResponse['outputMode'];
   confirmationPreview?: ManuConfirmationPreview;
   executionResult?: ManuExecutionResult;
+  citations?: ManuKnowledgeCitation[];
+  draft?: ManuDraftArtifact;
+  intent?: ManuAskResponse['intent'];
+  answerPlan?: ManuAnswerPlan;
+  presentation?: ManuAnswerPresentation;
   source?: 'backend' | 'local';
   intentKind?: PromptKind;
 }
@@ -386,7 +400,7 @@ const getStandardPromptGroups = (pathname: string, context: PageContext) => {
     },
     {
       label: 'What is the right process?',
-      prompt: `Explain the correct AuroraHR process for ${lowerTitle}.`,
+      prompt: `Explain the correct Aura process for ${lowerTitle}.`,
       level: 'L1',
       kind: 'howto',
     },
@@ -470,7 +484,7 @@ const getStandardPromptGroups = (pathname: string, context: PageContext) => {
 
   return [
     { title: 'Questions', description: 'Simple answers and module facts.', prompts: moduleQuestions.slice(0, 4) },
-    { title: 'How to', description: 'Guided steps for AuroraHR processes.', prompts: howToPrompts.slice(0, 3) },
+    { title: 'How to', description: 'Guided steps for Aura processes.', prompts: howToPrompts.slice(0, 3) },
     { title: 'Actions', description: 'Decision, flagging, approval, and completion checks.', prompts: actionPrompts.slice(0, 3) },
   ];
 };
@@ -590,12 +604,30 @@ export default function ManuAssistant({ user, tenantName }: ManuAssistantProps) 
     messagesEndRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
   }, [messages, isThinking, isOpen]);
 
+  const resetConversation = () => {
+    setMessages([]);
+    setInput('');
+    setIsThinking(false);
+    setFocusedOutput(null);
+    setPreviewingProposalId(null);
+    setExecutingProposalId(null);
+    setConfirmationTexts({});
+  };
+
   const askManu = useCallback(async (prompt: string) => {
     try {
+      const screen = collectManuScreenContext(location, pageContext.title);
       const response = await assistantService.ask({
         prompt,
         pathname: location.pathname,
         pageTitle: pageContext.title,
+        context: {
+          screen,
+          conversation: messages.slice(-8).map((message) => ({
+            role: message.role === 'manu' ? 'assistant' : 'user',
+            content: message.text,
+          })),
+        },
       });
 
       return {
@@ -608,6 +640,11 @@ export default function ManuAssistant({ user, tenantName }: ManuAssistantProps) 
         guardrails: response.guardrails,
         answerKind: response.answerKind,
         outputMode: response.outputMode,
+        citations: response.citations,
+        draft: response.draft,
+        intent: response.intent,
+        answerPlan: response.answerPlan,
+        presentation: response.presentation,
         source: 'backend' as const,
       };
     } catch (error) {
@@ -618,13 +655,32 @@ export default function ManuAssistant({ user, tenantName }: ManuAssistantProps) 
         source: 'local' as const,
         text: `Backend Manu intelligence is unavailable, so this is only the local screen guide. Error: ${message}. ${fallback.text}`,
         suggestedActions: [
-          'Check that the backend is running and the frontend API URL points to the AuroraHR backend.',
+          'Check that the backend is running and the frontend API URL points to the Aura backend.',
           'Do not treat this local fallback as a live data answer.',
         ],
         actionProposals: [],
+        citations: [],
+        draft: undefined,
+        intent: {
+          id: 'local_screen_fallback',
+          description: 'Local screen guidance only.',
+          confidence: 0,
+          matchedBy: 'fallback' as const,
+        },
+        answerPlan: {
+          questionType: 'general' as const,
+          resolvedFrom: 'none' as const,
+        },
+        presentation: {
+          density: 'standard' as const,
+          showInsights: false,
+          showSuggestions: true,
+        },
+        answerKind: 'simple_answer' as const,
+        outputMode: 'tray' as const,
       };
     }
-  }, [location.pathname, pageContext, tenantName, user?.role]);
+  }, [location, messages, pageContext, tenantName, user?.role]);
 
   const toAssistantMessage = (
     response: Awaited<ReturnType<typeof askManu>>,
@@ -639,6 +695,13 @@ export default function ManuAssistant({ user, tenantName }: ManuAssistantProps) 
     actionProposals: response.actionProposals,
     data: response.data,
     guardrails: response.guardrails,
+    citations: response.citations,
+    draft: response.draft,
+    intent: response.intent,
+    answerKind: response.answerKind,
+    outputMode: response.outputMode,
+    answerPlan: response.answerPlan,
+    presentation: response.presentation,
     source: response.source,
     ...overrides,
   });
@@ -814,7 +877,7 @@ export default function ManuAssistant({ user, tenantName }: ManuAssistantProps) 
   };
 
   return (
-    <div className={`manu-assistant ${isOpen ? 'manu-assistant-open' : ''}`}>
+    <div className={`manu-assistant ${isOpen ? 'manu-assistant-open' : ''} ${isThinking ? 'manu-assistant-thinking' : ''}`}>
       {isOpen && (
         <section className="manu-panel" aria-label="Ask Manu assistant">
           <header className="manu-panel-header">
@@ -827,55 +890,51 @@ export default function ManuAssistant({ user, tenantName }: ManuAssistantProps) 
                 <p className="text-base font-black text-gray-950">Manu</p>
                 <span className="manu-level-chip">{latestLevel} {autonomyLabels[latestLevel]}</span>
               </div>
-              <p className="text-xs font-bold text-violet-700">HR Operations Angel</p>
+              <p className="text-xs font-bold text-gray-500">HR Operations Angel</p>
               <p className="mt-1 text-[11px] font-semibold text-gray-500">
                 {tenantName || 'Tenant'} · {roleLabel(user?.role)}
               </p>
             </div>
-            <button type="button" className="manu-icon-button" onClick={() => setIsOpen(false)} aria-label="Close Ask Manu">
-              <XMarkIcon className="h-4 w-4" />
-            </button>
+            <div className="manu-header-actions">
+              <button
+                type="button"
+                className="manu-icon-button"
+                onClick={resetConversation}
+                aria-label="Start a new Manu conversation"
+                title="New conversation"
+                disabled={messages.length === 0 && !input && !focusedOutput}
+              >
+                <ArrowPathIcon className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                className="manu-icon-button"
+                onClick={() => setIsOpen(false)}
+                aria-label="Close Ask Manu"
+                title="Close"
+              >
+                <XMarkIcon className="h-4 w-4" />
+              </button>
+            </div>
           </header>
 
           <div className="manu-scroll-body">
             {messages.length === 0 && (
               <>
-                <div className="manu-command-strip manu-command-strip-compact">
-                  <div>
-                    <p className="manu-kicker">Ask Manu · {pageContext.title}</p>
-                    <h3>Choose a standard question.</h3>
-                    <p>Simple answers stay here. Data-heavy answers open in a focused view. Guided workflows return step-by-step instructions.</p>
-                  </div>
-                  <SparklesIcon className="h-6 w-6 text-violet-500" />
+                <div className="manu-empty-state">
+                  <p className="manu-kicker">{pageContext.title}</p>
+                  <h3>How can I help?</h3>
                 </div>
 
-                <div className="manu-question-board">
-                  {promptGroups.map((group) => (
-                    <section key={group.title} className="manu-question-group">
-                      <div className="manu-question-group-title">
-                        {group.title === 'Questions' && <ChatBubbleLeftRightIcon className="h-4 w-4" />}
-                        {group.title === 'How to' && <LightBulbIcon className="h-4 w-4" />}
-                        {group.title === 'Actions' && <ClipboardDocumentCheckIcon className="h-4 w-4" />}
-                        <div>
-                          <h4>{group.title}</h4>
-                          <p>{group.description}</p>
-                        </div>
-                      </div>
-                      <div className="manu-question-chips">
-                        {group.prompts.map((quickPrompt) => (
-                          <button key={`${group.title}-${quickPrompt.label}`} type="button" onClick={() => runPrompt(quickPrompt)}>
-                            <span>{quickPrompt.level || 'L0'}</span>
-                            {quickPrompt.label}
-                          </button>
-                        ))}
-                      </div>
-                    </section>
-                  ))}
-                </div>
-
-                <div className="manu-safe-note">
-                  <ShieldCheckIcon className="h-4 w-4" />
-                  <span>{pageContext.risk}</span>
+                <div className="manu-starter-prompts">
+                  {promptGroups
+                    .flatMap((group) => group.prompts)
+                    .slice(0, 6)
+                    .map((quickPrompt) => (
+                      <button key={quickPrompt.label} type="button" onClick={() => runPrompt(quickPrompt)}>
+                        {quickPrompt.label}
+                      </button>
+                    ))}
                 </div>
               </>
             )}
@@ -885,9 +944,45 @@ export default function ManuAssistant({ user, tenantName }: ManuAssistantProps) 
                 <div key={message.id} className={`manu-message ${message.role === 'user' ? 'manu-message-user' : ''}`}>
                   {message.role === 'manu' && <ChatBubbleLeftRightIcon className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />}
                   <div>
-                    {message.level && <p className="manu-message-level">{message.level} · {autonomyLabels[message.level]}</p>}
-                    <p className="manu-message-text">{message.text}</p>
-                    {message.insights && message.insights.length > 0 && (
+                    {message.level && message.presentation?.density !== 'compact' && (
+                      <p className="manu-message-level">{message.level} · {autonomyLabels[message.level]}</p>
+                    )}
+                    <p className={`manu-message-text ${message.presentation?.density === 'compact' ? 'manu-message-text-direct' : ''}`}>
+                      {message.text}
+                    </p>
+                    {message.presentation?.factCard && (
+                      <div className="manu-fact-card">
+                        <div className="manu-fact-card-heading">
+                          <strong>{message.presentation.factCard.title}</strong>
+                          {message.presentation.factCard.subtitle && <span>{message.presentation.factCard.subtitle}</span>}
+                        </div>
+                        <dl>
+                          {message.presentation.factCard.facts.map((fact) => (
+                            <div key={`${message.id}-${fact.label}`}>
+                              <dt>{fact.label}</dt>
+                              <dd>{fact.value}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </div>
+                    )}
+                    {message.citations && message.citations.length > 0 && (
+                      <details className="manu-inline-sources">
+                        <summary>
+                          <BookOpenIcon className="h-3.5 w-3.5" />
+                          {message.citations.length} source{message.citations.length === 1 ? '' : 's'}
+                        </summary>
+                        <div>
+                          {message.citations.slice(0, 4).map((citation) => (
+                            <p key={`${message.id}-${citation.id}`}>
+                              <strong>{citation.title}</strong>
+                              <span>{citation.section}</span>
+                            </p>
+                          ))}
+                        </div>
+                      </details>
+                    )}
+                    {message.presentation?.showInsights !== false && message.insights && message.insights.length > 0 && (
                       <div className="manu-insights">
                         {message.insights.slice(0, 4).map((insight) => (
                           <span key={`${message.id}-${insight.label}`} data-tone={insight.tone || 'neutral'}>
@@ -896,7 +991,7 @@ export default function ManuAssistant({ user, tenantName }: ManuAssistantProps) 
                         ))}
                       </div>
                     )}
-                    {message.suggestedActions && message.suggestedActions.length > 0 && (
+                    {message.presentation?.showSuggestions !== false && message.suggestedActions && message.suggestedActions.length > 0 && (
                       <ul className="manu-actions">
                         {message.suggestedActions.slice(0, 2).map((action) => (
                           <li key={`${message.id}-${action}`}>{action}</li>
@@ -908,7 +1003,7 @@ export default function ManuAssistant({ user, tenantName }: ManuAssistantProps) 
                         Open focused output
                       </button>
                     )}
-                    {message.actionProposals && message.actionProposals.length > 0 && (
+                    {message.presentation?.showSuggestions !== false && message.actionProposals && message.actionProposals.length > 0 && (
                       <div className="manu-proposals">
                         {message.actionProposals.slice(0, 2).map((proposal) => (
                           <article key={`${message.id}-${proposal.id}`} className="manu-proposal-card">
@@ -1071,16 +1166,10 @@ export default function ManuAssistant({ user, tenantName }: ManuAssistantProps) 
         <span className="manu-launcher-avatar" aria-hidden="true">
           <img src={MANU_AVATAR} alt="" />
         </span>
-        <span className="manu-launcher-copy hidden text-left sm:block">
-          <span className="block text-base font-black leading-tight">Ask Manu</span>
-          <span className="block text-[11px] font-bold uppercase tracking-wide text-violet-100">HR Operations Angel</span>
-          <span className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-white/85">
-            <ClipboardDocumentCheckIcon className="h-3.5 w-3.5" />
-            Context-aware · Permission-safe
-          </span>
+        <span className="manu-launcher-copy text-left">
+          <span className="block text-sm font-black leading-tight">Ask Manu</span>
+          <span className="block text-[10px] font-semibold text-violet-100">HR assistant</span>
         </span>
-        {!isOpen && <DocumentTextIcon className="hidden h-4 w-4 text-white/80 sm:block" />}
-        {isOpen && <ArrowPathIcon className="hidden h-4 w-4 text-white/80 sm:block" />}
       </button>
 
       {focusedOutput && (
@@ -1108,7 +1197,52 @@ export default function ManuAssistant({ user, tenantName }: ManuAssistantProps) 
                     <ChatBubbleLeftRightIcon className="h-4 w-4" />
                     <span>Answer</span>
                   </div>
-                  <p className="manu-output-answer">{focusedOutput.message.text}</p>
+                  <p className="manu-output-answer whitespace-pre-wrap">{focusedOutput.message.text}</p>
+                </section>
+              )}
+
+              {focusedOutput.message?.draft && (
+                <section className="manu-output-section">
+                  <div className="manu-output-section-title">
+                    <DocumentTextIcon className="h-4 w-4" />
+                    <span>Draft review</span>
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <p className="text-xs font-black uppercase text-gray-500">Missing inputs</p>
+                      <ul className="manu-output-guardrails">
+                        {(focusedOutput.message.draft.missingInputs.length
+                          ? focusedOutput.message.draft.missingInputs
+                          : ['No required input gaps detected']
+                        ).map((item) => <li key={item}>{item}</li>)}
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="text-xs font-black uppercase text-gray-500">Human review</p>
+                      <ul className="manu-output-guardrails">
+                        {focusedOutput.message.draft.reviewChecklist.map((item) => <li key={item}>{item}</li>)}
+                      </ul>
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {focusedOutput.message?.citations && focusedOutput.message.citations.length > 0 && (
+                <section className="manu-output-section">
+                  <div className="manu-output-section-title">
+                    <BookOpenIcon className="h-4 w-4" />
+                    <span>Sources used</span>
+                  </div>
+                  <div className="space-y-3">
+                    {focusedOutput.message.citations.map((citation) => (
+                      <article key={citation.id} className="border-l-2 border-violet-300 pl-3">
+                        <p className="text-sm font-black text-gray-900">{citation.title}</p>
+                        <p className="text-xs font-bold text-violet-700">{citation.section}</p>
+                        <p className="mt-1 text-sm text-gray-600">{citation.excerpt}</p>
+                        {citation.sourcePath && <p className="mt-1 text-[11px] text-gray-400">{citation.sourcePath}</p>}
+                      </article>
+                    ))}
+                  </div>
                 </section>
               )}
 

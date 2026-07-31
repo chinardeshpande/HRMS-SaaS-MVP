@@ -10,11 +10,89 @@ export type ManuAnswerKind =
   | 'refusal'
   | 'unsupported';
 export type ManuOutputMode = 'tray' | 'focused_modal' | 'guided_tour' | 'confirmation_gate';
+export type ManuQuestionType =
+  | 'reporting_manager'
+  | 'direct_reports'
+  | 'designation'
+  | 'department'
+  | 'joining_date'
+  | 'work_location'
+  | 'employee_profile'
+  | 'employee_compensation'
+  | 'employee_leave'
+  | 'employee_documents'
+  | 'draft_manager_email'
+  | 'aggregate'
+  | 'workflow'
+  | 'general';
 
 export interface ManuInsight {
   label: string;
   value: string | number;
   tone?: 'neutral' | 'good' | 'warning' | 'critical';
+}
+
+export interface ManuConversationTurn {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface ManuScreenContext {
+  pathname?: string;
+  pageTitle?: string;
+  routeParams?: Record<string, string>;
+  query?: Record<string, string>;
+  activeTab?: string;
+  selectedEntity?: {
+    type: string;
+    id?: string;
+    label?: string;
+  };
+  visibleSections?: string[];
+  visibleColumns?: string[];
+}
+
+export interface ManuKnowledgeCitation {
+  id: string;
+  title: string;
+  section: string;
+  sourceType: 'application' | 'acv_document';
+  sourcePath?: string;
+  excerpt: string;
+  score: number;
+}
+
+export interface ManuDraftArtifact {
+  draftId: string;
+  type: 'appointment_letter' | 'document_request_email' | 'attendance_clarification' | 'leave_note' | 'manager_email';
+  title: string;
+  subject?: string;
+  content: string;
+  employeeId?: string;
+  employeeCode?: string | null;
+  employeeName?: string;
+  generatedAt: string;
+  missingInputs: string[];
+  assumptions: string[];
+  reviewChecklist: string[];
+}
+
+export interface ManuAnswerPlan {
+  questionType: ManuQuestionType;
+  subjectEmployeeId?: string;
+  subjectEmployeeName?: string;
+  resolvedFrom: 'current_prompt' | 'conversation' | 'screen' | 'none';
+}
+
+export interface ManuAnswerPresentation {
+  density: 'compact' | 'standard' | 'workspace';
+  showInsights: boolean;
+  showSuggestions: boolean;
+  factCard?: {
+    title: string;
+    subtitle?: string;
+    facts: Array<{ label: string; value: string }>;
+  };
 }
 
 export interface ManuActionProposal {
@@ -42,6 +120,16 @@ export interface ManuAskResponse {
   insights: ManuInsight[];
   suggestedActions: string[];
   actionProposals: ManuActionProposal[];
+  intent: {
+    id: string;
+    description: string;
+    confidence: number;
+    matchedBy: 'prompt' | 'screen' | 'fallback';
+  };
+  citations: ManuKnowledgeCitation[];
+  draft?: ManuDraftArtifact;
+  answerPlan: ManuAnswerPlan;
+  presentation: ManuAnswerPresentation;
   data?: Record<string, any>;
   guardrails: string[];
 }
@@ -85,6 +173,10 @@ export interface ManuAskPayload {
   prompt: string;
   pathname?: string;
   pageTitle?: string;
+  context?: {
+    screen?: ManuScreenContext;
+    conversation?: ManuConversationTurn[];
+  };
 }
 
 export interface ManuConfirmationPreviewPayload {

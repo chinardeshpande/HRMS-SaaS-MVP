@@ -49,6 +49,8 @@ router.post('/permissions/initialize', ownerOnly, settingsController.initializeP
 
 // ==================== USER MANAGEMENT ROUTES ====================
 router.get('/users', hrOperations, settingsController.getAllUsers);
+router.get('/identity-mappings', ownerOnly, settingsController.getIdentityMappings);
+router.post('/identity-mappings/:userId', ownerOnly, settingsController.assignIdentityMapping);
 router.post('/users/:employeeId/role', hrOperations, settingsController.assignRoleToUser);
 router.post('/users/:employeeId/deactivate', hrOperations, settingsController.deactivateUser);
 router.post('/users/:employeeId/reactivate', hrOperations, settingsController.reactivateUser);

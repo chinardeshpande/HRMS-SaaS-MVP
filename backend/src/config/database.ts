@@ -174,7 +174,7 @@ export const AppDataSource = new DataSource({
     CompanyDocument,
     EmployeeDocument,
   ],
-  migrations: ['dist/backend/src/migrations/*.js'],
+  migrations: ['dist/backend/src/migrations-v2/*.js'],
   subscribers: [],
   // Connection pool configuration
   extra: {

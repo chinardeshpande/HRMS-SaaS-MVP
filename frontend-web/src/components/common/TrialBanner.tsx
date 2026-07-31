@@ -39,7 +39,7 @@ export const TrialBanner = ({ trialEndDate, onUpgrade }: TrialBannerProps) => {
 
   const getMessage = () => {
     if (daysLeft === 0) {
-      return 'Your trial has expired. Upgrade now to continue using AuroraHR.';
+      return 'Your trial has expired. Upgrade now to continue using Aura.';
     }
     if (daysLeft === 1) {
       return 'Your trial expires tomorrow. Upgrade now to keep your data.';

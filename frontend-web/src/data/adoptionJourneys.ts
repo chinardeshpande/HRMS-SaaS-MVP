@@ -27,7 +27,7 @@ export const adoptionJourneys: AdoptionJourney[] = [
     shortTitle: 'Register',
     description: 'Create the tenant, verify the owner account, and establish the first HR admin workspace.',
     detail:
-      'AuroraHR starts with a clean company registration flow. The first HR owner creates the organization, verifies identity, and enters a guided workspace that is ready for onboarding, configuration, and controlled user creation.',
+      'Aura starts with a clean company registration flow. The first HR owner creates the organization, verifies identity, and enters a guided workspace that is ready for onboarding, configuration, and controlled user creation.',
     image: '/images/Hero-Images/hero-leadership.jpg',
     screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png',
     icon: BuildingOffice2Icon,
@@ -49,7 +49,7 @@ export const adoptionJourneys: AdoptionJourney[] = [
     shortTitle: 'Configure',
     description: 'Set departments, designations, roles, reporting lines, approval rules, and document templates.',
     detail:
-      'The implementation layer converts HR policy into usable product structure: departments, designations, org relationships, approval paths, and document templates. This is where AuroraHR becomes specific to the company instead of remaining generic software.',
+      'The implementation layer converts HR policy into usable product structure: departments, designations, org relationships, approval paths, and document templates. This is where Aura becomes specific to the company instead of remaining generic software.',
     image: '/images/Module-Headers/organization-header.jpg',
     screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.18-AM.png',
     icon: Cog6ToothIcon,
@@ -71,7 +71,7 @@ export const adoptionJourneys: AdoptionJourney[] = [
     shortTitle: 'Migrate',
     description: 'Import employee records, attach reporting context, and invite people into role-specific workspaces.',
     detail:
-      'AuroraHR supports serious pilot adoption by treating employee import as implementation work, not a one-off spreadsheet upload. Employee records, managers, roles, and access are brought together so the team can begin using the platform with confidence.',
+      'Aura supports serious pilot adoption by treating employee import as implementation work, not a one-off spreadsheet upload. Employee records, managers, roles, and access are brought together so the team can begin using the platform with confidence.',
     image: '/images/Hero-Images/hero-team-collaboration.jpg',
     screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.15.14-AM.png',
     icon: UserPlusIcon,
@@ -115,7 +115,7 @@ export const adoptionJourneys: AdoptionJourney[] = [
     shortTitle: 'Adopt',
     description: 'Use curated sample data to train buyers, leaders, HR teams, managers, and employees.',
     detail:
-      'AuroraHR can show a complete good-data workspace without polluting the customer tenant. Demo mode supports investor walkthroughs, customer demos, HR team training, and user confidence before real company data is fully adopted.',
+      'Aura can show a complete good-data workspace without polluting the customer tenant. Demo mode supports investor walkthroughs, customer demos, HR team training, and user confidence before real company data is fully adopted.',
     image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.42-AM.png',
     screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.42-AM.png',
     icon: PresentationChartLineIcon,
@@ -137,7 +137,7 @@ export const adoptionJourneys: AdoptionJourney[] = [
     shortTitle: 'Scale',
     description: 'Use reports, lifecycle history, documents, HR Connect, and analytics to mature operations over time.',
     detail:
-      'The platform is meant to grow with the organization. As the company adds people and processes, AuroraHR keeps lifecycle history, documents, role-based views, reports, and HR communication connected to the same employee record.',
+      'The platform is meant to grow with the organization. As the company adds people and processes, Aura keeps lifecycle history, documents, role-based views, reports, and HR communication connected to the same employee record.',
     image: '/images/Hero-Images/hero-happy-employees.jpg',
     screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.06-AM.png',
     icon: UserGroupIcon,

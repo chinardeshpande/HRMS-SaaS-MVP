@@ -692,7 +692,7 @@ export default function ModernDashboard() {
         <div className="bg-gradient-to-br from-primary-50 to-blue-50 rounded-xl p-8 mb-6 border border-primary-100">
           <div className="max-w-3xl">
             <h2 className="text-2xl font-bold text-gray-900 mb-3">
-              🎉 Welcome to AuroraHR!
+              🎉 Welcome to Aura!
             </h2>
             <p className="text-gray-600 mb-6">
               Your account is set up and ready. Complete these steps to get started with your HRMS:

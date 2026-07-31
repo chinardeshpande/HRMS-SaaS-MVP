@@ -405,7 +405,7 @@ export default function OrganizationTab() {
                         className="h-5 w-5 rounded-full border border-gray-300"
                         style={{ backgroundColor: formData.branding?.primaryColor || '#2563eb' }}
                       />
-                      <span className="text-base text-gray-900">{formData.branding?.primaryColor || 'Default AuroraHR blue'}</span>
+                      <span className="text-base text-gray-900">{formData.branding?.primaryColor || 'Default Aura navy'}</span>
                     </div>
                   )}
                 </div>
@@ -442,7 +442,7 @@ export default function OrganizationTab() {
                 <div className="rounded-lg border border-primary-100 bg-primary-50 px-4 py-3">
                   <p className="text-sm font-semibold text-primary-900">Workspace identity</p>
                   <p className="mt-1 text-xs text-primary-700">
-                    Logo and colors are used in tenant workspace surfaces. AuroraHR remains the platform brand.
+                    Logo and colors are used in tenant workspace surfaces. Aura remains the platform brand.
                   </p>
                 </div>
               </div>

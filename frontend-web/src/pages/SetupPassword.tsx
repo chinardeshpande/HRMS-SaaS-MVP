@@ -109,7 +109,7 @@ export default function SetupPassword() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 mb-4">
             <SparklesIcon className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">AuroraHR</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Aura</h1>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
@@ -250,7 +250,7 @@ export default function SetupPassword() {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Need help?{' '}
-            <a href="mailto:support@aurorahr.in" className="text-purple-600 hover:text-purple-700 font-medium">
+            <a href="mailto:support@aurahrms.com" className="text-purple-600 hover:text-purple-700 font-medium">
               Contact support
             </a>
           </p>

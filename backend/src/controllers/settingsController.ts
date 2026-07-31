@@ -7,6 +7,7 @@ import { RuleCategory } from '../models/BusinessRules';
 import { PermissionModule } from '../models/Permission';
 import leavePolicyService from '../services/leavePolicyService';
 import attendancePolicyService from '../services/attendancePolicyService';
+import identityMappingService from '../services/identityMappingService';
 
 // ==================== SUBSCRIPTION CONTROLLERS ====================
 
@@ -877,6 +878,52 @@ export const initializePermissions = async (req: Request, res: Response) => {
 };
 
 // ==================== USER MANAGEMENT CONTROLLERS ====================
+
+export const getIdentityMappings = async (req: Request, res: Response) => {
+  try {
+    const mappings = await identityMappingService.auditTenant(req.user!.tenantId);
+    res.status(200).json({
+      success: true,
+      data: {
+        mappings,
+        summary: mappings.reduce<Record<string, number>>((counts, mapping) => {
+          counts[mapping.status] = (counts[mapping.status] || 0) + 1;
+          return counts;
+        }, {}),
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      error: { code: 'IDENTITY_MAPPING_AUDIT_ERROR', message: error.message },
+    });
+  }
+};
+
+export const assignIdentityMapping = async (req: Request, res: Response) => {
+  try {
+    const employeeId = typeof req.body.employeeId === 'string' ? req.body.employeeId.trim() : '';
+    if (!employeeId) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'EMPLOYEE_ID_REQUIRED', message: 'Employee id is required.' },
+      });
+    }
+
+    const mapping = await identityMappingService.assignExplicitMapping(
+      req.user!.tenantId,
+      req.params.userId,
+      employeeId
+    );
+    res.status(200).json({ success: true, data: mapping });
+  } catch (error: any) {
+    const notFound = /not found/i.test(error.message);
+    res.status(notFound ? 404 : 409).json({
+      success: false,
+      error: { code: 'IDENTITY_MAPPING_ERROR', message: error.message },
+    });
+  }
+};
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {

@@ -241,18 +241,18 @@ const seedDemoData = async () => {
     ]);
 
     const employeeSpecs = [
-      ['DEMO001', 'Aditi', 'Rao', 'demo.admin@aurorahr.in', 'Executive Office', 'Founder & CEO', undefined, -900, 'system_admin'],
-      ['DEMO002', 'Maya', 'Iyer', 'demo.hr@aurorahr.in', 'People Operations', 'Head of People', 'DEMO001', -520, 'hr_admin'],
-      ['DEMO003', 'Arjun', 'Mehta', 'demo.manager@aurorahr.in', 'Engineering', 'Engineering Manager', 'DEMO001', -430, 'manager'],
-      ['DEMO004', 'Neha', 'Shah', 'demo.employee@aurorahr.in', 'Engineering', 'Senior Product Engineer', 'DEMO003', -240, 'employee'],
-      ['DEMO005', 'Kabir', 'Sethi', 'demo.finance@aurorahr.in', 'Finance & Operations', 'Finance Operations Lead', 'DEMO001', -360, 'hr_admin'],
-      ['DEMO006', 'Sara', 'Fernandes', 'sara.fernandes.demo@aurorahr.in', 'People Operations', 'People Operations Associate', 'DEMO002', -80, 'employee'],
-      ['DEMO007', 'Rohan', 'Kapoor', 'rohan.kapoor.demo@aurorahr.in', 'Engineering', 'Senior Product Engineer', 'DEMO003', -110, 'employee'],
-      ['DEMO008', 'Isha', 'Menon', 'isha.menon.demo@aurorahr.in', 'Engineering', 'Product Designer', 'DEMO003', -35, 'employee'],
-      ['DEMO009', 'Vikram', 'Nair', 'vikram.nair.demo@aurorahr.in', 'Sales', 'Customer Success Manager', 'DEMO001', -280, 'manager'],
-      ['DEMO010', 'Tara', 'Bose', 'tara.bose.demo@aurorahr.in', 'Sales', 'Sales Development Representative', 'DEMO009', -18, 'employee'],
-      ['DEMO011', 'Dev', 'Malhotra', 'dev.malhotra.demo@aurorahr.in', 'Engineering', 'Senior Product Engineer', 'DEMO003', -12, 'employee'],
-      ['DEMO012', 'Pooja', 'Raman', 'pooja.raman.demo@aurorahr.in', 'Finance & Operations', 'People Operations Associate', 'DEMO005', -700, 'employee'],
+      ['DEMO001', 'Aditi', 'Rao', 'demo.admin@aurahrms.com', 'Executive Office', 'Founder & CEO', undefined, -900, 'system_admin'],
+      ['DEMO002', 'Maya', 'Iyer', 'demo.hr@aurahrms.com', 'People Operations', 'Head of People', 'DEMO001', -520, 'hr_admin'],
+      ['DEMO003', 'Arjun', 'Mehta', 'demo.manager@aurahrms.com', 'Engineering', 'Engineering Manager', 'DEMO001', -430, 'manager'],
+      ['DEMO004', 'Neha', 'Shah', 'demo.employee@aurahrms.com', 'Engineering', 'Senior Product Engineer', 'DEMO003', -240, 'employee'],
+      ['DEMO005', 'Kabir', 'Sethi', 'demo.finance@aurahrms.com', 'Finance & Operations', 'Finance Operations Lead', 'DEMO001', -360, 'hr_admin'],
+      ['DEMO006', 'Sara', 'Fernandes', 'sara.fernandes.demo@aurahrms.com', 'People Operations', 'People Operations Associate', 'DEMO002', -80, 'employee'],
+      ['DEMO007', 'Rohan', 'Kapoor', 'rohan.kapoor.demo@aurahrms.com', 'Engineering', 'Senior Product Engineer', 'DEMO003', -110, 'employee'],
+      ['DEMO008', 'Isha', 'Menon', 'isha.menon.demo@aurahrms.com', 'Engineering', 'Product Designer', 'DEMO003', -35, 'employee'],
+      ['DEMO009', 'Vikram', 'Nair', 'vikram.nair.demo@aurahrms.com', 'Sales', 'Customer Success Manager', 'DEMO001', -280, 'manager'],
+      ['DEMO010', 'Tara', 'Bose', 'tara.bose.demo@aurahrms.com', 'Sales', 'Sales Development Representative', 'DEMO009', -18, 'employee'],
+      ['DEMO011', 'Dev', 'Malhotra', 'dev.malhotra.demo@aurahrms.com', 'Engineering', 'Senior Product Engineer', 'DEMO003', -12, 'employee'],
+      ['DEMO012', 'Pooja', 'Raman', 'pooja.raman.demo@aurahrms.com', 'Finance & Operations', 'People Operations Associate', 'DEMO005', -700, 'employee'],
     ] as const;
 
     const employeeByCode = new Map<string, Employee>();
@@ -383,8 +383,8 @@ const seedDemoData = async () => {
     ]);
 
     const candidates = await candidateRepo.save([
-      candidateRepo.create({ tenantId: tenant.tenantId, firstName: 'Ananya', lastName: 'Kulkarni', email: 'ananya.kulkarni.demo@aurorahr.in', phone: '+91 91111 00001', currentState: OnboardingState.DOCS_SUBMITTED, departmentId: deptByName.get('Engineering')!.departmentId, designationId: desigByName.get('Senior Product Engineer')!.designationId, reportingManagerId: manager.employeeId, offeredSalary: 2200000, currency: 'INR', expectedJoinDate: dateOnly(14), offerSentDate: dateOnly(-8), offerAcceptedDate: dateOnly(-5), employmentType: 'full_time', workLocation: 'Bengaluru Hybrid', city: 'Bengaluru', state: 'Karnataka', pincode: '560001', remarks: 'Demo candidate with documents awaiting HR review' }),
-      candidateRepo.create({ tenantId: tenant.tenantId, firstName: 'Nikhil', lastName: 'Verma', email: 'nikhil.verma.demo@aurorahr.in', phone: '+91 91111 00002', currentState: OnboardingState.BGV_IN_PROGRESS, departmentId: deptByName.get('Sales')!.departmentId, designationId: desigByName.get('Sales Development Representative')!.designationId, reportingManagerId: employeeByCode.get('DEMO009')!.employeeId, offeredSalary: 900000, currency: 'INR', expectedJoinDate: dateOnly(24), offerSentDate: dateOnly(-12), offerAcceptedDate: dateOnly(-9), employmentType: 'full_time', workLocation: 'Mumbai', city: 'Mumbai', state: 'Maharashtra', pincode: '400001', remarks: 'Demo candidate in background verification' }),
+      candidateRepo.create({ tenantId: tenant.tenantId, firstName: 'Ananya', lastName: 'Kulkarni', email: 'ananya.kulkarni.demo@aurahrms.com', phone: '+91 91111 00001', currentState: OnboardingState.DOCS_SUBMITTED, departmentId: deptByName.get('Engineering')!.departmentId, designationId: desigByName.get('Senior Product Engineer')!.designationId, reportingManagerId: manager.employeeId, offeredSalary: 2200000, currency: 'INR', expectedJoinDate: dateOnly(14), offerSentDate: dateOnly(-8), offerAcceptedDate: dateOnly(-5), employmentType: 'full_time', workLocation: 'Bengaluru Hybrid', city: 'Bengaluru', state: 'Karnataka', pincode: '560001', remarks: 'Demo candidate with documents awaiting HR review' }),
+      candidateRepo.create({ tenantId: tenant.tenantId, firstName: 'Nikhil', lastName: 'Verma', email: 'nikhil.verma.demo@aurahrms.com', phone: '+91 91111 00002', currentState: OnboardingState.BGV_IN_PROGRESS, departmentId: deptByName.get('Sales')!.departmentId, designationId: desigByName.get('Sales Development Representative')!.designationId, reportingManagerId: employeeByCode.get('DEMO009')!.employeeId, offeredSalary: 900000, currency: 'INR', expectedJoinDate: dateOnly(24), offerSentDate: dateOnly(-12), offerAcceptedDate: dateOnly(-9), employmentType: 'full_time', workLocation: 'Mumbai', city: 'Mumbai', state: 'Maharashtra', pincode: '400001', remarks: 'Demo candidate in background verification' }),
     ]);
 
     for (const candidate of candidates) {
@@ -513,9 +513,9 @@ const seedDemoData = async () => {
         industry: 'SaaS HR Technology',
         registrationNumber: 'DEMO20260001',
         taxId: 'DEMO29GSTIN001',
-        email: 'people.demo@aurorahr.in',
+        email: 'people.demo@aurahrms.com',
         phone: '+91 80 4000 9000',
-        website: 'https://aurorahr.in',
+        website: 'https://aurahrms.com',
         address: 'Aurora Demo Business Park',
         city: 'Bengaluru',
         state: 'Karnataka',

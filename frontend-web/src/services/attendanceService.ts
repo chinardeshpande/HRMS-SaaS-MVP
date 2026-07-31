@@ -59,6 +59,39 @@ export interface DepartmentAttendance {
   totalWorkMinutes: number;
 }
 
+export type AttendanceImportAction = 'create' | 'update' | 'unchanged' | 'skip' | 'error';
+export type AttendanceImportConflictPolicy = 'skip' | 'overwrite';
+
+export interface AttendanceImportPreview {
+  fileName: string;
+  conflictPolicy: AttendanceImportConflictPolicy;
+  totalRows: number;
+  dateRange: { from?: string; to?: string };
+  summary: {
+    creates: number;
+    updates: number;
+    unchanged: number;
+    skipped: number;
+    errors: number;
+    ready: number;
+  };
+  rows: Array<{
+    row: number;
+    employeeCode: string;
+    employeeId?: string;
+    employeeName?: string;
+    date: string;
+    status?: Attendance['status'];
+    checkIn?: string;
+    checkOut?: string;
+    workMinutes?: number;
+    location?: string;
+    notes?: string;
+    action: AttendanceImportAction;
+    messages: string[];
+  }>;
+}
+
 export enum TimeEntryEditStatus {
   PENDING = 'pending',
   APPROVED = 'approved',
@@ -97,6 +130,32 @@ export interface TimeEntryEdit {
 }
 
 class AttendanceService {
+  async previewImport(
+    file: File,
+    conflictPolicy: AttendanceImportConflictPolicy
+  ): Promise<AttendanceImportPreview> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('conflictPolicy', conflictPolicy);
+    const response = await api.post('/attendance/import/preview', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  }
+
+  async commitImport(
+    file: File,
+    conflictPolicy: AttendanceImportConflictPolicy
+  ): Promise<AttendanceImportPreview & { imported: number; message: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('conflictPolicy', conflictPolicy);
+    const response = await api.post('/attendance/import/commit', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  }
+
   /**
    * Employee: Clock In
    */

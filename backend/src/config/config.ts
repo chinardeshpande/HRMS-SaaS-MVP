@@ -42,6 +42,11 @@ interface Config {
     maxSize: number;
     allowedTypes: string[];
   };
+  storage: {
+    type: 'local' | 'gcs';
+    gcsBucket: string;
+    signedUrlTtlSeconds: number;
+  };
 
   // Rate Limiting
   rateLimitWindowMs: number;
@@ -74,7 +79,7 @@ interface Config {
 export const config: Config = {
   // Server
   nodeEnv: process.env.NODE_ENV || 'development',
-  port: parseInt(process.env.PORT || '3000', 10),
+  port: parseInt(process.env.PORT || '8080', 10),
   apiVersion: process.env.API_VERSION || 'v1',
 
   // Database
@@ -108,6 +113,11 @@ export const config: Config = {
     dir: process.env.UPLOAD_DIR || 'uploads',
     maxSize: parseInt(process.env.MAX_FILE_SIZE || '5242880', 10), // 5MB
     allowedTypes: (process.env.ALLOWED_FILE_TYPES || 'pdf,jpg,jpeg,png,doc,docx').split(','),
+  },
+  storage: {
+    type: process.env.STORAGE_TYPE === 'gcs' ? 'gcs' : 'local',
+    gcsBucket: process.env.GCS_BUCKET || '',
+    signedUrlTtlSeconds: parseInt(process.env.SIGNED_URL_TTL_SECONDS || '300', 10),
   },
 
   // Rate Limiting
@@ -148,6 +158,10 @@ if (!config.jwt.secret || config.jwt.secret === 'your-super-secret-jwt-key-chang
 
 if (!config.database.password && config.nodeEnv === 'production') {
   throw new Error('DB_PASSWORD must be set in production environment');
+}
+
+if (config.nodeEnv === 'production' && config.storage.type === 'gcs' && !config.storage.gcsBucket) {
+  throw new Error('GCS_BUCKET must be set when STORAGE_TYPE=gcs');
 }
 
 export default config;

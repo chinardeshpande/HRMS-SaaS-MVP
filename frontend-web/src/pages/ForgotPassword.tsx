@@ -32,8 +32,8 @@ export default function ForgotPassword() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <img
-            src="/images/AuroraHR_logo.svg?v=20260514b"
-            alt="AuroraHR - Illuminate The Journey | Grow Every Person"
+            src="/brand/aura/aura-logo-exact-transparent.png"
+            alt="Aura - People operations. Humanly intelligent."
             className="mx-auto h-16 w-auto"
           />
         </div>

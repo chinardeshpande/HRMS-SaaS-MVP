@@ -92,8 +92,8 @@ export default function ResetPassword() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <img
-            src="/images/AuroraHR_logo.svg?v=20260514b"
-            alt="AuroraHR - Illuminate The Journey | Grow Every Person"
+            src="/brand/aura/aura-logo-exact-transparent.png"
+            alt="Aura - People operations. Humanly intelligent."
             className="mx-auto h-16 w-auto"
           />
         </div>
@@ -101,7 +101,7 @@ export default function ResetPassword() {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Create new password</h1>
-            <p className="text-gray-500">Choose a secure password for your AuroraHR account.</p>
+            <p className="text-gray-500">Choose a secure password for your Aura account.</p>
           </div>
 
           {message && (

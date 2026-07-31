@@ -69,7 +69,7 @@ export const TemplatePreview = ({ template, htmlContent, onClose }: TemplatePrev
 
     // Company
     if (lowerField.includes('company')) {
-      return 'Aurora HR';
+      return 'Aura';
     }
 
     // Salary/Money

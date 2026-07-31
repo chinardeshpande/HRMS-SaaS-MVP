@@ -25,12 +25,15 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+.ua/
 *.swp
 *.swo
 *~
 
 # Test coverage
 coverage/
+__pycache__/
+*.pyc
 
 # Docker
 docker-compose.override.yml

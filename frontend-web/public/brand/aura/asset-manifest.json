@@ -1,0 +1,34 @@
+{
+  "brand": "Aura",
+  "endorsement": "by ACV Solutions",
+  "tagline": "People operations. Humanly intelligent.",
+  "supportingPromise": "Clarity for every people journey.",
+  "version": "2.0.0",
+  "approvedExactRecreation": {
+    "sourceReference": "aura-logo-exact-source.jpeg",
+    "whiteMaster": "aura-logo-exact-white.png",
+    "whiteMaster2x": "aura-logo-exact-white-2x.png",
+    "transparentMaster": "aura-logo-exact-transparent.png",
+    "transparentMaster2x": "aura-logo-exact-transparent-2x.png",
+    "transparentFullCanvas": "aura-logo-exact-transparent-full.png"
+  },
+  "masterAssets": {
+    "approvedLogo": "aura-logo-exact-transparent.png",
+    "approvedLogo2x": "aura-logo-exact-transparent-2x.png",
+    "whiteComposition": "aura-logo-exact-white.png",
+    "reversedLogo": "aura-logo-exact-reversed.png",
+    "approvedMark": "aura-mark-exact-transparent.png",
+    "approvedMark2x": "aura-mark-exact-transparent-2x.png",
+    "reversedMark": "aura-mark-exact-white.png",
+    "socialCard": "aura-social-card.svg"
+  },
+  "applicationAssets": {
+    "favicon32": "aura-icon-exact-32.png",
+    "favicon64": "aura-icon-exact-64.png",
+    "appIcon192": "aura-icon-exact-192.png",
+    "appIcon512": "aura-icon-exact-512.png",
+    "socialCard": "aura-social-card.png",
+    "manifest": "manifest.webmanifest",
+    "tokens": "aura-tokens.css"
+  }
+}

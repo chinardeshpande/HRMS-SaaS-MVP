@@ -24,7 +24,7 @@ export const platformPillars: PlatformPillar[] = [
     description:
       'Masters, role access, reporting lines, approval flows, templates, and employee import are part of the product story.',
     detail:
-      'AuroraHR treats implementation as a first-class HR workflow. The product is meant to help an HR owner move from a fresh tenant to a company-specific operating workspace with clean masters, clear roles, reporting relationships, approval rules, and employee data migration.',
+      'Aura treats implementation as a first-class HR workflow. The product is meant to help an HR owner move from a fresh tenant to a company-specific operating workspace with clean masters, clear roles, reporting relationships, approval rules, and employee data migration.',
     heroImage: '/images/Module-Headers/organization-header.jpg',
     screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.18-AM.png',
     icon: BuildingOffice2Icon,
@@ -68,7 +68,7 @@ export const platformPillars: PlatformPillar[] = [
     description:
       'Attendance, leave, onboarding, probation, performance, documents, HR Connect, and exit are connected to real approvals.',
     detail:
-      'AuroraHR is not just a set of forms. Core HR processes behave like workflows with status, ownership, approval context, document support, and timeline-led review points.',
+      'Aura is not just a set of forms. Core HR processes behave like workflows with status, ownership, approval context, document support, and timeline-led review points.',
     heroImage: '/images/Module-Headers/performance-header.jpg',
     screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.58-AM.png',
     icon: ClipboardDocumentCheckIcon,
@@ -90,7 +90,7 @@ export const platformPillars: PlatformPillar[] = [
     description:
       'Reports, dashboards, demo data, and visual QA evidence help leadership trust the system before full rollout.',
     detail:
-      'Leadership needs confidence before rollout. AuroraHR supports this through role-based dashboards, reports, analytics views, demo data, and visual QA evidence that explains not only what exists, but how it behaves under real HR scenarios.',
+      'Leadership needs confidence before rollout. Aura supports this through role-based dashboards, reports, analytics views, demo data, and visual QA evidence that explains not only what exists, but how it behaves under real HR scenarios.',
     heroImage: '/images/Module-Headers/dashboard-header.jpg',
     screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png',
     icon: ChartBarIcon,

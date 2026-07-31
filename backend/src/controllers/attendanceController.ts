@@ -4,6 +4,9 @@ import { AttendanceStatus } from '../models/Attendance';
 import managerTeamService from '../services/managerTeamService';
 import { UserRole } from '../../../shared/types';
 import logger from '../utils/logger';
+import attendanceImportService, {
+  AttendanceImportConflictPolicy,
+} from '../services/attendanceImportService';
 
 /**
  * @swagger
@@ -13,6 +16,55 @@ import logger from '../utils/logger';
  */
 
 export class AttendanceController {
+  async downloadImportTemplate(req: Request, res: Response) {
+    const csv = [
+      'employeeCode,date,status,checkIn,checkOut,workMinutes,location,notes',
+      'EMP001,2026-07-01,present,09:00,18:00,540,Office,Regular workday',
+      'EMP002,2026-07-01,present,09:15,17:45,510,WFH,',
+      'EMP001,2026-07-02,on_leave,,,,,Approved leave',
+    ].join('\n');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename=aura_attendance_import_template.csv');
+    res.send(csv);
+  }
+
+  async previewImport(req: Request, res: Response) {
+    try {
+      if (!req.file) throw new Error('CSV file is required');
+      const tenantId = req.user!.tenantId;
+      const conflictPolicy = (req.body.conflictPolicy === 'overwrite' ? 'overwrite' : 'skip') as AttendanceImportConflictPolicy;
+      const preview = await attendanceImportService.preview(
+        tenantId,
+        req.file.originalname,
+        req.file.buffer,
+        conflictPolicy
+      );
+      res.json({ success: true, data: preview });
+    } catch (error: any) {
+      res.status(400).json({ success: false, error: error.message });
+    }
+  }
+
+  async commitImport(req: Request, res: Response) {
+    try {
+      if (!req.file) throw new Error('CSV file is required');
+      const conflictPolicy = (req.body.conflictPolicy === 'overwrite' ? 'overwrite' : 'skip') as AttendanceImportConflictPolicy;
+      const result = await attendanceImportService.commit(
+        req.user!.tenantId,
+        req.user!.userId,
+        req.user!.employeeId,
+        req.file.originalname,
+        req.file.buffer,
+        conflictPolicy,
+        req.ip,
+        req.get('user-agent')
+      );
+      res.json({ success: true, data: result, message: result.message });
+    } catch (error: any) {
+      res.status(400).json({ success: false, error: error.message });
+    }
+  }
+
   /**
    * @swagger
    * /attendance/clock-in:

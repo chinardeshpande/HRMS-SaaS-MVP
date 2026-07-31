@@ -76,8 +76,8 @@ export default function EmailVerificationPending() {
         <div className="text-center mb-8">
           <div className="inline-block bg-white rounded-xl p-4 shadow-sm mb-4">
             <img
-              src="/images/AuroraHR_logo.svg?v=20260514b"
-              alt="AuroraHR"
+              src="/brand/aura/aura-logo-exact-transparent.png"
+              alt="Aura"
               className="h-12 w-auto"
             />
           </div>
@@ -153,7 +153,7 @@ export default function EmailVerificationPending() {
                   </div>
                 </div>
                 <p className="ml-3 text-sm text-gray-600">
-                  Check your inbox for an email from AuroraHR
+                  Check your inbox for an email from Aura
                 </p>
               </div>
               <div className="flex items-start">

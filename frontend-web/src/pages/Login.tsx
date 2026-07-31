@@ -62,8 +62,8 @@ const Login = () => {
           {/* Logo */}
           <Box sx={{ mb: 2 }}>
             <img
-              src="/images/AuroraHR_logo.svg?v=20260514b"
-              alt="AuroraHR - Illuminate The Journey | Grow Every Person"
+              src="/brand/aura/aura-logo-exact-transparent.png"
+              alt="Aura - People operations. Humanly intelligent."
               style={{ height: '80px', width: 'auto' }}
             />
           </Box>

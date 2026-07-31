@@ -1,11 +1,10 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
 import { authenticate, authorize } from '../middleware/auth';
 import { UserRole } from '../../../shared/types';
 import companyDocumentService from '../services/companyDocumentService';
-import { uploadDir } from '../utils/uploadPaths';
+import { config } from '../config/config';
+import { storageProvider, tenantDocumentKey } from '../services/storage';
 import {
   CompanyDocumentCategory,
   CompanyDocumentStatus,
@@ -17,24 +16,8 @@ router.use(authenticate);
 
 const hrOnly = authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN);
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    const targetDir = uploadDir('company-documents');
-    if (!fs.existsSync(targetDir)) {
-      fs.mkdirSync(targetDir, { recursive: true });
-    }
-    cb(null, targetDir);
-  },
-  filename: (_req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const ext = path.extname(file.originalname);
-    const nameWithoutExt = path.basename(file.originalname, ext).replace(/[^\w.-]+/g, '-');
-    cb(null, `${nameWithoutExt}-${uniqueSuffix}${ext}`);
-  },
-});
-
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   fileFilter: (_req, file, cb) => {
     const allowedTypes = [
       'application/pdf',
@@ -53,7 +36,7 @@ const upload = multer({
       cb(new Error('Only PDF, image, Word, and Excel files are allowed.'));
     }
   },
-  limits: { fileSize: 15 * 1024 * 1024 },
+  limits: { fileSize: config.upload.maxSize },
 });
 
 const actorFromRequest = (req: Request) => ({
@@ -128,14 +111,20 @@ router.post('/', hrOnly, upload.single('file') as any, async (req: Request, res:
     }
 
     const payload = parsePayload(req.body);
+    const storageKey = tenantDocumentKey(
+      req.user!.tenantId,
+      'company-documents',
+      req.file.originalname
+    );
+    await storageProvider.put(storageKey, req.file.buffer, req.file.mimetype);
     const document = await companyDocumentService.create(
       {
         ...payload,
         tenantId: req.user!.tenantId,
         uploadedBy: req.user!.userId,
-        fileName: req.file.filename,
+        fileName: storageKey.split('/').pop()!,
         originalFileName: req.file.originalname,
-        fileUrl: `/uploads/company-documents/${req.file.filename}`,
+        fileUrl: storageKey,
         fileType: req.file.mimetype,
         fileSize: req.file.size,
       },
@@ -192,11 +181,12 @@ router.get('/:documentId/download', hrOnly, async (req: Request, res: Response) 
     if (!document) {
       return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Company document not found' } });
     }
-    if (!companyDocumentService.fileExists(document.fileUrl)) {
+    if (!(await storageProvider.exists(document.fileUrl))) {
       return res.status(404).json({ success: false, error: { code: 'FILE_NOT_FOUND', message: 'File not found on server' } });
     }
     await companyDocumentService.logDownload(document, actorFromRequest(req));
-    res.download(companyDocumentService.resolveFilePath(document.fileUrl), document.originalFileName);
+    const url = await storageProvider.getSignedUrl(document.fileUrl, config.storage.signedUrlTtlSeconds);
+    res.redirect(url);
   } catch (error: any) {
     res.status(500).json({ success: false, error: { code: 'COMPANY_DOCUMENT_DOWNLOAD_ERROR', message: error.message } });
   }

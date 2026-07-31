@@ -1,0 +1,23 @@
+.git
+.gitignore
+node_modules
+**/node_modules
+**/yarn.lock
+dist
+**/dist
+.env
+.env*.local
+*.tsbuildinfo
+.DS_Store
+.vscode
+.idea
+docs
+e2e
+mobile-app
+.ua
+uploads
+clean-restart.sh
+start.sh
+*.dump
+*.sql
+/WhatsApp Image*.jpeg
