@@ -110,6 +110,11 @@ app.use(helmet({
 }));
 
 // CORS configuration
+const configuredOrigins = config.corsOrigin
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
@@ -120,7 +125,7 @@ const allowedOrigins = [
   'http://localhost:3000',
   'https://aurahrms.com',
   'https://www.aurahrms.com',
-  config.corsOrigin
+  ...configuredOrigins,
 ];
 
 app.use(
