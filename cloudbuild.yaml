@@ -78,8 +78,8 @@ steps:
           --set-env-vars="NODE_ENV=production,DB_HOST=/cloudsql/$$SQL_CONN,DB_NAME=aurahrms,DB_USER=aurahrms_app,DB_SSL=false,STORAGE_TYPE=gcs,GCS_BUCKET=$PROJECT_ID-documents,CORS_ORIGIN=https://aurahrms.com,LOG_LEVEL=info" \
           --set-secrets="DB_PASSWORD=aurahrms-db-password:latest,JWT_SECRET=aurahrms-jwt-secret:latest,SMTP_PASSWORD=aurahrms-smtp-password:latest"
 
-  - id: build-web
-    name: gcr.io/cloud-builders/docker
+  - id: resolve-api-url
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
       - -c
@@ -89,6 +89,17 @@ steps:
           --project="$PROJECT_ID" \
           --region="$_REGION" \
           --format='value(status.url)')"
+        test -n "$$API_URL"
+        printf '%s' "$$API_URL" > /workspace/.aurahrms-api-url
+
+  - id: build-web
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        API_URL="$$(cat /workspace/.aurahrms-api-url)"
         test -n "$$API_URL"
         docker build \
           -f Dockerfile.web \
