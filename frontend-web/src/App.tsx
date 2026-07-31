@@ -27,6 +27,7 @@ const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
 const SetupPassword = lazy(() => import('./pages/SetupPassword'));
 const Welcome = lazy(() => import('./pages/Welcome'));
 const ModernDashboard = lazy(() => import('./pages/ModernDashboard'));
+const ACVReadinessDashboard = lazy(() => import('./pages/ACVReadinessDashboard'));
 const ModernEmployees = lazy(() => import('./pages/ModernEmployees'));
 const ModernEmployeeDetail = lazy(() => import('./pages/ModernEmployeeDetail'));
 const ModernAttendance = lazy(() => import('./pages/ModernAttendance'));
@@ -144,6 +145,7 @@ function App() {
 
                 {/* Protected routes */}
                 <Route path="/dashboard" element={protectedElement('/dashboard', <ModernDashboard />)} />
+                <Route path="/acv-readiness" element={protectedElement('/acv-readiness', <ACVReadinessDashboard />)} />
                 <Route path="/employees" element={protectedElement('/employees', <ModernEmployees />)} />
                 <Route path="/employees/:id" element={protectedElement('/employees/:id', <ModernEmployeeDetail />)} />
                 <Route path="/master-data" element={protectedElement('/master-data', <ModernMasterData />)} />

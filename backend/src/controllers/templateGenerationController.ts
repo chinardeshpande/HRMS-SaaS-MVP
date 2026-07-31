@@ -11,7 +11,8 @@ import documentGenerationService from '../services/documentGenerationService';
 import { sendSuccess, sendError } from '../utils/responses';
 import logger from '../utils/logger';
 import path from 'path';
-import fs from 'fs';
+import { config } from '../config/config';
+import { storageProvider } from '../services/storage';
 
 const defaultDocumentTemplates: Array<Partial<DocumentTemplate>> = [
   {
@@ -162,20 +163,11 @@ export const generateDocument = async (req: Request, res: Response) => {
     const mergedData = await buildMergedDocumentData(tenantId, employeeId, variables);
 
     // Generate PDF
-    const pdfPath = await documentGenerationService.generateDocument(
+    const generated = await documentGenerationService.generateDocument(
       template.templateName,
       mergedData,
       tenantId
     );
-
-    // Read the generated PDF file
-    const absolutePath = path.join(__dirname, '../..', pdfPath);
-    if (!fs.existsSync(absolutePath)) {
-      return sendError(res, { code: 'FILE_NOT_FOUND', message: 'Generated file not found' }, 500);
-    }
-
-    const fileName = path.basename(pdfPath);
-    const fileBuffer = fs.readFileSync(absolutePath);
 
     const generatedDocRepo = AppDataSource.getRepository(GeneratedDocument);
     await generatedDocRepo.save(
@@ -188,9 +180,9 @@ export const generateDocument = async (req: Request, res: Response) => {
         generatedBy: userId,
         status: GeneratedDocumentStatus.GENERATED,
         format: GeneratedDocumentFormat.PDF,
-        filePath: pdfPath,
-        fileUrl: pdfPath,
-        fileSizeBytes: fileBuffer.length,
+        filePath: generated.storageKey,
+        fileUrl: generated.storageKey,
+        fileSizeBytes: generated.buffer.length,
         metadata: {
           variables: mergedData,
           issuedTo: mergedData.email
@@ -205,11 +197,11 @@ export const generateDocument = async (req: Request, res: Response) => {
 
     // Set response headers for download
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-    res.setHeader('Content-Length', fileBuffer.length.toString());
+    res.setHeader('Content-Disposition', `attachment; filename="${generated.fileName}"`);
+    res.setHeader('Content-Length', generated.buffer.length.toString());
 
     // Send the PDF file
-    res.send(fileBuffer);
+    res.send(generated.buffer);
   } catch (error: any) {
     logger.error('Error generating document:', error);
     return sendError(res, { code: 'GENERATION_ERROR', message: error.message }, 500);
@@ -304,12 +296,15 @@ export const downloadGeneratedDocument = async (req: Request, res: Response) => 
       return sendError(res, { code: 'NOT_FOUND', message: 'Generated document not found' }, 404);
     }
 
-    const absolutePath = path.join(__dirname, '../..', document.filePath);
-    if (!fs.existsSync(absolutePath)) {
+    if (!(await storageProvider.exists(document.filePath))) {
       return sendError(res, { code: 'FILE_NOT_FOUND', message: 'Generated document file is no longer available' }, 404);
     }
 
-    res.download(absolutePath, path.basename(document.filePath));
+    const url = await storageProvider.getSignedUrl(
+      document.filePath,
+      config.storage.signedUrlTtlSeconds
+    );
+    res.redirect(url);
   } catch (error: any) {
     logger.error('Error downloading generated document:', error);
     return sendError(res, { code: 'DOWNLOAD_ERROR', message: error.message }, 500);

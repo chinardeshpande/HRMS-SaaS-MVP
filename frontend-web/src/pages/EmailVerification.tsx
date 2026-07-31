@@ -64,8 +64,8 @@ export default function EmailVerification() {
         {/* Logo */}
         <div className="text-center mb-8">
           <img
-            src="/images/AuroraHR_logo.svg?v=20260514b"
-            alt="AuroraHR - Illuminate The Journey | Grow Every Person"
+            src="/brand/aura/aura-logo-exact-transparent.png"
+            alt="Aura - People operations. Humanly intelligent."
             className="h-20 w-auto mx-auto"
           />
         </div>
@@ -132,7 +132,7 @@ export default function EmailVerification() {
         {/* Help Text */}
         <div className="text-center mt-6 text-gray-600 text-sm">
           Need help?{' '}
-          <a href="mailto:support@aurorahr.in" className="text-blue-600 hover:underline">
+          <a href="mailto:support@aurahrms.com" className="text-blue-600 hover:underline">
             Contact Support
           </a>
         </div>

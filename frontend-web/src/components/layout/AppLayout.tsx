@@ -34,6 +34,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { UserRole } from '../../types';
+import { brand } from '../../config/brand';
 
 const drawerWidth = 280;
 
@@ -139,9 +140,9 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         onClick={() => navigate('/dashboard')}
       >
         <img
-          src="/images/AuroraHR_logo.svg?v=20260514b"
-          alt="AuroraHR - Illuminate The Journey | Grow Every Person"
-          style={{ height: '40px', width: 'auto' }}
+          src={brand.logo}
+          alt={brand.fullName}
+          style={{ height: '68px', width: 'auto', objectFit: 'contain' }}
         />
       </Box>
 

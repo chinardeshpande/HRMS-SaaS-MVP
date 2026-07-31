@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aura Brand Kit</title>
+    <link rel="icon" href="./favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./aura-tokens.css" />
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--aura-cloud);
+        color: var(--aura-ink);
+        font-family: var(--aura-font-body);
+      }
+      header {
+        background: var(--aura-white);
+        border-bottom: 1px solid #d9e6ed;
+      }
+      .nav {
+        width: min(1160px, calc(100% - 40px));
+        min-height: 76px;
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+      .nav img { width: auto; height: 62px; }
+      .version {
+        color: var(--aura-slate);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      main { padding-bottom: 72px; }
+      .hero {
+        background: var(--aura-navy);
+        color: var(--aura-white);
+      }
+      .hero-inner {
+        width: min(1160px, calc(100% - 40px));
+        min-height: 470px;
+        margin: auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(280px, .68fr);
+        align-items: center;
+        gap: 64px;
+        padding: 52px 0;
+      }
+      .eyebrow {
+        margin: 0 0 14px;
+        color: var(--aura-sky);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.8px;
+        text-transform: uppercase;
+      }
+      h1, h2, h3 {
+        margin-top: 0;
+        font-family: var(--aura-font-display);
+        letter-spacing: 0;
+      }
+      h1 {
+        max-width: 720px;
+        margin-bottom: 20px;
+        font-size: clamp(44px, 6vw, 76px);
+        line-height: 1.04;
+      }
+      .hero-copy {
+        max-width: 640px;
+        margin: 0;
+        color: #c9dde9;
+        font-size: 18px;
+        line-height: 1.7;
+      }
+      .hero-mark {
+        width: min(100%, 340px);
+        justify-self: center;
+        filter: drop-shadow(0 24px 42px rgba(4, 25, 39, .24));
+      }
+      .section {
+        width: min(1160px, calc(100% - 40px));
+        margin: 58px auto 0;
+      }
+      .section-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 22px;
+      }
+      .section-head h2 { margin-bottom: 0; font-size: 30px; }
+      .section-head p {
+        max-width: 570px;
+        margin: 0;
+        color: var(--aura-slate);
+        line-height: 1.55;
+      }
+      .logo-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border: 1px solid #d9e6ed;
+        background: var(--aura-white);
+      }
+      .logo-cell {
+        min-height: 270px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 34px;
+        border-right: 1px solid #d9e6ed;
+        border-bottom: 1px solid #d9e6ed;
+      }
+      .logo-cell:nth-child(2n) { border-right: 0; }
+      .logo-cell:nth-last-child(-n + 2) { border-bottom: 0; }
+      .logo-cell img { width: min(100%, 500px); max-height: 190px; }
+      .logo-cell.dark { background: var(--aura-navy); }
+      .logo-cell.mist { background: var(--aura-mist); }
+      .mark-scale {
+        display: flex;
+        align-items: end;
+        justify-content: space-around;
+        gap: 24px;
+        min-height: 190px;
+        padding: 32px;
+        border: 1px solid #d9e6ed;
+        background: var(--aura-white);
+      }
+      .mark-sample { text-align: center; color: var(--aura-slate); font-size: 12px; font-weight: 700; }
+      .mark-sample img { display: block; margin: 0 auto 16px; }
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .swatch {
+        min-height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        padding: 18px;
+        color: var(--aura-white);
+      }
+      .swatch strong { font-family: var(--aura-font-display); font-size: 16px; }
+      .swatch span { margin-top: 5px; font-size: 12px; opacity: .8; }
+      .swatch.light { color: var(--aura-ink); border: 1px solid #d9e6ed; }
+      .type-specimen {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 1px solid #d9e6ed;
+        background: var(--aura-white);
+      }
+      .type-block { min-height: 260px; padding: 32px; }
+      .type-block + .type-block { border-left: 1px solid #d9e6ed; }
+      .display-sample {
+        margin: 24px 0 10px;
+        font-family: var(--aura-font-display);
+        font-size: 42px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .body-sample { margin: 24px 0 10px; font-size: 20px; line-height: 1.6; }
+      .ui-band {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr);
+        min-height: 420px;
+        overflow: hidden;
+        border: 1px solid #d9e6ed;
+        background: var(--aura-white);
+        box-shadow: var(--aura-shadow-panel);
+      }
+      .ui-sidebar { padding: 26px 20px; border-right: 1px solid #d9e6ed; background: #fbfdfe; }
+      .ui-sidebar img { width: 164px; }
+      .ui-menu { margin-top: 34px; display: grid; gap: 8px; }
+      .ui-menu span { padding: 11px 12px; color: var(--aura-slate); font-size: 14px; font-weight: 600; }
+      .ui-menu .active { border-left: 3px solid var(--aura-cobalt); background: var(--aura-mist); color: var(--aura-navy); }
+      .ui-main { padding: 34px; }
+      .ui-main h3 { margin-bottom: 8px; font-size: 28px; }
+      .ui-main > p { margin: 0; color: var(--aura-slate); }
+      .metrics { margin-top: 34px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .metric { padding: 22px; border: 1px solid #d9e6ed; border-top: 4px solid var(--aura-cobalt); }
+      .metric:nth-child(2) { border-top-color: var(--aura-teal); }
+      .metric:nth-child(3) { border-top-color: var(--aura-coral); }
+      .metric span { display: block; color: var(--aura-slate); font-size: 12px; font-weight: 700; }
+      .metric strong { display: block; margin-top: 8px; font-family: var(--aura-font-display); font-size: 30px; }
+      .actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
+      .button {
+        min-height: 42px;
+        padding: 0 18px;
+        border: 1px solid var(--aura-cobalt);
+        border-radius: var(--aura-radius-control);
+        background: var(--aura-cobalt);
+        color: var(--aura-white);
+        font: 700 14px var(--aura-font-body);
+      }
+      .button.secondary { background: var(--aura-white); color: var(--aura-navy); }
+      .social-card { width: 100%; display: block; border: 1px solid #d9e6ed; }
+      footer {
+        width: min(1160px, calc(100% - 40px));
+        margin: 56px auto 0;
+        padding-top: 24px;
+        border-top: 1px solid #d9e6ed;
+        color: var(--aura-slate);
+        font-size: 13px;
+      }
+      @media (max-width: 760px) {
+        .nav { width: min(100% - 28px, 1160px); }
+        .nav img { width: auto; height: 50px; }
+        .hero-inner { width: min(100% - 28px, 1160px); min-height: 0; grid-template-columns: 1fr; gap: 32px; }
+        .hero-mark { width: 220px; }
+        .section { width: min(100% - 28px, 1160px); }
+        .section-head { align-items: start; flex-direction: column; }
+        .logo-grid, .type-specimen { grid-template-columns: 1fr; }
+        .logo-cell { border-right: 0; }
+        .logo-cell:nth-last-child(2) { border-bottom: 1px solid #d9e6ed; }
+        .type-block + .type-block { border-top: 1px solid #d9e6ed; border-left: 0; }
+        .swatches { grid-template-columns: repeat(2, 1fr); }
+        .ui-band { grid-template-columns: 1fr; }
+        .ui-sidebar { border-right: 0; border-bottom: 1px solid #d9e6ed; }
+        .ui-menu { display: none; }
+        .metrics { grid-template-columns: 1fr; }
+        .mark-scale { flex-wrap: wrap; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="nav">
+        <img src="./aura-logo-exact-transparent.png" alt="Aura" />
+        <span class="version">Brand system 2.0</span>
+      </div>
+    </header>
+    <main>
+      <section class="hero">
+        <div class="hero-inner">
+          <div>
+            <p class="eyebrow">Aura by ACV Solutions</p>
+            <h1>People operations. Humanly intelligent.</h1>
+            <p class="hero-copy">Aura brings calm intelligence to every people journey, connecting trusted HR operations, relevant context and genuinely useful assistance.</p>
+          </div>
+          <img class="hero-mark" src="./aura-mark-exact-white.png" alt="" />
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Logo system</h2>
+          <p>The supplied stacked lockup is the approved master. Use the complete logo at first touch and the exact symbol when the available space is compact.</p>
+        </div>
+        <div class="logo-grid">
+          <div class="logo-cell"><img src="./aura-logo-exact-transparent.png" alt="Aura approved logo" /></div>
+          <div class="logo-cell mist"><img src="./aura-logo-exact-white.png" alt="Aura approved composition" /></div>
+          <div class="logo-cell dark"><img src="./aura-logo-exact-reversed.png" alt="Aura reversed logo" /></div>
+          <div class="logo-cell"><img src="./aura-mark-exact-transparent.png" alt="Aura approved mark" /></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Responsive mark</h2>
+          <p>The approved mark remains unchanged at every size. Optical-size exports add only a quiet cloud tile so its fine crossover stays clear.</p>
+        </div>
+        <div class="mark-scale">
+          <div class="mark-sample"><img src="./aura-mark-exact-transparent.png" width="160" height="160" alt="" />160 px</div>
+          <div class="mark-sample"><img src="./aura-mark-exact-transparent.png" width="96" height="96" alt="" />96 px</div>
+          <div class="mark-sample"><img src="./aura-icon-exact-64.png" width="64" height="64" alt="" />64 px</div>
+          <div class="mark-sample"><img src="./aura-icon-exact-32.png" width="32" height="32" alt="" />32 px</div>
+          <div class="mark-sample"><img src="./aura-icon-exact-32.png" width="16" height="16" alt="" />16 px</div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Colour language</h2>
+          <p>Navy and cobalt carry trust and product identity. Teal, coral and sun add human warmth, state meaning and visual rhythm.</p>
+        </div>
+        <div class="swatches">
+          <div class="swatch" style="background:#123b5d"><strong>Aura Navy</strong><span>#123B5D</span></div>
+          <div class="swatch" style="background:#2477b5"><strong>Aura Cobalt</strong><span>#2477B5</span></div>
+          <div class="swatch" style="background:#159a8c"><strong>Human Teal</strong><span>#159A8C</span></div>
+          <div class="swatch" style="background:#e66b5b"><strong>Warm Coral</strong><span>#E66B5B</span></div>
+          <div class="swatch light" style="background:#f6fafc"><strong>Aura Cloud</strong><span>#F6FAFC</span></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Typography</h2>
+          <p>The existing product typography is retained, avoiding an unnecessary font migration while giving Aura a firmer display voice.</p>
+        </div>
+        <div class="type-specimen">
+          <div class="type-block">
+            <p class="eyebrow">Plus Jakarta Sans · Display</p>
+            <p class="display-sample">Human journeys deserve clarity.</p>
+            <p>Semibold and bold for product headings, campaign statements and high-confidence decisions.</p>
+          </div>
+          <div class="type-block">
+            <p class="eyebrow">Inter · Interface</p>
+            <p class="body-sample">Clear employee information, focused actions and calm guidance for every role.</p>
+            <p>Regular through bold for controls, data, supporting copy and dense operational surfaces.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Product expression</h2>
+          <p>Aura should feel calm and operational: strong hierarchy, restrained panels, meaningful colour and minimal decoration.</p>
+        </div>
+        <div class="ui-band">
+          <aside class="ui-sidebar">
+            <img src="./aura-logo-exact-transparent.png" alt="Aura" />
+            <div class="ui-menu">
+              <span class="active">Dashboard</span>
+              <span>Employees</span>
+              <span>Documents</span>
+              <span>Lifecycle</span>
+              <span>Analytics</span>
+            </div>
+          </aside>
+          <div class="ui-main">
+            <p class="eyebrow">People operations</p>
+            <h3>Good morning, Anupama.</h3>
+            <p>Here is what needs attention across your workforce today.</p>
+            <div class="metrics">
+              <div class="metric"><span>ACTIVE EMPLOYEES</span><strong>44</strong></div>
+              <div class="metric"><span>PRESENT TODAY</span><strong>38</strong></div>
+              <div class="metric"><span>ACTIONS DUE</span><strong>6</strong></div>
+            </div>
+            <div class="actions">
+              <button class="button">Review actions</button>
+              <button class="button secondary">Open employee register</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Social and launch artwork</h2>
+          <p>The social system uses the actual mark, direct language and strong colour fields rather than generic stock imagery.</p>
+        </div>
+        <img class="social-card" src="./aura-social-card.svg" alt="Aura social card" />
+      </section>
+    </main>
+    <footer>Aura brand kit 2.0 · ACV Solutions · Approved exact logo system</footer>
+  </body>
+</html>

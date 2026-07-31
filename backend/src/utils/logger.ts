@@ -3,15 +3,28 @@ import path from 'path';
 import fs from 'fs';
 import { config } from '../config/config';
 
-// Ensure logs directory exists
 const logsDir = path.dirname(config.logFile);
-if (!fs.existsSync(logsDir)) {
+if (config.nodeEnv !== 'production' && !fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir, { recursive: true });
 }
 
-// Define log format
+const cloudSeverity = winston.format((info) => {
+  const severityByLevel: Record<string, string> = {
+    error: 'ERROR',
+    warn: 'WARNING',
+    info: 'INFO',
+    http: 'INFO',
+    verbose: 'DEBUG',
+    debug: 'DEBUG',
+    silly: 'DEBUG',
+  };
+  info.severity = severityByLevel[info.level] || 'DEFAULT';
+  return info;
+});
+
 const logFormat = winston.format.combine(
-  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  cloudSeverity(),
+  winston.format.timestamp(),
   winston.format.errors({ stack: true }),
   winston.format.splat(),
   winston.format.json()
@@ -30,31 +43,32 @@ const consoleFormat = winston.format.combine(
   })
 );
 
-// Create the logger
-export const logger = winston.createLogger({
-  level: config.logLevel,
-  format: logFormat,
-  transports: [
-    // Write all logs to console
-    new winston.transports.Console({
-      format: consoleFormat,
-    }),
+const transports: winston.transport[] = [
+  new winston.transports.Console({
+    format: config.nodeEnv === 'production' ? logFormat : consoleFormat,
+  }),
+];
 
-    // Write all logs to file
+if (config.nodeEnv !== 'production') {
+  transports.push(
     new winston.transports.File({
       filename: config.logFile,
-      maxsize: 5242880, // 5MB
+      maxsize: 5242880,
       maxFiles: 5,
     }),
-
-    // Write errors to separate file
     new winston.transports.File({
       filename: path.join(logsDir, 'error.log'),
       level: 'error',
-      maxsize: 5242880, // 5MB
+      maxsize: 5242880,
       maxFiles: 5,
-    }),
-  ],
+    })
+  );
+}
+
+export const logger = winston.createLogger({
+  level: config.logLevel,
+  format: logFormat,
+  transports,
   // Don't exit on handled exceptions
   exitOnError: false,
 });

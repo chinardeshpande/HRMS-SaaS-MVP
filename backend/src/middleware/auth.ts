@@ -6,6 +6,7 @@ import { UserRole } from '../../../shared/types';
 import { AppDataSource } from '../config/database';
 import { User } from '../models/User';
 import { Tenant } from '../models/Tenant';
+import identityMappingService from '../services/identityMappingService';
 
 // Extend Express Request type to include user and tenant
 declare global {
@@ -67,6 +68,11 @@ export const authenticate = async (
 
     if (!user) {
       throw new AppError('User account is inactive or no longer exists', 401, 'ACCOUNT_INACTIVE');
+    }
+
+    const identity = await identityMappingService.resolveUser(user, true);
+    if (identity.status === 'auto_linked') {
+      user.employeeId = identity.employeeId;
     }
 
     const tenant = await AppDataSource.getRepository(Tenant).findOne({

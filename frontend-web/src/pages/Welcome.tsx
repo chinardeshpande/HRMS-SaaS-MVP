@@ -80,7 +80,7 @@ export default function Welcome() {
               <SparklesIcon className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">AuroraHR</h1>
+              <h1 className="text-xl font-bold text-gray-900">Aura</h1>
               <p className="text-xs text-gray-500">Welcome aboard!</p>
             </div>
           </div>
@@ -94,7 +94,7 @@ export default function Welcome() {
             <RocketLaunchIcon className="h-12 w-12 text-white" />
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            🎉 Welcome to AuroraHR!
+            🎉 Welcome to Aura!
           </h2>
           <p className="text-xl text-gray-600 mb-2">
             Your HRMS workspace is ready to go
@@ -182,11 +182,11 @@ export default function Welcome() {
           <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 text-white">
             <h3 className="text-2xl font-bold mb-2">Need Help Getting Started?</h3>
             <p className="mb-4 opacity-90">
-              Our support team is here to help you make the most of AuroraHR
+              Our support team is here to help you make the most of Aura
             </p>
             <div className="flex items-center justify-center space-x-4">
               <a
-                href="mailto:support@aurorahr.in"
+                href="mailto:support@aurahrms.com"
                 className="bg-white text-purple-600 px-6 py-2 rounded-lg font-medium hover:bg-gray-100 transition-all"
               >
                 Contact Support

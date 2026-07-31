@@ -4,7 +4,15 @@ import { UserRole } from '../types';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import { ApplyLeaveModal } from '../components/leave/ApplyLeaveModal';
 import { EmptyState } from '../components/common/EmptyState';
-import attendanceService, { Attendance, AttendanceStatistics, DepartmentAttendance, TimeEntryEdit, TimeEntryEditStatus } from '../services/attendanceService';
+import attendanceService, {
+  Attendance,
+  AttendanceImportConflictPolicy,
+  AttendanceImportPreview,
+  AttendanceStatistics,
+  DepartmentAttendance,
+  TimeEntryEdit,
+  TimeEntryEditStatus,
+} from '../services/attendanceService';
 import leaveService from '../services/leaveService';
 import employeeService from '../services/employeeService';
 import {
@@ -103,22 +111,13 @@ export default function ModernAttendance() {
     type: 'success',
   });
 
-  // Sync attendance modal
+  // Attendance import modal
   const [showSyncModal, setShowSyncModal] = useState(false);
-  const [syncFormData, setSyncFormData] = useState({
-    date: new Date().toISOString().split('T')[0],
-    device: '',
-    uploadMethod: 'device' as 'device' | 'file',
-  });
-  const [syncPreviewData, setSyncPreviewData] = useState<Array<{
-    employeeCode: string;
-    employeeName: string;
-    checkIn: string;
-    checkOut: string;
-    status: string;
-  }>>([]);
-  const [showSyncResults, setShowSyncResults] = useState(false);
-  const [syncResults, setSyncResults] = useState({ total: 0, successful: 0, failed: 0 });
+  const [syncFile, setSyncFile] = useState<File | null>(null);
+  const [syncConflictPolicy, setSyncConflictPolicy] = useState<AttendanceImportConflictPolicy>('skip');
+  const [syncPreview, setSyncPreview] = useState<AttendanceImportPreview | null>(null);
+  const [syncImported, setSyncImported] = useState<number | null>(null);
+  const [syncPreviewing, setSyncPreviewing] = useState(false);
   const [syncSaving, setSyncSaving] = useState(false);
 
   const [reportStartDate, setReportStartDate] = useState(`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-01`);
@@ -127,13 +126,6 @@ export default function ModernAttendance() {
   const [departmentAttendance, setDepartmentAttendance] = useState<DepartmentAttendance[]>([]);
   const [leaveStats, setLeaveStats] = useState<any | null>(null);
   const [reportsLoading, setReportsLoading] = useState(false);
-
-  // Device connectors are listed as configured integration slots. They do not fabricate data.
-  const biometricDevices = [
-    { id: 'device-1', name: 'Main Entrance - ZKTeco K40', location: 'Building A' },
-    { id: 'device-2', name: 'Office Floor - Suprema BioStation', location: 'Building B' },
-    { id: 'device-3', name: 'Warehouse - eSSL X990', location: 'Building C' },
-  ];
 
   useEffect(() => {
     fetchData();
@@ -149,6 +141,11 @@ export default function ModernAttendance() {
     const interval = window.setInterval(() => setTimerNow(new Date()), 30000);
     return () => window.clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle('manu-suppressed', showSyncModal);
+    return () => document.body.classList.remove('manu-suppressed');
+  }, [showSyncModal]);
 
   const fetchEmployees = async () => {
     try {
@@ -180,12 +177,6 @@ export default function ModernAttendance() {
   const getNormalizedStatus = (status: string) => status.replace('-', '_');
 
   const getStatusLabel = (status: string) => getNormalizedStatus(status).replace('_', ' ').toUpperCase();
-
-  const buildDateTime = (date: string, time?: string) => {
-    if (!time) return undefined;
-    const normalizedTime = time.length === 5 ? `${time}:00` : time;
-    return new Date(`${date}T${normalizedTime}`).toISOString();
-  };
 
   const toISODate = (date: Date) => date.toISOString().split('T')[0];
 
@@ -504,80 +495,83 @@ export default function ModernAttendance() {
     setSelectedEmployees([]);
   };
 
-  const handleDeviceSelection = (deviceId: string) => {
-    setSyncFormData({ ...syncFormData, device: deviceId });
-    if (deviceId) {
-      setSyncPreviewData([]);
-      showNotification('Device connector is not configured yet. Use file upload for production sync.', 'error');
-    }
-  };
-
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    setSyncFile(file || null);
+    setSyncPreview(null);
+    setSyncImported(null);
+  };
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      const lines = text.split('\n');
+  const getImportError = (error: any, fallback: string) =>
+    error?.response?.data?.error?.message ||
+    error?.response?.data?.error ||
+    error?.message ||
+    fallback;
 
-      // Parse CSV format: EmployeeCode,Name,CheckIn,CheckOut,Status
-      const data = lines.slice(1).filter(line => line.trim()).map(line => {
-        const [employeeCode, employeeName, checkIn, checkOut, status] = line.split(',');
-        return {
-          employeeCode: employeeCode?.trim() || '',
-          employeeName: employeeName?.trim() || '',
-          checkIn: checkIn?.trim() || '',
-          checkOut: checkOut?.trim() || '',
-          status: getNormalizedStatus(status?.trim() || 'present'),
-        };
-      });
+  const handleSyncPreview = async () => {
+    if (!syncFile) {
+      showNotification('Choose a CSV attendance file first', 'error');
+      return;
+    }
 
-      setSyncPreviewData(data);
-    };
-    reader.readAsText(file);
+    setSyncPreviewing(true);
+    try {
+      const preview = await attendanceService.previewImport(syncFile, syncConflictPolicy);
+      setSyncPreview(preview);
+      setSyncImported(null);
+    } catch (error: any) {
+      setSyncPreview(null);
+      showNotification(getImportError(error, 'Unable to preview attendance file'), 'error');
+    } finally {
+      setSyncPreviewing(false);
+    }
   };
 
   const handleSyncSave = async () => {
-    if (syncPreviewData.length === 0) {
-      showNotification('No attendance data to sync', 'error');
+    if (!syncFile || !syncPreview) {
+      showNotification('Preview the attendance file before importing it', 'error');
       return;
     }
-
-    const employeesByCode = new Map(employees.map((employee) => [employee.code.toLowerCase(), employee]));
-    const validRows = syncPreviewData
-      .map((record) => ({ record, employee: employeesByCode.get(record.employeeCode.toLowerCase()) }))
-      .filter((row) => row.employee);
-    const failed = syncPreviewData.length - validRows.length;
-
-    if (validRows.length === 0) {
-      showNotification('No rows match active employees. Check employee codes in the file.', 'error');
+    if (syncPreview.summary.errors > 0) {
+      showNotification('Correct the invalid rows before importing', 'error');
       return;
     }
-
     setSyncSaving(true);
     try {
-      await attendanceService.bulkUpdate(
-        validRows.map(({ record, employee }) => ({
-          employeeId: employee!.id,
-          date: syncFormData.date,
-          status: getNormalizedStatus(record.status),
-          checkIn: buildDateTime(syncFormData.date, record.checkIn),
-          checkOut: buildDateTime(syncFormData.date, record.checkOut),
-          notes: `Synced from ${syncFormData.uploadMethod === 'file' ? 'uploaded file' : 'configured device connector'}`,
-        })),
-        `Attendance sync ${syncFormData.uploadMethod} import for ${syncFormData.date}`
-      );
-
-      setSyncResults({ total: syncPreviewData.length, successful: validRows.length, failed });
-      setShowSyncResults(true);
-      showNotification(`Attendance synced: ${validRows.length} successful, ${failed} failed`, failed === 0 ? 'success' : 'error');
+      const result = await attendanceService.commitImport(syncFile, syncConflictPolicy);
+      setSyncPreview(result);
+      setSyncImported(result.imported);
+      showNotification(result.message, 'success');
       await fetchData();
     } catch (error: any) {
-      showNotification(error.message || 'Failed to sync attendance records', 'error');
+      showNotification(getImportError(error, 'Failed to import attendance records'), 'error');
     } finally {
       setSyncSaving(false);
     }
+  };
+
+  const handleDownloadImportTemplate = () => {
+    const template = [
+      'employeeCode,date,status,checkIn,checkOut,workMinutes,location,notes',
+      'EMP001,2026-07-01,present,09:00,18:00,540,Office,Regular workday',
+      'EMP002,2026-07-01,present,09:15,17:45,510,WFH,',
+      'EMP001,2026-07-02,on_leave,,,,,Approved leave',
+    ].join('\n');
+    const blob = new Blob(['\uFEFF' + template], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'aura_attendance_import_template.csv';
+    link.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const closeSyncModal = () => {
+    setShowSyncModal(false);
+    setSyncFile(null);
+    setSyncPreview(null);
+    setSyncImported(null);
+    setSyncConflictPolicy('skip');
   };
 
   const handleExportCSV = () => {
@@ -937,10 +931,10 @@ export default function ModernAttendance() {
                   <button
                     onClick={() => setShowSyncModal(true)}
                     className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center space-x-1 text-xs font-medium"
-                    title="Sync Attendance"
+                    title="Import attendance"
                   >
                     <ArrowDownTrayIcon className="h-4 w-4" />
-                    <span>Sync</span>
+                    <span>Import</span>
                   </button>
                 </div>
               )}
@@ -2010,7 +2004,7 @@ export default function ModernAttendance() {
 
       {/* Regularization Request Modal */}
       {showRegularizationModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <div className="card max-w-2xl w-full my-8 max-h-[90vh] flex flex-col">
             <div className="card-body p-6 overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
@@ -2276,221 +2270,238 @@ export default function ModernAttendance() {
         </div>
       )}
 
-      {/* Sync Attendance Modal */}
+      {/* Attendance Import Modal */}
       {showSyncModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="card max-w-4xl w-full my-4 max-h-[95vh] flex flex-col">
-            <div className="card-body p-4 overflow-y-auto">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                    <ArrowDownTrayIcon className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-bold text-gray-900">Sync Attendance</h3>
-                    <p className="text-xs text-gray-600">Import data from device or file</p>
-                  </div>
+          <div className="w-full max-w-6xl my-4 max-h-[95vh] overflow-hidden rounded-lg bg-white shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary-50">
+                  <ArrowDownTrayIcon className="h-5 w-5 text-primary-700" />
                 </div>
-                <button
-                  onClick={() => {
-                    setShowSyncModal(false);
-                    setSyncPreviewData([]);
-                    setShowSyncResults(false);
-                    setSyncFormData({ date: new Date().toISOString().split('T')[0], device: '', uploadMethod: 'device' });
-                  }}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <XMarkIcon className="h-5 w-5" />
-                </button>
+                <div>
+                  <h3 className="text-base font-bold text-gray-950">Import attendance</h3>
+                  <p className="text-xs text-gray-600">Daily, weekly, or monthly CSV data</p>
+                </div>
               </div>
+              <button
+                type="button"
+                onClick={closeSyncModal}
+                className="flex h-9 w-9 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                title="Close"
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            </div>
 
-              <div className="space-y-3">
-                {/* Date Selection */}
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Attendance Date *</label>
-                  <input
-                    type="date"
-                    value={syncFormData.date}
-                    onChange={(e) => setSyncFormData({ ...syncFormData, date: e.target.value })}
-                    required
-                    className="input input-sm text-xs"
-                  />
-                </div>
-
-                {/* Upload Method Selection */}
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">Sync Method</label>
-                  <div className="grid grid-cols-2 gap-2">
+            <div className="overflow-y-auto px-5 py-4">
+              <div className="grid gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
+                <aside className="space-y-5 border-b border-gray-200 pb-5 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-5">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wide text-primary-700">1. Prepare the file</p>
+                    <p className="mt-2 text-sm leading-6 text-gray-600">
+                      Use one row per employee and attendance date. Add one day, one week, or a complete month in the same format.
+                    </p>
                     <button
                       type="button"
-                      onClick={() => setSyncFormData({ ...syncFormData, uploadMethod: 'device', device: '' })}
-                      className={`p-2.5 rounded-lg border-2 transition-all ${
-                        syncFormData.uploadMethod === 'device'
-                          ? 'border-blue-600 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      onClick={handleDownloadImportTemplate}
+                      className="mt-3 inline-flex items-center gap-2 rounded-md border border-primary-200 px-3 py-2 text-sm font-semibold text-primary-800 hover:bg-primary-50"
                     >
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-                          syncFormData.uploadMethod === 'device' ? 'bg-blue-600' : 'bg-gray-200'
-                        }`}>
-                          <ClockIcon className={`h-4 w-4 ${syncFormData.uploadMethod === 'device' ? 'text-white' : 'text-gray-600'}`} />
-                        </div>
-                        <div className="text-left flex-1">
-                          <p className="text-xs font-medium text-gray-900">Biometric Device</p>
-                          <p className="text-[10px] text-gray-500">Connector required</p>
-                        </div>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setSyncFormData({ ...syncFormData, uploadMethod: 'file', device: '' })}
-                      className={`p-2.5 rounded-lg border-2 transition-all ${
-                        syncFormData.uploadMethod === 'file'
-                          ? 'border-blue-600 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-                          syncFormData.uploadMethod === 'file' ? 'bg-blue-600' : 'bg-gray-200'
-                        }`}>
-                          <ArrowDownTrayIcon className={`h-4 w-4 ${syncFormData.uploadMethod === 'file' ? 'text-white' : 'text-gray-600'}`} />
-                        </div>
-                        <div className="text-left flex-1">
-                          <p className="text-xs font-medium text-gray-900">Upload File</p>
-                          <p className="text-[10px] text-gray-500">CSV or log file</p>
-                        </div>
-                      </div>
+                      <ArrowDownTrayIcon className="h-4 w-4" />
+                      Download CSV template
                     </button>
                   </div>
-                </div>
 
-                {/* Device Selection */}
-                {syncFormData.uploadMethod === 'device' && (
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Select Biometric Device *</label>
-                    <select
-                      value={syncFormData.device}
-                      onChange={(e) => handleDeviceSelection(e.target.value)}
-                      className="input input-sm text-xs"
-                    >
-                      <option value="">-- Select a device --</option>
-                      {biometricDevices.map(device => (
-                        <option key={device.id} value={device.id}>
-                          {device.name} ({device.location})
-                        </option>
-                      ))}
-                    </select>
-                    {syncFormData.device && (
-                      <p className="text-[10px] text-blue-600 mt-1 flex items-center">
-                        <CheckIcon className="h-3 w-3 mr-1" />
-                        Device connector is not configured. Upload a CSV file to sync production attendance.
+                    <label htmlFor="attendance-import-file" className="text-xs font-bold uppercase tracking-wide text-primary-700">
+                      2. Choose CSV file
+                    </label>
+                    <input
+                      id="attendance-import-file"
+                      type="file"
+                      accept=".csv,text/csv"
+                      onChange={handleFileUpload}
+                      className="mt-2 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm file:mr-3 file:rounded file:border-0 file:bg-primary-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-primary-800"
+                    />
+                    {syncFile && (
+                      <p className="mt-2 truncate text-xs font-medium text-gray-700" title={syncFile.name}>
+                        {syncFile.name} · {(syncFile.size / 1024).toFixed(1)} KB
                       </p>
                     )}
                   </div>
-                )}
 
-                {/* File Upload */}
-                {syncFormData.uploadMethod === 'file' && (
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Upload Attendance File *</label>
-                    <input
-                      type="file"
-                      accept=".csv,.txt,.log"
-                      onChange={handleFileUpload}
-                      className="input input-sm text-xs"
-                    />
-                    <p className="text-[10px] text-gray-500 mt-1">
-                      Format: CSV, TXT, LOG (EmployeeCode, Name, CheckIn, CheckOut, Status)
+                    <p className="text-xs font-bold uppercase tracking-wide text-primary-700">3. Existing records</p>
+                    <div className="mt-2 grid grid-cols-2 rounded-md border border-gray-200 bg-gray-50 p-1">
+                      {(['skip', 'overwrite'] as AttendanceImportConflictPolicy[]).map((policy) => (
+                        <button
+                          key={policy}
+                          type="button"
+                          onClick={() => {
+                            setSyncConflictPolicy(policy);
+                            setSyncPreview(null);
+                            setSyncImported(null);
+                          }}
+                          className={`rounded px-3 py-2 text-xs font-semibold capitalize ${
+                            syncConflictPolicy === policy
+                              ? 'bg-white text-primary-800 shadow-sm'
+                              : 'text-gray-600 hover:text-gray-900'
+                          }`}
+                        >
+                          {policy}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="mt-2 text-xs leading-5 text-gray-500">
+                      {syncConflictPolicy === 'skip'
+                        ? 'Existing employee-date records are left unchanged.'
+                        : 'Existing employee-date records are replaced after preview.'}
                     </p>
                   </div>
-                )}
 
-                {/* Preview Data */}
-                {syncPreviewData.length > 0 && (
-                  <div className="border-2 border-gray-200 rounded-lg p-2.5 bg-gray-50">
-                    <h4 className="text-xs font-semibold text-gray-900 mb-2">
-                      Preview ({syncPreviewData.length} records)
-                    </h4>
-                    <div className="max-h-40 overflow-y-auto bg-white rounded border border-gray-200">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50 sticky top-0">
-                          <tr>
-                            <th className="px-2 py-1.5 text-left text-[10px] font-semibold text-gray-700">Code</th>
-                            <th className="px-2 py-1.5 text-left text-[10px] font-semibold text-gray-700">Name</th>
-                            <th className="px-2 py-1.5 text-left text-[10px] font-semibold text-gray-700">Check In</th>
-                            <th className="px-2 py-1.5 text-left text-[10px] font-semibold text-gray-700">Check Out</th>
-                            <th className="px-2 py-1.5 text-left text-[10px] font-semibold text-gray-700">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                          {syncPreviewData.map((record, index) => (
-                            <tr key={index} className="hover:bg-gray-50">
-                              <td className="px-2 py-1.5 text-[10px] text-gray-900">{record.employeeCode}</td>
-                              <td className="px-2 py-1.5 text-[10px] text-gray-900">{record.employeeName}</td>
-                              <td className="px-2 py-1.5 text-[10px] text-gray-900">{record.checkIn}</td>
-                              <td className="px-2 py-1.5 text-[10px] text-gray-900">{record.checkOut}</td>
-                              <td className="px-2 py-1.5">
-                                <span className={`badge badge-sm text-[9px] ${
-                                  record.status === 'present' ? 'badge-success' : 'badge-danger'
-                                }`}>
-                                  {record.status}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                  <button
+                    type="button"
+                    onClick={handleSyncPreview}
+                    disabled={!syncFile || syncPreviewing}
+                    className="btn btn-primary w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {syncPreviewing ? 'Validating file...' : 'Preview import'}
+                  </button>
+                </aside>
+
+                <section className="min-w-0">
+                  {!syncPreview && (
+                    <div className="flex min-h-72 flex-col items-center justify-center border border-dashed border-gray-300 px-6 py-12 text-center">
+                      <CalendarDaysIcon className="h-9 w-9 text-gray-300" />
+                      <h4 className="mt-3 text-sm font-bold text-gray-900">Preview before anything changes</h4>
+                      <p className="mt-1 max-w-md text-sm leading-6 text-gray-500">
+                        Aura will match employee codes, validate every date and status, identify duplicates, and show exactly what will be created or updated.
+                      </p>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Sync Results */}
-                {showSyncResults && (
-                  <div className="bg-green-50 border-2 border-green-200 rounded-lg p-3">
-                    <div className="flex items-start space-x-2">
-                      <div className="w-7 h-7 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
-                        <CheckIcon className="h-4 w-4 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs font-semibold text-green-900">Sync Completed</p>
-                        <div className="mt-1.5 space-y-0.5 text-[10px] text-green-800">
-                          <p>Total: <span className="font-bold">{syncResults.total}</span></p>
-                          <p>Success: <span className="font-bold text-green-600">{syncResults.successful}</span></p>
-                          <p>Failed: <span className="font-bold text-red-600">{syncResults.failed}</span></p>
+                  {syncPreview && (
+                    <div className="space-y-4">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                          <p className="text-xs font-bold uppercase tracking-wide text-gray-500">Validated range</p>
+                          <h4 className="mt-1 text-lg font-bold text-gray-950">
+                            {syncPreview.dateRange.from || 'No valid dates'}
+                            {syncPreview.dateRange.to && syncPreview.dateRange.to !== syncPreview.dateRange.from
+                              ? ` to ${syncPreview.dateRange.to}`
+                              : ''}
+                          </h4>
                         </div>
-                        <p className="text-[10px] text-green-700 mt-1.5">Review the result and close when ready.</p>
+                        <p className="text-sm text-gray-600">{syncPreview.totalRows} source rows</p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-gray-200 bg-gray-200 sm:grid-cols-5">
+                        {[
+                          ['Create', syncPreview.summary.creates, 'text-emerald-700'],
+                          ['Update', syncPreview.summary.updates, 'text-blue-700'],
+                          ['Unchanged', syncPreview.summary.unchanged, 'text-gray-700'],
+                          ['Skipped', syncPreview.summary.skipped, 'text-amber-700'],
+                          ['Errors', syncPreview.summary.errors, 'text-red-700'],
+                        ].map(([label, value, color]) => (
+                          <div key={String(label)} className="bg-white px-3 py-3">
+                            <p className="text-[11px] font-semibold text-gray-500">{label}</p>
+                            <p className={`mt-1 text-xl font-bold ${color}`}>{value}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {syncImported !== null && (
+                        <div className="flex items-start gap-3 border border-emerald-200 bg-emerald-50 px-4 py-3">
+                          <CheckCircleIcon className="mt-0.5 h-5 w-5 text-emerald-700" />
+                          <div>
+                            <p className="text-sm font-bold text-emerald-900">Import completed</p>
+                            <p className="mt-0.5 text-xs text-emerald-800">{syncImported} attendance rows were saved.</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {syncPreview.summary.errors > 0 && (
+                        <div className="flex items-start gap-3 border border-red-200 bg-red-50 px-4 py-3">
+                          <ExclamationCircleIcon className="mt-0.5 h-5 w-5 text-red-700" />
+                          <div>
+                            <p className="text-sm font-bold text-red-900">Correct the invalid rows</p>
+                            <p className="mt-0.5 text-xs text-red-800">
+                              The import stays locked until the CSV has no validation errors.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="max-h-[42vh] overflow-auto border border-gray-200">
+                        <table className="min-w-[920px] w-full divide-y divide-gray-200 text-left">
+                          <thead className="sticky top-0 bg-gray-50">
+                            <tr>
+                              {['Row', 'Employee', 'Date', 'Status', 'In', 'Out', 'Location', 'Action', 'Notes'].map((heading) => (
+                                <th key={heading} className="px-3 py-2 text-[11px] font-bold uppercase tracking-wide text-gray-600">
+                                  {heading}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100 bg-white">
+                            {syncPreview.rows.map((row) => (
+                              <tr key={`${row.row}-${row.employeeCode}-${row.date}`} className={row.action === 'error' ? 'bg-red-50/50' : ''}>
+                                <td className="px-3 py-2 text-xs text-gray-500">{row.row}</td>
+                                <td className="px-3 py-2">
+                                  <p className="text-xs font-semibold text-gray-900">{row.employeeName || row.employeeCode || 'Missing code'}</p>
+                                  {row.employeeName && <p className="text-[11px] text-gray-500">{row.employeeCode}</p>}
+                                </td>
+                                <td className="px-3 py-2 text-xs text-gray-700">{row.date || '-'}</td>
+                                <td className="px-3 py-2 text-xs font-medium text-gray-700">{row.status ? getStatusLabel(row.status) : '-'}</td>
+                                <td className="px-3 py-2 text-xs text-gray-600">{row.checkIn ? formatTime(row.checkIn) : '-'}</td>
+                                <td className="px-3 py-2 text-xs text-gray-600">{row.checkOut ? formatTime(row.checkOut) : '-'}</td>
+                                <td className="px-3 py-2 text-xs text-gray-600">{row.location || '-'}</td>
+                                <td className="px-3 py-2">
+                                  <span className={`inline-flex rounded px-2 py-1 text-[10px] font-bold uppercase ${
+                                    row.action === 'create' ? 'bg-emerald-50 text-emerald-700' :
+                                    row.action === 'update' ? 'bg-blue-50 text-blue-700' :
+                                    row.action === 'error' ? 'bg-red-50 text-red-700' :
+                                    row.action === 'skip' ? 'bg-amber-50 text-amber-700' :
+                                    'bg-gray-100 text-gray-600'
+                                  }`}>
+                                    {row.action}
+                                  </span>
+                                </td>
+                                <td className="max-w-64 px-3 py-2 text-[11px] leading-5 text-gray-600">
+                                  {row.messages.length ? row.messages.join(' · ') : row.notes || '-'}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </section>
+              </div>
+            </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center justify-end space-x-2 pt-3 border-t border-gray-200">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowSyncModal(false);
-                      setSyncPreviewData([]);
-                      setShowSyncResults(false);
-                      setSyncFormData({ date: new Date().toISOString().split('T')[0], device: '', uploadMethod: 'device' });
-                    }}
-                    className="btn btn-sm btn-secondary text-xs px-3 py-1.5"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSyncSave}
-                    disabled={syncPreviewData.length === 0 || syncSaving}
-                    className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed text-xs px-3 py-1.5"
-                  >
-                    <CheckIcon className="h-3.5 w-3.5 mr-1" />
-                    {syncSaving ? 'Saving...' : `Save (${syncPreviewData.length})`}
-                  </button>
-                </div>
+            <div className="flex flex-col-reverse gap-2 border-t border-gray-200 bg-gray-50 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-gray-500">Every completed import is recorded in the audit log.</p>
+              <div className="flex items-center justify-end gap-2">
+                <button type="button" onClick={closeSyncModal} className="btn btn-secondary">
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSyncSave}
+                  disabled={
+                    !syncPreview ||
+                    syncPreview.summary.errors > 0 ||
+                    syncPreview.summary.ready === 0 ||
+                    syncSaving ||
+                    syncImported !== null
+                  }
+                  className="btn btn-primary disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <CheckIcon className="h-4 w-4" />
+                  {syncSaving ? 'Importing...' : `Import ${syncPreview?.summary.ready || 0} rows`}
+                </button>
               </div>
             </div>
           </div>

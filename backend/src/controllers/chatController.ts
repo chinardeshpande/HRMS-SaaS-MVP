@@ -3,6 +3,7 @@ import { chatService } from '../services/chatService';
 import { socketService } from '../services/socketService';
 import { ConversationType } from '../models/ChatConversation';
 import { MessageType } from '../models/ChatMessage';
+import { storageProvider, tenantDocumentKey } from '../services/storage';
 
 // ==================== CONVERSATION CONTROLLERS ====================
 
@@ -475,11 +476,16 @@ export const uploadFile = async (req: Request, res: Response) => {
     }
 
     const file = req.file;
-    const fileUrl = `/uploads/documents/${file.filename}`;
+    const fileUrl = tenantDocumentKey(
+      tenantId,
+      `chat/${conversationId}`,
+      file.originalname
+    );
+    await storageProvider.put(fileUrl, file.buffer, file.mimetype);
 
     console.log('📤 [UPLOAD] File received:', {
       originalname: file.originalname,
-      filename: file.filename,
+      filename: fileUrl.split('/').pop(),
       fileUrl: fileUrl,
       mimetype: file.mimetype,
       size: file.size,

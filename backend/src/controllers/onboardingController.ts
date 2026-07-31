@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import path from 'path';
-import fs from 'fs';
 import onboardingService from '../services/onboardingService';
 import onboardingFSMService from '../services/OnboardingFSMService';
 import { sendSuccess, sendError, sendCreated } from '../utils/responses';
 import logger from '../utils/logger';
 import { AppDataSource } from '../config/database';
 import { OnboardingDocument } from '../models/OnboardingDocument';
+import { config } from '../config/config';
+import { storageProvider, tenantDocumentKey } from '../services/storage';
 
 export const createCandidate = async (req: Request, res: Response) => {
   try {
@@ -91,9 +91,14 @@ export const uploadDocument = async (req: Request, res: Response) => {
 
     // File info from multer
     const fileName = req.file.originalname;
-    const filePath = req.file.path; // Full path to uploaded file
+    const filePath = tenantDocumentKey(
+      tenantId,
+      `onboarding/${candidateId}`,
+      req.file.originalname
+    );
     const fileSize = req.file.size;
     const mimeType = req.file.mimetype;
+    await storageProvider.put(filePath, req.file.buffer, mimeType);
 
     const document = await onboardingService.uploadDocument(
       candidateId,
@@ -189,18 +194,15 @@ export const downloadDocument = async (req: Request, res: Response) => {
       return sendError(res, { code: 'NOT_FOUND', message: 'Document not found' }, 404);
     }
 
-    // Check if file exists
-    if (!fs.existsSync(document.filePath)) {
+    if (!(await storageProvider.exists(document.filePath))) {
       return sendError(res, { code: 'FILE_NOT_FOUND', message: 'File not found on server' }, 404);
     }
 
-    // Set appropriate headers
-    res.setHeader('Content-Type', document.mimeType || 'application/octet-stream');
-    res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
-
-    // Stream the file
-    const fileStream = fs.createReadStream(document.filePath);
-    fileStream.pipe(res);
+    const url = await storageProvider.getSignedUrl(
+      document.filePath,
+      config.storage.signedUrlTtlSeconds
+    );
+    res.redirect(url);
   } catch (error: any) {
     logger.error('Download document error:', error);
     return sendError(res, { code: 'DOWNLOAD_FAILED', message: error.message }, 500);
@@ -314,8 +316,7 @@ export const bulkUploadCandidates = async (req: Request, res: Response) => {
       return sendError(res, { code: 'NO_FILE', message: 'No CSV file uploaded' }, 400);
     }
 
-    const filePath = req.file.path;
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const fileContent = req.file.buffer.toString('utf-8');
 
     // Remove BOM if present
     const cleanContent = fileContent.replace(/^\uFEFF/, '');
@@ -324,7 +325,6 @@ export const bulkUploadCandidates = async (req: Request, res: Response) => {
     const lines = cleanContent.split('\n').filter(line => line.trim() && !line.trim().startsWith('#'));
 
     if (lines.length < 2) {
-      fs.unlinkSync(filePath); // Clean up uploaded file
       return sendError(res, { code: 'INVALID_CSV', message: 'CSV file must contain headers and at least one data row' }, 400);
     }
 
@@ -383,17 +383,9 @@ export const bulkUploadCandidates = async (req: Request, res: Response) => {
       }
     }
 
-    // Clean up uploaded file
-    fs.unlinkSync(filePath);
-
     return sendSuccess(res, results);
   } catch (error: any) {
     logger.error('Bulk upload error:', error);
-
-    // Clean up uploaded file if it exists
-    if (req.file?.path && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
 
     return sendError(res, { code: 'BULK_UPLOAD_FAILED', message: error.message }, 500);
   }

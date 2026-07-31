@@ -1,7 +1,5 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
 import compensationService from '../services/compensationService';
 import { authenticate, authorize } from '../middleware/auth';
 import { UserRole } from '../../../shared/types';
@@ -9,30 +7,15 @@ import { SalaryApprovalStatus, SalaryStructureStatus } from '../models/SalaryStr
 import { SalaryComponentType } from '../models/SalaryComponent';
 import { PayslipStatus } from '../models/Payslip';
 import { CompensationShareChannel } from '../models/CompensationShareLog';
-import { resolveUploadUrl, uploadDir } from '../utils/uploadPaths';
 import auditService from '../services/auditService';
+import { config } from '../config/config';
+import { storageProvider, tenantDocumentKey } from '../services/storage';
 
 const router = Router();
 router.use(authenticate);
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    const targetDir = uploadDir('compensation');
-    if (!fs.existsSync(targetDir)) {
-      fs.mkdirSync(targetDir, { recursive: true });
-    }
-    cb(null, targetDir);
-  },
-  filename: (_req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const ext = path.extname(file.originalname);
-    const nameWithoutExt = path.basename(file.originalname, ext);
-    cb(null, `${nameWithoutExt}-${uniqueSuffix}${ext}`);
-  },
-});
-
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   fileFilter: (_req, file, cb) => {
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (allowedTypes.includes(file.mimetype)) {
@@ -41,7 +24,7 @@ const upload = multer({
       cb(new Error('Only PDF and image payslip files are allowed.'));
     }
   },
-  limits: { fileSize: 10 * 1024 * 1024 },
+  limits: { fileSize: config.upload.maxSize },
 });
 
 const hrOnly = authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN);
@@ -296,12 +279,18 @@ router.post('/payslips/:payslipId/attachments', hrOnly, upload.single('file') as
   try {
     if (!req.file) throw new Error('Payslip file is required');
 
+    const storageKey = tenantDocumentKey(
+      req.user!.tenantId,
+      `compensation/${req.params.payslipId}`,
+      req.file.originalname
+    );
+    await storageProvider.put(storageKey, req.file.buffer, req.file.mimetype);
     const data = await compensationService.addPayslipAttachment({
       tenantId: req.user!.tenantId,
       payslipId: req.params.payslipId,
       fileName: req.file.originalname,
       fileType: req.file.mimetype,
-      fileUrl: `/uploads/compensation/${req.file.filename}`,
+      fileUrl: storageKey,
       fileSize: req.file.size,
       uploadedBy: req.user!.employeeId,
       isPrimary: req.body.isPrimary !== 'false',
@@ -328,8 +317,7 @@ router.get('/attachments/:attachmentId/download', async (req: Request, res: Resp
       return deny(res);
     }
 
-    const absolutePath = resolveUploadUrl(attachment.fileUrl);
-    if (!fs.existsSync(absolutePath)) {
+    if (!(await storageProvider.exists(attachment.fileUrl))) {
       return res.status(404).json({ success: false, error: { code: 'FILE_NOT_FOUND', message: 'File not found on server' } });
     }
 
@@ -350,7 +338,11 @@ router.get('/attachments/:attachmentId/download', async (req: Request, res: Resp
       userAgent: req.get('user-agent'),
     });
 
-    res.download(absolutePath, attachment.fileName);
+    const url = await storageProvider.getSignedUrl(
+      attachment.fileUrl,
+      config.storage.signedUrlTtlSeconds
+    );
+    res.redirect(url);
   } catch (error: any) {
     res.status(500).json({ success: false, error: { code: 'DOWNLOAD_ERROR', message: error.message } });
   }

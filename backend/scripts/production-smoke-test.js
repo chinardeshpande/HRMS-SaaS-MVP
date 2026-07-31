@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const dataSource = require('../dist/backend/src/data-source.js').default;
 
 const baseUrl = process.env.SMOKE_TEST_BASE_URL || 'http://localhost:3000/api/v1';
-const email = `codex-smoke-${Date.now()}@aurorahr.in`;
+const email = `codex-smoke-${Date.now()}@aurahrms.com`;
 const password = crypto.randomBytes(24).toString('base64url');
 
 const endpoints = [
@@ -80,7 +80,7 @@ async function deleteSmokeUser() {
 }
 
 async function createTemporaryUser(role) {
-  const tempEmail = `codex-${role.replace(/_/g, '-')}-${Date.now()}@aurorahr.in`;
+  const tempEmail = `codex-${role.replace(/_/g, '-')}-${Date.now()}@aurahrms.com`;
   const tenants = await dataSource.query(
     'select "tenantId" from tenants order by "createdAt" limit 1'
   );
@@ -556,7 +556,7 @@ async function runInvitationLifecycleWorkflow(token) {
     'Content-Type': 'application/json',
   };
   const suffix = Date.now();
-  const invitedEmail = `codex-invite-${suffix}@aurorahr.in`;
+  const invitedEmail = `codex-invite-${suffix}@aurahrms.com`;
   const invitedPassword = crypto.randomBytes(24).toString('base64url');
   let invitationId;
   let invitedToken;
@@ -740,8 +740,8 @@ async function runSubscriptionEnforcementWorkflow(token) {
   }
 
   const suffix = Date.now();
-  const limitEmail = `codex-limit-${suffix}@aurorahr.in`;
-  const suspendedEmail = `codex-suspended-${suffix}@aurorahr.in`;
+  const limitEmail = `codex-limit-${suffix}@aurahrms.com`;
+  const suspendedEmail = `codex-suspended-${suffix}@aurahrms.com`;
 
   try {
     const [activeUsers] = await dataSource.query(

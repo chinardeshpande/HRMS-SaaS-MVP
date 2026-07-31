@@ -1,4 +1,4 @@
-const baseUrl = (process.env.FRONTEND_SMOKE_BASE_URL || 'https://aurorahr.in').replace(/\/$/, '');
+const baseUrl = (process.env.FRONTEND_SMOKE_BASE_URL || 'https://aurahrms.com').replace(/\/$/, '');
 
 const appShellRoutes = ['/', '/login', '/dashboard', '/my-hr-documents', '/settings'];
 

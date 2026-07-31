@@ -1,0 +1,55 @@
+name: Deploy AuraHRMS to Cloud Run
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: Image tag; defaults to the selected commit SHA
+        required: false
+        type: string
+
+concurrency:
+  group: aurahrms-staging-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOYER_SA }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build, migrate, deploy, and verify
+        env:
+          IMAGE_TAG: ${{ inputs.image_tag || github.sha }}
+        run: |
+          set -euo pipefail
+          gcloud builds submit \
+            --project="${{ vars.GCP_PROJECT_ID }}" \
+            --config=cloudbuild.yaml \
+            --substitutions="_REGION=${{ vars.GCP_REGION }},_TAG=${IMAGE_TAG}"
+
+          API_URL="$(gcloud run services describe aurahrms-api \
+            --project="${{ vars.GCP_PROJECT_ID }}" \
+            --region="${{ vars.GCP_REGION }}" \
+            --format='value(status.url)')"
+          WEB_URL="$(gcloud run services describe aurahrms-web \
+            --project="${{ vars.GCP_PROJECT_ID }}" \
+            --region="${{ vars.GCP_REGION }}" \
+            --format='value(status.url)')"
+
+          curl --fail --silent --show-error "$API_URL/health" >/dev/null
+          curl --fail --silent --show-error "$WEB_URL/" >/dev/null

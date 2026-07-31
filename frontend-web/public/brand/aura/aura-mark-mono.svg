@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Aura monochrome ribbon A mark</title>
+  <desc id="desc">A continuous ribbon forming a human, forward-moving letter A.</desc>
+  <path
+    d="M151 72 210 206"
+    fill="none"
+    stroke="#123B5D"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="25"
+  />
+  <path
+    d="M49 206 104 69c10-26 38-38 61-24 27 16 34 51 14 74-7 8-17 15-27 21l-68 40c-16 9-36 2-42-15-6-16 2-34 17-43l89-51"
+    fill="none"
+    stroke="#123B5D"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="25"
+  />
+</svg>

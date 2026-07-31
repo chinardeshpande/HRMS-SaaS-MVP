@@ -6,6 +6,7 @@ import {
   CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
   ChartBarIcon,
+  ClipboardDocumentListIcon,
   UserPlusIcon,
   ArrowRightStartOnRectangleIcon,
   Cog6ToothIcon,
@@ -52,6 +53,7 @@ export const canAccessRoles = (
 
 export const routeAccessRules: AccessRule[] = [
   { path: '/dashboard' },
+  { path: '/acv-readiness', roles: ADMIN_ROLES },
   { path: '/onboarding-wizard', roles: ADMIN_ROLES },
   { path: '/employees', roles: MANAGER_PLUS_ROLES },
   { path: '/employees/:id', roles: MANAGER_PLUS_ROLES },
@@ -95,6 +97,13 @@ export const routeAccessRules: AccessRule[] = [
 
 export const navigationItems: NavItemConfig[] = [
   { name: 'Dashboard', href: '/dashboard', path: '/dashboard', icon: HomeIcon },
+  {
+    name: 'ACV Readiness',
+    href: '/acv-readiness',
+    path: '/acv-readiness',
+    icon: ClipboardDocumentListIcon,
+    roles: ADMIN_ROLES,
+  },
   {
     name: 'Employee Register',
     href: '/employees',

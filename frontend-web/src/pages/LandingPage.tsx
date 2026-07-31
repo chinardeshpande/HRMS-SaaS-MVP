@@ -22,6 +22,7 @@ import BrandedScreenshot from '../components/landing/BrandedScreenshot';
 import { adoptionJourneys } from '../data/adoptionJourneys';
 import { differentiators } from '../data/differentiators';
 import { platformPillars } from '../data/platformPillars';
+import { brand } from '../config/brand';
 
 type Capability = {
   moduleId: string;
@@ -129,7 +130,7 @@ const pricingPlans = [
   {
     name: 'Growth',
     price: 'Per employee',
-    description: 'For SMEs and startups ready to operate HR on AuroraHR.',
+    description: 'For SMEs and startups ready to operate HR on Aura.',
     features: ['Role-based dashboards', 'Attendance and leave', 'Performance and exit', 'Reports and documents'],
     action: 'Register company',
     featured: true,
@@ -217,7 +218,7 @@ export default function LandingPage() {
     const body = [
       'Hi Anupama,',
       '',
-      'A new AuroraHR website enquiry has been submitted.',
+      'A new Aura website enquiry has been submitted.',
       '',
       `Name: ${contactForm.name}`,
       `Company: ${contactForm.company}`,
@@ -232,7 +233,7 @@ export default function LandingPage() {
     ].join('\n');
 
     window.location.href = `mailto:Anupama.Bhat@acvsolutions.in?subject=${encodeURIComponent(
-      `AuroraHR enquiry - ${contactForm.company || contactForm.name || 'Website lead'}`
+      `Aura enquiry - ${contactForm.company || contactForm.name || 'Website lead'}`
     )}&body=${encodeURIComponent(body)}`;
   };
 
@@ -246,9 +247,9 @@ export default function LandingPage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <button onClick={() => scrollToSection('top')} className="flex items-center">
             <img
-              src="/images/AuroraHR_logo.svg?v=20260514b"
-              alt="AuroraHR"
-              className="h-10 w-auto transition-all"
+              src={brand.logo}
+              alt={brand.fullName}
+              className="h-14 w-auto object-contain transition-all"
             />
           </button>
 
@@ -325,15 +326,14 @@ export default function LandingPage() {
           <div className="grid w-full overflow-hidden rounded-md border border-white/80 bg-white/72 shadow-2xl shadow-primary-900/10 backdrop-blur lg:grid-cols-[0.95fr_1.05fr]">
             <div className="flex items-center p-5 sm:p-7 lg:p-7 xl:p-8">
               <div className="max-w-3xl">
-              <div className="inline-flex items-center rounded-full border border-primary-200 bg-white/75 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-primary-800 shadow-sm backdrop-blur sm:text-xs">
-                Built for serious adoption
-              </div>
+              <p className="text-xs font-bold uppercase tracking-wide text-primary-700">{brand.descriptor}</p>
               <h1 className="mt-3 max-w-3xl text-[1.95rem] font-bold leading-[1.12] text-gray-950 sm:text-5xl sm:leading-[1.12] lg:text-[3.05rem] xl:text-[3.25rem]">
-                A clean HR foundation for GCC launches, SMEs, and startup scale.
+                {brand.name}
               </h1>
+              <p className="mt-2 text-xl font-semibold text-primary-800 sm:text-2xl">{brand.tagline}</p>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-700 sm:text-base lg:text-base lg:leading-6">
-                Launch people operations quickly with role-based workspaces, employee lifecycle workflows,
-                documents, HR Connect, and leadership visibility without forcing payroll or recruitment lock-in.
+                Connected HR operations, trusted company knowledge, and context-aware assistance in one focused
+                platform. {brand.promise}
               </p>
 
               <div className="mt-3 flex flex-wrap gap-2">
@@ -429,7 +429,7 @@ export default function LandingPage() {
               <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Platform capabilities</p>
               <h2 className="mt-3 text-4xl font-bold text-gray-900">The HR foundation for a company that is ready to operate.</h2>
               <p className="mt-4 text-lg leading-8 text-gray-600">
-                AuroraHR is organized around the operating moments HR teams handle every week: clean data,
+                Aura is organized around the operating moments HR teams handle every week: clean data,
                 employee self-service, manager approvals, HR exceptions, documents, communication, and leadership visibility.
               </p>
               </div>
@@ -462,7 +462,7 @@ export default function LandingPage() {
                       Not a brochure tool. A working HR operating layer.
                     </h3>
                     <p className="mt-4 text-base leading-7 text-gray-600">
-                      AuroraHR already supports registration, onboarding, employee records, masters, attendance, leave,
+                      Aura already supports registration, onboarding, employee records, masters, attendance, leave,
                       probation, performance, exit, HR Connect, reports, documents, demo mode, role-based dashboards,
                       and production tenant pilots.
                     </p>
@@ -485,7 +485,7 @@ export default function LandingPage() {
                   <div className="bg-gray-950 p-4 sm:p-6">
                     <BrandedScreenshot
                       src="/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png"
-                      alt="AuroraHR dashboard sample"
+                      alt="Aura dashboard sample"
                       className="h-full min-h-[300px] w-full rounded-md"
                       imageClassName="h-full min-h-[300px] w-full rounded-md object-cover object-left-top"
                     />
@@ -665,12 +665,12 @@ export default function LandingPage() {
                 <h2 className="mt-3 text-4xl font-bold text-gray-900">
                   {activeUniqueTab === 'unique'
                     ? 'Focused HR software that avoids the all-in-one trap.'
-                    : 'Three product choices that make AuroraHR feel different.'}
+                    : 'Three product choices that make Aura feel different.'}
                 </h2>
                 <p className="mt-4 text-lg leading-8 text-gray-600">
                   {activeUniqueTab === 'unique'
-                    ? 'AuroraHR is intentionally human-centric, HR-focused, and ecosystem-friendly. It gives each persona a clean workspace while leaving room for the customer’s existing payroll, recruitment, finance, identity, and collaboration systems.'
-                    : 'The strongest parts of AuroraHR are the connective ideas that make HR work easier: context-rich collaboration, document-backed lifecycle actions, and timeline-led process UX.'}
+                    ? 'Aura is intentionally human-centric, HR-focused, and ecosystem-friendly. It gives each persona a clean workspace while leaving room for the customer’s existing payroll, recruitment, finance, identity, and collaboration systems.'
+                    : 'The strongest parts of Aura are the connective ideas that make HR work easier: context-rich collaboration, document-backed lifecycle actions, and timeline-led process UX.'}
                 </p>
               </div>
               <div className="grid gap-2 rounded-md border border-gray-200 bg-white p-1 text-sm font-semibold text-gray-600 shadow-sm sm:grid-cols-2">
@@ -699,7 +699,7 @@ export default function LandingPage() {
                   <h3 className="mt-2 text-2xl font-bold">Payroll and recruitment are not missing. They are intentionally left out.</h3>
                   <p className="mt-3 text-sm leading-6 text-primary-50">
                     For GCCs, SMEs, and startups, this is an advantage. Customers can keep their preferred payroll,
-                    ATS, finance, and communication stack while AuroraHR becomes the focused people-operations layer
+                    ATS, finance, and communication stack while Aura becomes the focused people-operations layer
                     for lifecycle, workflows, documents, collaboration, and reporting.
                   </p>
                 </div>
@@ -818,7 +818,7 @@ export default function LandingPage() {
           <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Contact us</p>
-              <h2 className="mt-3 text-4xl font-bold text-gray-900">Request a focused AuroraHR conversation.</h2>
+              <h2 className="mt-3 text-4xl font-bold text-gray-900">Request a focused Aura conversation.</h2>
               <p className="mt-4 text-lg leading-8 text-gray-600">
                 Share your context and a preferred time slot. For now, the enquiry will be routed by email to
                 Anupama Bhat while we build the full lead-management admin panel later.
@@ -944,9 +944,9 @@ export default function LandingPage() {
       <footer className="border-t border-gray-200 bg-white px-4 py-12 text-gray-600 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
           <div>
-            <img src="/images/AuroraHR_logo.svg?v=20260514b" alt="AuroraHR" className="h-12 w-auto" />
+            <img src={brand.logo} alt={brand.fullName} className="h-24 w-auto object-contain" />
             <p className="mt-4 max-w-md text-sm leading-6 text-gray-600">
-              AuroraHR helps organizations launch, operate, and improve HR with strong workflows, role clarity,
+              Aura helps organizations launch, operate, and improve HR with strong workflows, role clarity,
               and a practical path from pilot to production.
             </p>
           </div>
@@ -977,7 +977,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="mx-auto mt-10 max-w-7xl border-t border-gray-200 pt-6 text-sm text-gray-500">
-          © 2026 AuroraHR. Illuminate The Journey. Grow Every Person.
+          © 2026 Aura by ACV Solutions. {brand.tagline}
         </div>
       </footer>
     </div>

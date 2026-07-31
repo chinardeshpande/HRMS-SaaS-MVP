@@ -8,6 +8,13 @@ import logger from '../utils/logger';
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
+import { storageProvider, tenantDocumentKey } from './storage';
+
+export interface GeneratedDocumentOutput {
+  storageKey: string;
+  fileName: string;
+  buffer: Buffer;
+}
 
 interface TenantDocumentBrand {
   companyName: string;
@@ -27,21 +34,11 @@ export class DocumentGenerationService {
   private employeeRepo = AppDataSource.getRepository(Employee);
   private organizationSettingsRepo = AppDataSource.getRepository(OrganizationSettings);
   private tenantRepo = AppDataSource.getRepository(Tenant);
-  private uploadsDir = path.join(__dirname, '../../uploads/documents');
-
-  constructor() {
-    // Ensure uploads directory exists
-    if (!fs.existsSync(this.uploadsDir)) {
-      fs.mkdirSync(this.uploadsDir, { recursive: true });
-      logger.info(`Created uploads directory: ${this.uploadsDir}`);
-    }
-  }
-
   async generateDocument(
     templateName: string,
     data: Record<string, any>,
     tenantId: string
-  ): Promise<string> {
+  ): Promise<GeneratedDocumentOutput> {
     const template = await this.templateRepo.findOne({
       where: { templateName: templateName as any, tenantId, isActive: true },
     });
@@ -51,10 +48,10 @@ export class DocumentGenerationService {
     }
 
     const brandedHtml = await this.generatePreviewHtml(templateName, data, tenantId);
-    const pdfPath = await this.htmlToPdf(brandedHtml, templateName, data, tenantId);
+    const generatedDocument = await this.htmlToPdf(brandedHtml, templateName, data, tenantId);
 
     logger.info(`Document generated: ${templateName}`);
-    return pdfPath;
+    return generatedDocument;
   }
 
   async generatePreviewHtml(
@@ -279,27 +276,21 @@ export class DocumentGenerationService {
 </html>`;
   }
 
-  async htmlToPdf(html: string, templateName: string, data?: Record<string, any>, tenantId?: string): Promise<string> {
+  async htmlToPdf(
+    html: string,
+    templateName: string,
+    data: Record<string, any>,
+    tenantId: string
+  ): Promise<GeneratedDocumentOutput> {
     const fileName = `${templateName}_${data?.employeeCode || data?.candidateId || Date.now()}.pdf`;
-    const filePath = path.join(this.uploadsDir, fileName);
-    const brand: TenantDocumentBrand = tenantId ? await this.getTenantBranding(tenantId) : {
-      companyName: data?.companyName || 'Company',
-      logoUrl: '',
-      email: '',
-      phone: '',
-      website: '',
-      address: '',
-      primaryColor: '#2563eb',
-      secondaryColor: '#0f172a',
-      accentColor: '#0ea5e9',
-    };
-
-    return new Promise((resolve, reject) => {
+    const brand = await this.getTenantBranding(tenantId);
+    const buffer = await new Promise<Buffer>((resolve, reject) => {
       try {
         const doc = new PDFDocument({ margin: 50 });
-        const writeStream = fs.createWriteStream(filePath);
-
-        doc.pipe(writeStream);
+        const chunks: Buffer[] = [];
+        doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+        doc.on('error', reject);
 
         // Simple HTML to PDF conversion (basic implementation)
         const textContent = html
@@ -381,24 +372,18 @@ export class DocumentGenerationService {
         doc.fontSize(9).fillColor('#6b7280').text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'right' });
 
         doc.end();
-
-        writeStream.on('finish', () => {
-          logger.info(`PDF generated: ${fileName}`);
-          resolve(`/uploads/documents/${fileName}`);
-        });
-
-        writeStream.on('error', (err) => {
-          logger.error(`PDF generation error: ${err.message}`);
-          reject(err);
-        });
       } catch (error: any) {
         logger.error(`PDF generation failed: ${error.message}`);
         reject(error);
       }
     });
+    const storageKey = tenantDocumentKey(tenantId, 'generated-documents', fileName);
+    await storageProvider.put(storageKey, buffer, 'application/pdf');
+    logger.info(`PDF generated: ${storageKey}`);
+    return { storageKey, fileName: storageKey.split('/').pop()!, buffer };
   }
 
-  async generateOfferLetter(candidateId: string): Promise<string> {
+  async generateOfferLetter(candidateId: string): Promise<GeneratedDocumentOutput> {
     const candidate = await this.candidateRepo.findOne({
       where: { candidateId },
       relations: ['department', 'designation'],
@@ -423,11 +408,11 @@ export class DocumentGenerationService {
     return this.generateDocument('offer_letter', data, candidate.tenantId);
   }
 
-  async generateAppointmentLetter(candidateId: string): Promise<string> {
+  async generateAppointmentLetter(candidateId: string): Promise<GeneratedDocumentOutput> {
     return this.generateOfferLetter(candidateId); // Simplified
   }
 
-  async generateConfirmationLetter(employeeId: string): Promise<string> {
+  async generateConfirmationLetter(employeeId: string): Promise<GeneratedDocumentOutput> {
     const employee = await this.employeeRepo.findOne({
       where: { employeeId },
       relations: ['department', 'designation'],
@@ -450,13 +435,11 @@ export class DocumentGenerationService {
   }
 
   async generateExtensionLetter(probationId: string): Promise<string> {
-    logger.info(`Extension letter generated for probation: ${probationId}`);
-    return '/uploads/documents/extension_letter.pdf';
+    throw new Error(`Extension letter generation is not implemented for probation ${probationId}`);
   }
 
   async generateTerminationLetter(probationId: string): Promise<string> {
-    logger.info(`Termination letter generated for probation: ${probationId}`);
-    return '/uploads/documents/termination_letter.pdf';
+    throw new Error(`Termination letter generation is not implemented for probation ${probationId}`);
   }
 }
 

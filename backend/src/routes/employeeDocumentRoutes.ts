@@ -1,11 +1,10 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
 import { authenticate, authorize } from '../middleware/auth';
 import { UserRole } from '../../../shared/types';
 import employeeDocumentService from '../services/employeeDocumentService';
-import { uploadDir } from '../utils/uploadPaths';
+import { config } from '../config/config';
+import { employeeDocumentKey, storageProvider } from '../services/storage';
 import {
   EmployeeDocumentCategory,
   EmployeeDocumentStatus,
@@ -17,22 +16,8 @@ router.use(authenticate);
 
 const hrOnly = authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN);
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    const targetDir = uploadDir('employee-documents');
-    if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
-    cb(null, targetDir);
-  },
-  filename: (_req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const ext = path.extname(file.originalname);
-    const nameWithoutExt = path.basename(file.originalname, ext).replace(/[^\w.-]+/g, '-');
-    cb(null, `${nameWithoutExt}-${uniqueSuffix}${ext}`);
-  },
-});
-
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   fileFilter: (_req, file, cb) => {
     const allowedTypes = [
       'application/pdf',
@@ -46,7 +31,7 @@ const upload = multer({
     if (allowedTypes.includes(file.mimetype)) cb(null, true);
     else cb(new Error('Only PDF, image, and Word files are allowed.'));
   },
-  limits: { fileSize: 15 * 1024 * 1024 },
+  limits: { fileSize: config.upload.maxSize },
 });
 
 const isHrUser = (req: Request) =>
@@ -136,15 +121,21 @@ router.post('/employees/:employeeId', hrOnly, upload.single('file') as any, asyn
       return res.status(400).json({ success: false, error: { code: 'NO_FILE', message: 'Document file is required' } });
     }
 
+    const storageKey = employeeDocumentKey(
+      req.user!.tenantId,
+      req.params.employeeId,
+      req.file.originalname
+    );
+    await storageProvider.put(storageKey, req.file.buffer, req.file.mimetype);
     const document = await employeeDocumentService.create(
       {
         ...parsePayload(req.body),
         tenantId: req.user!.tenantId,
         employeeId: req.params.employeeId,
         uploadedBy: req.user!.userId,
-        fileName: req.file.filename,
+        fileName: storageKey.split('/').pop()!,
         originalFileName: req.file.originalname,
-        fileUrl: `/uploads/employee-documents/${req.file.filename}`,
+        fileUrl: storageKey,
         fileType: req.file.mimetype,
         fileSize: req.file.size,
       },
@@ -203,11 +194,12 @@ router.get('/:documentId/download', async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Employee document not found' } });
     }
     if (!canReadEmployeeDocuments(req, document.employeeId)) return deny(res);
-    if (!employeeDocumentService.fileExists(document.fileUrl)) {
+    if (!(await storageProvider.exists(document.fileUrl))) {
       return res.status(404).json({ success: false, error: { code: 'FILE_NOT_FOUND', message: 'File not found on server' } });
     }
     await employeeDocumentService.logDownload(document, actorFromRequest(req));
-    res.download(employeeDocumentService.resolveFilePath(document.fileUrl), document.originalFileName);
+    const url = await storageProvider.getSignedUrl(document.fileUrl, config.storage.signedUrlTtlSeconds);
+    res.redirect(url);
   } catch (error: any) {
     res.status(500).json({ success: false, error: { code: 'EMPLOYEE_DOCUMENT_DOWNLOAD_ERROR', message: error.message } });
   }

@@ -2,13 +2,48 @@ import { Router } from 'express';
 import attendanceController from '../controllers/attendanceController';
 import { authenticate, authorize } from '../middleware/auth';
 import { UserRole } from '../../../shared/types';
+import multer from 'multer';
 
 const router = Router();
+const attendanceImportUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, callback) => {
+    const isCsv =
+      file.originalname.toLowerCase().endsWith('.csv') ||
+      ['text/csv', 'application/csv', 'application/vnd.ms-excel', 'text/plain'].includes(file.mimetype);
+    if (isCsv) callback(null, true);
+    else callback(new Error('Only CSV attendance files are allowed'));
+  },
+});
 
 // Employee routes - All authenticated employees can access
 router.post('/clock-in', authenticate, attendanceController.clockIn);
 router.post('/clock-out', authenticate, attendanceController.clockOut);
 router.get('/my-attendance', authenticate, attendanceController.getMyAttendance);
+
+router.get(
+  '/import/template',
+  authenticate,
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
+  attendanceController.downloadImportTemplate
+);
+
+router.post(
+  '/import/preview',
+  authenticate,
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
+  attendanceImportUpload.single('file') as any,
+  attendanceController.previewImport
+);
+
+router.post(
+  '/import/commit',
+  authenticate,
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
+  attendanceImportUpload.single('file') as any,
+  attendanceController.commitImport
+);
 
 // HR-only routes - Requires HR role
 router.post(

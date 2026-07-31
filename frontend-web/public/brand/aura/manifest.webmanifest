@@ -1,0 +1,20 @@
+{
+  "name": "Aura by ACV Solutions",
+  "short_name": "Aura",
+  "description": "People operations. Humanly intelligent.",
+  "theme_color": "#123B5D",
+  "background_color": "#F6FAFC",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/brand/aura/aura-icon-exact-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/brand/aura/aura-icon-exact-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

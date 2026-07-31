@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Aura by ACV Solutions</title>
+  <desc id="desc">Aura social sharing card with the message People operations, made clear.</desc>
+  <rect width="1200" height="630" fill="#123B5D"/>
+  <rect x="0" y="0" width="18" height="630" fill="#159A8C"/>
+  <rect x="18" y="0" width="7" height="630" fill="#E66B5B"/>
+  <path d="M1000 40 1240 280 1000 520 760 280Z" fill="#2477B5" opacity=".18"/>
+  <path d="M1060 128 1210 278 1060 428 910 278Z" fill="#75B9DD" opacity=".12"/>
+  <image href="./aura-logo-exact-reversed.png" x="66" y="44" width="238" height="198" preserveAspectRatio="xMidYMid meet"/>
+  <text x="80" y="381" fill="#FFFFFF" font-family="'Avenir Next', 'Plus Jakarta Sans', Arial, sans-serif" font-size="57" font-weight="700">People operations.</text>
+  <text x="80" y="451" fill="#FFFFFF" font-family="'Avenir Next', 'Plus Jakarta Sans', Arial, sans-serif" font-size="57" font-weight="700">Humanly intelligent.</text>
+  <text x="82" y="530" fill="#BBD7E8" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="500">Clarity for every people journey.</text>
+  <text x="82" y="568" fill="#75B9DD" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="1.8">BY ACV SOLUTIONS</text>
+</svg>

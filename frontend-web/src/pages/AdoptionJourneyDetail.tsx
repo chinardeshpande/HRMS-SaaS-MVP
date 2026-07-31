@@ -23,7 +23,7 @@ export default function AdoptionJourneyDetail() {
         <div className="max-w-md rounded-md border border-gray-200 bg-white p-8 text-center shadow-sm">
           <h1 className="text-2xl font-bold text-gray-900">Journey not found</h1>
           <button onClick={() => navigate('/')} className="mt-6 rounded-md bg-primary-600 px-5 py-3 font-semibold text-white">
-            Back to AuroraHR
+            Back to Aura
           </button>
         </div>
       </div>
@@ -38,8 +38,8 @@ export default function AdoptionJourneyDetail() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4">
             <img
-              src="/images/AuroraHR_logo.svg?v=20260514b"
-              alt="AuroraHR"
+              src="/brand/aura/aura-logo-exact-transparent.png"
+              alt="Aura"
               className="h-9 w-auto cursor-pointer"
               onClick={() => navigate('/')}
             />
@@ -70,7 +70,7 @@ export default function AdoptionJourneyDetail() {
                 <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-md border border-white/25 bg-white/10 backdrop-blur">
                   <Icon className="h-8 w-8" />
                 </div>
-                <p className="text-sm font-semibold uppercase tracking-wide text-primary-100">AuroraHR adoption journey</p>
+                <p className="text-sm font-semibold uppercase tracking-wide text-primary-100">Aura adoption journey</p>
                 <h1 className="mt-3 text-4xl font-bold sm:text-5xl">{journey.title}</h1>
                 <p className="mt-5 text-lg leading-8 text-gray-100">{journey.detail}</p>
               </div>

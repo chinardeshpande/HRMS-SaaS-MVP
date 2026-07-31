@@ -50,8 +50,8 @@ export default function FeatureDetail() {
           <div className="flex justify-between items-center h-14">
             <div className="flex items-center space-x-4">
               <img
-                src="/images/AuroraHR_logo.svg?v=20260514b"
-                alt="AuroraHR"
+                src="/brand/aura/aura-logo-exact-transparent.png"
+                alt="Aura"
                 className="h-8 w-auto cursor-pointer"
                 onClick={() => navigate('/')}
               />
@@ -202,7 +202,7 @@ export default function FeatureDetail() {
             Ready to Transform {module.title}?
           </h2>
           <p className="text-sm text-white/90 mb-4">
-            Join 500+ companies using AuroraHR. Start your free 14-day trial today.
+            Bring your people operations into Aura. Start your free 14-day trial today.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -213,7 +213,7 @@ export default function FeatureDetail() {
               Start Free Trial
             </button>
             <button
-              onClick={() => window.location.href = `mailto:sales@aurorahr.in?subject=Schedule%20Demo%20-%20${encodeURIComponent(module.title)}&body=Hi%2C%0A%0AI%20would%20like%20to%20schedule%20a%20demo%20for%20${encodeURIComponent(module.title)}.%0A%0ACompany%20Name%3A%20%0ANumber%20of%20Employees%3A%20%0APreferred%20Date%2FTime%3A%20%0A%0AThank%20you!`}
+              onClick={() => window.location.href = `mailto:sales@aurahrms.com?subject=Schedule%20Demo%20-%20${encodeURIComponent(module.title)}&body=Hi%2C%0A%0AI%20would%20like%20to%20schedule%20a%20demo%20for%20${encodeURIComponent(module.title)}.%0A%0ACompany%20Name%3A%20%0ANumber%20of%20Employees%3A%20%0APreferred%20Date%2FTime%3A%20%0A%0AThank%20you!`}
               className="btn btn-outline border-white text-white hover:bg-white hover:text-primary-600 text-sm py-2 px-5"
             >
               Talk to an Expert

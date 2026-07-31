@@ -9,8 +9,8 @@ import { DocumentType } from '../models/enums/DocumentEnums';
 import Handlebars from 'handlebars';
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
-import path from 'path';
 import logger from '../utils/logger';
+import { storageProvider, tenantDocumentKey } from './storage';
 
 // Note: For production, install puppeteer for better HTML to PDF conversion
 // npm install puppeteer
@@ -95,8 +95,6 @@ export class EnhancedDocumentService {
   private employeeRepo: Repository<Employee>;
   private candidateRepo: Repository<Candidate>;
   private orgSettingsRepo: Repository<OrganizationSettings>;
-  private uploadsDir = path.join(__dirname, '../../uploads/documents');
-  private templatesDir = path.join(__dirname, '../../templates/documents');
 
   constructor() {
     this.templateRepo = AppDataSource.getRepository(DocumentTemplate);
@@ -104,14 +102,6 @@ export class EnhancedDocumentService {
     this.employeeRepo = AppDataSource.getRepository(Employee);
     this.candidateRepo = AppDataSource.getRepository(Candidate);
     this.orgSettingsRepo = AppDataSource.getRepository(OrganizationSettings);
-
-    // Ensure directories exist
-    [this.uploadsDir, this.templatesDir].forEach((dir) => {
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-        logger.info(`Created directory: ${dir}`);
-      }
-    });
 
     this.registerHandlebarsHelpers();
   }
@@ -188,8 +178,13 @@ export class EnhancedDocumentService {
 
       // Generate document based on format
       const format = options.format || GeneratedDocumentFormat.PDF;
-      const filePath = await this.generateFile(html, format, template.templateName, variables);
-      const fileSizeBytes = fs.statSync(filePath).size;
+      const generatedFile = await this.generateFile(
+        tenantId,
+        html,
+        format,
+        template.templateName,
+        variables
+      );
 
       // Create GeneratedDocument record
       const generatedDoc = this.generatedDocRepo.create({
@@ -202,8 +197,8 @@ export class EnhancedDocumentService {
         generatedBy: userId,
         status: options.autoIssue ? GeneratedDocumentStatus.ISSUED : GeneratedDocumentStatus.GENERATED,
         format,
-        filePath,
-        fileSizeBytes,
+        filePath: generatedFile.storageKey,
+        fileSizeBytes: generatedFile.size,
         metadata: {
           variables,
           issuedTo: {
@@ -313,36 +308,42 @@ export class EnhancedDocumentService {
    * Generate file (PDF or DOCX)
    */
   private async generateFile(
+    tenantId: string,
     html: string,
     format: GeneratedDocumentFormat,
     templateName: string,
     variables: TemplateVariables
-  ): Promise<string> {
+  ): Promise<{ storageKey: string; size: number }> {
     const fileName = `${templateName}_${variables.recipient.code}_${Date.now()}.${format}`;
-    const filePath = path.join(this.uploadsDir, fileName);
-
-    if (format === GeneratedDocumentFormat.PDF) {
-      return await this.generatePDF(html, filePath, variables);
-    } else if (format === GeneratedDocumentFormat.DOCX) {
-      return await this.generateDOCX(html, filePath, variables);
-    } else {
-      // HTML format
-      fs.writeFileSync(filePath.replace('.html', '.html'), html);
-      return filePath;
-    }
+    const content =
+      format === GeneratedDocumentFormat.PDF
+        ? await this.generatePDF(html, variables)
+        : format === GeneratedDocumentFormat.DOCX
+          ? this.generateDOCX(html, variables)
+          : Buffer.from(html, 'utf-8');
+    const contentType =
+      format === GeneratedDocumentFormat.PDF
+        ? 'application/pdf'
+        : format === GeneratedDocumentFormat.DOCX
+          ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          : 'text/html; charset=utf-8';
+    const storageKey = tenantDocumentKey(tenantId, 'generated-documents', fileName);
+    await storageProvider.put(storageKey, content, contentType);
+    return { storageKey, size: content.length };
   }
 
   /**
    * Generate PDF file
    * Note: This uses basic PDFKit. For production, use Puppeteer for better HTML rendering
    */
-  private async generatePDF(html: string, filePath: string, variables: TemplateVariables): Promise<string> {
+  private async generatePDF(html: string, variables: TemplateVariables): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       try {
         const doc = new PDFDocument({ margin: 50, size: 'A4' });
-        const writeStream = fs.createWriteStream(filePath);
-
-        doc.pipe(writeStream);
+        const chunks: Buffer[] = [];
+        doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+        doc.on('error', reject);
 
         // Add company logo if available
         if (variables.company.logo && fs.existsSync(variables.company.logo)) {
@@ -420,12 +421,6 @@ export class EnhancedDocumentService {
         }
 
         doc.end();
-
-        writeStream.on('finish', () => {
-          resolve(filePath);
-        });
-
-        writeStream.on('error', reject);
       } catch (error) {
         reject(error);
       }
@@ -436,7 +431,7 @@ export class EnhancedDocumentService {
    * Generate DOCX file
    * Note: For production, use 'docx' or 'officegen' library
    */
-  private async generateDOCX(html: string, filePath: string, variables: TemplateVariables): Promise<string> {
+  private generateDOCX(html: string, variables: TemplateVariables): Buffer {
     // Simplified implementation - save as HTML with .docx extension
     // In production, use a proper DOCX library like 'docx' npm package
     const docxContent = `
@@ -453,8 +448,7 @@ export class EnhancedDocumentService {
       </html>
     `;
 
-    fs.writeFileSync(filePath, docxContent);
-    return filePath;
+    return Buffer.from(docxContent, 'utf-8');
   }
 
   /**

@@ -684,7 +684,7 @@ export default function ModernReports() {
                 </div>
 
                 <div className="min-w-0">
-                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wide text-slate-500">Ask AuroraHR</label>
+                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wide text-slate-500">Ask Manu</label>
                   <textarea
                     value={question}
                     onChange={(event) => setQuestion(event.target.value)}

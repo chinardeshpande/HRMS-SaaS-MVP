@@ -52,6 +52,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@google-cloud/storage": "^7.16.0",
     "@types/node-schedule": "^2.1.8",
     "@types/pdfkit": "^0.17.5",
     "bcrypt": "^6.0.0",

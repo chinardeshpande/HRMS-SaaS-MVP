@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import path from 'path';
-import fs from 'fs';
 import { sendSuccess, sendError, sendCreated } from '../utils/responses';
+import { config } from '../config/config';
+import { storageProvider, tenantDocumentKey } from '../services/storage';
 
 // Mock database (replace with actual database calls)
 interface Document {
@@ -40,15 +40,17 @@ export const uploadDocument = async (req: Request, res: Response) => {
     const { entityType, entityId, documentType, isRequired, requiresSignature } = req.body;
     const userId = req.user!.userId;
     const tenantId = req.user!.tenantId;
+    const storageKey = tenantDocumentKey(tenantId, 'documents', file.originalname);
+    await storageProvider.put(storageKey, file.buffer, file.mimetype);
 
     const document: Document = {
       documentId: `doc-${Date.now()}-${Math.random().toString(36).substring(7)}`,
       entityType,
       entityId,
       documentType: documentType || 'general',
-      fileName: file.filename,
+      fileName: storageKey.split('/').pop()!,
       originalFileName: file.originalname,
-      filePath: file.path,
+      filePath: storageKey,
       fileSize: file.size,
       mimeType: file.mimetype,
       uploadedBy: userId,
@@ -86,15 +88,17 @@ export const uploadMultipleDocuments = async (req: Request, res: Response) => {
     const userId = req.user!.userId;
     const tenantId = req.user!.tenantId;
 
-    const uploadedDocuments = files.map((file, index) => {
+    const uploadedDocuments = await Promise.all(files.map(async (file, index) => {
+      const storageKey = tenantDocumentKey(tenantId, 'documents', file.originalname);
+      await storageProvider.put(storageKey, file.buffer, file.mimetype);
       const document: Document = {
         documentId: `doc-${Date.now()}-${index}-${Math.random().toString(36).substring(7)}`,
         entityType,
         entityId,
         documentType: req.body.documentTypes?.[index] || 'general',
-        fileName: file.filename,
+        fileName: storageKey.split('/').pop()!,
         originalFileName: file.originalname,
-        filePath: file.path,
+        filePath: storageKey,
         fileSize: file.size,
         mimeType: file.mimetype,
         uploadedBy: userId,
@@ -112,7 +116,7 @@ export const uploadMultipleDocuments = async (req: Request, res: Response) => {
         filePath: undefined,
         fileUrl: `/api/v1/documents/${document.documentId}/download`,
       };
-    });
+    }));
 
     return sendCreated(res, { documents: uploadedDocuments });
   } catch (error: any) {
@@ -160,16 +164,15 @@ export const downloadDocument = async (req: Request, res: Response) => {
       return sendError(res, { code: 'NOT_FOUND', message: 'Document not found' }, 404);
     }
 
-    if (!fs.existsSync(document.filePath)) {
+    if (!(await storageProvider.exists(document.filePath))) {
       return sendError(res, { code: 'FILE_NOT_FOUND', message: 'File not found on server' }, 404);
     }
 
-    res.setHeader('Content-Type', document.mimeType);
-    res.setHeader('Content-Disposition', `attachment; filename="${document.originalFileName}"`);
-    res.setHeader('Content-Length', document.fileSize.toString());
-
-    const fileStream = fs.createReadStream(document.filePath);
-    fileStream.pipe(res);
+    const url = await storageProvider.getSignedUrl(
+      document.filePath,
+      config.storage.signedUrlTtlSeconds
+    );
+    res.redirect(url);
   } catch (error: any) {
     console.error('Download document error:', error);
     return sendError(res, { code: 'DOWNLOAD_ERROR', message: error.message }, 500);
@@ -323,10 +326,7 @@ export const deleteDocument = async (req: Request, res: Response) => {
 
     const document = documents[docIndex];
 
-    // Delete physical file
-    if (fs.existsSync(document.filePath)) {
-      fs.unlinkSync(document.filePath);
-    }
+    await storageProvider.delete(document.filePath);
 
     // Remove from array
     documents.splice(docIndex, 1);

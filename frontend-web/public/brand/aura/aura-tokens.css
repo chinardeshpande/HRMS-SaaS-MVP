@@ -1,0 +1,22 @@
+:root {
+  --aura-navy: #123b5d;
+  --aura-cobalt: #2477b5;
+  --aura-sky: #75b9dd;
+  --aura-teal: #159a8c;
+  --aura-coral: #e66b5b;
+  --aura-sun: #f4c95d;
+  --aura-ink: #102a43;
+  --aura-slate: #557189;
+  --aura-mist: #eaf4f8;
+  --aura-cloud: #f6fafc;
+  --aura-white: #ffffff;
+
+  --aura-font-display: "Plus Jakarta Sans", "Avenir Next", Arial, sans-serif;
+  --aura-font-body: Inter, Arial, sans-serif;
+
+  --aura-radius-control: 6px;
+  --aura-radius-panel: 8px;
+  --aura-shadow-panel: 0 18px 48px rgba(18, 59, 93, 0.14);
+  --aura-motion-fast: 160ms;
+  --aura-motion-standard: 240ms;
+}

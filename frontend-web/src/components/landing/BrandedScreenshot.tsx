@@ -15,7 +15,7 @@ export default function BrandedScreenshot({
     <div className={`relative overflow-hidden ${className}`}>
       <img src={src} alt={alt} className={imageClassName} />
       <div className="absolute left-3 top-3 rounded-md border border-gray-200 bg-white/95 px-2 py-1 shadow-sm backdrop-blur">
-        <img src="/images/AuroraHR_logo.svg?v=20260514b" alt="" className="h-5 w-auto" />
+        <img src="/brand/aura/aura-logo-exact-transparent.png" alt="" className="h-5 w-auto" />
       </div>
     </div>
   );

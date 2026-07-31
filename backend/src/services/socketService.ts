@@ -37,7 +37,8 @@ export class SocketService {
       cors: {
         origin: [
           ...configuredOrigins,
-          'https://aurorahr.in',
+          'https://aurahrms.com',
+          'https://www.aurahrms.com',
           'http://localhost:5173',
           'http://localhost:3000',
           'http://localhost:5174',

@@ -118,7 +118,8 @@ const allowedOrigins = [
   'http://localhost:5177',
   'http://localhost:5178',
   'http://localhost:3000',
-  'https://aurorahr.in',
+  'https://aurahrms.com',
+  'https://www.aurahrms.com',
   config.corsOrigin
 ];
 

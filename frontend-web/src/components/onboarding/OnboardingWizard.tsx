@@ -291,8 +291,8 @@ export default function OnboardingWizard() {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <img
-                src="/images/AuroraHR_logo.svg?v=20260514b"
-                alt="AuroraHR"
+                src="/brand/aura/aura-logo-exact-transparent.png"
+                alt="Aura"
                 className="h-12 w-auto"
               />
             </div>
@@ -370,7 +370,7 @@ export default function OnboardingWizard() {
             <div className="text-center">
               <SparklesIcon className="h-20 w-20 text-blue-600 mx-auto mb-6" />
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Welcome to AuroraHR!
+                Welcome to Aura!
               </h2>
               <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
                 Let's set up your organization in just a few steps. This wizard will help you
@@ -540,7 +540,7 @@ export default function OnboardingWizard() {
                 Invite Team Members
               </h2>
               <p className="text-gray-600 mb-8">
-                Invite your team members to join your AuroraHR workspace. You can skip this and
+                Invite your team members to join your Aura workspace. You can skip this and
                 add them later.
               </p>
 
@@ -690,7 +690,7 @@ export default function OnboardingWizard() {
                 You're All Set!
               </h2>
               <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                Your AuroraHR workspace is ready. Click finish to start managing your team
+                Your Aura workspace is ready. Click finish to start managing your team
                 and illuminate their journey.
               </p>
 

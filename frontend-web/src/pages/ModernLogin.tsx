@@ -6,7 +6,6 @@ import {
   LockClosedIcon,
   EyeIcon,
   EyeSlashIcon,
-  BriefcaseIcon,
   CheckCircleIcon,
   HomeIcon,
   ShieldCheckIcon,
@@ -93,23 +92,23 @@ export default function ModernLogin() {
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="mb-8 bg-white/95 rounded-xl p-4 inline-block text-left transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white/70"
-              aria-label="Go to AuroraHR home page"
+              className="mb-8 inline-block bg-white/95 p-5 text-left transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white/70"
+              aria-label="Go to Aura home page"
             >
               <img
-                src="/images/AuroraHR_logo.svg?v=20260514b"
-                alt="AuroraHR - Illuminate The Journey | Grow Every Person"
-                className="h-14 w-auto"
+                src="/brand/aura/aura-logo-exact-transparent.png"
+                alt="Aura - People operations. Humanly intelligent."
+                className="h-24 w-auto object-contain"
               />
             </button>
 
             <h2 className="text-4xl font-bold text-white mb-4 leading-tight">
-              Illuminate The Journey.
+              People operations. Humanly intelligent.
               <br />
-              Grow Every Person.
+              Clarity for every people journey.
             </h2>
             <p className="text-lg text-primary-100 mb-12">
-              Transform HR from administrative overhead into a strategic growth engine. Trusted by 500+ companies.
+              Connected people operations for GCC launches, growing SMEs, and ambitious teams.
             </p>
 
             {/* Features */}
@@ -133,7 +132,7 @@ export default function ModernLogin() {
           {/* Footer */}
           <div className="flex items-center space-x-6 text-primary-100 text-sm">
             <CheckCircleIcon className="h-5 w-5" />
-            <span>Trusted by 500+ companies worldwide</span>
+            <span>Built for confident, human-centred HR operations</span>
           </div>
         </div>
       </div>
@@ -142,14 +141,12 @@ export default function ModernLogin() {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <div className="lg:hidden flex items-center justify-center space-x-3 mb-8">
-            <div className="bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl p-3">
-              <BriefcaseIcon className="h-8 w-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">AuroraHR</h1>
-              <p className="text-sm text-gray-500">Illuminate The Journey</p>
-            </div>
+          <div className="mb-8 flex items-center justify-center lg:hidden">
+            <img
+              src="/brand/aura/aura-logo-exact-transparent.png"
+              alt="Aura by ACV Solutions"
+              className="h-24 w-auto object-contain"
+            />
           </div>
 
           {/* Login card */}
@@ -160,7 +157,7 @@ export default function ModernLogin() {
               className="mb-6 inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-600 transition-colors hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700"
             >
               <HomeIcon className="h-4 w-4 mr-1.5" />
-              AuroraHR Home
+              Aura Home
             </button>
             <div className="mb-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h2>
@@ -308,7 +305,7 @@ export default function ModernLogin() {
               <p className="text-xs font-medium text-primary-900 mb-2">Demo credentials:</p>
               <div className="space-y-1 text-xs text-primary-700">
                 <p>
-                  <span className="font-medium">HR Lead:</span> demo.hr@aurorahr.in
+                  <span className="font-medium">HR Lead:</span> demo.hr@aurahrms.com
                 </p>
                 <p>
                   <span className="font-medium">Password:</span> Demo@12345

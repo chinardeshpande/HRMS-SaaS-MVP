@@ -5,6 +5,7 @@ import ManuAssistant from '../assistant/ManuAssistant';
 import DemoJourneyPanel from '../demo/DemoJourneyPanel';
 import { filterNavItemsForRole, navigationItems, NavItemConfig } from '../../config/accessControl';
 import settingsService, { OrganizationSettings } from '../../services/settingsService';
+import { brand } from '../../config/brand';
 import {
   ArrowRightStartOnRectangleIcon,
   Bars3Icon,
@@ -18,8 +19,8 @@ interface ModernLayoutProps {
   children: ReactNode;
 }
 
-const DEFAULT_PLATFORM_LOGO = '/images/AuroraHR_logo.svg?v=20260514b';
-const DEFAULT_PLATFORM_NAME = 'AuroraHR';
+const DEFAULT_PLATFORM_LOGO = brand.logo;
+const DEFAULT_PLATFORM_NAME = brand.name;
 
 export const ModernLayout = ({ children }: ModernLayoutProps) => {
   const { user, logout, switchToDemo, exitDemo, isDemoMode } = useAuth();
@@ -134,11 +135,11 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="ui-experiment-sidebar flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
           {/* Logo */}
-          <div className="flex items-center flex-shrink-0 px-6">
+          <div className="flex h-20 items-center flex-shrink-0 px-6">
             <img
               src={DEFAULT_PLATFORM_LOGO}
-              alt="AuroraHR - Illuminate The Journey | Grow Every Person"
-              className="h-10 w-auto cursor-pointer"
+              alt={brand.fullName}
+              className="h-[68px] w-auto cursor-pointer object-contain"
               onClick={() => navigate('/dashboard')}
             />
           </div>
@@ -159,7 +160,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
               </button>
               {isDemoMode && (
                 <p className="mt-2 text-xs text-amber-700">
-                  Demo workspace: {user?.tenant?.companyName || 'AuroraHR Demo'}
+                  Demo workspace: {user?.tenant?.companyName || 'Aura Demo'}
                 </p>
               )}
             </div>
@@ -289,7 +290,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                 <div className="flex items-center flex-shrink-0 px-4">
                   <img
                     src={DEFAULT_PLATFORM_LOGO}
-                    alt="AuroraHR - Illuminate The Journey | Grow Every Person"
+                    alt={brand.fullName}
                     className="h-10 w-auto cursor-pointer"
                     onClick={() => { navigate('/dashboard'); setSidebarOpen(false); }}
                   />

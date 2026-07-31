@@ -7,6 +7,8 @@ import { User } from '../models/User';
 import { Employee } from '../models/Employee';
 import { config } from '../config/config';
 import emailService from '../services/emailService';
+import identityMappingService from '../services/identityMappingService';
+import { storageProvider, tenantDocumentKey } from '../services/storage';
 
 const serializeUser = (user: User) => ({
   userId: user.userId,
@@ -146,6 +148,15 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
+    const identity = await identityMappingService.resolveUser(user, true);
+    if (identity.status === 'auto_linked') {
+      user.employeeId = identity.employeeId;
+      user.employee = await AppDataSource.getRepository(Employee).findOne({
+        where: { employeeId: identity.employeeId, tenantId: user.tenantId },
+        relations: ['department', 'designation'],
+      }) || undefined;
+    }
+
     // Generate JWT token
     const token = jwt.sign(
       {
@@ -238,6 +249,15 @@ export const getCurrentUser = async (req: Request, res: Response) => {
           message: 'User not found',
         },
       });
+    }
+
+    const identity = await identityMappingService.resolveUser(user, true);
+    if (identity.status === 'auto_linked') {
+      user.employeeId = identity.employeeId;
+      user.employee = await AppDataSource.getRepository(Employee).findOne({
+        where: { employeeId: identity.employeeId, tenantId: user.tenantId },
+        relations: ['department', 'designation'],
+      }) || undefined;
     }
 
     return res.json({
@@ -435,7 +455,9 @@ export const uploadProfilePhoto = async (req: Request, res: Response) => {
       });
     }
 
-    user.profilePhotoUrl = `/uploads/profiles/${path.basename(file.filename)}`;
+    const storageKey = tenantDocumentKey(tenantId, 'profiles', file.originalname);
+    await storageProvider.put(storageKey, file.buffer, file.mimetype);
+    user.profilePhotoUrl = storageKey;
     await userRepository.save(user);
 
     return res.json({
