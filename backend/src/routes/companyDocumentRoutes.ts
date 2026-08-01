@@ -4,7 +4,7 @@ import { authenticate, authorize } from '../middleware/auth';
 import { UserRole } from '../../../shared/types';
 import companyDocumentService from '../services/companyDocumentService';
 import { config } from '../config/config';
-import { storageProvider, tenantDocumentKey } from '../services/storage';
+import { storageProvider, streamStoredObject, tenantDocumentKey } from '../services/storage';
 import {
   CompanyDocumentCategory,
   CompanyDocumentStatus,
@@ -185,9 +185,9 @@ router.get('/:documentId/download', hrOnly, async (req: Request, res: Response) 
       return res.status(404).json({ success: false, error: { code: 'FILE_NOT_FOUND', message: 'File not found on server' } });
     }
     await companyDocumentService.logDownload(document, actorFromRequest(req));
-    const url = await storageProvider.getSignedUrl(document.fileUrl, config.storage.signedUrlTtlSeconds);
-    res.redirect(url);
+    await streamStoredObject(res, document.fileUrl, document.fileName, document.fileType);
   } catch (error: any) {
+    if (res.headersSent) return res.destroy(error);
     res.status(500).json({ success: false, error: { code: 'COMPANY_DOCUMENT_DOWNLOAD_ERROR', message: error.message } });
   }
 });

@@ -4,7 +4,7 @@ import { authenticate, authorize } from '../middleware/auth';
 import { UserRole } from '../../../shared/types';
 import employeeDocumentService from '../services/employeeDocumentService';
 import { config } from '../config/config';
-import { employeeDocumentKey, storageProvider } from '../services/storage';
+import { employeeDocumentKey, storageProvider, streamStoredObject } from '../services/storage';
 import {
   EmployeeDocumentCategory,
   EmployeeDocumentStatus,
@@ -198,9 +198,9 @@ router.get('/:documentId/download', async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, error: { code: 'FILE_NOT_FOUND', message: 'File not found on server' } });
     }
     await employeeDocumentService.logDownload(document, actorFromRequest(req));
-    const url = await storageProvider.getSignedUrl(document.fileUrl, config.storage.signedUrlTtlSeconds);
-    res.redirect(url);
+    await streamStoredObject(res, document.fileUrl, document.fileName, document.fileType);
   } catch (error: any) {
+    if (res.headersSent) return res.destroy(error);
     res.status(500).json({ success: false, error: { code: 'EMPLOYEE_DOCUMENT_DOWNLOAD_ERROR', message: error.message } });
   }
 });

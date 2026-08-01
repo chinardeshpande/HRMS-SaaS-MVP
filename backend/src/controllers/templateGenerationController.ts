@@ -12,7 +12,7 @@ import { sendSuccess, sendError } from '../utils/responses';
 import logger from '../utils/logger';
 import path from 'path';
 import { config } from '../config/config';
-import { storageProvider } from '../services/storage';
+import { storageProvider, streamStoredObject } from '../services/storage';
 
 const defaultDocumentTemplates: Array<Partial<DocumentTemplate>> = [
   {
@@ -300,13 +300,10 @@ export const downloadGeneratedDocument = async (req: Request, res: Response) => 
       return sendError(res, { code: 'FILE_NOT_FOUND', message: 'Generated document file is no longer available' }, 404);
     }
 
-    const url = await storageProvider.getSignedUrl(
-      document.filePath,
-      config.storage.signedUrlTtlSeconds
-    );
-    res.redirect(url);
+    await streamStoredObject(res, document.filePath, `${document.documentName}.${document.format}`);
   } catch (error: any) {
     logger.error('Error downloading generated document:', error);
+    if (res.headersSent) return res.destroy(error);
     return sendError(res, { code: 'DOWNLOAD_ERROR', message: error.message }, 500);
   }
 };

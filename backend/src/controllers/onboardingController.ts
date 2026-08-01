@@ -6,7 +6,7 @@ import logger from '../utils/logger';
 import { AppDataSource } from '../config/database';
 import { OnboardingDocument } from '../models/OnboardingDocument';
 import { config } from '../config/config';
-import { storageProvider, tenantDocumentKey } from '../services/storage';
+import { storageProvider, streamStoredObject, tenantDocumentKey } from '../services/storage';
 
 export const createCandidate = async (req: Request, res: Response) => {
   try {
@@ -198,13 +198,10 @@ export const downloadDocument = async (req: Request, res: Response) => {
       return sendError(res, { code: 'FILE_NOT_FOUND', message: 'File not found on server' }, 404);
     }
 
-    const url = await storageProvider.getSignedUrl(
-      document.filePath,
-      config.storage.signedUrlTtlSeconds
-    );
-    res.redirect(url);
+    await streamStoredObject(res, document.filePath, document.fileName, document.mimeType);
   } catch (error: any) {
     logger.error('Download document error:', error);
+    if (res.headersSent) return res.destroy(error);
     return sendError(res, { code: 'DOWNLOAD_FAILED', message: error.message }, 500);
   }
 };
