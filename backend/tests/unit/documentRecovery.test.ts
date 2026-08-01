@@ -3,6 +3,7 @@ import os from "os";
 import path from "path";
 import {
   buildRecoveryIndex,
+  classifyRecoveryCandidates,
   findRecoveryCandidates,
 } from "../../src/utils/documentRecovery";
 
@@ -36,5 +37,27 @@ describe("document recovery matching", () => {
   it("does not use partial filename matches", () => {
     const index = buildRecoveryIndex([rootDir]);
     expect(findRecoveryCandidates(index, ["example-final.pdf"])).toEqual([]);
+  });
+
+  it("selects one candidate when duplicate files have identical content", async () => {
+    const duplicate = path.join(rootDir, "duplicate.pdf");
+    await fs.writeFile(duplicate, "synthetic");
+    expect(
+      classifyRecoveryCandidates([
+        path.join(rootDir, "nested", "Example.PDF"),
+        duplicate,
+      ]).status,
+    ).toBe("identical");
+  });
+
+  it("refuses candidates whose contents conflict", async () => {
+    const conflict = path.join(rootDir, "conflict.pdf");
+    await fs.writeFile(conflict, "different");
+    expect(
+      classifyRecoveryCandidates([
+        path.join(rootDir, "nested", "Example.PDF"),
+        conflict,
+      ]),
+    ).toEqual({ status: "conflicting", selectedPath: null });
   });
 });

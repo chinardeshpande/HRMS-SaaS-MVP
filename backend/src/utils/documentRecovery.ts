@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { createHash } from "crypto";
 
 export interface RecoveryIndex {
   byBasename: Map<string, string[]>;
@@ -57,4 +58,34 @@ export const findRecoveryCandidates = (
       basenames.flatMap((basename) => index.byBasename.get(basename) || []),
     ),
   );
+};
+
+const sha256File = (filePath: string): string => {
+  const hash = createHash("sha256");
+  const descriptor = fs.openSync(filePath, "r");
+  const buffer = Buffer.allocUnsafe(1024 * 1024);
+  try {
+    let bytesRead = 0;
+    do {
+      bytesRead = fs.readSync(descriptor, buffer, 0, buffer.length, null);
+      if (bytesRead) hash.update(buffer.subarray(0, bytesRead));
+    } while (bytesRead);
+  } finally {
+    fs.closeSync(descriptor);
+  }
+  return hash.digest("hex");
+};
+
+export type RecoveryCandidateClassification =
+  | { status: "none"; selectedPath: null }
+  | { status: "identical"; selectedPath: string }
+  | { status: "conflicting"; selectedPath: null };
+
+export const classifyRecoveryCandidates = (
+  candidatePaths: string[],
+): RecoveryCandidateClassification => {
+  if (!candidatePaths.length) return { status: "none", selectedPath: null };
+  const hashes = new Set(candidatePaths.map(sha256File));
+  if (hashes.size > 1) return { status: "conflicting", selectedPath: null };
+  return { status: "identical", selectedPath: [...candidatePaths].sort()[0] };
 };
