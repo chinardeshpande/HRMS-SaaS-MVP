@@ -37,6 +37,17 @@ export class GcsStorageProvider implements StorageProvider {
     return url;
   }
 
+  async openRead(key: string) {
+    const file = this.bucket.file(normalizeGcsKey(key));
+    const [metadata] = await file.getMetadata();
+    const contentLength = Number(metadata.size);
+    return {
+      stream: file.createReadStream(),
+      contentType: metadata.contentType,
+      contentLength: Number.isFinite(contentLength) ? contentLength : undefined,
+    };
+  }
+
   async delete(key: string): Promise<void> {
     await this.bucket.file(normalizeGcsKey(key)).delete({ ignoreNotFound: true });
   }

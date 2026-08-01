@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import { createReadStream } from 'fs';
 import path from 'path';
 import { StorageProvider } from './StorageProvider';
 
@@ -32,6 +33,12 @@ export class LocalStorageProvider implements StorageProvider {
   async getSignedUrl(key: string, _ttlSeconds: number): Promise<string> {
     if (!(await this.exists(key))) throw new Error('Stored object not found');
     return `/uploads/${key.split('/').map(encodeURIComponent).join('/')}`;
+  }
+
+  async openRead(key: string) {
+    const target = this.resolveKey(key);
+    const stats = await fs.stat(target);
+    return { stream: createReadStream(target), contentLength: stats.size };
   }
 
   async delete(key: string): Promise<void> {

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { sendSuccess, sendError, sendCreated } from '../utils/responses';
 import { config } from '../config/config';
-import { storageProvider, tenantDocumentKey } from '../services/storage';
+import { storageProvider, streamStoredObject, tenantDocumentKey } from '../services/storage';
 
 // Mock database (replace with actual database calls)
 interface Document {
@@ -168,13 +168,10 @@ export const downloadDocument = async (req: Request, res: Response) => {
       return sendError(res, { code: 'FILE_NOT_FOUND', message: 'File not found on server' }, 404);
     }
 
-    const url = await storageProvider.getSignedUrl(
-      document.filePath,
-      config.storage.signedUrlTtlSeconds
-    );
-    res.redirect(url);
+    await streamStoredObject(res, document.filePath, document.originalFileName, document.mimeType);
   } catch (error: any) {
     console.error('Download document error:', error);
+    if (res.headersSent) return res.destroy(error);
     return sendError(res, { code: 'DOWNLOAD_ERROR', message: error.message }, 500);
   }
 };

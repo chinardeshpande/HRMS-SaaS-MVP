@@ -9,7 +9,7 @@ import { PayslipStatus } from '../models/Payslip';
 import { CompensationShareChannel } from '../models/CompensationShareLog';
 import auditService from '../services/auditService';
 import { config } from '../config/config';
-import { storageProvider, tenantDocumentKey } from '../services/storage';
+import { storageProvider, streamStoredObject, tenantDocumentKey } from '../services/storage';
 
 const router = Router();
 router.use(authenticate);
@@ -338,12 +338,9 @@ router.get('/attachments/:attachmentId/download', async (req: Request, res: Resp
       userAgent: req.get('user-agent'),
     });
 
-    const url = await storageProvider.getSignedUrl(
-      attachment.fileUrl,
-      config.storage.signedUrlTtlSeconds
-    );
-    res.redirect(url);
+    await streamStoredObject(res, attachment.fileUrl, attachment.fileName, attachment.fileType);
   } catch (error: any) {
+    if (res.headersSent) return res.destroy(error);
     res.status(500).json({ success: false, error: { code: 'DOWNLOAD_ERROR', message: error.message } });
   }
 });

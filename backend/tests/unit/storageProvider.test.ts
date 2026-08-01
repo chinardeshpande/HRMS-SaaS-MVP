@@ -31,6 +31,12 @@ describe('document storage', () => {
     expect(await fs.readFile(path.join(rootDir, key))).toEqual(content);
     expect(await provider.getSignedUrl(key, 60)).toContain('/uploads/tenants/tenant-a/');
 
+    const storedObject = await provider.openRead(key);
+    const chunks: Buffer[] = [];
+    for await (const chunk of storedObject.stream) chunks.push(Buffer.from(chunk));
+    expect(Buffer.concat(chunks)).toEqual(content);
+    expect(storedObject.contentLength).toBe(content.length);
+
     await provider.delete(key);
     expect(await provider.exists(key)).toBe(false);
   });
