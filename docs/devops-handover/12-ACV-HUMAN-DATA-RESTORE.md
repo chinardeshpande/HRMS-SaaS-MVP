@@ -14,7 +14,8 @@ The helper script:
 - restores to staging first;
 - refuses production until a human records staging acceptance;
 - creates a target backup immediately before each restore;
-- restores with `--no-owner`, `--no-privileges`, `--clean`, one transaction, and fail-fast;
+- replaces the target `public` schema and restores it with `--no-owner`, `--no-privileges`,
+  one transaction, and fail-fast, so schema drift cannot leave a partial restore;
 - uploads local documents to the environment bucket without deleting existing objects;
 - never prints passwords or database row values.
 
@@ -72,6 +73,11 @@ Unset the password after `dump-local`:
 ```bash
 unset AURA_LOCAL_DB_PASSWORD
 ```
+
+The target restore is atomic. The existing `public` schema is dropped and recreated inside the
+same transaction as the streamed archive restore. If any schema or data statement fails, the
+transaction rolls back and the target retains its previous schema. A separate custom-format
+pre-restore archive is also retained as defense in depth.
 
 ## Step 2 — human restores staging
 

@@ -183,12 +183,23 @@ restore_target() {
   shasum -a 256 "$backup" > "$backup.sha256"
   printf 'Pre-restore backup created: %s\n' "$backup"
 
+  # Restore an exact schema replacement in one database transaction.  Using
+  # pg_restore --clean against a drifted target is not sufficient: target-only
+  # foreign keys can prevent archive-owned primary keys from being dropped.
+  # Streaming the archive as SQL lets psql include the schema replacement and
+  # every restored object/data statement in the same transaction.  A failure
+  # therefore leaves the pre-existing target schema intact.
   PGPASSWORD="$TARGET_PASSWORD" pg_restore \
-    --host=127.0.0.1 --port="$PROXY_PORT" \
-    --username="$TARGET_USER" --dbname="$TARGET_DATABASE" \
-    --clean --if-exists --no-owner --no-privileges \
-    --exit-on-error --single-transaction \
-    "$ARCHIVE"
+    --no-owner --no-privileges \
+    --file=- \
+    "$ARCHIVE" | \
+    PGPASSWORD="$TARGET_PASSWORD" psql \
+      --host=127.0.0.1 --port="$PROXY_PORT" \
+      --username="$TARGET_USER" --dbname="$TARGET_DATABASE" \
+      --no-psqlrc --single-transaction \
+      --set=ON_ERROR_STOP=1 --set=VERBOSITY=terse \
+      --command='DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public AUTHORIZATION CURRENT_USER;' \
+      --file=-
   unset TARGET_PASSWORD PGPASSWORD
   printf '%s database restore completed. Application and document validation are still required.\n' "$environment"
 }
