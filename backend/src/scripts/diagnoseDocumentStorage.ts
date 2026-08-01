@@ -7,13 +7,20 @@ import { EmployeeDocument } from '../models/EmployeeDocument';
 import { CompanyDocument } from '../models/CompanyDocument';
 import { PayslipAttachment } from '../models/PayslipAttachment';
 import { findUploadPath, uploadPathExists, uploadRoots } from '../utils/uploadPaths';
-import { buildRecoveryIndex, findRecoveryCandidates, RecoveryIndex } from '../utils/documentRecovery';
+import { normalizeUploadUrl } from '../utils/uploadPaths';
+import {
+  buildRecoveryIndex,
+  classifyRecoveryCandidates,
+  findRecoveryCandidates,
+  RecoveryIndex,
+} from '../utils/documentRecovery';
 
 interface Options {
   tenantId?: string;
   companyName: string;
   outputDir: string;
   searchRoots: string[];
+  copyRoot?: string;
 }
 
 const DEFAULT_OUTPUT_DIR = path.resolve(
@@ -37,6 +44,7 @@ const parseOptions = (): Options => ({
   companyName: readArg('company-name') || 'ACV Solutions',
   outputDir: readArg('output-dir') || DEFAULT_OUTPUT_DIR,
   searchRoots: readArgs('search-root').map((root) => path.resolve(root)),
+  copyRoot: readArg('copy-root') ? path.resolve(readArg('copy-root')!) : undefined,
 });
 
 const csvValue = (value: unknown): string => {
@@ -71,7 +79,37 @@ const recoveryFields = (
   return {
     recoveryCandidateCount: candidates.length,
     recoveryCandidatePaths: candidates.join(' | '),
+    recoveryCandidateClassification: classifyRecoveryCandidates(candidates).status,
   };
+};
+
+const confirmExact = async (expected: string, message: string): Promise<void> => {
+  process.stdout.write(`${message}\nType exactly: ${expected}\n> `);
+  const answer = await new Promise<string>((resolve) => {
+    process.stdin.setEncoding('utf8');
+    process.stdin.once('data', (value) => resolve(String(value).trim()));
+  });
+  if (answer !== expected) throw new Error('Confirmation did not match; no files were copied.');
+};
+
+const copyRecoveredFile = (
+  copyRoot: string,
+  fileUrl: string | null | undefined,
+  candidatePaths: string[]
+): string => {
+  if (!fileUrl || /^https?:\/\//i.test(fileUrl)) return 'skipped_no_target';
+  const classification = classifyRecoveryCandidates(candidatePaths);
+  if (classification.status === 'none') return 'skipped_no_candidate';
+  if (classification.status === 'conflicting') return 'skipped_conflicting';
+
+  const destination = path.resolve(copyRoot, normalizeUploadUrl(fileUrl));
+  const relative = path.relative(copyRoot, destination);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) return 'skipped_invalid_target';
+  if (fs.existsSync(destination)) return 'skipped_existing';
+  fs.mkdirSync(path.dirname(destination), { recursive: true, mode: 0o700 });
+  fs.copyFileSync(classification.selectedPath, destination, fs.constants.COPYFILE_EXCL);
+  fs.chmodSync(destination, 0o600);
+  return 'copied';
 };
 
 const safeRef = (prefix: string, id?: string): string => `${prefix}${id ? ` ending ${id.slice(-6)}` : ''}`;
@@ -130,6 +168,16 @@ async function main() {
     }
   });
   const recoveryIndex = options.searchRoots.length ? buildRecoveryIndex(options.searchRoots) : null;
+  if (options.copyRoot && !recoveryIndex) {
+    throw new Error('--copy-root requires at least one --search-root.');
+  }
+  if (options.copyRoot) {
+    fs.mkdirSync(options.copyRoot, { recursive: true, mode: 0o700 });
+    await confirmExact(
+      'COPY HASH VERIFIED DOCUMENTS',
+      `This copies only unambiguous hash-verified candidates into ${options.copyRoot}. Existing files are never overwritten.`
+    );
+  }
   await AppDataSource.initialize();
 
   try {
@@ -144,7 +192,13 @@ async function main() {
     ]);
 
     const rows = [
-      ...employeeDocuments.map((doc) => ({
+      ...employeeDocuments.map((doc) => {
+        const recovery = recoveryFields(
+          recoveryIndex,
+          [doc.fileUrl, doc.fileName, doc.originalFileName],
+          uploadPathExists(doc.fileUrl)
+        );
+        return {
         source: 'employee_document',
         recordRef: safeRef('employee-document', doc.documentId),
         employeeCode: doc.employee?.employeeCode || '',
@@ -153,12 +207,24 @@ async function main() {
         fileUrlPattern: urlPattern(doc.fileUrl),
         storageStatus: storageStatus(doc.fileUrl),
         storageRoot: storageRootLabel(doc.fileUrl),
-        ...recoveryFields(recoveryIndex, [doc.fileUrl, doc.fileName, doc.originalFileName], uploadPathExists(doc.fileUrl)),
+        ...recovery,
+        recoveryCopyStatus: options.copyRoot
+          ? uploadPathExists(doc.fileUrl)
+            ? 'already_reachable'
+            : copyRecoveredFile(options.copyRoot, doc.fileUrl, recovery.recoveryCandidatePaths.split(' | ').filter(Boolean))
+          : 'not_requested',
         recommendedAction: uploadPathExists(doc.fileUrl)
           ? 'No action needed.'
           : 'Repair file path/storage mapping or re-upload this document.',
-      })),
-      ...companyDocuments.map((doc) => ({
+        };
+      }),
+      ...companyDocuments.map((doc) => {
+        const recovery = recoveryFields(
+          recoveryIndex,
+          [doc.fileUrl, doc.fileName, doc.originalFileName],
+          uploadPathExists(doc.fileUrl)
+        );
+        return {
         source: 'company_document',
         recordRef: safeRef('company-document', doc.documentId),
         employeeCode: '',
@@ -167,12 +233,24 @@ async function main() {
         fileUrlPattern: urlPattern(doc.fileUrl),
         storageStatus: storageStatus(doc.fileUrl),
         storageRoot: storageRootLabel(doc.fileUrl),
-        ...recoveryFields(recoveryIndex, [doc.fileUrl, doc.fileName, doc.originalFileName], uploadPathExists(doc.fileUrl)),
+        ...recovery,
+        recoveryCopyStatus: options.copyRoot
+          ? uploadPathExists(doc.fileUrl)
+            ? 'already_reachable'
+            : copyRecoveredFile(options.copyRoot, doc.fileUrl, recovery.recoveryCandidatePaths.split(' | ').filter(Boolean))
+          : 'not_requested',
         recommendedAction: uploadPathExists(doc.fileUrl)
           ? 'No action needed.'
           : 'Repair file path/storage mapping or re-upload this document.',
-      })),
-      ...payslipAttachments.map((attachment) => ({
+        };
+      }),
+      ...payslipAttachments.map((attachment) => {
+        const recovery = recoveryFields(
+          recoveryIndex,
+          [attachment.fileUrl, attachment.fileName],
+          uploadPathExists(attachment.fileUrl)
+        );
+        return {
         source: 'payslip_attachment',
         recordRef: safeRef('payslip-attachment', attachment.attachmentId),
         employeeCode: '',
@@ -181,11 +259,21 @@ async function main() {
         fileUrlPattern: urlPattern(attachment.fileUrl),
         storageStatus: storageStatus(attachment.fileUrl),
         storageRoot: storageRootLabel(attachment.fileUrl),
-        ...recoveryFields(recoveryIndex, [attachment.fileUrl, attachment.fileName], uploadPathExists(attachment.fileUrl)),
+        ...recovery,
+        recoveryCopyStatus: options.copyRoot
+          ? uploadPathExists(attachment.fileUrl)
+            ? 'already_reachable'
+            : copyRecoveredFile(
+                options.copyRoot,
+                attachment.fileUrl,
+                recovery.recoveryCandidatePaths.split(' | ').filter(Boolean)
+              )
+          : 'not_requested',
         recommendedAction: uploadPathExists(attachment.fileUrl)
           ? 'No action needed.'
           : 'Repair file path/storage mapping or re-upload this payslip attachment.',
-      })),
+        };
+      }),
     ];
 
     const outputPath = path.join(options.outputDir, 'document-storage-diagnostics.csv');
@@ -210,6 +298,10 @@ async function main() {
       searchRootsChecked: options.searchRoots.length,
       indexedCandidateFiles: recoveryIndex?.indexedFiles || 0,
       skippedCandidateDirectories: recoveryIndex?.skippedDirectories || 0,
+      recoveredCopies: rows.filter((row) => row.recoveryCopyStatus === 'copied').length,
+      skippedConflictingCopies: rows.filter((row) => row.recoveryCopyStatus === 'skipped_conflicting').length,
+      skippedNoCandidateCopies: rows.filter((row) => row.recoveryCopyStatus === 'skipped_no_candidate').length,
+      skippedExistingCopies: rows.filter((row) => row.recoveryCopyStatus === 'skipped_existing').length,
     }, null, 2));
   } finally {
     await AppDataSource.destroy();
