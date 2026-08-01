@@ -36,10 +36,14 @@ const parseBinary = (res: any, callback: (error: Error | null, body?: Buffer) =>
   res.on('error', (error: Error) => callback(error));
 };
 
-const followLocalStorageRedirect = async (response: any) => {
-  expect(response.status).toBe(302);
-  expect(response.headers.location).toMatch(/^\/uploads\/tenants\//);
-  return api.get(response.headers.location).buffer(true).parse(parseBinary);
+const expectStreamedDocument = (response: any, expectedContent: string) => {
+  expect(response.status).toBe(200);
+  expect(response.headers['content-type']).toMatch(/^application\/pdf/);
+  expect(response.headers['content-disposition']).toMatch(/^inline;/);
+  expect(response.headers['cache-control']).toBe('private, no-store');
+  expect(response.headers['x-content-type-options']).toBe('nosniff');
+  expect(Buffer.isBuffer(response.body)).toBe(true);
+  expect(response.body.toString()).toContain(expectedContent);
 };
 
 const expectAuditEvent = async (tenantId: string, entityId: string, action: string) => {
@@ -86,10 +90,7 @@ describe('Document and Payslip Lifecycle API', () => {
         .buffer(true)
         .parse(parseBinary);
 
-      const downloadedFile = await followLocalStorageRedirect(downloaded);
-      expect(downloadedFile.status).toBe(200);
-      expect(Buffer.isBuffer(downloadedFile.body)).toBe(true);
-      expect(downloadedFile.body.toString()).toContain(temp.content);
+      expectStreamedDocument(downloaded, temp.content);
       await expectAuditEvent(employee.tenantId, upload.body.data.documentId, 'employee_document.download');
 
       const update = await authPut(`/employee-documents/${upload.body.data.documentId}`, hr.token).send({
@@ -176,9 +177,7 @@ describe('Document and Payslip Lifecycle API', () => {
         .buffer(true)
         .parse(parseBinary);
 
-      const downloadedFile = await followLocalStorageRedirect(downloaded);
-      expect(downloadedFile.status).toBe(200);
-      expect(downloadedFile.body.toString()).toContain(temp.content);
+      expectStreamedDocument(downloaded, temp.content);
       await expectAuditEvent(hr.tenantId, upload.body.data.documentId, 'company_document.download');
 
       const update = await authPut(`/company-documents/${upload.body.data.documentId}`, hr.token).send({
@@ -270,9 +269,7 @@ describe('Document and Payslip Lifecycle API', () => {
         .set('Authorization', `Bearer ${hr.token}`)
         .buffer(true)
         .parse(parseBinary);
-      const downloadedByHrFile = await followLocalStorageRedirect(downloadedByHr);
-      expect(downloadedByHrFile.status).toBe(200);
-      expect(downloadedByHrFile.body.toString()).toContain(temp.content);
+      expectStreamedDocument(downloadedByHr, temp.content);
       await expectAuditEvent(hr.tenantId, attachment.body.data.attachmentId, 'payslip_attachment.download');
 
       const downloadedByEmployee = await api
@@ -280,9 +277,7 @@ describe('Document and Payslip Lifecycle API', () => {
         .set('Authorization', `Bearer ${employee.token}`)
         .buffer(true)
         .parse(parseBinary);
-      const downloadedByEmployeeFile = await followLocalStorageRedirect(downloadedByEmployee);
-      expect(downloadedByEmployeeFile.status).toBe(200);
-      expect(downloadedByEmployeeFile.body.toString()).toContain(temp.content);
+      expectStreamedDocument(downloadedByEmployee, temp.content);
       await expectAuditEvent(employee.tenantId, attachment.body.data.attachmentId, 'payslip_attachment.download');
     } finally {
       fs.rmSync(temp.dir, { recursive: true, force: true });
