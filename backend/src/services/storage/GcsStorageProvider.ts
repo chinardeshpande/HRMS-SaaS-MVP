@@ -1,6 +1,13 @@
 import { Storage } from '@google-cloud/storage';
 import { StorageProvider } from './StorageProvider';
 
+export const normalizeGcsKey = (key: string): string => {
+  const keyWithoutLeadingSlash = key.replace(/^\/+/, '');
+  return keyWithoutLeadingSlash.startsWith('uploads/')
+    ? keyWithoutLeadingSlash.slice('uploads/'.length)
+    : keyWithoutLeadingSlash;
+};
+
 export class GcsStorageProvider implements StorageProvider {
   private readonly bucket;
 
@@ -10,7 +17,7 @@ export class GcsStorageProvider implements StorageProvider {
   }
 
   async put(key: string, buffer: Buffer, contentType: string): Promise<void> {
-    await this.bucket.file(key).save(buffer, {
+    await this.bucket.file(normalizeGcsKey(key)).save(buffer, {
       resumable: false,
       validation: 'crc32c',
       metadata: {
@@ -22,7 +29,7 @@ export class GcsStorageProvider implements StorageProvider {
   }
 
   async getSignedUrl(key: string, ttlSeconds: number): Promise<string> {
-    const [url] = await this.bucket.file(key).getSignedUrl({
+    const [url] = await this.bucket.file(normalizeGcsKey(key)).getSignedUrl({
       version: 'v4',
       action: 'read',
       expires: Date.now() + ttlSeconds * 1000,
@@ -31,11 +38,11 @@ export class GcsStorageProvider implements StorageProvider {
   }
 
   async delete(key: string): Promise<void> {
-    await this.bucket.file(key).delete({ ignoreNotFound: true });
+    await this.bucket.file(normalizeGcsKey(key)).delete({ ignoreNotFound: true });
   }
 
   async exists(key: string): Promise<boolean> {
-    const [exists] = await this.bucket.file(key).exists();
+    const [exists] = await this.bucket.file(normalizeGcsKey(key)).exists();
     return exists;
   }
 }

@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
 import { LocalStorageProvider } from '../../src/services/storage/LocalStorageProvider';
+import { normalizeGcsKey } from '../../src/services/storage/GcsStorageProvider';
 import {
   employeeDocumentKey,
   tenantDocumentKey,
@@ -60,5 +61,14 @@ describe('document storage', () => {
     );
     expect(employeeKey).not.toContain('..');
     expect(companyKey).not.toContain('..');
+  });
+
+  it.each([
+    ['/uploads/company-documents/legacy.pdf', 'company-documents/legacy.pdf'],
+    ['uploads/employee-documents/legacy.pdf', 'employee-documents/legacy.pdf'],
+    ['tenants/tenant-a/employees/employee-a/current.pdf', 'tenants/tenant-a/employees/employee-a/current.pdf'],
+    ['/tenants/tenant-a/company-documents/current.pdf', 'tenants/tenant-a/company-documents/current.pdf'],
+  ])('maps stored document path %s to GCS object key %s', (storedPath, expectedKey) => {
+    expect(normalizeGcsKey(storedPath)).toBe(expectedKey);
   });
 });
