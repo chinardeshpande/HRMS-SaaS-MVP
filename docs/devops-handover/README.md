@@ -73,7 +73,9 @@ This reframes the project: it is **not** "improve hosting on a running system." 
 | `09-GOTCHAS.md` | Hard-won failures. Each one cost real hours | Continuously |
 | `10-CODEX-OPERATING-RULES.md` | **Guardrails.** What Codex may and may not do | First. Always. |
 | `11-ACCEPTANCE-CHECKLIST.md` | Definition of done + verification gates | Before claiming done |
+| `12-ACV-HUMAN-DATA-RESTORE.md` | Human-operated local ACV database and document transfer | Data restoration |
 | `scripts/setup-gcp-pipeline.sh` | Idempotent GCP wiring (APIs, AR, WIF, IAM) | Phase 4 |
+| `scripts/human-acv-database-transfer.sh` | Guarded staging-first restore helper; human execution only | Data restoration |
 
 ---
 
