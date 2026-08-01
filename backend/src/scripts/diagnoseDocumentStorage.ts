@@ -7,11 +7,13 @@ import { EmployeeDocument } from '../models/EmployeeDocument';
 import { CompanyDocument } from '../models/CompanyDocument';
 import { PayslipAttachment } from '../models/PayslipAttachment';
 import { findUploadPath, uploadPathExists, uploadRoots } from '../utils/uploadPaths';
+import { buildRecoveryIndex, findRecoveryCandidates, RecoveryIndex } from '../utils/documentRecovery';
 
 interface Options {
   tenantId?: string;
   companyName: string;
   outputDir: string;
+  searchRoots: string[];
 }
 
 const DEFAULT_OUTPUT_DIR = path.resolve(
@@ -25,10 +27,16 @@ const readArg = (name: string): string | undefined => {
   return arg ? arg.slice(prefix.length) : undefined;
 };
 
+const readArgs = (name: string): string[] => {
+  const prefix = `--${name}=`;
+  return process.argv.slice(2).filter((value) => value.startsWith(prefix)).map((value) => value.slice(prefix.length));
+};
+
 const parseOptions = (): Options => ({
   tenantId: readArg('tenant-id'),
   companyName: readArg('company-name') || 'ACV Solutions',
   outputDir: readArg('output-dir') || DEFAULT_OUTPUT_DIR,
+  searchRoots: readArgs('search-root').map((root) => path.resolve(root)),
 });
 
 const csvValue = (value: unknown): string => {
@@ -38,7 +46,8 @@ const csvValue = (value: unknown): string => {
 };
 
 const writeCsv = <T extends object>(filePath: string, rows: T[]) => {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.mkdirSync(path.dirname(filePath), { recursive: true, mode: 0o700 });
+  fs.chmodSync(path.dirname(filePath), 0o700);
   const headers = Array.from(
     rows.reduce((set, row) => {
       Object.keys(row as Record<string, unknown>).forEach((key) => set.add(key));
@@ -49,7 +58,20 @@ const writeCsv = <T extends object>(filePath: string, rows: T[]) => {
     headers.map(csvValue).join(','),
     ...rows.map((row) => headers.map((header) => csvValue((row as Record<string, unknown>)[header])).join(',')),
   ].join('\n');
-  fs.writeFileSync(filePath, `${output}\n`);
+  fs.writeFileSync(filePath, `${output}\n`, { mode: 0o600 });
+  fs.chmodSync(filePath, 0o600);
+};
+
+const recoveryFields = (
+  index: RecoveryIndex | null,
+  storedNames: Array<string | null | undefined>,
+  isReachable: boolean
+) => {
+  const candidates = !isReachable && index ? findRecoveryCandidates(index, storedNames) : [];
+  return {
+    recoveryCandidateCount: candidates.length,
+    recoveryCandidatePaths: candidates.join(' | '),
+  };
 };
 
 const safeRef = (prefix: string, id?: string): string => `${prefix}${id ? ` ending ${id.slice(-6)}` : ''}`;
@@ -102,6 +124,12 @@ const findTenant = async (options: Options): Promise<Tenant> => {
 
 async function main() {
   const options = parseOptions();
+  options.searchRoots.forEach((root) => {
+    if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) {
+      throw new Error(`Search root is not an accessible directory: ${root}`);
+    }
+  });
+  const recoveryIndex = options.searchRoots.length ? buildRecoveryIndex(options.searchRoots) : null;
   await AppDataSource.initialize();
 
   try {
@@ -125,6 +153,7 @@ async function main() {
         fileUrlPattern: urlPattern(doc.fileUrl),
         storageStatus: storageStatus(doc.fileUrl),
         storageRoot: storageRootLabel(doc.fileUrl),
+        ...recoveryFields(recoveryIndex, [doc.fileUrl, doc.fileName, doc.originalFileName], uploadPathExists(doc.fileUrl)),
         recommendedAction: uploadPathExists(doc.fileUrl)
           ? 'No action needed.'
           : 'Repair file path/storage mapping or re-upload this document.',
@@ -138,6 +167,7 @@ async function main() {
         fileUrlPattern: urlPattern(doc.fileUrl),
         storageStatus: storageStatus(doc.fileUrl),
         storageRoot: storageRootLabel(doc.fileUrl),
+        ...recoveryFields(recoveryIndex, [doc.fileUrl, doc.fileName, doc.originalFileName], uploadPathExists(doc.fileUrl)),
         recommendedAction: uploadPathExists(doc.fileUrl)
           ? 'No action needed.'
           : 'Repair file path/storage mapping or re-upload this document.',
@@ -151,6 +181,7 @@ async function main() {
         fileUrlPattern: urlPattern(attachment.fileUrl),
         storageStatus: storageStatus(attachment.fileUrl),
         storageRoot: storageRootLabel(attachment.fileUrl),
+        ...recoveryFields(recoveryIndex, [attachment.fileUrl, attachment.fileName], uploadPathExists(attachment.fileUrl)),
         recommendedAction: uploadPathExists(attachment.fileUrl)
           ? 'No action needed.'
           : 'Repair file path/storage mapping or re-upload this payslip attachment.',
@@ -165,7 +196,20 @@ async function main() {
       checked: rows.length,
       reachable: rows.filter((row) => row.storageStatus === 'reachable' || row.storageStatus === 'remote').length,
       missing: rows.filter((row) => row.storageStatus === 'missing' || row.storageStatus === 'not_provided').length,
+      missingWithCandidate: rows.filter(
+        (row) =>
+          (row.storageStatus === 'missing' || row.storageStatus === 'not_provided') &&
+          row.recoveryCandidateCount > 0
+      ).length,
+      missingWithoutCandidate: rows.filter(
+        (row) =>
+          (row.storageStatus === 'missing' || row.storageStatus === 'not_provided') &&
+          row.recoveryCandidateCount === 0
+      ).length,
       uploadRootsChecked: uploadRoots.length,
+      searchRootsChecked: options.searchRoots.length,
+      indexedCandidateFiles: recoveryIndex?.indexedFiles || 0,
+      skippedCandidateDirectories: recoveryIndex?.skippedDirectories || 0,
     }, null, 2));
   } finally {
     await AppDataSource.destroy();
