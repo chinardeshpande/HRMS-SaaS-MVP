@@ -9,6 +9,7 @@ import { config } from '../config/config';
 import emailService from '../services/emailService';
 import identityMappingService from '../services/identityMappingService';
 import { storageProvider, tenantDocumentKey } from '../services/storage';
+import { isRefreshTokenPayload, signRefreshToken } from '../services/tokenService';
 
 const serializeUser = (user: User) => ({
   userId: user.userId,
@@ -171,14 +172,7 @@ export const login = async (req: Request, res: Response) => {
     );
 
     // Generate refresh token
-    const refreshToken = jwt.sign(
-      {
-        userId: user.userId,
-        tenantId: user.tenantId,
-      },
-      config.jwt.secret,
-      { expiresIn: config.jwt.refreshExpiry } as jwt.SignOptions
-    );
+    const refreshToken = signRefreshToken(user.userId, user.tenantId);
 
     // Update last login
     user.lastLogin = new Date();
@@ -202,6 +196,66 @@ export const login = async (req: Request, res: Response) => {
       error: {
         code: 'SERVER_ERROR',
         message: 'An error occurred during login',
+      },
+    });
+  }
+};
+
+export const refresh = async (req: Request, res: Response) => {
+  const refreshToken = typeof req.body?.refreshToken === 'string' ? req.body.refreshToken : '';
+
+  if (!refreshToken) {
+    return res.status(400).json({
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Refresh token is required',
+      },
+    });
+  }
+
+  try {
+    const payload = jwt.verify(refreshToken, config.jwt.secret);
+    if (typeof payload === 'string' || !isRefreshTokenPayload(payload)) {
+      throw new Error('Invalid refresh token payload');
+    }
+
+    const user = await AppDataSource.getRepository(User).findOne({
+      where: {
+        userId: payload.userId,
+        tenantId: payload.tenantId,
+      },
+    });
+
+    if (!user || !user.isActive) {
+      throw new Error('Refresh token user is unavailable');
+    }
+
+    const token = jwt.sign(
+      {
+        userId: user.userId,
+        tenantId: user.tenantId,
+        email: user.email,
+        role: user.role,
+        employeeId: user.employeeId,
+      },
+      config.jwt.secret,
+      { expiresIn: config.jwt.expiry } as jwt.SignOptions
+    );
+
+    return res.json({
+      success: true,
+      data: {
+        token,
+        refreshToken: signRefreshToken(user.userId, user.tenantId),
+      },
+    });
+  } catch {
+    return res.status(401).json({
+      success: false,
+      error: {
+        code: 'INVALID_REFRESH_TOKEN',
+        message: 'Refresh token is invalid or expired',
       },
     });
   }
@@ -648,6 +702,7 @@ export const resetPassword = async (req: Request, res: Response) => {
 
 export default {
   login,
+  refresh,
   getCurrentUser,
   updateCurrentUserProfile,
   changePassword,

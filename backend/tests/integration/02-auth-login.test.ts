@@ -1,4 +1,6 @@
 import { api, API_PREFIX, TEST_ACCOUNTS, loginAs, authGet, requireAuth } from '../helpers/testSetup';
+import jwt from 'jsonwebtoken';
+import { config } from '../../src/config/config';
 
 describe('Auth: Login / Logout / Me', () => {
   describe('POST /auth/login', () => {
@@ -103,6 +105,68 @@ describe('Auth: Login / Logout / Me', () => {
       expect(ctx!.token).toBeTruthy();
       expect(ctx!.role).toBe(TEST_ACCOUNTS.SECOND_TENANT_ADMIN.expectedRole);
       expect(ctx!.tenantId).toBeTruthy();
+    });
+  });
+
+  describe('POST /auth/refresh', () => {
+    it('returns a usable access token and rotates the refresh token', async () => {
+      const ctx = await loginAs(TEST_ACCOUNTS.SYSTEM_ADMIN);
+      requireAuth(ctx, TEST_ACCOUNTS.SYSTEM_ADMIN.label);
+
+      const res = await api.post(`${API_PREFIX}/auth/refresh`).send({
+        refreshToken: ctx.refreshToken,
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.token).toBeTruthy();
+      expect(res.body.data.refreshToken).toBeTruthy();
+      expect(res.body.data.refreshToken).not.toBe(ctx.refreshToken);
+
+      const payload = jwt.decode(res.body.data.refreshToken) as jwt.JwtPayload;
+      expect(payload.tokenType).toBe('refresh');
+      expect(payload.userId).toBe(ctx.userId);
+      expect(payload.tenantId).toBe(ctx.tenantId);
+
+      const me = await authGet('/auth/me', res.body.data.token);
+      expect(me.status).toBe(200);
+      expect(me.body.data.userId).toBe(ctx.userId);
+    });
+
+    it('rejects an access token as a refresh token', async () => {
+      const ctx = await loginAs(TEST_ACCOUNTS.SYSTEM_ADMIN);
+      requireAuth(ctx, TEST_ACCOUNTS.SYSTEM_ADMIN.label);
+
+      const res = await api.post(`${API_PREFIX}/auth/refresh`).send({
+        refreshToken: ctx.token,
+      });
+
+      expect(res.status).toBe(401);
+      expect(res.body.error.code).toBe('INVALID_REFRESH_TOKEN');
+    });
+
+    it('accepts a legacy refresh token issued before tokenType was added', async () => {
+      const ctx = await loginAs(TEST_ACCOUNTS.SYSTEM_ADMIN);
+      requireAuth(ctx, TEST_ACCOUNTS.SYSTEM_ADMIN.label);
+      const legacyRefreshToken = jwt.sign(
+        { userId: ctx.userId, tenantId: ctx.tenantId },
+        config.jwt.secret,
+        { expiresIn: '2h' }
+      );
+
+      const res = await api.post(`${API_PREFIX}/auth/refresh`).send({
+        refreshToken: legacyRefreshToken,
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.token).toBeTruthy();
+      expect((jwt.decode(res.body.data.refreshToken) as jwt.JwtPayload).tokenType).toBe('refresh');
+    });
+
+    it('rejects a missing refresh token with 400', async () => {
+      const res = await api.post(`${API_PREFIX}/auth/refresh`).send({});
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe('VALIDATION_ERROR');
     });
   });
 
