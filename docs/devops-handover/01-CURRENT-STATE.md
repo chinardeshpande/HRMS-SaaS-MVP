@@ -1,168 +1,145 @@
-# 01 — Current State (verified 2026-07-23)
+# 01 — Current State (verified 2026-08-02)
 
-Everything here was verified by inspecting the repo and probing the network on 2026-07-23.
-Facts are marked **[verified]**. Inferences and unknowns are marked as such. Do not upgrade
-an inference to a fact without checking.
+This file records the observed platform state after the Cloud Run rebuild. Facts are marked
+**[verified]**; incomplete evidence is marked **[unknown]**. The operating constraints in
+`10-CODEX-OPERATING-RULES.md` continue to apply.
 
 ---
 
-## 1. The application
+## 1. Recovery decision
 
-**[verified]** A polyglot monorepo, not a single app:
+**[verified — human report]** The DigitalOcean droplet was destroyed and DigitalOcean had no
+backup or snapshot. The former production database and droplet-local uploads were not
+recoverable.
 
-| Directory | What it is | Stack |
+**[verified]** ADR `0001-aurahrms-cloud-run-fresh-start.md` records the resulting decision:
+rebuild from the current local application, use `aurahrms.com`, keep staging and production in
+separate GCP projects, ship `main` before the unexecuted `hardening` branch, and keep all
+production PII operations human-controlled.
+
+---
+
+## 2. Repository and delivery state
+
+**[verified 2026-08-02]** `origin/main` is `63b32a27`, “Proxy private document downloads
+through API (#75)”. The three most recent document-recovery PRs are:
+
+| PR | Commit | Purpose |
 |---|---|---|
-| `backend/` | REST API + WebSocket server | Node ≥18, Express 4.18, TypeScript, **TypeORM 0.3.19**, `pg` 8.11, Socket.IO 4.8 |
-| `frontend-web/` | Web SPA | **Vite 5** + React 18, MUI 5, react-router 6, axios |
-| `mobile-app/` | Mobile client | (not inspected in depth — treat as out of scope for v1 cutover) |
-| `shared/types` | Shared TypeScript types | — |
-| `e2e/` | End-to-end tests | Playwright |
-| `docker/` | Legacy droplet Docker assets | `backend/Dockerfile`, `frontend/Dockerfile`, `nginx/*.conf` |
+| #73 | `6096bc7` | private local recovery scanner |
+| #74 | `6ae0900` | hash-verified recovery copies |
+| #75 | `63b32a2` | authenticated API streaming for private downloads |
 
-**[verified]** Backend entrypoint: `package.json` `main` = `dist/backend/src/server.js`, and
-`docker/backend/Dockerfile` uses `CMD ["node", "dist/backend/src/server.js"]`.
+The active workflow `.github/workflows/deploy-cloud-run.yml` is a manually dispatched,
+staging-only deployment. It authenticates with WIF, submits `cloudbuild.yaml`, runs the
+migration job, deploys the API and web services, then verifies both service URLs by HTTP.
 
-> ⚠️ **Trap:** `backend/tsconfig.json` declares `"outDir": "./dist"` with
-> `"include": ["src/**/*"]`, which would normally emit `dist/src/server.js` — **not**
-> `dist/backend/src/server.js`. The two disagree. This resolves at build time depending on
-> how tsc computes the common root. **Do not guess.** Run `npm ci && npm run build` in
-> `backend/` and `find dist -name server.js` to establish the real path, then set the
-> Docker `CMD` from the observed result. See `09-GOTCHAS.md` §B1.
+**[verified]** Workflow run `30697288929` successfully deployed `63b32a27` to staging. Its
+manual rerun also completed successfully on 2026-08-01.
 
-**[verified]** Database access is via TypeORM with **discrete connection fields**, not a URL:
+**[gap]** There is no production promotion workflow on `main`. The existing staging workflow
+must not be repointed to production. Production promotion must be a separate, manual workflow
+that promotes the tested staging image rather than rebuilding it.
 
-```ts
-// backend/src/data-source.ts
-host: process.env.DB_HOST || 'localhost',
-port: parseInt(process.env.DB_PORT || '5432'),
-username: process.env.DB_USER, password: process.env.DB_PASSWORD,
-database: process.env.DB_NAME,
-ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-synchronize: false,   // good — migrations only
-```
-
-This is **good news** for Cloud SQL: `pg` treats a `host` beginning with `/` as a Unix socket
-directory, so `DB_HOST=/cloudsql/<PROJECT>:<REGION>:<INSTANCE>` works directly. AuraHRMS
-therefore **avoids** the postgres-js URL-parsing gotcha that bit the CCC pilot.
-
-**[verified]** Health endpoint already exists: `backend/src/app.ts:194` → `GET /health`
-returning `{ status: 'healthy', ... }`. Verify it is unauthenticated and does not touch the
-DB before relying on it as the Cloud Run probe (see `04-BLOCKERS.md` §4).
-
-**[verified]** Socket.IO is real and wired: `backend/src/services/socketService.ts` creates a
-`SocketIOServer` on path `/socket.io`; the frontend expects `VITE_SOCKET_URL`.
+**[gap]** GitHub environments `staging` and `production` exist, but `production` currently has
+no protection rules or required reviewer.
 
 ---
 
-## 2. Current (dead) hosting
+## 3. Staging (`aurahrms-staging`)
 
-**[verified]** DNS `aurorahr.in` → A `64.227.173.175`, a DigitalOcean droplet named
-`aurorahr-production` (per June 2026 records).
+**[verified 2026-08-02]** Project `aurahrms-staging` is ACTIVE with billing enabled.
 
-**[verified] The host is unreachable as of 2026-07-23:**
+| Resource | Observed state |
+|---|---|
+| API | revision `aurahrms-api-00013-bl2`, image tag `63b32a27…`, HTTP `/health` 200 |
+| Web | revision `aurahrms-web-00005-zw9`, image tag `63b32a27…`, HTTP `/` 200 |
+| Migration job | `aurahrms-migrate`; latest execution successful |
+| Cloud SQL | PostgreSQL 16, RUNNABLE, backups on, PITR on, deletion protection on |
+| Documents | `gs://aurahrms-staging-documents`, uniform access and versioning on, no public IAM binding |
+| Secrets | required secret resources exist; values were not read |
+| CI auth | WIF provider ACTIVE; no user-managed deployer service-account key was listed |
 
-```
-https://aurorahr.in        -> HTTP 000
-https://www.aurorahr.in    -> HTTP 000
-http://64.227.173.175/     -> HTTP 000
-TCP 443 / 80 / 22          -> all closed or filtered
-ICMP ping                  -> 2 packets sent, 0 received (100% loss)
-https://www.google.com     -> HTTP 200   (control: local network is fine)
-```
+The API is capped at one instance with concurrency 250 and session affinity. Both API and web
+currently scale to zero; this differs from ADR 0001's proposed one minimum API instance and is
+the lower-cost configuration presently deployed.
 
-**[inference]** The droplet has been destroyed, powered off, or fully firewalled. From
-outside these are indistinguishable. Note that in the June `chinardeshpande.tech` outage the
-dead IP still answered ICMP; here even ICMP is dead, which leans toward *destroyed or powered
-off* rather than *reassigned*.
+### Staging PII exception — unresolved
 
-**[unknown — Chinar must resolve in the DigitalOcean console]**
-1. Does droplet `aurorahr-production` still exist?
-2. Do automated backups or manual snapshots exist, and what is the newest restore point?
-3. Can the Postgres database be dumped from it?
-4. Can `uploads/` (employee documents) be retrieved from its disk?
+**[verified — human-run procedure and reported results]** A human restored the current local
+ACV database into staging and uploaded recovered ACV documents. This means staging contains
+real employee PII, contrary to the canonical synthetic-only staging rule.
 
-**Deployment mechanism was:** GitHub Actions → droplet, via
-`.github/workflows/deploy-aurorahr.yml` (build + test with a `postgres:15` service container,
-then deploy). Also present: `deploy-staging.yml`, plus `ci-cd.yml.disabled` and
-`deploy-production.yml.disabled`. Docker Compose files `docker-compose.yml` and
-`docker-compose.production.yml` at root, and nginx configs in `docker/nginx/`.
+The agent must not inspect these records. Before handover, the owner must choose and record a
+remediation window: restrict staging as a temporary PII environment, complete validation, and
+then purge/reseed it with synthetic data. This is an open acceptance gate.
 
----
+### Remaining staging acceptance
 
-## 3. Repository state
-
-**[verified]**
-
-| Ref | SHA | Note |
-|---|---|---|
-| `origin/main` | `5e9d208` | `fix(security): scope payment status updates to tenant (IDOR)` — last deployed state |
-| local `main` | `5e9d208` | in sync with origin as of last fetch (**2026-06-11**) |
-| `origin/hardening` | `028e01e` | ⚠️ **Mission 2 tenant-isolation work — built but NEVER RUNTIME-TESTED** |
-
-Other remote branches exist from prior agent sessions (`codex/*`, `antigravity/*`,
-`claude/*`) — e.g. `codex/production-schema-hardening`, `codex/production-migration-idempotency`
-(already merged per git log), `antigravity/acv-mobile-pilot-hardening`.
-
-**[verified]** Working tree is dirty: `clean-restart.sh` and `start.sh` modified; untracked
-`.ua/` directory (an Understand-Anything artifact — should be gitignored).
-
-**[verified]** The local checkout has not fetched since 2026-06-11. **Run `git fetch --all`
-before trusting any branch comparison.**
-
-### ⚠️ The `hardening` branch landmine
-
-`origin/hardening` contains substantial multi-tenant isolation work (AsyncLocalStorage tenant
-context; `tenantIsolation` wired into ~33 authed route files, Socket.IO and cron; app-side
-repository scoping in `database/tenantScope.ts`; a `set_config` session-variable layer for
-Postgres RLS in `database/tenantSession.ts`). It is TypeScript-clean but **nothing was ever
-executed against a database**. It also has known unfinished items (by-ID fixes in
-`performanceController.ts`, the RLS migration itself, and an adversarial test suite).
-
-**Decision required from Chinar before Codex starts:** does the restart (a) merge and finish
-`hardening`, (b) ship `main` to Cloud Run first and treat `hardening` as a follow-on, or
-(c) abandon it? Recommendation is **(b)** — do not combine an untested security refactor with
-a platform migration; that is two variables at once and makes any failure ambiguous.
+- [ ] Signed-in login and authenticated route verified by the owner.
+- [ ] Employee PDF Preview and Download verified after PR #75.
+- [ ] Company-document Preview and Download verified after PR #75.
+- [ ] Document survives a newly deployed revision.
+- [ ] Socket.IO connects and receives an event.
+- [ ] An error appears in Cloud Logging with `severity: ERROR` and a correlation ID.
+- [ ] A Cloud SQL restore drill is demonstrated.
+- [ ] Staging PII is purged and replaced with synthetic data after the approved validation window.
 
 ---
 
-## 4. Data and PII — the constraint that governs everything
+## 4. Production (`aurahrms-prod`)
 
-**ACV Solutions is a real, onboarded, paying-relationship tenant with real employee PII.**
-`ACV-India/HRMS-MVP/ACV Implementation Data/` contains the intake corpus: appointment letters,
-offer letters, resumes, salary/increment letters, FNF statements, headcount reports, leave
-policies, and an onboarding master workbook — i.e. exactly the data a data-protection
-regulator cares about.
+**[verified 2026-08-02]** Project `aurahrms-prod` is ACTIVE with billing enabled. Production
+infrastructure exists and the public domain is live.
 
-The backend has ACV-specific production import scripts (`acv:company-documents`,
-`acv:leave-balances`, `acv:attendance`, `acv:customer-zero-cleanup`, `acv:validation-reports`),
-which means **real ACV data was imported into the production database**.
+| Resource | Observed state |
+|---|---|
+| API | revision `aurahrms-api-00003-q8b`, image tag `prod-731ae872`, direct `/health` 200 |
+| Web | revision `aurahrms-web-00001-w5t`, image tag `prod-731ae872`, direct `/` 200 |
+| Migration job | `aurahrms-migrate`; latest execution successful |
+| Cloud SQL | PostgreSQL 16, RUNNABLE, backups on, PITR on, deletion protection on |
+| Documents | `gs://aurahrms-prod-documents`, uniform access and versioning on, no public IAM binding |
+| Secrets | required secret resources exist; values were not read |
+| CI auth | WIF provider ACTIVE; no user-managed deployer service-account key was listed |
 
-Therefore:
-- Production data is **never** copied to a laptop, a scratch directory, or a shared drive.
-- Test/staging environments use synthetic or anonymised data only.
-- Any database dump is treated as a controlled artifact: encrypted at rest, deleted after use.
-- See `10-CODEX-OPERATING-RULES.md` for the hard rules.
+**[verified]** `aurahrms.com` resolves to `8.233.68.252`; apex and `www` return HTTPS 200;
+HTTP redirects to HTTPS; managed certificate `aurahrms-cert-v2` is ACTIVE and covers both
+hostnames. `https://aurahrms.com/health` returns 200.
+
+**[gap]** Production runs older application commit `731ae872`, while staging runs tested
+commit `63b32a27`. Production therefore does not yet include PRs #70–#75, including the
+authenticated document-streaming fix.
+
+**[unknown]** No agent inspection of production database rows, employee records, or document
+contents was performed or is permitted. Signed-in production workflows and the completeness
+of the ACV implementation require human validation.
 
 ---
 
-## 5. Existing GCP estate
+## 5. Security and governance gaps
 
-**[verified]** `gcloud` is installed and authenticated on this machine. Existing projects:
+- Production promotion is not encoded as a separate PR-reviewed workflow.
+- The production GitHub environment has no required reviewer protection.
+- WIF provider conditions are restricted to the GitHub repository owner, not visibly to this
+  single repository; bindings and conditions need a focused least-privilege review.
+- Runtime services use the projects' default compute service accounts rather than dedicated
+  least-privilege runtime identities.
+- Secret Manager access scope has not yet been proven per-secret.
+- Uptime, 5xx, latency, and budget alerts have not yet been evidenced.
+- Rollback revisions are identifiable, but a rollback rehearsal has not been evidenced.
+- A production restore drill has not been evidenced.
 
-```
-smyra-10271          (Smyra — live)
-acv-solutions-63915  (ACV — exists; purpose to be confirmed before reuse)
-gradient-cloud-81724 (Gradient)
-ccc-pilot-25459      (CCC pilot — the proven Cloud Run reference)
-chinar-portfolio     (portfolio — Cloud Run + LB reference)
-```
+These are tracked handover requirements. They do not authorise an agent to modify production.
 
-**There is no AuraHRMS project yet.** Per the platform standard, AuraHRMS gets its own
-projects, one per environment (`aurahrms-staging`, `aurahrms-prod`) — see
-`02-GOLDEN-PATH-SOP.md` §7. Do **not** deploy AuraHRMS into `ccc-pilot-25459` or
-`acv-solutions-63915` without an explicit decision from Chinar; `acv-solutions-63915` in
-particular may already hold unrelated ACV resources.
+---
 
-**Billing:** one central account (`01FFEC-2708FA-A00DFF`). A $300 trial was noted as expiring
-~20 Sep 2026 — **verify current billing status before assuming free headroom**, as the trial
-may since have been consumed or converted.
+## 6. Next safe sequence
+
+1. Complete the owner-led signed-in staging acceptance checks, especially document preview.
+2. Add and review a dedicated build-once/promote-by-digest production workflow.
+3. Configure a human approval gate on the GitHub `production` environment.
+4. Obtain explicit approval for the production migration and deployment.
+5. Promote the tested staging artifact, verify Cloud Run URLs, then verify the real domain.
+6. Complete owner-led ACV data validation without exposing PII to the agent.
+7. Purge real PII from staging and reseed synthetic data.
+8. Complete the operational and security handover in `13-ACV-OPERATIONS-HANDOVER.md`.

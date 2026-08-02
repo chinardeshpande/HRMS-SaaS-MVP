@@ -1,6 +1,6 @@
 # AuraHRMS — Hosting & DevOps Handover Kit
 
-**Version:** 1.0 · **Written:** 2026-07-23 · **Author:** Claude Code (Opus 4.8), from a proven
+**Version:** 1.1 · **Written:** 2026-07-23 · **State reconciled:** 2026-08-02 · **Author:** Claude Code (Opus 4.8), from a proven
 GCP Cloud Run recipe shipped on two live production apps.
 **Audience:** ChatGPT Codex (or any agent/engineer) restarting the AuraHRMS HRMS MVP with the
 ACV Solutions implementation.
@@ -26,9 +26,11 @@ and describing a DigitalOcean droplet architecture that is **no longer running**
 
 ---
 
-## 1. 🔴 Urgent finding — read before planning anything
+## 1. Current restart status
 
-**As of 2026-07-23, `aurorahr.in` is DOWN and the production host is unreachable.**
+The original 2026-07-23 finding below is retained as incident history. The current verified
+platform state is maintained in `01-CURRENT-STATE.md`: Cloud Run staging and production now
+exist, `aurahrms.com` is domain-live, and production still trails the tested staging commit.
 
 Verified from this machine:
 
@@ -74,6 +76,7 @@ This reframes the project: it is **not** "improve hosting on a running system." 
 | `10-CODEX-OPERATING-RULES.md` | **Guardrails.** What Codex may and may not do | First. Always. |
 | `11-ACCEPTANCE-CHECKLIST.md` | Definition of done + verification gates | Before claiming done |
 | `12-ACV-HUMAN-DATA-RESTORE.md` | Human-operated local ACV database and document transfer | Data restoration |
+| `13-ACV-OPERATIONS-HANDOVER.md` | ACV ownership, release, rollback, monitoring, and three-month review | Before handover |
 | `scripts/setup-gcp-pipeline.sh` | Idempotent GCP wiring (APIs, AR, WIF, IAM) | Phase 4 |
 | `scripts/human-acv-database-transfer.sh` | Guarded staging-first restore helper; human execution only | Data restoration |
 
