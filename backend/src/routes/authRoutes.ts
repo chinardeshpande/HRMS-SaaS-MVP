@@ -50,6 +50,7 @@ const handleProfilePhotoUpload = (req: Request, res: Response, next: NextFunctio
 
 // Public routes
 router.post('/login', authController.login);
+router.post('/refresh', authController.refresh);
 router.post('/forgot-password', authController.requestPasswordReset);
 router.post('/reset-password', authController.resetPassword);
 

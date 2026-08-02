@@ -1,5 +1,6 @@
 import { EntityManager, Repository } from 'typeorm';
 import { AppDataSource } from '../config/database';
+import { signRefreshToken } from './tokenService';
 import { UserInvitation, InvitationStatus } from '../models/UserInvitation';
 import { User } from '../models/User';
 import { Tenant } from '../models/Tenant';
@@ -217,14 +218,7 @@ export class InvitationService {
         { expiresIn: config.jwt.expiry }
       );
 
-      const refreshToken = jwt.sign(
-        {
-          userId: savedUser.userId,
-          tenantId: savedUser.tenantId,
-        },
-        config.jwt.secret,
-        { expiresIn: config.jwt.refreshExpiry }
-      );
+      const refreshToken = signRefreshToken(savedUser.userId, savedUser.tenantId);
 
       return {
         userId: savedUser.userId,

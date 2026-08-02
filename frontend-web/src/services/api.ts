@@ -53,7 +53,11 @@ class ApiClient {
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
         // Handle 401 errors (token expired)
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        if (
+          error.response?.status === 401 &&
+          originalRequest.url !== '/auth/refresh' &&
+          !originalRequest._retry
+        ) {
           originalRequest._retry = true;
 
           try {

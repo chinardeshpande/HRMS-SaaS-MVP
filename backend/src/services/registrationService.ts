@@ -11,6 +11,7 @@ import { config } from '../config/config';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
 import jwt, { SignOptions } from 'jsonwebtoken';
+import { signRefreshToken } from './tokenService';
 import tenantInitializationService from './tenantInitializationService';
 import logger from '../utils/logger';
 
@@ -324,16 +325,7 @@ export class RegistrationService {
         { expiresIn: config.jwt.expiry } as SignOptions
       );
 
-      const refreshTokenPayload = {
-        userId: savedUser.userId,
-        tenantId: savedTenant.tenantId,
-      };
-
-      const refreshToken = jwt.sign(
-        refreshTokenPayload,
-        config.jwt.secret,
-        { expiresIn: config.jwt.refreshExpiry } as SignOptions
-      );
+      const refreshToken = signRefreshToken(savedUser.userId, savedTenant.tenantId);
 
       return {
         tenantId: savedTenant.tenantId,

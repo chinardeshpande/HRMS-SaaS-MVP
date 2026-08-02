@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { signRefreshToken } from './tokenService';
 import { AppDataSource } from '../config/database';
 import { config } from '../config/config';
 import { User } from '../models/User';
@@ -85,14 +86,7 @@ export const createDemoSession = async (personaKey?: string) => {
     expiresIn: config.jwt.expiry,
   } as jwt.SignOptions);
 
-  const refreshToken = jwt.sign(
-    {
-      userId: user.userId,
-      tenantId: user.tenantId,
-    },
-    config.jwt.secret,
-    { expiresIn: config.jwt.refreshExpiry } as jwt.SignOptions
-  );
+  const refreshToken = signRefreshToken(user.userId, user.tenantId);
 
   user.lastLogin = new Date();
   await AppDataSource.getRepository(User).save(user);
