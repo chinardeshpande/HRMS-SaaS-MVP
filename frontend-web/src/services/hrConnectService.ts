@@ -98,32 +98,30 @@ class HRConnectService {
     };
   }
 
+  transformPost(post: any): Post {
+    return {
+      ...post,
+      authorName: post.authorName
+        || (post.author ? `${post.author.firstName} ${post.author.lastName}` : undefined)
+        || 'Unknown',
+      authorAvatar: post.authorAvatar || post.author?.profilePicture,
+      authorDepartment: post.authorDepartment || post.author?.department?.name,
+      authorDesignation: post.authorDesignation || post.author?.designation?.name,
+      title: post.title || '',
+      comments: (post.comments || []).map((comment: any) => this.transformComment(comment)),
+    };
+  }
+
   // Posts
   async getAllPosts(filters?: { visibility?: string; groupId?: string }): Promise<Post[]> {
-    console.log('🔵 Fetching posts from API...');
     const response = await api.get('/hr-connect/posts', { params: filters });
-    console.log('✅ Full API Response:', response);
-    console.log('📦 Response.data:', response.data);
-    console.log('📋 Response.data type:', typeof response.data);
 
     // API client already unwraps to { success: true, data: { posts: [], total: 0 } }
     // So response.data is { posts: [], total: 0 }
     const posts = response.data?.posts || [];
-    console.log('📝 Extracted posts array:', posts);
-    console.log('📊 Number of posts:', posts.length);
 
     // Transform backend post format to frontend format
-    const transformedPosts = posts.map((post: any) => ({
-      ...post,
-      authorName: post.author ? `${post.author.firstName} ${post.author.lastName}` : 'Unknown',
-      authorDepartment: post.author?.department?.name,
-      authorDesignation: post.author?.designation?.name,
-      title: post.title || '', // Add title field if missing
-      comments: (post.comments || []).map((comment: any) => this.transformComment(comment)),
-    }));
-
-    console.log('✨ Transformed posts:', transformedPosts);
-    return transformedPosts;
+    return posts.map((post: any) => this.transformPost(post));
   }
 
   async getPostById(postId: string): Promise<Post> {
