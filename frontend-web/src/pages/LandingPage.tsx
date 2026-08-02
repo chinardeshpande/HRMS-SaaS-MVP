@@ -71,8 +71,7 @@ const modules = [
     eyebrow: "Role-aware dashboards",
     title: "Start every day with the right priorities in view.",
     copy: "AuraHR brings workforce signals, approvals, upcoming people moments, and recent activity together—shaped around what each role needs to see and do next.",
-    image:
-      "/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png",
+    image: "/images/Product-Screenshots/latest/dashboard.png",
     points: ["Workforce overview", "Pending approvals", "Upcoming milestones"],
   },
   {
@@ -81,8 +80,7 @@ const modules = [
     eyebrow: "Everyday operations",
     title: "Turn daily attendance into a clean operating rhythm.",
     copy: "Track presence, exceptions, late arrivals, leave, and work hours from a single company view—with the controls HR teams need for mass actions, sync, and export.",
-    image:
-      "/images/Product-Screenshots/Screenshot-2026-03-26-at-10.15.14-AM.png",
+    image: "/images/Product-Screenshots/latest/attendance.png",
     points: ["Daily company view", "Exception management", "Bulk HR actions"],
   },
   {
@@ -91,8 +89,7 @@ const modules = [
     eyebrow: "Employee self-service",
     title: "Make leave balances and approvals effortless to understand.",
     copy: "Employees see their balances clearly. Managers get team context. HR can govern company-wide requests and policy outcomes without losing the human thread.",
-    image:
-      "/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.04-AM.png",
+    image: "/images/Product-Screenshots/latest/leave.png",
     points: ["Live balances", "Manager approvals", "Policy visibility"],
   },
   {
@@ -101,8 +98,7 @@ const modules = [
     eyebrow: "Growth with accountability",
     title: "Connect goals, evidence, reviews, and development.",
     copy: "Run structured cycles from goal-setting through development planning, with weighted goals, measurable KPIs, progress signals, and a visible review journey.",
-    image:
-      "/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.58-AM.png",
+    image: "/images/Product-Screenshots/latest/performance.png",
     points: ["Goals and KPIs", "Review cycles", "Development plans"],
   },
   {
@@ -111,8 +107,7 @@ const modules = [
     eyebrow: "One employee story",
     title: "Preserve the context behind every people decision.",
     copy: "Joining, probation, movements, compensation, performance, documents, and exit become one continuous, auditable employee history—not disconnected transactions.",
-    image:
-      "/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.18-AM.png",
+    image: "/images/Product-Screenshots/latest/employee-register.png",
     points: [
       "Employee 360°",
       "Timeline-led journeys",
@@ -125,9 +120,29 @@ const modules = [
     eyebrow: "A connected workplace",
     title: "Bring communication and HR service into the flow of work.",
     copy: "Give teams a shared space for announcements, conversations, groups, appointments, and helpdesk cases—without separating communication from employee context.",
-    image:
-      "/images/Product-Screenshots/Screenshot-2026-03-26-at-10.21.10-AM.png",
+    image: "/images/Product-Screenshots/latest/hr-connect.png",
     points: ["Company feed", "Contextual chat", "HR helpdesk"],
+  },
+];
+
+const capabilityStories = [
+  {
+    eyebrow: "Governed documents",
+    title: "Keep workforce evidence organized and ready.",
+    copy: "Company policies and employee records live in a structured library with ownership, verification, expiry, preview, and download controls.",
+    image: "/images/Product-Screenshots/latest/document-library.png",
+  },
+  {
+    eyebrow: "Lifecycle workflows",
+    title: "Guide every new joiner from offer to impact.",
+    copy: "Onboarding keeps candidate details, joining readiness, task ownership, documents, and day-one progress visible in one shared flow.",
+    image: "/images/Product-Screenshots/latest/onboarding.png",
+  },
+  {
+    eyebrow: "People intelligence",
+    title: "Turn HR activity into leadership clarity.",
+    copy: "Role-aware analytics bring workforce signals, trends, and operational priorities together without spreadsheet archaeology.",
+    image: "/images/Product-Screenshots/latest/analytics.png",
   },
 ];
 
@@ -277,7 +292,7 @@ export default function LandingPage() {
                 <span>app.aurahrms.com</span>
               </div>
               <img
-                src="/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png"
+                src="/images/Product-Screenshots/latest/dashboard.png"
                 alt="AuraHR role-aware dashboard"
               />
             </div>
@@ -414,6 +429,34 @@ export default function LandingPage() {
           </div>
         </section>
 
+        <section className="aura-section aura-capabilities">
+          <div className="aura-shell">
+            <div className="aura-section-heading">
+              <span>More than a system of record</span>
+              <h2>One workspace. The full people-operations story.</h2>
+              <p>
+                From workforce evidence to onboarding and leadership insight,
+                AuraHR keeps every important moment connected to the people it
+                serves.
+              </p>
+            </div>
+            <div className="aura-capability-grid">
+              {capabilityStories.map((story) => (
+                <article key={story.title}>
+                  <div className="aura-capability-screen">
+                    <img src={story.image} alt={`${story.eyebrow} in AuraHR`} />
+                  </div>
+                  <div className="aura-capability-copy">
+                    <span className="aura-eyebrow">{story.eyebrow}</span>
+                    <h3>{story.title}</h3>
+                    <p>{story.copy}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="aura-section aura-showcase">
           <div className="aura-shell aura-showcase__grid">
             <div className="aura-showcase__copy">
@@ -441,8 +484,8 @@ export default function LandingPage() {
             </div>
             <div className="aura-showcase__screen">
               <img
-                src="/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.18-AM.png"
-                alt="Employee lifecycle timeline in AuraHR"
+                src="/images/Product-Screenshots/latest/probation.png"
+                alt="Probation management journey in AuraHR"
               />
             </div>
           </div>
