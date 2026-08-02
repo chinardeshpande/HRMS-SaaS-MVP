@@ -12,6 +12,8 @@ import {
   FingerPrintIcon,
   GlobeAltIcon,
   LockClosedIcon,
+  PlayIcon,
+  ShieldCheckIcon,
   SparklesIcon,
   UserGroupIcon,
   UserPlusIcon,
@@ -278,9 +280,9 @@ export default function LandingPage() {
               </button>
               <button
                 className="aura-button aura-button--ghost"
-                onClick={() => scrollTo("product")}
+                onClick={() => scrollTo("manu")}
               >
-                Explore the platform
+                Meet Manu, our AI
               </button>
             </div>
             <div className="aura-trust-row">
@@ -345,6 +347,121 @@ export default function LandingPage() {
       </header>
 
       <main>
+        <section id="manu" className="aura-section aura-manu">
+          <div className="aura-manu__orb aura-manu__orb--one" />
+          <div className="aura-manu__orb aura-manu__orb--two" />
+          <div className="aura-shell">
+            <div className="aura-manu__hero">
+              <div className="aura-manu__copy">
+                <div className="aura-manu__identity">
+                  <img src="/images/assistant/manu-avatar.png" alt="Manu, AuraHR’s AI assistant" />
+                  <span>
+                    <b>Meet Manu</b>
+                    <small>The intelligence inside AuraHR</small>
+                  </span>
+                </div>
+                <span className="aura-eyebrow">The AI of AuraHR</span>
+                <h2>Not a chatbot beside HR.<br /><em>Intelligence inside the work.</em></h2>
+                <p>
+                  Manu understands the screen you are on, the role you hold,
+                  and the company context you are allowed to see. She helps
+                  people find answers, understand workflows, retrieve evidence,
+                  and prepare thoughtful drafts—without stepping around the
+                  controls that make HR trustworthy.
+                </p>
+                <div className="aura-manu__actions">
+                  <button className="aura-button" onClick={() => scrollTo("manu-flow")}>See how Manu helps <ArrowRightIcon /></button>
+                  <button className="aura-button aura-button--ghost" onClick={() => scrollTo("contact")}>Discuss AI-enabled HR</button>
+                </div>
+                <div className="aura-manu__trust">
+                  <span><ShieldCheckIcon /> Permission-aware</span>
+                  <span><FingerPrintIcon /> Tenant-safe</span>
+                  <span><DocumentTextIcon /> Evidence-led</span>
+                </div>
+              </div>
+              <div className="aura-manu__stage">
+                <div className="aura-manu__screen">
+                  <div className="aura-manu__screen-bar">
+                    <i /><i /><i /><span>Manu in the AuraHR workspace</span>
+                  </div>
+                  <img src="/images/Product-Screenshots/latest/manu-assistant.png" alt="Manu open inside the current AuraHR demo workspace" />
+                </div>
+                <div className="aura-manu__floating aura-manu__floating--question">
+                  <ChatBubbleLeftRightIcon />
+                  <span><b>Ask in natural language</b><small>“What needs my attention today?”</small></span>
+                </div>
+                <div className="aura-manu__floating aura-manu__floating--safe">
+                  <ShieldCheckIcon />
+                  <span><b>Safe by design</b><small>Permissions · confirmation · audit</small></span>
+                </div>
+              </div>
+            </div>
+
+            <div id="manu-flow" className="aura-manu-flow">
+              <div className="aura-manu-flow__intro">
+                <span className="aura-eyebrow">How Manu thinks with you</span>
+                <h3>From question to useful outcome—without losing control.</h3>
+              </div>
+              <div className="aura-manu-flow__path">
+                <article>
+                  <span>01</span>
+                  <div><ChatBubbleLeftRightIcon /></div>
+                  <b>Understand the moment</b>
+                  <p>Reads your question together with the current screen and conversation.</p>
+                </article>
+                <i><ArrowRightIcon /></i>
+                <article>
+                  <span>02</span>
+                  <div><UserGroupIcon /></div>
+                  <b>Respect role and context</b>
+                  <p>Uses only tenant-scoped data and knowledge your role is permitted to access.</p>
+                </article>
+                <i><ArrowRightIcon /></i>
+                <article>
+                  <span>03</span>
+                  <div><SparklesIcon /></div>
+                  <b>Answer, guide, or draft</b>
+                  <p>Explains data, opens the right journey, and prepares reviewable HR communication.</p>
+                </article>
+                <i><ArrowRightIcon /></i>
+                <article>
+                  <span>04</span>
+                  <div><ShieldCheckIcon /></div>
+                  <b>Gate sensitive action</b>
+                  <p>Record changes remain behind module permissions, evidence, confirmation, and audit.</p>
+                </article>
+              </div>
+            </div>
+
+            <div className="aura-manu__roles">
+              <article><span>For employees</span><h3>Find the right answer without finding the right menu.</h3><p>Understand leave, attendance, documents, policies, and the next step in a people journey.</p></article>
+              <article><span>For managers</span><h3>See team context before making a people decision.</h3><p>Review approvals, understand exceptions, navigate workflows, and prepare thoughtful responses.</p></article>
+              <article><span>For HR teams</span><h3>Turn operational knowledge into dependable service.</h3><p>Retrieve evidence, explain processes, draft letters and notes, and move quickly without losing governance.</p></article>
+              <article><span>For leadership</span><h3>Ask better questions of workforce information.</h3><p>Explore tenant-safe aggregates, readiness signals, and operating context with the right caveats visible.</p></article>
+            </div>
+
+            <div className="aura-manu-video">
+              <div className="aura-manu-video__poster">
+                <img src="/images/Product-Screenshots/latest/manu-assistant.png" alt="Preview frame for the future Manu walkthrough" />
+                <span><PlayIcon /></span>
+              </div>
+              <div>
+                <span className="aura-eyebrow">The next chapter</span>
+                <h3>A guided Manu walkthrough will live here.</h3>
+                <p>
+                  The section is already designed to host a concise product
+                  film: a real HR question, Manu’s reasoning path, the resulting
+                  answer or draft, and the safety gate before any sensitive
+                  action.
+                </p>
+                <div className="aura-manu-video__chapters">
+                  <span>01 · Ask</span><span>02 · Understand</span><span>03 · Assist</span><span>04 · Confirm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section id="product" className="aura-section aura-product">
           <div className="aura-shell">
             <div className="aura-section-heading">

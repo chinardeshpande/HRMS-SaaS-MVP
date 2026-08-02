@@ -589,6 +589,73 @@
 .aura-feature-card button svg {
   width: 14px;
 }
+.aura-manu {
+  position: relative;
+  overflow: hidden;
+  color: white;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(82, 215, 201, .17), transparent 25%),
+    radial-gradient(circle at 86% 14%, rgba(122, 76, 246, .32), transparent 31%),
+    linear-gradient(145deg, #071f31 0%, #102f4a 56%, #182f5a 100%);
+}
+.aura-manu__orb { position:absolute; border-radius:50%; filter:blur(8px); pointer-events:none; }
+.aura-manu__orb--one { width:360px; height:360px; right:-140px; top:320px; background:rgba(122,72,246,.13); }
+.aura-manu__orb--two { width:240px; height:240px; left:-100px; bottom:430px; background:rgba(62,190,211,.11); }
+.aura-manu__hero { display:grid; grid-template-columns:.86fr 1.14fr; gap:74px; align-items:center; }
+.aura-manu__identity { display:flex; align-items:center; gap:13px; margin-bottom:28px; }
+.aura-manu__identity img { width:68px; height:68px; object-fit:cover; border-radius:50%; border:3px solid rgba(255,255,255,.8); background:#fff; box-shadow:0 15px 38px rgba(0,0,0,.25); }
+.aura-manu__identity b,.aura-manu__identity small { display:block; }
+.aura-manu__identity b { font-size:17px; }
+.aura-manu__identity small { margin-top:3px; color:#9db7c7; font-size:10px; }
+.aura-manu .aura-eyebrow { color:#65ded0; }
+.aura-manu__copy h2 { margin:17px 0 21px; color:white; font-size:48px; line-height:1.04; letter-spacing:-.05em; }
+.aura-manu__copy h2 em { color:#ac91ff; font-style:normal; }
+.aura-manu__copy > p { color:#b6cad6; font-size:15px; line-height:1.85; }
+.aura-manu__actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:27px; }
+.aura-manu .aura-button--ghost { color:white; border-color:rgba(255,255,255,.2); background:rgba(255,255,255,.07); }
+.aura-manu__trust { display:flex; flex-wrap:wrap; gap:15px; margin-top:25px; color:#b6cad6; font-size:10px; font-weight:750; }
+.aura-manu__trust span { display:flex; align-items:center; gap:6px; }
+.aura-manu__trust svg { width:17px; color:#63dece; }
+.aura-manu__stage { position:relative; padding:34px 0; }
+.aura-manu__screen { overflow:hidden; border:7px solid rgba(255,255,255,.88); border-radius:25px; background:white; box-shadow:0 35px 90px rgba(0,0,0,.34); transform:perspective(1200px) rotateY(-2deg) rotateX(1deg); }
+.aura-manu__screen-bar { height:34px; display:flex; align-items:center; gap:6px; padding:0 13px; color:#8a98a8; background:#f7f8fb; font-size:9px; }
+.aura-manu__screen-bar i { width:7px; height:7px; border-radius:50%; background:#d9dde5; }
+.aura-manu__screen-bar span { margin-left:auto; }
+.aura-manu__screen > img { display:block; width:100%; }
+.aura-manu__floating { position:absolute; z-index:2; display:flex; align-items:center; gap:10px; padding:14px 16px; color:#17314a; border-radius:16px; background:rgba(255,255,255,.94); box-shadow:0 18px 50px rgba(0,0,0,.24); backdrop-filter:blur(18px); }
+.aura-manu__floating > svg { width:22px; color:var(--violet); }
+.aura-manu__floating b,.aura-manu__floating small { display:block; }
+.aura-manu__floating b { font-size:11px; }
+.aura-manu__floating small { margin-top:3px; color:#76879a; font-size:8px; }
+.aura-manu__floating--question { left:-30px; bottom:4px; }
+.aura-manu__floating--safe { right:-24px; top:0; }
+.aura-manu-flow { margin-top:110px; padding-top:65px; border-top:1px solid rgba(255,255,255,.1); }
+.aura-manu-flow__intro { max-width:680px; margin:0 auto 45px; text-align:center; }
+.aura-manu-flow__intro h3 { margin:15px 0 0; font-size:36px; line-height:1.12; }
+.aura-manu-flow__path { display:grid; grid-template-columns:1fr 32px 1fr 32px 1fr 32px 1fr; gap:10px; align-items:center; }
+.aura-manu-flow__path article { min-height:270px; padding:24px; border:1px solid rgba(255,255,255,.12); border-radius:21px; background:rgba(255,255,255,.06); backdrop-filter:blur(16px); }
+.aura-manu-flow__path article > span { color:#819dad; font-size:9px; font-weight:800; }
+.aura-manu-flow__path article > div { width:48px; height:48px; margin:17px 0; display:grid; place-items:center; border-radius:15px; color:white; background:linear-gradient(135deg,var(--violet),#419fe8); }
+.aura-manu-flow__path article > div svg { width:23px; }
+.aura-manu-flow__path b { display:block; font-size:14px; }
+.aura-manu-flow__path p { margin-top:9px; color:#a8bfcd; font-size:10px; line-height:1.65; }
+.aura-manu-flow__path > i { display:grid; place-items:center; color:#728fa1; }
+.aura-manu-flow__path > i svg { width:19px; }
+.aura-manu__roles { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:32px; }
+.aura-manu__roles article { padding:25px 22px; border-radius:20px; background:linear-gradient(145deg,rgba(139,104,255,.13),rgba(56,167,194,.06)); border:1px solid rgba(167,144,255,.13); }
+.aura-manu__roles span { color:#6cddcf; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.1em; }
+.aura-manu__roles h3 { margin:16px 0 10px; font-size:16px; line-height:1.35; }
+.aura-manu__roles p { color:#a8becb; font-size:10px; line-height:1.65; }
+.aura-manu-video { margin-top:75px; display:grid; grid-template-columns:1.15fr .85fr; gap:52px; align-items:center; padding:28px; border-radius:28px; color:var(--deep); background:linear-gradient(135deg,#fff,#f3efff); box-shadow:0 30px 80px rgba(0,0,0,.24); }
+.aura-manu-video__poster { position:relative; overflow:hidden; border-radius:20px; aspect-ratio:16/9; background:#dcd7f2; }
+.aura-manu-video__poster:after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent,rgba(9,29,45,.3)); }
+.aura-manu-video__poster img { width:100%; height:100%; object-fit:cover; object-position:center; }
+.aura-manu-video__poster > span { position:absolute; left:50%; top:50%; z-index:2; width:70px; height:70px; transform:translate(-50%,-50%); display:grid; place-items:center; border-radius:50%; color:white; background:linear-gradient(135deg,var(--violet),var(--sky)); box-shadow:0 15px 35px rgba(56,45,115,.28); }
+.aura-manu-video__poster svg { width:27px; margin-left:4px; }
+.aura-manu-video h3 { margin:14px 0; font-size:30px; line-height:1.12; }
+.aura-manu-video p { color:#60758a; font-size:12px; line-height:1.75; }
+.aura-manu-video__chapters { display:flex; flex-wrap:wrap; gap:7px; margin-top:19px; }
+.aura-manu-video__chapters span { padding:7px 9px; border-radius:999px; color:#6650be; background:#e9e3ff; font-size:8px; font-weight:800; }
 .aura-platform-depth {
   background:
     radial-gradient(circle at 50% 42%, rgba(107, 71, 245, 0.11), transparent 31%),
@@ -1106,6 +1173,12 @@
   font-size: 10px;
 }
 @media (max-width: 900px) {
+  .aura-manu__hero,
+  .aura-manu-video { grid-template-columns:1fr; }
+  .aura-manu-flow__path { grid-template-columns:1fr 1fr; }
+  .aura-manu-flow__path > i { display:none; }
+  .aura-manu__roles { grid-template-columns:1fr 1fr; }
+  .aura-manu__stage { margin-top:15px; }
   .aura-platform-map {
     min-height: auto;
     grid-template-columns: 1fr 1fr;
@@ -1202,6 +1275,12 @@
   }
 }
 @media (max-width: 600px) {
+  .aura-manu__copy h2 { font-size:37px; }
+  .aura-manu-flow__path,
+  .aura-manu__roles { grid-template-columns:1fr; }
+  .aura-manu__floating { position:relative; left:auto; right:auto; top:auto; bottom:auto; margin-top:10px; }
+  .aura-manu-flow { margin-top:65px; }
+  .aura-manu-video { padding:16px; }
   .aura-platform-map,
   .aura-adoption-path { grid-template-columns:1fr; }
   .aura-depth-strip { grid-template-columns:1fr; }
