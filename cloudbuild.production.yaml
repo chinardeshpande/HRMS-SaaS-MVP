@@ -1,0 +1,114 @@
+substitutions:
+  _REGION: asia-south1
+  _SOURCE_PROJECT: aurahrms-staging
+  _REPO: containers
+  _API: aurahrms-api
+  _WEB: aurahrms-web
+  _COMMIT_SHA: required
+  _API_DIGEST: required
+  _WEB_DIGEST: required
+
+steps:
+  - id: validate-tested-images
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        [[ "$_COMMIT_SHA" =~ ^[0-9a-f]{40}$$ ]]
+        [[ "$_API_DIGEST" =~ ^sha256:[0-9a-f]{64}$$ ]]
+        [[ "$_WEB_DIGEST" =~ ^sha256:[0-9a-f]{64}$$ ]]
+
+        API_SOURCE="$_REGION-docker.pkg.dev/$_SOURCE_PROJECT/$_REPO/$_API:$_COMMIT_SHA"
+        WEB_SOURCE="$_REGION-docker.pkg.dev/$_SOURCE_PROJECT/$_REPO/$_WEB:$_COMMIT_SHA"
+        test "$$(gcloud artifacts docker images describe "$$API_SOURCE" --format='value(image_summary.digest)')" = "$_API_DIGEST"
+        test "$$(gcloud artifacts docker images describe "$$WEB_SOURCE" --format='value(image_summary.digest)')" = "$_WEB_DIGEST"
+
+  - id: promote-api-image
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        SOURCE="$_REGION-docker.pkg.dev/$_SOURCE_PROJECT/$_REPO/$_API@$_API_DIGEST"
+        DEST="$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_API:release-$_COMMIT_SHA"
+        docker pull "$$SOURCE"
+        docker tag "$$SOURCE" "$$DEST"
+        docker push "$$DEST"
+
+  - id: promote-web-image
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        SOURCE="$_REGION-docker.pkg.dev/$_SOURCE_PROJECT/$_REPO/$_WEB@$_WEB_DIGEST"
+        DEST="$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_WEB:release-$_COMMIT_SHA"
+        docker pull "$$SOURCE"
+        docker tag "$$SOURCE" "$$DEST"
+        docker push "$$DEST"
+
+  - id: deploy-candidates-and-promote
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        API_IMAGE="$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_API@$_API_DIGEST"
+        WEB_IMAGE="$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_WEB@$_WEB_DIGEST"
+        current_revision() {
+          gcloud run services describe "$$1" --project="$PROJECT_ID" --region="$_REGION" --format=json \
+            | python3 -c 'import json, sys; traffic=json.load(sys.stdin)["status"]["traffic"]; print(next(item["revisionName"] for item in traffic if item.get("percent") == 100))'
+        }
+        tagged_url() {
+          gcloud run services describe "$$1" --project="$PROJECT_ID" --region="$_REGION" --format=json \
+            | python3 -c 'import json, sys; traffic=json.load(sys.stdin)["status"]["traffic"]; print(next(item["url"] for item in traffic if item.get("tag") == "candidate"))'
+        }
+
+        OLD_API="$$(current_revision "$_API")"
+        OLD_WEB="$$(current_revision "$_WEB")"
+        PROMOTION_STARTED=false
+
+        rollback() {
+          if [ "$$PROMOTION_STARTED" = true ]; then
+            gcloud run services update-traffic "$_API" --project="$PROJECT_ID" --region="$_REGION" --to-revisions="$$OLD_API=100" || true
+            gcloud run services update-traffic "$_WEB" --project="$PROJECT_ID" --region="$_REGION" --to-revisions="$$OLD_WEB=100" || true
+          fi
+        }
+        trap rollback ERR
+
+        gcloud run deploy "$_API" --project="$PROJECT_ID" --region="$_REGION" \
+          --image="$$API_IMAGE" --no-traffic --tag=candidate --quiet
+        gcloud run deploy "$_WEB" --project="$PROJECT_ID" --region="$_REGION" \
+          --image="$$WEB_IMAGE" --no-traffic --tag=candidate --quiet \
+          --update-env-vars="AURA_API_URL=https://aurahrms.com/api/v1,AURA_SOCKET_URL=https://aurahrms.com"
+
+        API_CANDIDATE_URL="$$(tagged_url "$_API")"
+        WEB_CANDIDATE_URL="$$(tagged_url "$_WEB")"
+        test -n "$$API_CANDIDATE_URL"
+        test -n "$$WEB_CANDIDATE_URL"
+        curl --fail --silent --show-error "$$API_CANDIDATE_URL/health" >/dev/null
+        curl --fail --silent --show-error "$$WEB_CANDIDATE_URL/" >/dev/null
+
+        NEW_API="$$(gcloud run services describe "$_API" --project="$PROJECT_ID" --region="$_REGION" --format='value(status.latestCreatedRevisionName)')"
+        NEW_WEB="$$(gcloud run services describe "$_WEB" --project="$PROJECT_ID" --region="$_REGION" --format='value(status.latestCreatedRevisionName)')"
+        PROMOTION_STARTED=true
+        gcloud run services update-traffic "$_API" --project="$PROJECT_ID" --region="$_REGION" --to-revisions="$$NEW_API=100"
+        gcloud run services update-traffic "$_WEB" --project="$PROJECT_ID" --region="$_REGION" --to-revisions="$$NEW_WEB=100"
+
+        API_URL="$$(gcloud run services describe "$_API" --project="$PROJECT_ID" --region="$_REGION" --format='value(status.url)')"
+        WEB_URL="$$(gcloud run services describe "$_WEB" --project="$PROJECT_ID" --region="$_REGION" --format='value(status.url)')"
+        curl --fail --silent --show-error "$$API_URL/health" >/dev/null
+        curl --fail --silent --show-error "$$WEB_URL/" >/dev/null
+        curl --fail --silent --show-error "https://aurahrms.com/health" >/dev/null
+        curl --fail --silent --show-error "https://aurahrms.com/" >/dev/null
+        trap - ERR
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1800s
