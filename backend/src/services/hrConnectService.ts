@@ -56,9 +56,8 @@ export class HRConnectService {
       });
 
       // Emit real-time event
-      const io = socketService.getIO();
-      if (io && fullPost) {
-        io.emit('new_post', fullPost);
+      if (fullPost) {
+        socketService.emitToTenant(data.tenantId, 'new_post', fullPost);
       }
     } catch (error) {
       console.error('Error broadcasting new post:', error);
@@ -160,9 +159,8 @@ export class HRConnectService {
     const fullPost = await this.getPostById(postId, tenantId);
 
     // Emit real-time event
-    const io = socketService.getIO();
-    if (io && fullPost) {
-      io.emit('post_updated', fullPost);
+    if (fullPost) {
+      socketService.emitToTenant(tenantId, 'post_updated', fullPost);
     }
 
     return updatedPost;
@@ -182,10 +180,7 @@ export class HRConnectService {
     await this.postRepo.save(post);
 
     // Emit real-time event
-    const io = socketService.getIO();
-    if (io) {
-      io.emit('post_deleted', { postId });
-    }
+    socketService.emitToTenant(tenantId, 'post_deleted', { postId });
 
     return true;
   }
@@ -239,9 +234,8 @@ export class HRConnectService {
     });
 
     // Emit real-time event
-    const io = socketService.getIO();
-    if (io && fullComment) {
-      io.emit('new_comment', {
+    if (fullComment) {
+      socketService.emitToTenant(data.tenantId, 'new_comment', {
         postId: data.postId,
         comment: fullComment,
       });
@@ -363,9 +357,8 @@ export class HRConnectService {
     });
 
     // Emit real-time event
-    const io = socketService.getIO();
-    if (io && fullReaction && data.postId) {
-      io.emit('new_reaction', {
+    if (fullReaction && data.postId) {
+      socketService.emitToTenant(data.tenantId, 'new_reaction', {
         postId: data.postId,
         reaction: fullReaction,
       });
@@ -404,9 +397,8 @@ export class HRConnectService {
     }
 
     // Emit real-time event
-    const io = socketService.getIO();
-    if (io && data.postId) {
-      io.emit('reaction_removed', {
+    if (data.postId) {
+      socketService.emitToTenant(data.tenantId, 'reaction_removed', {
         postId: data.postId,
         userId: data.userId,
       });

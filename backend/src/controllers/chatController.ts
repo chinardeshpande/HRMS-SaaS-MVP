@@ -217,10 +217,7 @@ export const sendMessage = async (req: Request, res: Response) => {
     // Broadcast the message via WebSocket to all participants in the conversation
     const io = socketService.getIO();
     if (io) {
-      console.log(`📡 Broadcasting message to conversation:${conversationId}`);
       io.to(`conversation:${conversationId}`).emit('new_message', message);
-    } else {
-      console.warn('⚠️ Socket.IO not initialized, message not broadcast');
     }
 
     res.status(201).json({
@@ -505,8 +502,6 @@ export const uploadFile = async (req: Request, res: Response) => {
       fileSize: file.size,
     };
 
-    console.log('📎 [ATTACHMENT] Created attachment object:', attachment);
-
     // Send message with attachment
     const message = await chatService.sendMessage({
       tenantId,
@@ -517,22 +512,11 @@ export const uploadFile = async (req: Request, res: Response) => {
       attachments: [attachment],
     });
 
-    console.log('✅ [SAVED] Message saved to database:', {
-      messageId: message.messageId,
-      attachments: message.attachments,
-    });
-
     // Broadcast the message via WebSocket
     const io = socketService.getIO();
     if (io) {
-      console.log('📡 [BROADCAST] Broadcasting message with attachments:', message.attachments);
       io.to(`conversation:${conversationId}`).emit('new_message', message);
     }
-
-    console.log('📤 [RESPONSE] Sending response to frontend:', {
-      messageId: message.messageId,
-      attachments: message.attachments,
-    });
 
     res.status(201).json({
       success: true,

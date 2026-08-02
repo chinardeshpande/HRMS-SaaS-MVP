@@ -16,9 +16,17 @@ interface AuthenticatedSocket extends Socket {
 export class SocketService {
   private static instance: SocketService;
   private io: SocketIOServer | null = null;
-  private userSockets: Map<string, Set<string>> = new Map(); // employeeId -> Set of socketIds
+  private userSockets: Map<string, Set<string>> = new Map(); // tenantId:employeeId -> socketIds
 
   private constructor() {}
+
+  private tenantRoom(tenantId: string): string {
+    return `tenant:${tenantId}`;
+  }
+
+  private userSocketKey(tenantId: string, employeeId: string): string {
+    return `${tenantId}:${employeeId}`;
+  }
 
   public static getInstance(): SocketService {
     if (!SocketService.instance) {
@@ -69,12 +77,16 @@ export class SocketService {
 
         const decoded = jwt.verify(token, config.jwt.secret) as JWTPayload;
 
+        if (!decoded.userId || !decoded.tenantId) {
+          return next(new Error('Authentication token is missing tenant context'));
+        }
+
         socket.userId = decoded.userId;
         socket.tenantId = decoded.tenantId;
         socket.employeeId = decoded.employeeId;
         socket.email = decoded.email;
 
-        logger.info(`🔐 Socket authenticated: ${decoded.email} (${socket.id})`);
+        logger.info('Socket authenticated');
         next();
       } catch (error) {
         logger.error('Socket authentication error:', error);
@@ -87,38 +99,29 @@ export class SocketService {
     if (!this.io) return;
 
     this.io.on('connection', (socket: AuthenticatedSocket) => {
-      console.log('🔌 [WEBSOCKET] Client connected:', {
-        socketId: socket.id,
-        email: socket.email,
-        employeeId: socket.employeeId,
-        tenantId: socket.tenantId,
-      });
-      logger.info(`🔌 Client connected: ${socket.id} (${socket.email})`);
+      if (!socket.tenantId) {
+        socket.disconnect(true);
+        return;
+      }
+
+      socket.join(this.tenantRoom(socket.tenantId));
+      logger.info('Socket connected to tenant room');
 
       // Track user's socket
       if (socket.employeeId) {
-        if (!this.userSockets.has(socket.employeeId)) {
-          this.userSockets.set(socket.employeeId, new Set());
+        const userSocketKey = this.userSocketKey(socket.tenantId, socket.employeeId);
+        if (!this.userSockets.has(userSocketKey)) {
+          this.userSockets.set(userSocketKey, new Set());
         }
-        this.userSockets.get(socket.employeeId)!.add(socket.id);
-        console.log('👤 User sockets updated:', {
-          employeeId: socket.employeeId,
-          socketCount: this.userSockets.get(socket.employeeId)!.size,
-        });
+        this.userSockets.get(userSocketKey)!.add(socket.id);
 
         // Notify online status
-        this.broadcastUserStatus(socket.employeeId, 'online');
+        this.broadcastUserStatus(socket.tenantId, socket.employeeId, 'online');
       }
 
       // Join conversation rooms
       socket.on('join_conversation', async (conversationId: string) => {
         try {
-          console.log('📥 [WEBSOCKET] Join conversation request:', {
-            conversationId,
-            email: socket.email,
-            socketId: socket.id,
-          });
-
           if (!socket.employeeId || !socket.tenantId) {
             socket.emit('error', { message: 'Not authenticated' });
             return;
@@ -136,11 +139,7 @@ export class SocketService {
           }
 
           socket.join(`conversation:${conversationId}`);
-          logger.info(`📥 ${socket.email} joined conversation: ${conversationId}`);
-
-          // Verify room membership
-          const room = this.io?.sockets.adapter.rooms.get(`conversation:${conversationId}`);
-          console.log('✅ Room joined. Members:', room ? Array.from(room) : 'none');
+          logger.info('Socket joined authorized conversation room');
 
           // Mark messages as read
           await chatService.markMessagesAsRead(conversationId, socket.employeeId, socket.tenantId);
@@ -161,7 +160,7 @@ export class SocketService {
       // Leave conversation rooms
       socket.on('leave_conversation', (conversationId: string) => {
         socket.leave(`conversation:${conversationId}`);
-        logger.info(`📤 ${socket.email} left conversation: ${conversationId}`);
+        logger.info('Socket left conversation room');
       });
 
       // Send message
@@ -172,20 +171,11 @@ export class SocketService {
         attachments?: any[];
       }) => {
         try {
-          console.log('📨 [WEBSOCKET] Received send_message event:', {
-            conversationId: data.conversationId,
-            content: data.content,
-            from: socket.email,
-            socketId: socket.id,
-          });
-
           if (!socket.employeeId || !socket.tenantId) {
-            console.error('❌ Socket not authenticated');
             socket.emit('error', { message: 'Not authenticated' });
             return;
           }
 
-          console.log('💾 Saving message to database...');
           const message = await chatService.sendMessage({
             tenantId: socket.tenantId,
             conversationId: data.conversationId,
@@ -194,33 +184,15 @@ export class SocketService {
             replyToMessageId: data.replyToMessageId,
             attachments: data.attachments,
           });
-          console.log('✅ Message saved:', message.messageId);
-
-          // BROADCAST TO ENTIRE ROOM (including sender)
-          console.log('📡 Broadcasting to ENTIRE room:', `conversation:${data.conversationId}`);
-
           if (this.io) {
-            // Emit to ALL sockets in the room
             this.io.to(`conversation:${data.conversationId}`).emit('new_message', message);
-            console.log('✅ Message broadcast to entire room');
-          } else {
-            console.error('❌ Socket.IO instance not available!');
-          }
-
-          // Log room members
-          const room = this.io?.sockets.adapter.rooms.get(`conversation:${data.conversationId}`);
-          if (room) {
-            console.log('👥 Room members count:', room.size);
-            console.log('👥 Room socket IDs:', Array.from(room));
-          } else {
-            console.warn('⚠️ No room found for conversation:', data.conversationId);
           }
 
           // Send notification to offline users
           const participants = await chatService.getParticipants(data.conversationId, socket.tenantId);
           for (const participant of participants) {
             if (participant.employeeId !== socket.employeeId) {
-              this.sendNotification(participant.employeeId, {
+              this.sendNotification(socket.tenantId, participant.employeeId, {
                 type: 'new_message',
                 conversationId: data.conversationId,
                 message,
@@ -228,7 +200,7 @@ export class SocketService {
             }
           }
 
-          logger.info(`💬 Message sent in conversation ${data.conversationId} by ${socket.email}`);
+          logger.info('Message sent in authorized conversation');
         } catch (error) {
           console.error('❌ Error sending message:', error);
           logger.error('Error sending message:', error);
@@ -317,7 +289,7 @@ export class SocketService {
         callType: 'audio' | 'video';
       }) => {
         try {
-          logger.info(`📞 Call initiated by ${socket.email} to ${data.targetEmployeeId}`);
+          logger.info('Call initiation requested');
 
           if (!socket.employeeId || !socket.tenantId) {
             socket.emit('error', { message: 'Not authenticated' });
@@ -335,7 +307,9 @@ export class SocketService {
           }
 
           // Send call offer to target user
-          const targetSocketIds = this.userSockets.get(data.targetEmployeeId);
+          const targetSocketIds = this.userSockets.get(
+            this.userSocketKey(socket.tenantId, data.targetEmployeeId)
+          );
           if (targetSocketIds && this.io) {
             for (const targetSocketId of targetSocketIds) {
               this.io.to(targetSocketId).emit('incoming_call', {
@@ -357,7 +331,7 @@ export class SocketService {
         callerId: string;
         callerSocketId: string;
       }) => {
-        logger.info(`📞 Call answered by ${socket.email}`);
+        logger.info('Call answered');
         this.io?.to(data.callerSocketId).emit('call_answered', {
           answererId: socket.employeeId,
           answererName: socket.email,
@@ -369,7 +343,7 @@ export class SocketService {
         callerId: string;
         callerSocketId: string;
       }) => {
-        logger.info(`📞 Call rejected by ${socket.email}`);
+        logger.info('Call rejected');
         this.io?.to(data.callerSocketId).emit('call_rejected', {
           rejecterId: socket.employeeId,
         });
@@ -379,7 +353,7 @@ export class SocketService {
         targetSocketId?: string;
         conversationId?: string;
       }) => {
-        logger.info(`📞 Call ended by ${socket.email}`);
+        logger.info('Call ended');
         if (data.targetSocketId) {
           this.io?.to(data.targetSocketId).emit('call_ended', {
             endedBy: socket.employeeId,
@@ -397,7 +371,7 @@ export class SocketService {
         targetSocketId: string;
         offer: any;
       }) => {
-        logger.info(`🔗 WebRTC offer from ${socket.email} to ${data.targetSocketId}`);
+        logger.info('WebRTC offer forwarded');
         this.io?.to(data.targetSocketId).emit('webrtc_offer', {
           offer: data.offer,
           senderSocketId: socket.id,
@@ -408,7 +382,7 @@ export class SocketService {
         targetSocketId: string;
         answer: any;
       }) => {
-        logger.info(`🔗 WebRTC answer from ${socket.email} to ${data.targetSocketId}`);
+        logger.info('WebRTC answer forwarded');
         this.io?.to(data.targetSocketId).emit('webrtc_answer', {
           answer: data.answer,
           senderSocketId: socket.id,
@@ -427,17 +401,18 @@ export class SocketService {
 
       // Disconnect
       socket.on('disconnect', () => {
-        logger.info(`🔌 Client disconnected: ${socket.id} (${socket.email})`);
+        logger.info('Socket disconnected');
 
         // Remove from user sockets
-        if (socket.employeeId) {
-          const userSocketSet = this.userSockets.get(socket.employeeId);
+        if (socket.employeeId && socket.tenantId) {
+          const userSocketKey = this.userSocketKey(socket.tenantId, socket.employeeId);
+          const userSocketSet = this.userSockets.get(userSocketKey);
           if (userSocketSet) {
             userSocketSet.delete(socket.id);
             if (userSocketSet.size === 0) {
-              this.userSockets.delete(socket.employeeId);
+              this.userSockets.delete(userSocketKey);
               // Notify offline status
-              this.broadcastUserStatus(socket.employeeId, 'offline');
+              this.broadcastUserStatus(socket.tenantId, socket.employeeId, 'offline');
             }
           }
         }
@@ -445,18 +420,16 @@ export class SocketService {
     });
   }
 
-  private broadcastUserStatus(employeeId: string, status: 'online' | 'offline'): void {
-    if (!this.io) return;
-
-    this.io.emit('user_status_change', {
+  private broadcastUserStatus(tenantId: string, employeeId: string, status: 'online' | 'offline'): void {
+    this.emitToTenant(tenantId, 'user_status_change', {
       employeeId,
       status,
       timestamp: new Date(),
     });
   }
 
-  private sendNotification(employeeId: string, notification: any): void {
-    const socketIds = this.userSockets.get(employeeId);
+  private sendNotification(tenantId: string, employeeId: string, notification: any): void {
+    const socketIds = this.userSockets.get(this.userSocketKey(tenantId, employeeId));
     if (socketIds && this.io) {
       for (const socketId of socketIds) {
         this.io.to(socketId).emit('notification', notification);
@@ -468,12 +441,19 @@ export class SocketService {
     return this.io;
   }
 
-  public isUserOnline(employeeId: string): boolean {
-    return this.userSockets.has(employeeId);
+  public emitToTenant(tenantId: string, event: string, payload: unknown): void {
+    this.io?.to(this.tenantRoom(tenantId)).emit(event, payload);
   }
 
-  public getOnlineUsers(): string[] {
-    return Array.from(this.userSockets.keys());
+  public isUserOnline(tenantId: string, employeeId: string): boolean {
+    return this.userSockets.has(this.userSocketKey(tenantId, employeeId));
+  }
+
+  public getOnlineUsers(tenantId: string): string[] {
+    const prefix = `${tenantId}:`;
+    return Array.from(this.userSockets.keys())
+      .filter((key) => key.startsWith(prefix))
+      .map((key) => key.slice(prefix.length));
   }
 }
 

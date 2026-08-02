@@ -94,14 +94,14 @@ export default function ModernHRConnect() {
       if (socket) {
         // New post created
         socket.on('new_post', (post: Post) => {
-          console.log('📢 New post received:', post);
-          setPosts(prev => [post, ...prev]);
+          const normalizedPost = hrConnectService.transformPost(post);
+          setPosts(prev => [normalizedPost, ...prev.filter(item => item.postId !== normalizedPost.postId)]);
         });
 
         // Post updated
         socket.on('post_updated', (updatedPost: Post) => {
-          console.log('📝 Post updated:', updatedPost);
-          setPosts(prev => prev.map(p => p.postId === updatedPost.postId ? updatedPost : p));
+          const normalizedPost = hrConnectService.transformPost(updatedPost);
+          setPosts(prev => prev.map(p => p.postId === normalizedPost.postId ? normalizedPost : p));
         });
 
         // Post deleted
