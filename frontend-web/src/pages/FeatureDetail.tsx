@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import BrandedScreenshot from '../components/landing/BrandedScreenshot';
 import { getModuleById } from '../data/modulesData';
+import './MarketingDetail.css';
 
 
 export default function FeatureDetail() {
@@ -43,7 +44,7 @@ export default function FeatureDetail() {
   };
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="aura-marketing-detail bg-white min-h-screen">
       {/* Navigation */}
       <nav className="fixed w-full bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

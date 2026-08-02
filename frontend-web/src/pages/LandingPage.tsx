@@ -1,25 +1,33 @@
 import { FormEvent, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowRightIcon,
   Bars3Icon,
+  BuildingOffice2Icon,
   ChartBarIcon,
   ChatBubbleLeftRightIcon,
   CheckCircleIcon,
   ClockIcon,
   DocumentTextIcon,
   FingerPrintIcon,
+  GlobeAltIcon,
+  LockClosedIcon,
   SparklesIcon,
   UserGroupIcon,
+  UserPlusIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { brand } from "../config/brand";
+import { adoptionJourneys } from "../data/adoptionJourneys";
+import { differentiators } from "../data/differentiators";
+import { platformPillars } from "../data/platformPillars";
 import "./LandingPage.css";
 
 const navItems = [
   ["Product tour", "modules"],
-  ["Why AuraHR", "why"],
-  ["For teams", "teams"],
+  ["Platform", "platform"],
+  ["Uniqueness", "unique"],
+  ["Ease of adoption", "adoption"],
   ["Contact", "contact"],
 ] as const;
 
@@ -148,6 +156,7 @@ const capabilityStories = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeModule, setActiveModule] = useState(modules[0]);
@@ -164,6 +173,13 @@ export default function LandingPage() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const routeState = location.state as { scrollTo?: string } | null;
+    const target = routeState?.scrollTo || location.hash.replace("#", "");
+    if (!target) return;
+    window.setTimeout(() => scrollTo(target), 100);
+  }, [location.hash, location.state]);
 
   const scrollTo = (id: string) => {
     document
@@ -362,6 +378,53 @@ export default function LandingPage() {
           </div>
         </section>
 
+        <section id="platform" className="aura-section aura-platform-depth">
+          <div className="aura-shell">
+            <div className="aura-section-heading aura-section-heading--left">
+              <span>The platform beneath the experience</span>
+              <h2>The HR foundation for a company ready to operate.</h2>
+              <p>
+                AuraHR is not a collection of disconnected forms. It brings
+                implementation, human workflows, operational depth, and
+                leadership visibility into one accountable operating layer.
+              </p>
+            </div>
+            <div className="aura-platform-map" aria-label="AuraHR platform pillars">
+              <div className="aura-platform-map__core">
+                <img src={brand.reversedMark} alt="" />
+                <strong>AuraHR</strong>
+                <span>One employee story</span>
+              </div>
+              {platformPillars.map((pillar, index) => {
+                const Icon = pillar.icon;
+                return (
+                  <button
+                    key={pillar.id}
+                    className={`aura-platform-node aura-platform-node--${index + 1}`}
+                    onClick={() => navigate(`/platform/${pillar.id}`)}
+                  >
+                    <span><Icon /></span>
+                    <b>{pillar.title}</b>
+                    <small>{pillar.description}</small>
+                    <em>Explore pillar <ArrowRightIcon /></em>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="aura-depth-strip">
+              <div>
+                <strong>A working HR operating layer</strong>
+                <span>Registration · employee records · attendance · leave · lifecycle · collaboration · reports</span>
+              </div>
+              <div>
+                {["Owner implementation console", "Role-aware workspaces", "Production-ready tenancy"].map((item) => (
+                  <span key={item}><CheckCircleIcon /> {item}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section id="modules" className="aura-section aura-modules">
           <div className="aura-shell">
             <div className="aura-section-heading aura-section-heading--left">
@@ -429,6 +492,90 @@ export default function LandingPage() {
           </div>
         </section>
 
+        <section id="unique" className="aura-section aura-unique">
+          <div className="aura-shell">
+            <div className="aura-unique__hero">
+              <div className="aura-unique__image">
+                <img
+                  src="/images/Hero-Images/hero-team-collaboration.jpg"
+                  alt="A collaborative people team at work"
+                />
+                <div className="aura-unique__quote">
+                  <SparklesIcon />
+                  <span>Built around how HR actually happens—not around software menus.</span>
+                </div>
+              </div>
+              <div className="aura-unique__copy">
+                <span className="aura-eyebrow">What makes AuraHR different</span>
+                <h2>Serious operational depth, with a genuinely human interface.</h2>
+                <p>
+                  Employees request. Managers approve. HR resolves exceptions.
+                  Leadership reviews outcomes. AuraHR gives each role the right
+                  context while preserving one connected record underneath.
+                </p>
+                <div className="aura-trust-stack">
+                  <div><FingerPrintIcon /><span><b>Authentic multi-tenancy</b><small>Company records and demo journeys remain safely separated.</small></span></div>
+                  <div><UserPlusIcon /><span><b>Role-based experience</b><small>Focused workspaces for owners, HR, managers, and employees.</small></span></div>
+                  <div><LockClosedIcon /><span><b>Trust by design</b><small>Account flows, evidence, ownership, and audit context are product-critical.</small></span></div>
+                </div>
+              </div>
+            </div>
+            <div className="aura-differentiator-grid">
+              {differentiators.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button key={item.id} onClick={() => navigate(`/differentiators/${item.id}`)}>
+                    <span><Icon /></span>
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                    <em>See why it matters <ArrowRightIcon /></em>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section id="adoption" className="aura-section aura-adoption">
+          <div className="aura-shell">
+            <div className="aura-section-heading">
+              <span>Ease of adoption</span>
+              <h2>From first visit to mature HR operations.</h2>
+              <p>
+                A clear implementation path makes adoption feel natural:
+                register, configure, migrate, operate, train safely, and scale.
+              </p>
+            </div>
+            <div className="aura-adoption-path" aria-label="AuraHR adoption journey">
+              {adoptionJourneys.map((journey, index) => {
+                const Icon = journey.icon;
+                return (
+                  <button key={journey.id} onClick={() => navigate(`/journeys/${journey.id}`)}>
+                    <span className="aura-adoption-path__number">0{index + 1}</span>
+                    <span className="aura-adoption-path__icon"><Icon /></span>
+                    <b>{journey.shortTitle}</b>
+                    <small>{journey.description}</small>
+                    <em>Open journey <ArrowRightIcon /></em>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="aura-adoption-story">
+              <div>
+                <span className="aura-eyebrow">Adoption confidence</span>
+                <h3>Train with good data. Go live with clarity.</h3>
+                <p>
+                  AuraHR’s curated demo workspace lets buyers, leaders, HR
+                  teams, managers, and employees learn complete journeys
+                  without touching live company records.
+                </p>
+                <button className="aura-button aura-button--ghost" onClick={() => navigate("/journeys/demo-and-training")}>Explore demo-led adoption <ArrowRightIcon /></button>
+              </div>
+              <img src="/images/Hero-Images/hero-employee-onboarding.jpg" alt="A new employee being welcomed by colleagues" />
+            </div>
+          </div>
+        </section>
+
         <section className="aura-section aura-capabilities">
           <div className="aura-shell">
             <div className="aura-section-heading">
@@ -453,6 +600,30 @@ export default function LandingPage() {
                   </div>
                 </article>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="aura-section aura-people-story">
+          <div className="aura-shell">
+            <div className="aura-people-story__grid">
+              <div className="aura-people-story__copy">
+                <span className="aura-eyebrow">Built for ambitious teams</span>
+                <h2>Technology that supports the people behind the work.</h2>
+                <p>
+                  Western MNCs building India GCCs, Indian SMEs
+                  professionalizing HR, and new-age teams scaling quickly all
+                  need the same thing: enough structure to inspire confidence,
+                  without losing warmth or speed.
+                </p>
+                <button className="aura-button" onClick={() => scrollTo("contact")}>Plan your AuraHR journey <ArrowRightIcon /></button>
+              </div>
+              <div className="aura-people-collage">
+                <img src="/images/Hero-Images/hero-leadership.jpg" alt="Leadership team reviewing people operations" />
+                <img src="/images/Hero-Images/hero-happy-employees.jpg" alt="Employees collaborating in a modern workplace" />
+                <div><GlobeAltIcon /><b>Global governance</b><span>Local operating clarity</span></div>
+                <div><BuildingOffice2Icon /><b>Practical adoption</b><span>Built for real HR teams</span></div>
+              </div>
             </div>
           </div>
         </section>

@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import BrandedScreenshot from '../components/landing/BrandedScreenshot';
 import { getPlatformPillarById } from '../data/platformPillars';
+import './MarketingDetail.css';
 
 export default function PlatformPillarDetail() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export default function PlatformPillarDetail() {
   const Icon = pillar.icon;
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="aura-marketing-detail min-h-screen bg-white text-gray-900">
       <nav className="fixed inset-x-0 top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4">

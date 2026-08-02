@@ -589,6 +589,143 @@
 .aura-feature-card button svg {
   width: 14px;
 }
+.aura-platform-depth {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(107, 71, 245, 0.11), transparent 31%),
+    #f7f6ff;
+}
+.aura-platform-map {
+  position: relative;
+  min-height: 610px;
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 150px 290px;
+  align-items: center;
+}
+.aura-platform-map:before,
+.aura-platform-map:after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  background: linear-gradient(90deg, transparent, rgba(108, 75, 235, 0.26), transparent);
+  transform: translate(-50%, -50%);
+}
+.aura-platform-map:before { width: 72%; height: 1px; }
+.aura-platform-map:after { width: 1px; height: 72%; }
+.aura-platform-map__core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 174px;
+  height: 174px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background: linear-gradient(135deg, var(--violet), #458eea 68%, var(--teal));
+  box-shadow: 0 28px 70px rgba(90, 57, 208, 0.3), 0 0 0 18px rgba(255,255,255,.7);
+}
+.aura-platform-map__core img { width: 50px; margin-bottom: 8px; }
+.aura-platform-map__core strong { font-size: 20px; }
+.aura-platform-map__core span { font-size: 10px; opacity: .76; margin-top: 3px; }
+.aura-platform-node {
+  position: relative;
+  z-index: 1;
+  min-height: 205px;
+  padding: 25px;
+  text-align: left;
+  border: 1px solid rgba(112, 82, 221, .14);
+  border-radius: 22px;
+  background: rgba(255,255,255,.84);
+  box-shadow: 0 22px 50px rgba(48, 38, 94, .08);
+  backdrop-filter: blur(16px);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.aura-platform-node:hover { transform: translateY(-5px); box-shadow: 0 28px 65px rgba(48,38,94,.14); }
+.aura-platform-node > span,
+.aura-differentiator-grid button > span {
+  width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
+  color: var(--violet); background: #efebff;
+}
+.aura-platform-node svg,
+.aura-differentiator-grid button > span svg { width: 23px; }
+.aura-platform-node b { display: block; margin-top: 17px; color: var(--deep); font-size: 17px; }
+.aura-platform-node small { display: block; margin-top: 8px; color: #66758c; line-height: 1.55; font-size: 11px; }
+.aura-platform-node em,
+.aura-differentiator-grid em,
+.aura-adoption-path em {
+  display: flex; align-items: center; gap: 6px; margin-top: 15px;
+  color: var(--violet); font-style: normal; font-size: 11px; font-weight: 800;
+}
+.aura-platform-node em svg,
+.aura-differentiator-grid em svg,
+.aura-adoption-path em svg { width: 13px; }
+.aura-depth-strip {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center;
+  padding: 28px 32px; border-radius: 20px; color: white;
+  background: linear-gradient(125deg, #102f4a, #173e60 60%, #1c5871);
+  box-shadow: 0 22px 55px rgba(13, 43, 67, .18);
+}
+.aura-depth-strip strong { display:block; font-size: 17px; }
+.aura-depth-strip > div:first-child span { display:block; margin-top: 7px; color: #abc2d0; font-size: 11px; line-height:1.6; }
+.aura-depth-strip > div:last-child { display:grid; gap:8px; }
+.aura-depth-strip > div:last-child span { display:flex; align-items:center; gap:8px; font-size:11px; }
+.aura-depth-strip svg { width:17px; color:#6de0ce; }
+.aura-unique { background:#fff; }
+.aura-unique__hero { display:grid; grid-template-columns: .95fr 1.05fr; gap:70px; align-items:center; }
+.aura-unique__image { position:relative; min-height:560px; }
+.aura-unique__image > img { width:100%; height:560px; object-fit:cover; border-radius:30px; box-shadow:0 30px 70px rgba(22,49,78,.19); }
+.aura-unique__image:before { content:""; position:absolute; inset:24px -22px -22px 24px; border-radius:30px; background:linear-gradient(145deg,#e5ddff,#d9f5f2); z-index:-1; }
+.aura-unique__quote { position:absolute; left:26px; right:26px; bottom:26px; display:flex; gap:12px; align-items:center; padding:18px; border-radius:18px; color:var(--deep); background:rgba(255,255,255,.91); backdrop-filter:blur(18px); font-size:12px; font-weight:750; }
+.aura-unique__quote svg { width:22px; color:var(--violet); flex:none; }
+.aura-unique__copy h2 { font-size:42px; line-height:1.08; letter-spacing:-.045em; color:var(--deep); margin:18px 0 20px; }
+.aura-unique__copy > p { color:#5f7487; line-height:1.8; font-size:15px; }
+.aura-trust-stack { display:grid; gap:13px; margin-top:28px; }
+.aura-trust-stack > div { display:flex; gap:13px; padding:15px; border:1px solid #e9e5fa; border-radius:16px; background:#fbfaff; }
+.aura-trust-stack svg { width:24px; color:var(--violet); flex:none; }
+.aura-trust-stack b,.aura-trust-stack small { display:block; }
+.aura-trust-stack b { font-size:13px; color:var(--deep); }
+.aura-trust-stack small { font-size:10px; color:#718296; margin-top:4px; }
+.aura-differentiator-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:70px; }
+.aura-differentiator-grid button { padding:28px; text-align:left; border:1px solid #e5e1f7; border-radius:22px; background:linear-gradient(145deg,#fff,#f8f6ff); transition:.25s; }
+.aura-differentiator-grid button:hover { transform:translateY(-5px); box-shadow:0 24px 55px rgba(68,49,137,.11); }
+.aura-differentiator-grid h3 { margin:20px 0 11px; font-size:18px; color:var(--deep); line-height:1.35; }
+.aura-differentiator-grid p { color:#65768a; font-size:11px; line-height:1.7; }
+.aura-adoption { background:linear-gradient(180deg,#f7f5ff,#eff7fb); overflow:hidden; }
+.aura-adoption-path { position:relative; display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-top:55px; }
+.aura-adoption-path:before { content:""; position:absolute; left:7%; right:7%; top:54px; height:2px; background:linear-gradient(90deg,var(--violet),#4aa8ea,var(--teal)); }
+.aura-adoption-path button { position:relative; z-index:1; padding:0 10px 22px; min-height:300px; border:1px solid rgba(111,77,220,.12); border-radius:22px; background:rgba(255,255,255,.8); text-align:left; box-shadow:0 18px 44px rgba(55,43,110,.07); }
+.aura-adoption-path__number { display:block; padding-top:15px; color:#9b8fc8; font-size:10px; font-weight:800; }
+.aura-adoption-path__icon { width:54px; height:54px; display:grid; place-items:center; margin:12px 0 20px; color:white; border-radius:50%; background:linear-gradient(135deg,var(--violet),#469ee7); box-shadow:0 0 0 8px #f6f4ff; }
+.aura-adoption-path__icon svg { width:25px; }
+.aura-adoption-path b { display:block; color:var(--deep); font-size:15px; }
+.aura-adoption-path small { display:block; margin-top:10px; color:#687a8c; font-size:10px; line-height:1.55; }
+.aura-adoption-story { margin-top:55px; display:grid; grid-template-columns:1fr 1fr; min-height:380px; overflow:hidden; border-radius:28px; background:white; box-shadow:0 28px 70px rgba(44,55,99,.12); }
+.aura-adoption-story > div { padding:52px; align-self:center; }
+.aura-adoption-story h3 { margin:15px 0; color:var(--deep); font-size:34px; line-height:1.1; }
+.aura-adoption-story p { color:#63788a; font-size:14px; line-height:1.8; }
+.aura-adoption-story .aura-button { margin-top:22px; }
+.aura-adoption-story > img { width:100%; height:100%; object-fit:cover; object-position:center 28%; }
+.aura-people-story { background:#fff; }
+.aura-people-story__grid { display:grid; grid-template-columns:.8fr 1.2fr; gap:70px; align-items:center; }
+.aura-people-story__copy h2 { margin:16px 0; font-size:40px; line-height:1.1; color:var(--deep); }
+.aura-people-story__copy p { color:#64788b; line-height:1.8; font-size:14px; }
+.aura-people-story__copy .aura-button { margin-top:24px; }
+.aura-people-collage { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:330px auto; gap:14px; }
+.aura-people-collage > img { width:100%; height:100%; object-fit:cover; border-radius:22px; box-shadow:0 22px 50px rgba(20,50,75,.14); }
+.aura-people-collage > img:first-child { object-position:center; }
+.aura-people-collage > div { display:flex; flex-direction:column; padding:20px; border-radius:18px; background:#f5f2ff; color:var(--deep); }
+.aura-people-collage > div:last-child { background:#eaf8f6; }
+.aura-people-collage svg { width:24px; color:var(--violet); margin-bottom:14px; }
+.aura-people-collage b { font-size:14px; }
+.aura-people-collage span { margin-top:4px; color:#6f8091; font-size:10px; }
 .aura-capabilities {
   background:
     radial-gradient(circle at 15% 5%, rgba(111, 66, 244, 0.1), transparent 30%),
@@ -969,6 +1106,22 @@
   font-size: 10px;
 }
 @media (max-width: 900px) {
+  .aura-platform-map {
+    min-height: auto;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .aura-platform-map:before,
+  .aura-platform-map:after,
+  .aura-platform-map__core { display:none; }
+  .aura-platform-node { min-height:220px; }
+  .aura-unique__hero,
+  .aura-adoption-story,
+  .aura-people-story__grid { grid-template-columns:1fr; }
+  .aura-differentiator-grid { grid-template-columns:1fr; }
+  .aura-adoption-path { grid-template-columns:repeat(3,1fr); }
+  .aura-adoption-path:before { display:none; }
+  .aura-adoption-path button { min-height:260px; }
   .aura-module-stage {
     grid-template-columns: 1fr;
   }
@@ -1049,6 +1202,15 @@
   }
 }
 @media (max-width: 600px) {
+  .aura-platform-map,
+  .aura-adoption-path { grid-template-columns:1fr; }
+  .aura-depth-strip { grid-template-columns:1fr; }
+  .aura-unique__image,
+  .aura-unique__image > img { min-height:400px; height:400px; }
+  .aura-unique__copy h2,
+  .aura-people-story__copy h2 { font-size:32px; }
+  .aura-adoption-story > div { padding:30px; }
+  .aura-people-collage { grid-template-rows:240px auto; }
   .aura-module-stage {
     padding: 22px;
   }
