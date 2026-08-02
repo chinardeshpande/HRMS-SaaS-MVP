@@ -51,6 +51,7 @@ import { uploadRoots } from './utils/uploadPaths';
 // import adminRoutes from './routes/adminRoutes';
 
 const app: Application = express();
+app.disable('etag');
 
 if (config.nodeEnv !== 'development') {
   app.set('trust proxy', 1);
@@ -210,6 +211,14 @@ app.get('/health', (req: Request, res: Response) => {
 
 // API routes
 const apiRouter = express.Router();
+
+// Authenticated API responses can contain tenant and employee data that must
+// not be reused from a browser or intermediary cache. Disabling conditional
+// API responses also keeps Axios from treating a 304 as a failed request.
+apiRouter.use((_req: Request, res: Response, next: NextFunction) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
 
 // Mount routes (uncomment as you create them)
 apiRouter.use('/auth', authRoutes);
