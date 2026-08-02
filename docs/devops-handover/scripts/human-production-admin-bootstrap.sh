@@ -30,11 +30,14 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 [[ -d "$REPO_ROOT/backend/node_modules/bcrypt" ]] || \
   die 'Backend dependencies are missing; run npm ci in backend/ first'
 
-printf 'Tenant UUID or exact subdomain (input hidden): ' >&2
+printf 'Tenant UUID, exact subdomain, or exact company name (input hidden): ' >&2
 IFS= read -r -s TENANT_SELECTOR
 printf '\n' >&2
-[[ "$TENANT_SELECTOR" =~ ^[A-Za-z0-9._-]{2,100}$ ]] || \
-  die 'Tenant selector must be a UUID or exact subdomain'
+TENANT_SELECTOR_BYTES="$(printf '%s' "$TENANT_SELECTOR" | LC_ALL=C wc -c | tr -d ' ')"
+(( TENANT_SELECTOR_BYTES >= 2 && TENANT_SELECTOR_BYTES <= 255 )) || \
+  die 'Tenant selector must be 2-255 bytes'
+TENANT_SELECTOR_BASE64="$(printf '%s' "$TENANT_SELECTOR" | base64 | tr -d '\n')"
+unset TENANT_SELECTOR
 
 printf 'Administrator email (input hidden): ' >&2
 IFS= read -r -s TARGET_EMAIL
@@ -75,7 +78,7 @@ PROXY_PID=''
 
 cleanup() {
   if [[ -n "$PROXY_PID" ]]; then kill "$PROXY_PID" 2>/dev/null || true; wait "$PROXY_PID" 2>/dev/null || true; fi
-  unset TENANT_SELECTOR TARGET_EMAIL FULL_NAME_BASE64 NEW_HASH TARGET_PASSWORD PGPASSWORD PGOPTIONS
+  unset TENANT_SELECTOR_BASE64 TARGET_EMAIL FULL_NAME_BASE64 NEW_HASH TARGET_PASSWORD PGPASSWORD PGOPTIONS
   case "$WORK_DIR" in
     /private/tmp/aurahrms-admin-bootstrap.*) rm -rf -- "$WORK_DIR" ;;
     *) printf 'Refusing to remove unexpected work directory: %s\n' "$WORK_DIR" >&2 ;;
@@ -97,15 +100,16 @@ for attempt in $(seq 1 30); do
 done
 
 PGPASSWORD="$TARGET_PASSWORD" \
-PGOPTIONS="-c aura.tenant_selector=$TENANT_SELECTOR -c aura.admin_email=$TARGET_EMAIL -c aura.admin_name_b64=$FULL_NAME_BASE64 -c aura.admin_hash=$NEW_HASH" \
+PGOPTIONS="-c aura.tenant_selector_b64=$TENANT_SELECTOR_BASE64 -c aura.admin_email=$TARGET_EMAIL -c aura.admin_name_b64=$FULL_NAME_BASE64 -c aura.admin_hash=$NEW_HASH" \
 psql --host=127.0.0.1 --port="$PROXY_PORT" --username="$DATABASE_USER" --dbname="$DATABASE" \
   --no-psqlrc --quiet --set=ON_ERROR_STOP=1 --file=- >/dev/null <<'SQL'
 BEGIN;
 CREATE TEMP TABLE bootstrap_tenant ON COMMIT DROP AS
 SELECT "tenantId" FROM tenants
 WHERE status = 'active'
-  AND (lower("tenantId"::text) = lower(current_setting('aura.tenant_selector'))
-       OR lower(coalesce(subdomain, '')) = lower(current_setting('aura.tenant_selector')));
+  AND (lower("tenantId"::text) = lower(convert_from(decode(current_setting('aura.tenant_selector_b64'), 'base64'), 'UTF8'))
+       OR lower(coalesce(subdomain, '')) = lower(convert_from(decode(current_setting('aura.tenant_selector_b64'), 'base64'), 'UTF8'))
+       OR lower("companyName") = lower(convert_from(decode(current_setting('aura.tenant_selector_b64'), 'base64'), 'UTF8')));
 
 DO $tenant_check$
 DECLARE matches integer;

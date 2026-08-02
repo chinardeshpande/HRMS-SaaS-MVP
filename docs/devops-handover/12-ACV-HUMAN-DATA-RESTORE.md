@@ -61,7 +61,7 @@ authorised production operator. Do not paste the email, password, or terminal tr
 chat. After the helper reports completion, sign in normally and record only pass/fail.
 
 If the account does not exist or is not currently an administrator, use the separately reviewed
-bootstrap/repair helper. It requires an exact active-tenant UUID or subdomain, creates or repairs
+bootstrap/repair helper. It requires an exact active-tenant UUID, subdomain, or company name; creates or repairs
 one matching account, activates it, and assigns `system_admin`. This is a privileged production
 write and must be explicitly approved before the human runs it:
 
