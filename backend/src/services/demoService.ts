@@ -15,7 +15,6 @@ export interface DemoPersona {
 }
 
 export const DEMO_TENANT_SUBDOMAIN = 'aurorahr-demo';
-export const DEMO_PASSWORD = 'Demo@12345';
 
 export const demoPersonas: DemoPersona[] = [
   {

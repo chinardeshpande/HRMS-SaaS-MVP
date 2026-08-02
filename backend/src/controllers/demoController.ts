@@ -1,11 +1,10 @@
 import { Request, Response } from 'express';
-import { createDemoSession, demoPersonas, DEMO_PASSWORD } from '../services/demoService';
+import { createDemoSession, demoPersonas } from '../services/demoService';
 
 export const getDemoPersonas = async (_req: Request, res: Response) => {
   return res.json({
     success: true,
     data: {
-      password: DEMO_PASSWORD,
       personas: demoPersonas,
     },
   });

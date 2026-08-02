@@ -22,8 +22,8 @@ export interface DemoSession {
 }
 
 class DemoService {
-  async getPersonas(): Promise<{ password: string; personas: DemoPersona[] }> {
-    const response = await api.get<{ password: string; personas: DemoPersona[] }>('/demo/personas');
+  async getPersonas(): Promise<{ personas: DemoPersona[] }> {
+    const response = await api.get<{ personas: DemoPersona[] }>('/demo/personas');
     if (!response.success || !response.data) {
       throw new Error(response.error?.message || 'Unable to load demo personas');
     }

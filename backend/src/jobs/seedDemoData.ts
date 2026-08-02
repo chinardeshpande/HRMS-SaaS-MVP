@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import bcrypt from 'bcrypt';
+import { randomBytes } from 'crypto';
 import { AppDataSource } from '../config/database';
 import { Tenant } from '../models/Tenant';
 import { Department } from '../models/Department';
@@ -26,10 +27,10 @@ import { ResignationType } from '../models/enums/ResignationType';
 import { Subscription, BillingCycle, SubscriptionPlan, SubscriptionStatus } from '../models/Subscription';
 import { OrganizationSettings } from '../models/OrganizationSettings';
 import { Role } from '../models/Role';
-import { DEMO_PASSWORD, DEMO_TENANT_SUBDOMAIN, demoPersonas } from '../services/demoService';
+import { DEMO_TENANT_SUBDOMAIN, demoPersonas } from '../services/demoService';
 import { EmploymentStatus } from '../../../shared/types';
 
-const demoCompanyName = 'AuroraHR Demo Pvt Ltd';
+const demoCompanyName = 'AuraHR Demo Pvt Ltd';
 
 const addDays = (days: number): Date => {
   const date = new Date();
@@ -265,7 +266,7 @@ const seedDemoData = async () => {
           email,
           phone: '+91 90000 00000',
           gender: firstName === 'Aditi' || firstName === 'Maya' || firstName === 'Neha' || firstName === 'Sara' || firstName === 'Isha' || firstName === 'Tara' || firstName === 'Pooja' ? 'female' : 'male',
-          address: 'Aurora Demo Business Park, Bengaluru',
+          address: 'AuraHR Demo Business Park, Bengaluru',
           departmentId: deptByName.get(departmentName)?.departmentId,
           designationId: desigByName.get(designationName)?.designationId,
           dateOfJoining: dateOnly(joiningDays),
@@ -287,7 +288,10 @@ const seedDemoData = async () => {
       }
     }
 
-    const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10);
+    // Demo access is issued only through /demo/login and /demo/switch. Give the
+    // underlying accounts an undisclosed high-entropy password so ordinary
+    // password login cannot become an alternate public access path.
+    const passwordHash = await bcrypt.hash(randomBytes(48).toString('base64url'), 10);
     const users = demoPersonas.map((persona) => {
       const employee = [...employeeByCode.values()].find((item) => item.email === persona.email);
       return userRepo.create({
@@ -305,7 +309,7 @@ const seedDemoData = async () => {
     await attendancePolicyRepo.save(
       attendancePolicyRepo.create({
         tenantId: tenant.tenantId,
-        policyName: 'Aurora Flexible Hybrid Attendance',
+        policyName: 'AuraHR Flexible Hybrid Attendance',
         standardCheckIn: '09:30:00',
         standardCheckOut: '18:30:00',
         lateGraceMinutes: 15,
@@ -516,7 +520,7 @@ const seedDemoData = async () => {
         email: 'people.demo@aurahrms.com',
         phone: '+91 80 4000 9000',
         website: 'https://aurahrms.com',
-        address: 'Aurora Demo Business Park',
+        address: 'AuraHR Demo Business Park',
         city: 'Bengaluru',
         state: 'Karnataka',
         country: 'India',
@@ -553,7 +557,6 @@ const seedDemoData = async () => {
     console.log('Demo tenant seeded successfully.');
     console.log(`Company: ${demoCompanyName}`);
     console.log(`Subdomain: ${DEMO_TENANT_SUBDOMAIN}`);
-    console.log(`Password for all demo personas: ${DEMO_PASSWORD}`);
     for (const persona of demoPersonas) {
       console.log(`${persona.label}: ${persona.email}`);
     }
