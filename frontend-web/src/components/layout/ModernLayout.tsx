@@ -6,6 +6,7 @@ import DemoJourneyPanel from '../demo/DemoJourneyPanel';
 import { filterNavItemsForRole, navigationItems, NavItemConfig } from '../../config/accessControl';
 import settingsService, { OrganizationSettings } from '../../services/settingsService';
 import { brand } from '../../config/brand';
+import { API_BASE_URL } from '../../config/runtime';
 import {
   ArrowRightStartOnRectangleIcon,
   Bars3Icon,
@@ -32,8 +33,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
   const [organizationSettings, setOrganizationSettings] = useState<OrganizationSettings | null>(null);
 
   const navigation = filterNavItemsForRole(navigationItems, user?.role);
-  const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
-  const assetBaseUrl = apiBaseUrl.replace('/api/v1', '');
+  const assetBaseUrl = API_BASE_URL.replace('/api/v1', '');
   const resolveAssetUrl = (value?: string | null) => {
     if (!value) return '';
     if (value.startsWith('http') || value.startsWith('data:')) return value;

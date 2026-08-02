@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import accountService from '../services/accountService';
 import { User } from '../types';
+import { API_BASE_URL } from '../config/runtime';
 import {
   CameraIcon,
   CheckCircleIcon,
@@ -63,8 +64,7 @@ export default function ModernEditProfile() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [notice, setNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
-  const assetBaseUrl = apiBaseUrl.replace('/api/v1', '');
+  const assetBaseUrl = API_BASE_URL.replace('/api/v1', '');
   const photoUrl = useMemo(() => {
     if (!user?.profilePhotoUrl) return '';
     return user.profilePhotoUrl.startsWith('http')

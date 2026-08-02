@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_BASE_URL } from '../config/runtime';
 
 export default function SimpleLogin() {
   const [email, setEmail] = useState('employee@acme.com');
@@ -10,8 +11,7 @@ export default function SimpleLogin() {
     setMessage('Logging in...');
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
-      const response = await fetch(`${API_URL}/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })

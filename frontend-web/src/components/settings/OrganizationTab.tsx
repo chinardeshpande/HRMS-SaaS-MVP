@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import settingsService, { OrganizationSettings } from '../../services/settingsService';
+import { API_BASE_URL } from '../../config/runtime';
 import {
   BuildingOfficeIcon,
   PhotoIcon,
@@ -103,9 +104,7 @@ export default function OrganizationTab() {
       if (!tokens) throw new Error('No authentication token');
 
       const { token } = JSON.parse(tokens);
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
-
-      const response = await fetch(`${apiUrl}/documents/upload`, {
+      const response = await fetch(`${API_BASE_URL}/documents/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
