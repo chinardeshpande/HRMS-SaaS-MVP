@@ -73,6 +73,11 @@ All identity and password prompts are hidden. Use a new unique password that has
 in chat. The helper refuses missing or ambiguous tenants and performs the repair/create operation
 in one transaction.
 
+When the production database is known to contain only one tenant but its identifier is unknown,
+enter `ONLY-TENANT`. The helper proceeds only when exactly one tenant exists, activates that
+tenant, and performs the administrator bootstrap in the same transaction. Zero or multiple
+tenants cause a complete rollback.
+
 Create a unique private work directory:
 
 ```bash
