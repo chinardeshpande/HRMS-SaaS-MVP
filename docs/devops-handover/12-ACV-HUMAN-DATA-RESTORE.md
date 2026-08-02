@@ -60,6 +60,19 @@ Type the exact confirmation phrase only after checking that the active `gcloud` 
 authorised production operator. Do not paste the email, password, or terminal transcript into
 chat. After the helper reports completion, sign in normally and record only pass/fail.
 
+If the account does not exist or is not currently an administrator, use the separately reviewed
+bootstrap/repair helper. It requires an exact active-tenant UUID or subdomain, creates or repairs
+one matching account, activates it, and assigns `system_admin`. This is a privileged production
+write and must be explicitly approved before the human runs it:
+
+```bash
+bash docs/devops-handover/scripts/human-production-admin-bootstrap.sh
+```
+
+All identity and password prompts are hidden. Use a new unique password that has never appeared
+in chat. The helper refuses missing or ambiguous tenants and performs the repair/create operation
+in one transaction.
+
 Create a unique private work directory:
 
 ```bash
