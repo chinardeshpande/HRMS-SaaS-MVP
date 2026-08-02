@@ -39,6 +39,27 @@ The local PostgreSQL defaults are `localhost:5432`, database `hrms_saas`, user `
 Override them with `AURA_LOCAL_DB_*` environment variables when necessary. Never put a password
 on a command line, in Git, in chat, or in this document.
 
+## Human-only production administrator password reset
+
+If production login is unavailable and the authorised operator chooses not to use the email
+reset flow, use the dedicated helper. Codex must prepare and review the helper but must not run
+it, provide its inputs, inspect its result in the database, or receive the password in chat.
+
+The helper accepts an email and password through hidden terminal prompts, refuses non-admin or
+inactive accounts, requires exactly one matching account, and performs the single update in a
+transaction. It does not create a user, change a role, print account data, or store credentials.
+
+Run from the repository root on the trusted workstation:
+
+```bash
+cd backend && npm ci && cd ..
+bash docs/devops-handover/scripts/human-production-admin-password-reset.sh
+```
+
+Type the exact confirmation phrase only after checking that the active `gcloud` identity is the
+authorised production operator. Do not paste the email, password, or terminal transcript into
+chat. After the helper reports completion, sign in normally and record only pass/fail.
+
 Create a unique private work directory:
 
 ```bash
