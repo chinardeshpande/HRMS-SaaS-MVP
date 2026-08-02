@@ -30,7 +30,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 [[ -d "$REPO_ROOT/backend/node_modules/bcrypt" ]] || \
   die 'Backend dependencies are missing; run npm ci in backend/ first'
 
-printf 'Tenant UUID, exact subdomain, or exact company name (input hidden): ' >&2
+printf 'Tenant UUID, exact subdomain/company name, or ONLY-TENANT (input hidden): ' >&2
 IFS= read -r -s TENANT_SELECTOR
 printf '\n' >&2
 TENANT_SELECTOR_BYTES="$(printf '%s' "$TENANT_SELECTOR" | LC_ALL=C wc -c | tr -d ' ')"
@@ -106,8 +106,8 @@ psql --host=127.0.0.1 --port="$PROXY_PORT" --username="$DATABASE_USER" --dbname=
 BEGIN;
 CREATE TEMP TABLE bootstrap_tenant ON COMMIT DROP AS
 SELECT "tenantId" FROM tenants
-WHERE status = 'active'
-  AND (lower("tenantId"::text) = lower(convert_from(decode(current_setting('aura.tenant_selector_b64'), 'base64'), 'UTF8'))
+WHERE (convert_from(decode(current_setting('aura.tenant_selector_b64'), 'base64'), 'UTF8') = 'ONLY-TENANT'
+       OR lower("tenantId"::text) = lower(convert_from(decode(current_setting('aura.tenant_selector_b64'), 'base64'), 'UTF8'))
        OR lower(coalesce(subdomain, '')) = lower(convert_from(decode(current_setting('aura.tenant_selector_b64'), 'base64'), 'UTF8'))
        OR lower("companyName") = lower(convert_from(decode(current_setting('aura.tenant_selector_b64'), 'base64'), 'UTF8')));
 
@@ -115,9 +115,13 @@ DO $tenant_check$
 DECLARE matches integer;
 BEGIN
   SELECT count(*) INTO matches FROM bootstrap_tenant;
-  IF matches <> 1 THEN RAISE EXCEPTION 'Expected exactly one active tenant; found %', matches; END IF;
+  IF matches <> 1 THEN RAISE EXCEPTION 'Expected exactly one tenant; found %', matches; END IF;
 END
 $tenant_check$;
+
+UPDATE tenants
+SET status = 'active', "updatedAt" = NOW()
+WHERE "tenantId" = (SELECT "tenantId" FROM bootstrap_tenant);
 
 CREATE TEMP TABLE bootstrap_user ON COMMIT DROP AS
 SELECT "userId" FROM users
