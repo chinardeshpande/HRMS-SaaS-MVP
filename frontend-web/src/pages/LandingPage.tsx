@@ -17,7 +17,7 @@ import { brand } from "../config/brand";
 import "./LandingPage.css";
 
 const navItems = [
-  ["Product", "product"],
+  ["Product tour", "modules"],
   ["Why AuraHR", "why"],
   ["For teams", "teams"],
   ["Contact", "contact"],
@@ -347,7 +347,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="aura-section aura-modules">
+        <section id="modules" className="aura-section aura-modules">
           <div className="aura-shell">
             <div className="aura-section-heading aura-section-heading--left">
               <span>See AuraHR at work</span>
