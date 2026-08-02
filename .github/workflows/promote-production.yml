@@ -1,0 +1,50 @@
+name: Promote tested AuraHRMS images to production
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: Tested main commit SHA
+        required: true
+        type: string
+      api_digest:
+        description: Tested staging API digest (sha256:...)
+        required: true
+        type: string
+      web_digest:
+        description: Tested staging web digest (sha256:...)
+        required: true
+        type: string
+
+concurrency:
+  group: aurahrms-production-promotion
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  promote:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOYER_SA }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Promote immutable images and verify
+        run: |
+          set -euo pipefail
+          gcloud builds submit \
+            --no-source \
+            --project="${{ vars.GCP_PROJECT_ID }}" \
+            --config=cloudbuild.production.yaml \
+            --substitutions="_REGION=${{ vars.GCP_REGION }},_COMMIT_SHA=${{ inputs.commit_sha }},_API_DIGEST=${{ inputs.api_digest }},_WEB_DIGEST=${{ inputs.web_digest }}"
