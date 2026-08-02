@@ -1,4 +1,5 @@
 import api from './api';
+import { API_BASE_URL } from '../config/runtime';
 
 export type CompanyDocumentCategory =
   | 'incorporation_identity'
@@ -114,7 +115,7 @@ class CompanyDocumentService {
   }
 
   async getBlob(document: CompanyDocument): Promise<Blob> {
-    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+    const apiBase = API_BASE_URL;
     const tokens = localStorage.getItem('tokens');
     const headers: HeadersInit = {};
     if (tokens) {

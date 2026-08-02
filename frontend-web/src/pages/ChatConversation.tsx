@@ -7,6 +7,7 @@ import chatService, { ChatMessage } from '../services/chatService';
 import socketService from '../services/socketService';
 import calendarService from '../services/calendarService';
 import { digitalLibraryService } from '../services/digitalLibraryService';
+import { API_BASE_URL, API_ORIGIN } from '../config/runtime';
 import {
   PaperAirplaneIcon,
   PaperClipIcon,
@@ -19,8 +20,6 @@ import {
   ArrowDownTrayIcon,
   CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
-
-const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1').replace(/\/api\/v1\/?$/, '');
 
 const buildAssetUrl = (fileUrl?: string) => {
   if (!fileUrl) return '';
@@ -500,7 +499,7 @@ export default function ChatConversation() {
         if (!tokens) throw new Error('No authentication token');
 
         const { token } = JSON.parse(tokens);
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+        const apiUrl = API_BASE_URL;
 
         console.log('📤 Uploading file to:', `${apiUrl}/chat/conversations/${conversationId}/upload`);
 

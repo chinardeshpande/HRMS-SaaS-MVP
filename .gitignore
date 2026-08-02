@@ -40,3 +40,4 @@ docker-compose.override.yml
 *.tar.gz
 *.sql
 *.sh
+!docker/nginx/20-runtime-config.sh

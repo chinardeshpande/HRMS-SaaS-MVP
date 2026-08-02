@@ -6,7 +6,6 @@ substitutions:
   _JOB: aurahrms-migrate
   _SQL_INSTANCE: aurahrms-pg
   _TAG: latest
-  _APP_ENV: staging
   _API_MIN_INSTANCES: "0"
   _WEB_MIN_INSTANCES: "0"
 
@@ -97,20 +96,13 @@ steps:
 
   - id: build-web
     name: gcr.io/cloud-builders/docker
-    entrypoint: bash
     args:
-      - -c
-      - |
-        set -euo pipefail
-        API_URL="$$(cat /workspace/.aurahrms-api-url)"
-        test -n "$$API_URL"
-        docker build \
-          -f Dockerfile.web \
-          --build-arg "VITE_API_URL=$$API_URL/api/v1" \
-          --build-arg "VITE_SOCKET_URL=$$API_URL" \
-          --build-arg "VITE_APP_ENV=$_APP_ENV" \
-          -t "$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_WEB:$_TAG" \
-          .
+      - build
+      - -f
+      - Dockerfile.web
+      - -t
+      - $_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_WEB:$_TAG
+      - .
 
   - id: push-web
     name: gcr.io/cloud-builders/docker
@@ -126,6 +118,8 @@ steps:
       - |
         set -euo pipefail
         RUNTIME_SA="$PROJECT_NUMBER-compute@developer.gserviceaccount.com"
+        API_URL="$$(cat /workspace/.aurahrms-api-url)"
+        test -n "$$API_URL"
         gcloud run deploy "$_WEB" \
           --project="$PROJECT_ID" \
           --image="$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_WEB:$_TAG" \
@@ -138,7 +132,8 @@ steps:
           --min-instances="$_WEB_MIN_INSTANCES" \
           --max-instances=4 \
           --concurrency=200 \
-          --service-account="$$RUNTIME_SA"
+          --service-account="$$RUNTIME_SA" \
+          --set-env-vars="AURA_API_URL=$$API_URL/api/v1,AURA_SOCKET_URL=$$API_URL"
 
   - id: allow-web-origin
     name: gcr.io/google.com/cloudsdktool/cloud-sdk
