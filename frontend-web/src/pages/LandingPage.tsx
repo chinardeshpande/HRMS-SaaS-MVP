@@ -854,17 +854,11 @@ export default function LandingPage() {
               <p>Our guided film will bring the product, Manu and the real HR moments between joining and exit into one concise journey.</p>
             </div>
             <div className="aura-video-stage">
-              <div className="aura-video-poster">
-                <img src="/images/Product-Screenshots/latest/dashboard.png" alt="AuraHR dashboard prepared for the product walkthrough" />
-                <div className="aura-video-poster__wash" />
-                <img className="aura-video-manu" src="/images/assistant/manu-avatar.png" alt="" />
-                <div className="aura-video-title">
-                  <span>Coming next</span>
-                  <h3>The AuraHR walkthrough film</h3>
-                  <p>Product clarity, people journeys and Manu—told as one story.</p>
-                  <button onClick={() => scrollTo("contact")}><span className="aura-play-symbol">▶</span> Request a live walkthrough</button>
-                </div>
-              </div>
+              <video className="aura-walkthrough-video" controls preload="metadata" poster="/brand/aura/aura-social-card.png">
+                <source src="/videos/aurahr-product-walkthrough.mp4" type="video/mp4" />
+                <track kind="captions" src="/videos/aurahr-product-walkthrough.vtt" srcLang="en" label="English" default />
+                Your browser does not support embedded video.
+              </video>
               <div className="aura-video-chapters" aria-label="Walkthrough chapters">
                 <button onClick={() => scrollTo("modules")}><span>01</span><b>Meet the workspace</b><small>Role-aware clarity</small></button>
                 <button onClick={() => showModule("lifecycle")}><span>02</span><b>Follow the journey</b><small>Joining to exit</small></button>

@@ -510,16 +510,7 @@
 .aura-walkthrough__heading h2 { max-width: 760px; margin: 15px 0 0; color: var(--deep); font-size: clamp(38px, 4.8vw, 66px); line-height: 1.03; letter-spacing: -.055em; }
 .aura-walkthrough__heading > p { color: #617c90; font-size: 15px; line-height: 1.75; }
 .aura-video-stage { overflow: hidden; border: 1px solid rgba(117,69,245,.14); border-radius: 28px; background: #fff; box-shadow: 0 28px 70px rgba(54,68,125,.14); }
-.aura-video-poster { position: relative; min-height: 510px; overflow: hidden; background: #111d3a; }
-.aura-video-poster > img:first-child { width: 100%; height: 510px; object-fit: cover; object-position: top; opacity: .42; filter: saturate(.78); }
-.aura-video-poster__wash { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(8,19,48,.97) 0%, rgba(20,35,79,.84) 48%, rgba(81,45,177,.3)); }
-.aura-video-manu { position: absolute; right: 4%; bottom: -48px; height: 490px; filter: drop-shadow(0 30px 45px rgba(1,8,30,.42)); }
-.aura-video-title { position: absolute; z-index: 2; top: 50%; left: 7%; max-width: 510px; transform: translateY(-50%); color: #fff; }
-.aura-video-title > span { color: #71e2db; font-size: 11px; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
-.aura-video-title h3 { margin: 13px 0; color: #fff; font-size: 45px; line-height: 1.04; letter-spacing: -.045em; }
-.aura-video-title p { color: rgba(255,255,255,.74); font-size: 15px; line-height: 1.7; }
-.aura-video-title button { display: inline-flex; align-items: center; gap: 10px; margin-top: 25px; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; background: rgba(255,255,255,.13); padding: 10px 16px 10px 10px; color: #fff; font-size: 12px; font-weight: 750; backdrop-filter: blur(12px); }
-.aura-play-symbol { display: grid; width: 31px; height: 31px; place-items: center; border-radius: 50%; background: #fff; color: var(--violet); font-size: 10px; }
+.aura-walkthrough-video { display: block; width: 100%; aspect-ratio: 16/9; background: #101b3b; object-fit: contain; }
 .aura-video-chapters { display: grid; grid-template-columns: repeat(4,1fr); }
 .aura-video-chapters button { position: relative; display: grid; gap: 5px; border: 0; border-right: 1px solid #e6e8f2; background: #fff; padding: 21px 24px; text-align: left; transition: background .2s; }
 .aura-video-chapters button:last-child { border-right: 0; }
@@ -1607,11 +1598,6 @@
   .aura-brand-story p { font-size: 11px; }
   .aura-brand-story b { margin-top: 8px; font-size: 11px; }
   .aura-walkthrough__heading { grid-template-columns: 1fr; gap: 18px; }
-  .aura-video-poster { min-height: 480px; }
-  .aura-video-poster > img:first-child { height: 480px; }
-  .aura-video-title { top: 42%; right: 24px; left: 24px; }
-  .aura-video-title h3 { font-size: 34px; }
-  .aura-video-manu { right: -60px; bottom: -85px; height: 330px; opacity: .9; }
   .aura-video-chapters { grid-template-columns: 1fr 1fr; }
   .aura-video-chapters button { border-bottom: 1px solid #e6e8f2; }
   .aura-browser {
