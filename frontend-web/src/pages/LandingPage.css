@@ -503,14 +503,11 @@
   padding: 28px 0 34px;
 }
 .aura-walkthrough__heading {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  align-items: center;
-  gap: 44px;
-  margin-bottom: 18px;
+  display: block;
+  margin-bottom: 14px;
 }
-.aura-walkthrough__heading h2 { margin: 8px 0 0; color: var(--deep); font-size: clamp(20px, 1.45vw, 27px); line-height: 1.15; letter-spacing: -.025em; white-space: nowrap; }
-.aura-walkthrough__heading > p { margin: 0; color: #617c90; font-size: 13px; line-height: 1.55; }
+.aura-section.aura-walkthrough .aura-walkthrough__heading h2 { margin: 6px 0 0; color: var(--deep); font-size: 22px; line-height: 1.2; letter-spacing: -.015em; white-space: nowrap; }
+.aura-walkthrough__heading > p { max-width: 720px; margin: 5px 0 0; color: #617c90; font-size: 11px; line-height: 1.45; }
 .aura-video-stage { overflow: hidden; border: 1px solid rgba(117,69,245,.14); border-radius: 28px; background: #fff; box-shadow: 0 28px 70px rgba(54,68,125,.14); }
 .aura-walkthrough-video { display: block; width: 100%; height: clamp(390px, calc(100svh - 340px), 664px); background: #101b3b; object-fit: contain; }
 .aura-video-chapters { display: grid; grid-template-columns: repeat(4,1fr); }
@@ -1437,7 +1434,7 @@
 }
 @media (max-width: 1080px) {
   .aura-walkthrough__heading { grid-template-columns: 1fr; gap: 10px; }
-  .aura-walkthrough__heading h2 { white-space: normal; }
+  .aura-section.aura-walkthrough .aura-walkthrough__heading h2 { white-space: normal; }
   .aura-modules__title { white-space: normal; }
   .aura-platform-map {
     min-height: auto;
