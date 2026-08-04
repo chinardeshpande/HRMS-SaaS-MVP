@@ -236,8 +236,184 @@
 }
 .aura-product-stage {
   position: relative;
-  padding: 30px 0;
+  min-height: 520px;
+  padding: 30px 0 58px;
 }
+.aura-hero-carousel {
+  position: relative;
+  height: 430px;
+  border-radius: 28px;
+}
+.aura-hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px) scale(.985);
+  transition: opacity .65s ease, transform .65s ease, visibility .65s;
+  pointer-events: none;
+}
+.aura-hero-slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  pointer-events: auto;
+  z-index: 2;
+}
+.aura-hero-slide--product {
+  display: grid;
+  align-items: center;
+}
+.aura-hero-slide--manu,
+.aura-hero-slide--people {
+  overflow: hidden;
+  border: 1px solid rgba(117, 69, 245, .13);
+  border-radius: 28px;
+  box-shadow: 0 35px 80px rgba(88, 64, 170, .22);
+}
+.aura-hero-slide--manu {
+  background:
+    radial-gradient(circle at 78% 34%, rgba(50, 202, 213, .4), transparent 25%),
+    radial-gradient(circle at 65% 85%, rgba(132, 86, 248, .5), transparent 42%),
+    linear-gradient(135deg, #0f2443 0%, #1b2864 50%, #6036c9 100%);
+  color: #fff;
+}
+.aura-manu-copy {
+  position: relative;
+  z-index: 4;
+  width: 52%;
+  padding: 54px 0 0 46px;
+}
+.aura-manu-copy > span,
+.aura-people-overlay > span {
+  color: #74e4da;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.aura-manu-copy h2,
+.aura-people-overlay h2 {
+  margin: 10px 0 12px;
+  color: #fff;
+  font-size: 42px;
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+.aura-manu-copy p {
+  max-width: 300px;
+  color: rgba(255,255,255,.76);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.aura-manu-copy button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 22px;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 999px;
+  background: rgba(255,255,255,.12);
+  padding: 10px 15px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 750;
+}
+.aura-manu-copy button svg { width: 16px; }
+.aura-manu-halo {
+  position: absolute;
+  right: 18px;
+  bottom: -90px;
+  width: 390px;
+  height: 390px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 50%;
+  box-shadow: 0 0 0 45px rgba(255,255,255,.035), 0 0 0 90px rgba(255,255,255,.025);
+}
+.aura-manu-portrait {
+  position: absolute;
+  z-index: 3;
+  right: 12px;
+  bottom: -18px;
+  height: 425px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 28px 34px rgba(3, 12, 38, .35));
+}
+.aura-manu-thought {
+  position: absolute;
+  z-index: 5;
+  right: 18px;
+  top: 22px;
+  display: flex;
+  gap: 8px;
+  width: 245px;
+  border: 1px solid rgba(255,255,255,.4);
+  border-radius: 16px;
+  background: rgba(255,255,255,.91);
+  box-shadow: 0 16px 35px rgba(4, 17, 55, .25);
+  padding: 12px;
+  color: #34536d;
+  font-size: 10px;
+  line-height: 1.45;
+}
+.aura-manu-thought svg { width: 17px; flex: none; color: #7750ef; }
+.aura-manu-thought b { display: block; color: var(--navy); }
+.aura-hero-slide--people > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.aura-hero-slide--people:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(9, 30, 58, .88), rgba(9, 30, 58, .24) 70%, rgba(9, 30, 58, .05));
+}
+.aura-people-overlay {
+  position: absolute;
+  z-index: 2;
+  left: 42px;
+  bottom: 38px;
+  max-width: 390px;
+}
+.aura-people-overlay h2 { font-size: 34px; line-height: 1.08; }
+.aura-people-overlay p { color: rgba(255,255,255,.78); font-size: 13px; }
+.aura-carousel-controls {
+  position: absolute;
+  z-index: 6;
+  right: 0;
+  bottom: 2px;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+}
+.aura-carousel-controls > button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(18, 59, 93, .14);
+  border-radius: 50%;
+  background: rgba(255,255,255,.84);
+  color: var(--navy);
+}
+.aura-carousel-controls > button svg { width: 16px; }
+.aura-carousel-dots { display: flex; align-items: center; gap: 7px; }
+.aura-carousel-dots button {
+  width: 8px;
+  height: 8px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 99px;
+  background: rgba(18, 59, 93, .2);
+  padding: 0;
+  transition: width .25s, background .25s;
+}
+.aura-carousel-dots button.is-active { width: 28px; background: linear-gradient(90deg, var(--purple), var(--sky)); }
+.aura-carousel-dots span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .aura-stage__glow {
   position: absolute;
   inset: 5% -8%;
@@ -1294,8 +1470,17 @@
     display: grid;
   }
   .aura-product-stage {
-    padding: 30px 8px;
+    min-height: 430px;
+    padding: 20px 2px 52px;
   }
+  .aura-hero-carousel { height: 350px; }
+  .aura-manu-copy { width: 65%; padding: 28px 0 0 24px; }
+  .aura-manu-copy h2 { font-size: 34px; }
+  .aura-manu-copy p { font-size: 12px; }
+  .aura-manu-portrait { right: -55px; height: 335px; }
+  .aura-manu-thought { display: none; }
+  .aura-people-overlay { left: 24px; right: 24px; bottom: 28px; }
+  .aura-people-overlay h2 { font-size: 29px; }
   .aura-browser {
     transform: none;
   }

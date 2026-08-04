@@ -7,6 +7,8 @@ import {
   ChartBarIcon,
   ChatBubbleLeftRightIcon,
   CheckCircleIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   ClockIcon,
   DocumentTextIcon,
   FingerPrintIcon,
@@ -179,6 +181,8 @@ export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeModule, setActiveModule] = useState(modules[0]);
+  const [heroSlide, setHeroSlide] = useState(0);
+  const [heroPaused, setHeroPaused] = useState(false);
   const [contact, setContact] = useState({
     name: "",
     company: "",
@@ -199,6 +203,12 @@ export default function LandingPage() {
     if (!target) return;
     window.setTimeout(() => scrollTo(target), 100);
   }, [location.hash, location.state]);
+
+  useEffect(() => {
+    if (heroPaused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const timer = window.setInterval(() => setHeroSlide((slide) => (slide + 1) % 3), 6500);
+    return () => window.clearInterval(timer);
+  }, [heroPaused]);
 
   const scrollTo = (id: string) => {
     document
@@ -320,42 +330,56 @@ export default function LandingPage() {
               </span>
             </div>
           </div>
-          <div
-            className="aura-product-stage"
-            aria-label="AuraHR product preview"
-          >
+          <div className="aura-product-stage" aria-roledescription="carousel" aria-label="AuraHR highlights" onMouseEnter={() => setHeroPaused(true)} onMouseLeave={() => setHeroPaused(false)}>
             <div className="aura-stage__glow" />
-            <div className="aura-browser">
-              <div className="aura-browser__bar">
-                <i />
-                <i />
-                <i />
-                <span>app.aurahrms.com</span>
+            <div className="aura-hero-carousel">
+              <div className={`aura-hero-slide aura-hero-slide--product ${heroSlide === 0 ? "is-active" : ""}`} aria-hidden={heroSlide !== 0}>
+                <div className="aura-browser">
+                  <div className="aura-browser__bar">
+                    <i /><i /><i /><span>app.aurahrms.com</span>
+                  </div>
+                  <img src="/images/Product-Screenshots/latest/dashboard.png" alt="AuraHR role-aware dashboard" />
+                </div>
+                <div className="aura-float-card aura-float-card--top">
+                  <span className="aura-float-icon"><CheckCircleIcon /></span>
+                  <div><b>Lifecycle complete</b><small>Probation milestone recorded</small></div>
+                </div>
+                <div className="aura-float-card aura-float-card--bottom">
+                  <span className="aura-avatars"><i>A</i><i>R</i><i>S</i></span>
+                  <div><b>One connected team</b><small>HR · Managers · Employees</small></div>
+                </div>
               </div>
-              <img
-                src="/images/Product-Screenshots/latest/dashboard.png"
-                alt="AuraHR role-aware dashboard"
-              />
+
+              <div className={`aura-hero-slide aura-hero-slide--manu ${heroSlide === 1 ? "is-active" : ""}`} aria-hidden={heroSlide !== 1}>
+                <div className="aura-manu-copy">
+                  <span>The AI of AuraHR</span>
+                  <h2>Meet Manu.</h2>
+                  <p>Context-aware help, thoughtful drafts and trusted answers—inside the work.</p>
+                  <button onClick={() => showModule("manu")}>Discover Manu <ArrowRightIcon /></button>
+                </div>
+                <div className="aura-manu-halo" />
+                <img className="aura-manu-portrait" src="/images/assistant/manu-avatar.png" alt="Manu, the AuraHR AI assistant" />
+                <div className="aura-manu-thought"><SparklesIcon /><span><b>Good morning.</b> I found three probation reviews that need attention.</span></div>
+              </div>
+
+              <div className={`aura-hero-slide aura-hero-slide--people ${heroSlide === 2 ? "is-active" : ""}`} aria-hidden={heroSlide !== 2}>
+                <img src="/images/Hero-Images/aura-people-team-v2.jpg" alt="An Indian people operations team collaborating" />
+                <div className="aura-people-overlay">
+                  <span>Designed around people</span>
+                  <h2>Serious HR. A genuinely human experience.</h2>
+                  <p>Clear for employees, managers, HR teams and leadership.</p>
+                </div>
+              </div>
             </div>
-            <div className="aura-float-card aura-float-card--top">
-              <span className="aura-float-icon">
-                <CheckCircleIcon />
-              </span>
-              <div>
-                <b>Lifecycle complete</b>
-                <small>Probation milestone recorded</small>
+
+            <div className="aura-carousel-controls">
+              <button aria-label="Previous highlight" onClick={() => { setHeroPaused(true); setHeroSlide((heroSlide + 2) % 3); }}><ChevronLeftIcon /></button>
+              <div className="aura-carousel-dots" role="tablist" aria-label="Choose highlight">
+                {["Product", "Manu", "People"].map((label, index) => (
+                  <button key={label} role="tab" aria-label={label} aria-selected={heroSlide === index} className={heroSlide === index ? "is-active" : ""} onClick={() => { setHeroPaused(true); setHeroSlide(index); }}><span>{label}</span></button>
+                ))}
               </div>
-            </div>
-            <div className="aura-float-card aura-float-card--bottom">
-              <span className="aura-avatars">
-                <i>A</i>
-                <i>R</i>
-                <i>S</i>
-              </span>
-              <div>
-                <b>One connected team</b>
-                <small>HR · Managers · Employees</small>
-              </div>
+              <button aria-label="Next highlight" onClick={() => { setHeroPaused(true); setHeroSlide((heroSlide + 1) % 3); }}><ChevronRightIcon /></button>
             </div>
           </div>
         </div>
