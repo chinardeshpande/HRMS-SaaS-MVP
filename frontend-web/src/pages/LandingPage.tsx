@@ -542,11 +542,11 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="modules" className="aura-section aura-modules">
-          <div className="aura-shell">
+        <section className="aura-section aura-modules">
+          <div id="modules" className="aura-shell aura-modules__content">
             <div className="aura-section-heading aura-section-heading--left">
               <span>See AuraHR at work</span>
-              <h2>Designed around real HR moments.</h2>
+              <h2 className="aura-modules__title">Designed around real HR moments.</h2>
               <p>
                 Explore the connected modules that turn day-to-day people
                 operations into calm, accountable journeys.
