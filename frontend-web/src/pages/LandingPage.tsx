@@ -176,6 +176,41 @@ const capabilityStories = [
   },
 ];
 
+const walkthroughFilms = [
+  {
+    id: 'overview',
+    number: '01',
+    title: 'AuraHR in one story',
+    subtitle: 'The product promise',
+    source: '/videos/aurahr-overview.mp4',
+    captions: '/videos/aurahr-overview.vtt',
+  },
+  {
+    id: 'new-joiner',
+    number: '02',
+    title: 'A new joiner journey',
+    subtitle: 'Offer to confidence',
+    source: '/videos/aurahr-new-joiner-journey.mp4',
+    captions: '/videos/aurahr-new-joiner-journey.vtt',
+  },
+  {
+    id: 'manager',
+    number: '03',
+    title: 'A manager’s working day',
+    subtitle: 'Moments that need attention',
+    source: '/videos/aurahr-manager-journey.mp4',
+    captions: '/videos/aurahr-manager-journey.vtt',
+  },
+  {
+    id: 'manu',
+    number: '04',
+    title: 'Working with Manu',
+    subtitle: 'AI with visible guardrails',
+    source: '/videos/aurahr-manu-journey.mp4',
+    captions: '/videos/aurahr-manu-journey.vtt',
+  },
+] as const;
+
 export default function LandingPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -184,6 +219,7 @@ export default function LandingPage() {
   const [activeModule, setActiveModule] = useState(modules[0]);
   const [heroSlide, setHeroSlide] = useState(0);
   const [heroPaused, setHeroPaused] = useState(false);
+  const [activeWalkthrough, setActiveWalkthrough] = useState(walkthroughFilms[0]);
   const [contact, setContact] = useState({
     name: "",
     company: "",
@@ -854,16 +890,17 @@ export default function LandingPage() {
               <p>Our guided film will bring the product, Manu and the real HR moments between joining and exit into one concise journey.</p>
             </div>
             <div className="aura-video-stage">
-              <video className="aura-walkthrough-video" controls preload="metadata" poster="/brand/aura/aura-social-card.png">
-                <source src="/videos/aurahr-product-walkthrough.mp4" type="video/mp4" />
-                <track kind="captions" src="/videos/aurahr-product-walkthrough.vtt" srcLang="en" label="English" default />
+              <video key={activeWalkthrough.id} className="aura-walkthrough-video" controls preload="metadata" poster="/brand/aura/aura-social-card.png">
+                <source src={activeWalkthrough.source} type="video/mp4" />
+                <track kind="captions" src={activeWalkthrough.captions} srcLang="en" label="English" default />
                 Your browser does not support embedded video.
               </video>
-              <div className="aura-video-chapters" aria-label="Walkthrough chapters">
-                <button onClick={() => scrollTo("modules")}><span>01</span><b>Meet the workspace</b><small>Role-aware clarity</small></button>
-                <button onClick={() => showModule("lifecycle")}><span>02</span><b>Follow the journey</b><small>Joining to exit</small></button>
-                <button onClick={() => showModule("manu")}><span>03</span><b>Work with Manu</b><small>AI inside HR</small></button>
-                <button onClick={() => scrollTo("platform")}><span>04</span><b>See the foundation</b><small>Governance and trust</small></button>
+              <div className="aura-video-chapters" aria-label="Choose a walkthrough film">
+                {walkthroughFilms.map((film) => (
+                  <button key={film.id} className={activeWalkthrough.id === film.id ? 'is-active' : ''} onClick={() => setActiveWalkthrough(film)}>
+                    <span>{film.number}</span><b>{film.title}</b><small>{film.subtitle}</small>
+                  </button>
+                ))}
               </div>
             </div>
           </div>

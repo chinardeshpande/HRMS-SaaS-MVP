@@ -1,0 +1,11 @@
+Maya is looking at her HR workspace and asks a simple question: “What needs my attention?”
+
+Manu understands the screen, Maya’s role, and the company context she is allowed to see.
+
+She can explain a workflow, retrieve trusted evidence, summarize a workforce signal, or prepare a thoughtful draft. Her answer stays connected to the work—not floating beside it as a generic chatbot.
+
+When an action carries risk, Manu does not quietly take control. She shows the proposed step, its scope, and the guardrails. A human remains responsible for the decision.
+
+That makes Manu useful without making HR careless.
+
+Manu is the AI of Aura... H R: permission-aware, tenant-safe, evidence-led, and designed to strengthen human judgement.
