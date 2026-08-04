@@ -28,27 +28,32 @@ const navItems = [
   ["Platform", "platform"],
   ["Uniqueness", "unique"],
   ["Ease of adoption", "adoption"],
+  ["Who it’s for", "people"],
   ["Contact", "contact"],
 ] as const;
 
 const features = [
   {
     icon: UserGroupIcon,
+    route: "/features/employee-management",
     title: "One employee story",
     copy: "A living record for every person—from joining and probation to performance, documents, mobility, and exit.",
   },
   {
     icon: ClockIcon,
+    route: "/features/attendance",
     title: "Everyday work, simplified",
     copy: "Attendance, leave, approvals, and exceptions designed around the way Indian teams actually operate.",
   },
   {
     icon: ChatBubbleLeftRightIcon,
+    route: "/features/hr-connect",
     title: "HR that stays connected",
     copy: "Announcements, conversations, helpdesk requests, and people moments in one familiar workspace.",
   },
   {
     icon: ChartBarIcon,
+    route: "/features/dashboard",
     title: "Clarity for leaders",
     copy: "Operational dashboards and trustworthy records that turn scattered HR activity into confident decisions.",
   },
@@ -56,16 +61,19 @@ const features = [
 
 const audiences = [
   {
+    id: "india-gccs",
     eyebrow: "Build",
     title: "India GCCs",
     copy: "Stand up a strong people-operations foundation without inheriting enterprise-suite complexity.",
   },
   {
+    id: "indian-smes",
     eyebrow: "Modernise",
     title: "Indian SMEs",
     copy: "Move beyond spreadsheets with clean records, approvals, documents, and role clarity.",
   },
   {
+    id: "growing-teams",
     eyebrow: "Scale",
     title: "Growing teams",
     copy: "Add the right structure early while keeping the employee experience fast and friendly.",
@@ -144,18 +152,21 @@ const modules = [
 
 const capabilityStories = [
   {
+    id: "governed-documents",
     eyebrow: "Governed documents",
     title: "Keep workforce evidence organized and ready.",
     copy: "Company policies and employee records live in a structured library with ownership, verification, expiry, preview, and download controls.",
     image: "/images/Product-Screenshots/latest/document-library.png",
   },
   {
+    id: "lifecycle-workflows",
     eyebrow: "Lifecycle workflows",
     title: "Guide every new joiner from offer to impact.",
     copy: "Onboarding keeps candidate details, joining readiness, task ownership, documents, and day-one progress visible in one shared flow.",
     image: "/images/Product-Screenshots/latest/onboarding.png",
   },
   {
+    id: "people-intelligence",
     eyebrow: "People intelligence",
     title: "Turn HR activity into leadership clarity.",
     copy: "Role-aware analytics bring workforce signals, trends, and operational priorities together without spreadsheet archaeology.",
@@ -375,8 +386,8 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="aura-feature-grid">
-              {features.map(({ icon: Icon, title, copy }, index) => (
-                <article key={title} className="aura-feature-card">
+              {features.map(({ icon: Icon, route, title, copy }, index) => (
+                <button key={title} className="aura-feature-card" onClick={() => navigate(route)}>
                   <div
                     className={`aura-feature-icon aura-feature-icon--${index + 1}`}
                   >
@@ -384,10 +395,10 @@ export default function LandingPage() {
                   </div>
                   <h3>{title}</h3>
                   <p>{copy}</p>
-                  <button onClick={() => scrollTo("contact")}>
+                  <span className="aura-feature-card__link">
                     Discover more <ArrowRightIcon />
-                  </button>
-                </article>
+                  </span>
+                </button>
               ))}
             </div>
           </div>
@@ -528,10 +539,10 @@ export default function LandingPage() {
                   Leadership reviews outcomes. AuraHR gives each role the right
                   context while preserving one connected record underneath.
                 </p>
-                <div className="aura-trust-stack">
-                  <div><FingerPrintIcon /><span><b>Authentic multi-tenancy</b><small>Company records and demo journeys remain safely separated.</small></span></div>
-                  <div><UserPlusIcon /><span><b>Role-based experience</b><small>Focused workspaces for owners, HR, managers, and employees.</small></span></div>
-                  <div><LockClosedIcon /><span><b>Trust by design</b><small>Account flows, evidence, ownership, and audit context are product-critical.</small></span></div>
+            <div className="aura-trust-stack">
+                  <button onClick={() => navigate('/stories/authentic-multi-tenancy')}><FingerPrintIcon /><span><b>Authentic multi-tenancy</b><small>Company records and demo journeys remain safely separated.</small></span><ArrowRightIcon /></button>
+                  <button onClick={() => navigate('/stories/role-based-experience')}><UserPlusIcon /><span><b>Role-based experience</b><small>Focused workspaces for owners, HR, managers, and employees.</small></span><ArrowRightIcon /></button>
+                  <button onClick={() => navigate('/stories/trust-by-design')}><LockClosedIcon /><span><b>Trust by design</b><small>Account flows, evidence, ownership, and audit context are product-critical.</small></span><ArrowRightIcon /></button>
                 </div>
               </div>
             </div>
@@ -591,7 +602,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="aura-section aura-capabilities">
+        <section id="capabilities" className="aura-section aura-capabilities">
           <div className="aura-shell">
             <div className="aura-section-heading">
               <span>More than a system of record</span>
@@ -604,7 +615,7 @@ export default function LandingPage() {
             </div>
             <div className="aura-capability-grid">
               {capabilityStories.map((story) => (
-                <article key={story.title}>
+                <button key={story.title} onClick={() => navigate(`/stories/${story.id}`)}>
                   <div className="aura-capability-screen">
                     <img src={story.image} alt={`${story.eyebrow} in AuraHR`} />
                   </div>
@@ -612,14 +623,15 @@ export default function LandingPage() {
                     <span className="aura-eyebrow">{story.eyebrow}</span>
                     <h3>{story.title}</h3>
                     <p>{story.copy}</p>
+                    <span className="aura-card-link">Explore capability <ArrowRightIcon /></span>
                   </div>
-                </article>
+                </button>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="aura-section aura-people-story">
+        <section id="people" className="aura-section aura-people-story">
           <div className="aura-shell">
             <div className="aura-people-story__grid">
               <div className="aura-people-story__copy">
@@ -667,6 +679,9 @@ export default function LandingPage() {
                   Clear ownership and audit trails
                 </li>
               </ul>
+              <button className="aura-button aura-button--ghost" onClick={() => navigate('/features/probation')}>
+                Explore lifecycle visibility <ArrowRightIcon />
+              </button>
             </div>
             <div className="aura-showcase__screen">
               <img
@@ -703,24 +718,24 @@ export default function LandingPage() {
                 thoughtful details that make adoption feel natural.
               </p>
               <div className="aura-metric-grid">
-                <div>
+                <button onClick={() => navigate('/stories/authentic-multi-tenancy')}>
                   <strong>One</strong>
                   <span>connected people workspace</span>
-                </div>
-                <div>
+                </button>
+                <button onClick={() => navigate('/stories/role-based-experience')}>
                   <strong>Every</strong>
                   <span>role gets a focused view</span>
-                </div>
-                <div>
+                </button>
+                <button onClick={() => navigate('/stories/trust-by-design')}>
                   <strong>Zero</strong>
                   <span>need for HR-suite clutter</span>
-                </div>
+                </button>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="aura-section aura-journeys">
+        <section id="roles" className="aura-section aura-journeys">
           <div className="aura-shell">
             <div className="aura-section-heading">
               <span>One platform, four clear perspectives</span>
@@ -731,38 +746,42 @@ export default function LandingPage() {
               </h2>
             </div>
             <div className="aura-journey-grid">
-              <article>
+              <button onClick={() => navigate('/stories/employees')}>
                 <span>01</span>
                 <h3>Employees</h3>
                 <p>
                   Self-service, documents, leave, attendance, conversations,
                   goals, and personal milestones—without HR dependency.
                 </p>
-              </article>
-              <article>
+                <span className="aura-card-link">Explore employee experience <ArrowRightIcon /></span>
+              </button>
+              <button onClick={() => navigate('/stories/managers')}>
                 <span>02</span>
                 <h3>Managers</h3>
                 <p>
                   Team context, approvals, performance conversations, probation
                   decisions, and actions that never lose their owner.
                 </p>
-              </article>
-              <article>
+                <span className="aura-card-link">Explore manager experience <ArrowRightIcon /></span>
+              </button>
+              <button onClick={() => navigate('/stories/hr-teams')}>
                 <span>03</span>
                 <h3>HR teams</h3>
                 <p>
                   Governed records, workflows, exceptions, communication,
                   templates, cases, and audit-ready operational control.
                 </p>
-              </article>
-              <article>
+                <span className="aura-card-link">Explore HR experience <ArrowRightIcon /></span>
+              </button>
+              <button onClick={() => navigate('/stories/leadership')}>
                 <span>04</span>
                 <h3>Leadership</h3>
                 <p>
                   Reliable workforce signals, organizational memory, readiness
                   views, and clarity without spreadsheet archaeology.
                 </p>
-              </article>
+                <span className="aura-card-link">Explore leadership view <ArrowRightIcon /></span>
+              </button>
             </div>
           </div>
         </section>
@@ -775,14 +794,14 @@ export default function LandingPage() {
             </div>
             <div className="aura-audience-grid">
               {audiences.map((item, index) => (
-                <article key={item.title}>
+                <button key={item.title} onClick={() => navigate(`/stories/${item.id}`)}>
                   <span>
                     0{index + 1} · {item.eyebrow}
                   </span>
                   <h3>{item.title}</h3>
                   <p>{item.copy}</p>
                   <ArrowRightIcon />
-                </article>
+                </button>
               ))}
             </div>
           </div>

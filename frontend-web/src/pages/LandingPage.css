@@ -544,6 +544,8 @@
 }
 .aura-feature-card {
   padding: 29px 25px;
+  text-align: left;
+  font: inherit;
   border: 1px solid #e3edf1;
   border-radius: 18px;
   background: #fff;
@@ -589,10 +591,7 @@
   color: #617b8e;
   min-height: 90px;
 }
-.aura-feature-card button {
-  border: 0;
-  background: none;
-  padding: 0;
+.aura-feature-card__link {
   color: var(--blue);
   font-weight: 750;
   font-size: 12px;
@@ -600,7 +599,7 @@
   gap: 7px;
   align-items: center;
 }
-.aura-feature-card button svg {
+.aura-feature-card__link svg {
   width: 14px;
 }
 .aura-platform-depth {
@@ -702,7 +701,10 @@
 .aura-unique__copy h2 { font-size:42px; line-height:1.08; letter-spacing:-.045em; color:var(--deep); margin:18px 0 20px; }
 .aura-unique__copy > p { color:#5f7487; line-height:1.8; font-size:15px; }
 .aura-trust-stack { display:grid; gap:13px; margin-top:28px; }
-.aura-trust-stack > div { display:flex; gap:13px; padding:15px; border:1px solid #e9e5fa; border-radius:16px; background:#fbfaff; }
+.aura-trust-stack > button { display:flex; align-items:center; gap:13px; padding:15px; text-align:left; font:inherit; border:1px solid #e9e5fa; border-radius:16px; background:#fbfaff; transition:.22s ease; }
+.aura-trust-stack > button:hover { transform:translateX(5px); border-color:#cfc4fb; box-shadow:0 14px 30px rgba(69,48,145,.08); }
+.aura-trust-stack > button > span { flex:1; }
+.aura-trust-stack > button > svg:last-child { width:17px; }
 .aura-trust-stack svg { width:24px; color:var(--violet); flex:none; }
 .aura-trust-stack b,.aura-trust-stack small { display:block; }
 .aura-trust-stack b { font-size:13px; color:var(--deep); }
@@ -750,8 +752,11 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
-.aura-capability-grid article {
+.aura-capability-grid > button {
   overflow: hidden;
+  padding: 0;
+  text-align: left;
+  font: inherit;
   border: 1px solid rgba(114, 87, 220, 0.14);
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.8);
@@ -759,7 +764,7 @@
   backdrop-filter: blur(18px);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-.aura-capability-grid article:hover {
+.aura-capability-grid > button:hover {
   transform: translateY(-6px);
   box-shadow: 0 30px 70px rgba(55, 43, 110, 0.14);
 }
@@ -909,10 +914,18 @@
   gap: 12px;
   margin-top: 37px;
 }
-.aura-metric-grid div {
+.aura-metric-grid button {
   padding-top: 18px;
+  text-align: left;
+  font: inherit;
+  background: transparent;
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 0;
   border-top: 1px solid rgba(117, 185, 221, 0.22);
+  transition: border-color .2s ease, transform .2s ease;
 }
+.aura-metric-grid button:hover { transform:translateY(-3px); border-top-color:#65ded0; }
 .aura-metric-grid strong {
   display: block;
   color: #fff;
@@ -937,13 +950,15 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 14px;
 }
-.aura-journey-grid article {
+.aura-journey-grid > button {
   padding: 28px 24px;
+  text-align: left;
+  font: inherit;
   border-radius: 20px;
   background: linear-gradient(145deg, #fbfaff, #f3f1ff);
   border: 1px solid #e8e3fb;
 }
-.aura-journey-grid article > span {
+.aura-journey-grid > button > span:first-child {
   color: var(--violet);
   font-size: 11px;
   font-weight: 800;
@@ -963,15 +978,17 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
-.aura-audience-grid article {
+.aura-audience-grid > button {
   position: relative;
   padding: 33px;
+  text-align: left;
+  font: inherit;
   border-radius: 18px;
   background: linear-gradient(145deg, #f8fbfc, #eef6f8);
   min-height: 260px;
   border: 1px solid #e0ecef;
 }
-.aura-audience-grid article > span {
+.aura-audience-grid > button > span {
   font-size: 10px;
   color: var(--teal);
   font-weight: 800;
@@ -995,6 +1012,22 @@
   bottom: 28px;
   right: 28px;
 }
+.aura-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 18px;
+  color: var(--violet) !important;
+  font-size: 10px !important;
+  font-weight: 800;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+.aura-card-link svg { position: static; width: 15px; }
+.aura-journey-grid > button,
+.aura-audience-grid > button { transition:transform .22s ease, box-shadow .22s ease; }
+.aura-journey-grid > button:hover,
+.aura-audience-grid > button:hover { transform:translateY(-5px); box-shadow:0 22px 48px rgba(54,43,108,.11); }
 .aura-contact {
   padding-top: 20px;
   background: #fff;
