@@ -27,6 +27,7 @@ import "./LandingPage.css";
 
 const navItems = [
   ["Product tour", "modules"],
+  ["Walkthrough", "walkthrough"],
   ["Platform", "platform"],
   ["Why AuraHR", "unique"],
   ["Adoption", "adoption"],
@@ -206,7 +207,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     if (heroPaused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const timer = window.setInterval(() => setHeroSlide((slide) => (slide + 1) % 3), 6500);
+    const timer = window.setInterval(() => setHeroSlide((slide) => (slide + 1) % 4), 6500);
     return () => window.clearInterval(timer);
   }, [heroPaused]);
 
@@ -241,10 +242,8 @@ export default function LandingPage() {
             onClick={() => scrollTo("top")}
             aria-label="AuraHR home"
           >
-            <img src={brand.mark} alt="" />
-            <span>
-              Aura<span>HR</span>
-            </span>
+            <img src="/brand/aura/aura-logo-exact-transparent.png" alt="Aura" />
+            <span className="aura-product-name"><small>Product</small>Aura<span>HR</span></span>
           </button>
           <div className="aura-nav__links">
             {navItems.map(([label, id]) => (
@@ -307,9 +306,9 @@ export default function LandingPage() {
             <div className="aura-hero__actions">
               <button
                 className="aura-button"
-                onClick={() => scrollTo("contact")}
+                onClick={() => scrollTo("walkthrough")}
               >
-                See AuraHR in action <ArrowRightIcon />
+                Watch the product story <ArrowRightIcon />
               </button>
               <button
                 className="aura-button aura-button--ghost"
@@ -370,16 +369,31 @@ export default function LandingPage() {
                   <p>Clear for employees, managers, HR teams and leadership.</p>
                 </div>
               </div>
+
+              <div className={`aura-hero-slide aura-hero-slide--brand ${heroSlide === 3 ? "is-active" : ""}`} aria-hidden={heroSlide !== 3}>
+                <div className="aura-brand-evolution" aria-label="The Aura infinity mark evolving into the Aura identity">
+                  <span className="aura-brand-orbit aura-brand-orbit--one" />
+                  <span className="aura-brand-orbit aura-brand-orbit--two" />
+                  <img className="aura-brand-mark" src="/brand/aura/aura-mark-exact-white.png" alt="" />
+                  <img className="aura-brand-reveal" src="/brand/aura/aura-logo-exact-white.png" alt="Aura" />
+                </div>
+                <div className="aura-brand-story">
+                  <span>Infinite human potential</span>
+                  <h2>Aura</h2>
+                  <p>The living identity behind AuraHR—clarity, continuity and care in every people journey.</p>
+                  <b>AuraHR <i>·</i> The people operating system</b>
+                </div>
+              </div>
             </div>
 
             <div className="aura-carousel-controls">
-              <button aria-label="Previous highlight" onClick={() => { setHeroPaused(true); setHeroSlide((heroSlide + 2) % 3); }}><ChevronLeftIcon /></button>
+              <button aria-label="Previous highlight" onClick={() => { setHeroPaused(true); setHeroSlide((heroSlide + 3) % 4); }}><ChevronLeftIcon /></button>
               <div className="aura-carousel-dots" role="tablist" aria-label="Choose highlight">
-                {["Product", "Manu", "People"].map((label, index) => (
+                {["Product", "Manu", "People", "Aura"].map((label, index) => (
                   <button key={label} role="tab" aria-label={label} aria-selected={heroSlide === index} className={heroSlide === index ? "is-active" : ""} onClick={() => { setHeroPaused(true); setHeroSlide(index); }}><span>{label}</span></button>
                 ))}
               </div>
-              <button aria-label="Next highlight" onClick={() => { setHeroPaused(true); setHeroSlide((heroSlide + 1) % 3); }}><ChevronRightIcon /></button>
+              <button aria-label="Next highlight" onClick={() => { setHeroPaused(true); setHeroSlide((heroSlide + 1) % 4); }}><ChevronRightIcon /></button>
             </div>
           </div>
         </div>
@@ -826,6 +840,37 @@ export default function LandingPage() {
                   <ArrowRightIcon />
                 </button>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="walkthrough" className="aura-section aura-walkthrough">
+          <div className="aura-shell">
+            <div className="aura-walkthrough__heading">
+              <div>
+                <span className="aura-eyebrow">The AuraHR product walkthrough</span>
+                <h2>See one employee story become one connected company story.</h2>
+              </div>
+              <p>Our guided film will bring the product, Manu and the real HR moments between joining and exit into one concise journey.</p>
+            </div>
+            <div className="aura-video-stage">
+              <div className="aura-video-poster">
+                <img src="/images/Product-Screenshots/latest/dashboard.png" alt="AuraHR dashboard prepared for the product walkthrough" />
+                <div className="aura-video-poster__wash" />
+                <img className="aura-video-manu" src="/images/assistant/manu-avatar.png" alt="" />
+                <div className="aura-video-title">
+                  <span>Coming next</span>
+                  <h3>The AuraHR walkthrough film</h3>
+                  <p>Product clarity, people journeys and Manu—told as one story.</p>
+                  <button onClick={() => scrollTo("contact")}><span className="aura-play-symbol">▶</span> Request a live walkthrough</button>
+                </div>
+              </div>
+              <div className="aura-video-chapters" aria-label="Walkthrough chapters">
+                <button onClick={() => scrollTo("modules")}><span>01</span><b>Meet the workspace</b><small>Role-aware clarity</small></button>
+                <button onClick={() => showModule("lifecycle")}><span>02</span><b>Follow the journey</b><small>Joining to exit</small></button>
+                <button onClick={() => showModule("manu")}><span>03</span><b>Work with Manu</b><small>AI inside HR</small></button>
+                <button onClick={() => scrollTo("platform")}><span>04</span><b>See the foundation</b><small>Governance and trust</small></button>
+              </div>
             </div>
           </div>
         </section>
