@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-  ArrowLeftIcon,
   ArrowRightIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import BrandedScreenshot from '../components/landing/BrandedScreenshot';
+import MarketingNav from '../components/landing/MarketingNav';
 import { getDifferentiatorById } from '../data/differentiators';
 import './MarketingDetail.css';
 
@@ -35,31 +35,7 @@ export default function DifferentiatorDetail() {
 
   return (
     <div className="aura-marketing-detail min-h-screen bg-white text-gray-900">
-      <nav className="fixed inset-x-0 top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4">
-            <img
-              src="/brand/aura/aura-logo-exact-transparent.png"
-              alt="Aura"
-              className="h-9 w-auto cursor-pointer"
-              onClick={() => navigate('/')}
-            />
-            <button
-              onClick={() => navigate('/', { state: { scrollTo: 'unique', uniqueTab: 'differentiators' } })}
-              className="inline-flex items-center gap-1 text-sm font-semibold text-gray-600 hover:text-primary-700"
-            >
-              <ArrowLeftIcon className="h-4 w-4" />
-              Key Differentiators
-            </button>
-          </div>
-          <button
-            onClick={() => navigate('/register')}
-            className="rounded-md bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700"
-          >
-            Sign Up / Register
-          </button>
-        </div>
-      </nav>
+      <MarketingNav context="Why AuraHR" />
 
       <header className="pt-16">
         <div className="bg-primary-50 px-4 py-16 sm:px-6 lg:px-8">
@@ -110,10 +86,10 @@ export default function DifferentiatorDetail() {
               </p>
             </div>
             <button
-              onClick={() => navigate('/register')}
+              onClick={() => navigate('/', { state: { scrollTo: 'contact' } })}
               className="inline-flex items-center rounded-md bg-white px-5 py-3 font-semibold text-primary-700 hover:bg-gray-100"
             >
-              Register company
+              Book a walkthrough
               <ArrowRightIcon className="ml-2 h-5 w-5" />
             </button>
           </div>

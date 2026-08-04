@@ -47,7 +47,7 @@ export const platformPillars: PlatformPillar[] = [
       'Every process is shaped around the employee, manager, HR manager, and leadership view instead of a generic admin grid.',
     detail:
       'The product is designed around the way HR actually happens: employees request, managers approve, HR resolves exceptions, and leadership reviews outcomes. Each role gets the interface and decisions relevant to that role.',
-    heroImage: '/images/Hero-Images/hero-team-collaboration.jpg',
+    heroImage: '/images/Hero-Images/aura-people-team-v2.jpg',
     screenshot: '/images/Product-Screenshots/latest/employee-register.png',
     icon: UserGroupIcon,
     proofPoints: [

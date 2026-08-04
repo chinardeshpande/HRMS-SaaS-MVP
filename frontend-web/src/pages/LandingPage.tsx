@@ -26,10 +26,9 @@ import "./LandingPage.css";
 const navItems = [
   ["Product tour", "modules"],
   ["Platform", "platform"],
-  ["Uniqueness", "unique"],
-  ["Ease of adoption", "adoption"],
+  ["Why AuraHR", "unique"],
+  ["Adoption", "adoption"],
   ["Who it’s for", "people"],
-  ["Contact", "contact"],
 ] as const;
 
 const features = [
@@ -523,7 +522,7 @@ export default function LandingPage() {
             <div className="aura-unique__hero">
               <div className="aura-unique__image">
                 <img
-                  src="/images/Hero-Images/hero-team-collaboration.jpg"
+                  src="/images/Hero-Images/aura-people-team-v2.jpg"
                   alt="A collaborative people team at work"
                 />
                 <div className="aura-unique__quote">
@@ -597,7 +596,7 @@ export default function LandingPage() {
                 </p>
                 <button className="aura-button aura-button--ghost" onClick={() => navigate("/journeys/demo-and-training")}>Explore demo-led adoption <ArrowRightIcon /></button>
               </div>
-              <img src="/images/Hero-Images/hero-employee-onboarding.jpg" alt="A new employee being welcomed by colleagues" />
+              <img src="/images/Hero-Images/aura-employee-welcome-v2.jpg" alt="A new employee being welcomed by colleagues" />
             </div>
           </div>
         </section>
@@ -646,8 +645,8 @@ export default function LandingPage() {
                 <button className="aura-button" onClick={() => scrollTo("contact")}>Plan your AuraHR journey <ArrowRightIcon /></button>
               </div>
               <div className="aura-people-collage">
-                <img src="/images/Hero-Images/hero-leadership.jpg" alt="Leadership team reviewing people operations" />
-                <img src="/images/Hero-Images/hero-happy-employees.jpg" alt="Employees collaborating in a modern workplace" />
+                <img src="/images/Hero-Images/aura-leadership-team-v2.jpg" alt="Leadership team reviewing people operations" />
+                <img src="/images/Hero-Images/aura-people-team-v2.jpg" alt="Employees collaborating in a modern workplace" />
                 <div><GlobeAltIcon /><b>Global governance</b><span>Local operating clarity</span></div>
                 <div><BuildingOffice2Icon /><b>Practical adoption</b><span>Built for real HR teams</span></div>
               </div>

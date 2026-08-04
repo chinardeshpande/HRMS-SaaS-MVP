@@ -9,7 +9,7 @@ interface CarouselSlide {
 
 const slides: CarouselSlide[] = [
   {
-    image: '/images/Hero-Images/hero-team-collaboration.jpg',
+    image: '/images/Hero-Images/aura-people-team-v2.jpg',
     title: 'Empower Your Team',
     description: 'Build a connected, engaged workforce with modern HR tools',
   },
@@ -19,7 +19,7 @@ const slides: CarouselSlide[] = [
     description: 'Make data-driven decisions with comprehensive analytics dashboard',
   },
   {
-    image: '/images/Hero-Images/hero-employee-onboarding.jpg',
+    image: '/images/Hero-Images/aura-employee-welcome-v2.jpg',
     title: 'Seamless Onboarding',
     description: 'Create memorable first impressions for every new hire',
   },
@@ -29,7 +29,7 @@ const slides: CarouselSlide[] = [
     description: 'Centralized employee data with full lifecycle management',
   },
   {
-    image: '/images/Hero-Images/hero-happy-employees.jpg',
+    image: '/images/Hero-Images/aura-leadership-team-v2.jpg',
     title: 'Culture & Engagement',
     description: 'Foster a positive workplace culture that retains top talent',
   },

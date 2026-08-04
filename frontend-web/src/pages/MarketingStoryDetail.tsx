@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-  ArrowLeftIcon,
   ArrowRightIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import BrandedScreenshot from '../components/landing/BrandedScreenshot';
+import MarketingNav from '../components/landing/MarketingNav';
 import { getMarketingStoryById, marketingStories } from '../data/marketingStories';
 import './MarketingDetail.css';
 
@@ -37,25 +37,7 @@ export default function MarketingStoryDetail() {
 
   return (
     <div className="aura-marketing-detail min-h-screen bg-white text-gray-900">
-      <nav className="fixed inset-x-0 top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/')} aria-label="AuraHR home">
-              <img src="/brand/aura/aura-logo-exact-transparent.png" alt="AuraHR" className="h-9 w-auto" />
-            </button>
-            <button
-              onClick={() => navigate('/', { state: { scrollTo: story.category === 'For every role' || story.category === 'Built for your next chapter' ? 'people' : story.category === 'Connected capability' ? 'capabilities' : 'unique' } })}
-              className="inline-flex items-center gap-1 text-sm font-semibold text-gray-600 hover:text-primary-700"
-            >
-              <ArrowLeftIcon className="h-4 w-4" />
-              Back to {story.category}
-            </button>
-          </div>
-          <button onClick={() => navigate('/', { state: { scrollTo: 'contact' } })} className="rounded-xl px-4 py-2 text-sm font-semibold text-white">
-            Book a walkthrough
-          </button>
-        </div>
-      </nav>
+      <MarketingNav context={story.category} />
 
       <header className="pt-16">
         <div className="px-4 py-14 sm:px-6 lg:px-8">

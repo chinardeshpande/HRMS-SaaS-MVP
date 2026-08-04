@@ -28,7 +28,7 @@ export const adoptionJourneys: AdoptionJourney[] = [
     description: 'Create the tenant, verify the owner account, and establish the first HR admin workspace.',
     detail:
       'Aura starts with a clean company registration flow. The first HR owner creates the organization, verifies identity, and enters a guided workspace that is ready for onboarding, configuration, and controlled user creation.',
-    image: '/images/Hero-Images/hero-leadership.jpg',
+    image: '/images/Hero-Images/aura-leadership-team-v2.jpg',
     screenshot: '/images/Product-Screenshots/latest/dashboard.png',
     icon: BuildingOffice2Icon,
     steps: [
@@ -72,7 +72,7 @@ export const adoptionJourneys: AdoptionJourney[] = [
     description: 'Import employee records, attach reporting context, and invite people into role-specific workspaces.',
     detail:
       'Aura supports serious pilot adoption by treating employee import as implementation work, not a one-off spreadsheet upload. Employee records, managers, roles, and access are brought together so the team can begin using the platform with confidence.',
-    image: '/images/Hero-Images/hero-team-collaboration.jpg',
+    image: '/images/Hero-Images/aura-people-team-v2.jpg',
     screenshot: '/images/Product-Screenshots/latest/employee-register.png',
     icon: UserPlusIcon,
     steps: [
@@ -138,7 +138,7 @@ export const adoptionJourneys: AdoptionJourney[] = [
     description: 'Use reports, lifecycle history, documents, HR Connect, and analytics to mature operations over time.',
     detail:
       'The platform is meant to grow with the organization. As the company adds people and processes, Aura keeps lifecycle history, documents, role-based views, reports, and HR communication connected to the same employee record.',
-    image: '/images/Hero-Images/hero-happy-employees.jpg',
+    image: '/images/Hero-Images/aura-employee-welcome-v2.jpg',
     screenshot: '/images/Product-Screenshots/latest/analytics.png',
     icon: UserGroupIcon,
     steps: [
