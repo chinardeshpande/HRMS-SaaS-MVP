@@ -509,7 +509,7 @@
   gap: 44px;
   margin-bottom: 18px;
 }
-.aura-walkthrough__heading h2 { margin: 10px 0 0; color: var(--deep); font-size: clamp(29px, 2vw, 38px); line-height: 1.05; letter-spacing: -.045em; white-space: nowrap; }
+.aura-walkthrough__heading h2 { margin: 8px 0 0; color: var(--deep); font-size: clamp(20px, 1.45vw, 27px); line-height: 1.15; letter-spacing: -.025em; white-space: nowrap; }
 .aura-walkthrough__heading > p { margin: 0; color: #617c90; font-size: 13px; line-height: 1.55; }
 .aura-video-stage { overflow: hidden; border: 1px solid rgba(117,69,245,.14); border-radius: 28px; background: #fff; box-shadow: 0 28px 70px rgba(54,68,125,.14); }
 .aura-walkthrough-video { display: block; width: 100%; height: clamp(390px, calc(100svh - 340px), 664px); background: #101b3b; object-fit: contain; }
