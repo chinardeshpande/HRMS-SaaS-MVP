@@ -1,5 +1,5 @@
-import { FormEvent, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { FormEvent, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowRightIcon,
   Bars3Icon,
@@ -7,7 +7,8 @@ import {
   ChartBarIcon,
   ChatBubbleLeftRightIcon,
   CheckCircleIcon,
-  ClipboardDocumentCheckIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   ClockIcon,
   DocumentTextIcon,
   FingerPrintIcon,
@@ -17,967 +18,993 @@ import {
   UserGroupIcon,
   UserPlusIcon,
   XMarkIcon,
-} from '@heroicons/react/24/outline';
-import BrandedScreenshot from '../components/landing/BrandedScreenshot';
-import { adoptionJourneys } from '../data/adoptionJourneys';
-import { differentiators } from '../data/differentiators';
-import { platformPillars } from '../data/platformPillars';
-import { brand } from '../config/brand';
+} from "@heroicons/react/24/outline";
+import { brand } from "../config/brand";
+import { adoptionJourneys } from "../data/adoptionJourneys";
+import { differentiators } from "../data/differentiators";
+import { platformPillars } from "../data/platformPillars";
+import "./LandingPage.css";
 
-type Capability = {
-  moduleId: string;
-  title: string;
-  description: string;
-  image: string;
-  icon: typeof UserGroupIcon;
-  points: string[];
-};
+const navItems = [
+  ["Product tour", "modules"],
+  ["Walkthrough", "walkthrough"],
+  ["Platform", "platform"],
+  ["Why AuraHR", "unique"],
+  ["Adoption", "adoption"],
+  ["Who it’s for", "people"],
+] as const;
 
-const navigation = [
-  { label: 'Home', target: 'top' },
-  { label: 'Platform', target: 'platform' },
-  { label: 'Uniqueness', target: 'unique' },
-  { label: 'Ease of Adoption', target: 'journeys' },
-  { label: 'Contact Us', target: 'contact' },
-];
-
-const capabilities: Capability[] = [
+const features = [
   {
-    moduleId: 'organization',
-    title: 'Implementation console for a clean company launch',
-    description:
-      'Set up a new company with masters, departments, designations, users, reporting relationships, approval flows, document templates, and onboarding readiness from one operating layer.',
-    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png',
-    icon: BuildingOffice2Icon,
-    points: ['Company setup', 'Masters migration', 'Role-based access'],
-  },
-  {
-    moduleId: 'employee-management',
-    title: 'Employee lifecycle that behaves like a real HR operating system',
-    description:
-      'Manage employee records, joining, probation, transfers, promotions, compensation context, documents, performance cycles, and exits without scattering data across spreadsheets.',
-    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.15.14-AM.png',
     icon: UserGroupIcon,
-    points: ['Employee 360', 'Lifecycle history', 'Document vault'],
+    route: "/features/employee-management",
+    title: "One employee story",
+    copy: "A living record for every person—from joining and probation to performance, documents, mobility, and exit.",
   },
   {
-    moduleId: 'attendance',
-    title: 'Attendance and leave with approval depth',
-    description:
-      'Support employee self-service, manager approvals, HR intervention, bulk updates, monthly views, balances, regularization, and operational reporting for distributed Indian teams.',
-    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.04-AM.png',
     icon: ClockIcon,
-    points: ['Daily operations', 'Leave balances', 'Manager approvals'],
+    route: "/features/attendance",
+    title: "Everyday work, simplified",
+    copy: "Attendance, leave, approvals, and exceptions designed around the way Indian teams actually operate.",
   },
   {
-    moduleId: 'performance',
-    title: 'Performance, probation, and exit workflows with accountability',
-    description:
-      'Convert sensitive HR events into structured cases with owners, status, evidence, approvals, and review steps so teams can run the process consistently.',
-    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.58-AM.png',
-    icon: ClipboardDocumentCheckIcon,
-    points: ['Review cycles', 'Probation cases', 'Exit clearance'],
-  },
-  {
-    moduleId: 'hr-connect',
-    title: 'HR Connect for communication and service moments',
-    description:
-      'Bring HR announcements, employee conversations, group collaboration, tickets, appointments, and technical hooks for chat, audio, and video-led service into the HR workspace.',
-    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.21.10-AM.png',
     icon: ChatBubbleLeftRightIcon,
-    points: ['Wall feeds', 'Chat context', 'Appointments'],
+    route: "/features/hr-connect",
+    title: "HR that stays connected",
+    copy: "Announcements, conversations, helpdesk requests, and people moments in one familiar workspace.",
   },
   {
-    moduleId: 'dashboard',
-    title: 'Documents, reports, and analytics for leadership confidence',
-    description:
-      'Generate HR documents, preserve employee records, and surface dashboards that help founders, HR leaders, and GCC leadership understand operational health quickly.',
-    image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.18-AM.png',
     icon: ChartBarIcon,
-    points: ['Standard letters', 'Analytics views', 'Audit trail'],
+    route: "/features/dashboard",
+    title: "Clarity for leaders",
+    copy: "Operational dashboards and trustworthy records that turn scattered HR activity into confident decisions.",
   },
 ];
 
-const personaCards = [
+const audiences = [
   {
-    title: 'Western MNCs building India GCCs',
-    description:
-      'Launch the India HR foundation fast while preserving global governance, local compliance expectations, role clarity, and auditable workflows.',
-    icon: GlobeAltIcon,
+    id: "india-gccs",
+    eyebrow: "Build",
+    title: "India GCCs",
+    copy: "Stand up a strong people-operations foundation without inheriting enterprise-suite complexity.",
   },
   {
-    title: 'Indian SMEs professionalizing HR',
-    description:
-      'Move beyond spreadsheets into clean employee records, approvals, documents, attendance, leave, and reports without enterprise-suite complexity.',
-    icon: BuildingOffice2Icon,
+    id: "indian-smes",
+    eyebrow: "Modernise",
+    title: "Indian SMEs",
+    copy: "Move beyond spreadsheets with clean records, approvals, documents, and role clarity.",
   },
   {
-    title: 'New-age startups scaling teams',
-    description:
-      'Give founders and HR operators enough structure for scale while keeping employee self-service clean, modern, and low-friction.',
-    icon: SparklesIcon,
+    id: "growing-teams",
+    eyebrow: "Scale",
+    title: "Growing teams",
+    copy: "Add the right structure early while keeping the employee experience fast and friendly.",
   },
 ];
 
-const pricingPlans = [
+const modules = [
   {
-    name: 'Pilot',
-    price: 'Free',
-    description: 'For evaluation, demo journeys, and first-company setup.',
-    features: ['Guided registration', 'Core HR modules', 'Demo workspace', 'Initial tenant setup'],
-    action: 'Start pilot',
+    id: "dashboard",
+    label: "Command centre",
+    eyebrow: "Role-aware dashboards",
+    title: "Start every day with the right priorities in view.",
+    copy: "AuraHR brings workforce signals, approvals, upcoming people moments, and recent activity together—shaped around what each role needs to see and do next.",
+    image: "/images/Product-Screenshots/latest/dashboard.png",
+    points: ["Workforce overview", "Pending approvals", "Upcoming milestones"],
   },
   {
-    name: 'Growth',
-    price: 'Per employee',
-    description: 'For SMEs and startups ready to operate HR on Aura.',
-    features: ['Role-based dashboards', 'Attendance and leave', 'Performance and exit', 'Reports and documents'],
-    action: 'Register company',
-    featured: true,
+    id: "attendance",
+    label: "Time & attendance",
+    eyebrow: "Everyday operations",
+    title: "Turn daily attendance into a clean operating rhythm.",
+    copy: "Track presence, exceptions, late arrivals, leave, and work hours from a single company view—with the controls HR teams need for mass actions, sync, and export.",
+    image: "/images/Product-Screenshots/latest/attendance.png",
+    points: ["Daily company view", "Exception management", "Bulk HR actions"],
   },
   {
-    name: 'GCC Launch',
-    price: 'Custom',
-    description: 'For MNCs planning India entity setup, migration, and rollout.',
-    features: ['Implementation planning', 'Data migration support', 'Workflow configuration', 'Leadership reporting'],
-    action: 'Talk to us',
+    id: "leave",
+    label: "Leave",
+    eyebrow: "Employee self-service",
+    title: "Make leave balances and approvals effortless to understand.",
+    copy: "Employees see their balances clearly. Managers get team context. HR can govern company-wide requests and policy outcomes without losing the human thread.",
+    image: "/images/Product-Screenshots/latest/leave.png",
+    points: ["Live balances", "Manager approvals", "Policy visibility"],
+  },
+  {
+    id: "performance",
+    label: "Performance",
+    eyebrow: "Growth with accountability",
+    title: "Connect goals, evidence, reviews, and development.",
+    copy: "Run structured cycles from goal-setting through development planning, with weighted goals, measurable KPIs, progress signals, and a visible review journey.",
+    image: "/images/Product-Screenshots/latest/performance.png",
+    points: ["Goals and KPIs", "Review cycles", "Development plans"],
+  },
+  {
+    id: "lifecycle",
+    label: "Lifecycle",
+    eyebrow: "One employee story",
+    title: "Preserve the context behind every people decision.",
+    copy: "Joining, probation, movements, compensation, performance, documents, and exit become one continuous, auditable employee history—not disconnected transactions.",
+    image: "/images/Product-Screenshots/latest/employee-register.png",
+    points: [
+      "Employee 360°",
+      "Timeline-led journeys",
+      "Document-backed events",
+    ],
+  },
+  {
+    id: "connect",
+    label: "HR Connect",
+    eyebrow: "A connected workplace",
+    title: "Bring communication and HR service into the flow of work.",
+    copy: "Give teams a shared space for announcements, conversations, groups, appointments, and helpdesk cases—without separating communication from employee context.",
+    image: "/images/Product-Screenshots/latest/hr-connect.png",
+    points: ["Company feed", "Contextual chat", "HR helpdesk"],
+  },
+  {
+    id: "manu",
+    label: "Meet Manu",
+    eyebrow: "The AI of AuraHR",
+    title: "Intelligence inside the work—not a chatbot beside HR.",
+    copy: "Manu understands the screen you are on, the role you hold, and the company context you are allowed to see. She helps people find answers, understand workflows, retrieve evidence, and prepare thoughtful drafts without stepping around trusted HR controls.",
+    image: "/images/Product-Screenshots/latest/manu-assistant.png",
+    points: ["Permission-aware", "Tenant-safe", "Evidence-led"],
   },
 ];
+
+const capabilityStories = [
+  {
+    id: "governed-documents",
+    eyebrow: "Governed documents",
+    title: "Keep workforce evidence organized and ready.",
+    copy: "Company policies and employee records live in a structured library with ownership, verification, expiry, preview, and download controls.",
+    image: "/images/Product-Screenshots/latest/document-library.png",
+  },
+  {
+    id: "lifecycle-workflows",
+    eyebrow: "Lifecycle workflows",
+    title: "Guide every new joiner from offer to impact.",
+    copy: "Onboarding keeps candidate details, joining readiness, task ownership, documents, and day-one progress visible in one shared flow.",
+    image: "/images/Product-Screenshots/latest/onboarding.png",
+  },
+  {
+    id: "people-intelligence",
+    eyebrow: "People intelligence",
+    title: "Turn HR activity into leadership clarity.",
+    copy: "Role-aware analytics bring workforce signals, trends, and operational priorities together without spreadsheet archaeology.",
+    image: "/images/Product-Screenshots/latest/analytics.png",
+  },
+];
+
+const walkthroughFilms = [
+  {
+    id: 'overview',
+    number: '01',
+    title: 'AuraHR in one story',
+    subtitle: 'The product promise',
+    source: '/videos/aurahr-overview.mp4',
+    captions: '/videos/aurahr-overview.vtt',
+  },
+  {
+    id: 'new-joiner',
+    number: '02',
+    title: 'A new joiner journey',
+    subtitle: 'Offer to confidence',
+    source: '/videos/aurahr-new-joiner-journey.mp4',
+    captions: '/videos/aurahr-new-joiner-journey.vtt',
+  },
+  {
+    id: 'manager',
+    number: '03',
+    title: 'A manager’s working day',
+    subtitle: 'Moments that need attention',
+    source: '/videos/aurahr-manager-journey.mp4',
+    captions: '/videos/aurahr-manager-journey.vtt',
+  },
+  {
+    id: 'manu',
+    number: '04',
+    title: 'Working with Manu',
+    subtitle: 'AI with visible guardrails',
+    source: '/videos/aurahr-manu-journey.mp4',
+    captions: '/videos/aurahr-manu-journey.vtt',
+  },
+] as const;
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('top');
-  const [activePlatformTab, setActivePlatformTab] = useState<'depth' | 'capabilities' | 'modules' | 'trust'>('depth');
-  const [activeUniqueTab, setActiveUniqueTab] = useState<'unique' | 'differentiators'>('unique');
-  const [contactForm, setContactForm] = useState({
-    name: '',
-    company: '',
-    email: '',
-    phone: '',
-    interest: 'GCC launch',
-    preferredDate: '',
-    preferredTime: '',
-    message: '',
+  const [activeModule, setActiveModule] = useState(modules[0]);
+  const [heroSlide, setHeroSlide] = useState(0);
+  const [heroPaused, setHeroPaused] = useState(false);
+  const [activeWalkthrough, setActiveWalkthrough] = useState(walkthroughFilms[0]);
+  const [contact, setContact] = useState({
+    name: "",
+    company: "",
+    email: "",
+    message: "",
   });
 
   useEffect(() => {
-    const sectionIds = navigation.map((item) => item.target);
-    const onScroll = () => {
-      setScrolled(window.scrollY > 24);
-
-      let currentSection = 'top';
-      sectionIds.forEach((id) => {
-        const element = document.getElementById(id);
-        if (element && element.getBoundingClientRect().top <= 120) {
-          currentSection = id;
-        }
-      });
-
-      setActiveSection(currentSection);
-    };
-
+    const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (!element) return;
-    const nav = document.querySelector('nav');
-    const navHeight = nav instanceof HTMLElement ? nav.getBoundingClientRect().height : 64;
-    const contentElement = id === 'top' ? element : element.firstElementChild;
-    const targetElement = contentElement instanceof HTMLElement ? contentElement : element;
-    const top = targetElement.getBoundingClientRect().top + window.scrollY - navHeight;
-    window.scrollTo({ top, behavior: 'smooth' });
-    setMobileMenuOpen(false);
-  };
-
   useEffect(() => {
-    const routeState = location.state as { scrollTo?: string; uniqueTab?: 'unique' | 'differentiators' } | null;
-    if (routeState?.uniqueTab) {
-      setActiveUniqueTab(routeState.uniqueTab);
-    }
-    const sectionFromState = routeState?.scrollTo;
-    const sectionFromHash = location.hash?.replace('#', '');
-    const target = sectionFromState || sectionFromHash;
+    const routeState = location.state as { scrollTo?: string } | null;
+    const target = routeState?.scrollTo || location.hash.replace("#", "");
     if (!target) return;
-    window.setTimeout(() => scrollToSection(target), 80);
-    window.setTimeout(() => scrollToSection(target), 450);
+    window.setTimeout(() => scrollTo(target), 100);
   }, [location.hash, location.state]);
 
-  const requestDemo = () => {
-    scrollToSection('contact');
+  useEffect(() => {
+    if (heroPaused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const timer = window.setInterval(() => setHeroSlide((slide) => (slide + 1) % 4), 6500);
+    return () => window.clearInterval(timer);
+  }, [heroPaused]);
+
+  const scrollTo = (id: string) => {
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setMenuOpen(false);
   };
 
-  const handleContactSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const body = [
-      'Hi Anupama,',
-      '',
-      'A new Aura website enquiry has been submitted.',
-      '',
-      `Name: ${contactForm.name}`,
-      `Company: ${contactForm.company}`,
-      `Email: ${contactForm.email}`,
-      `Phone: ${contactForm.phone}`,
-      `Interest: ${contactForm.interest}`,
-      `Preferred demo date: ${contactForm.preferredDate || 'Not specified'}`,
-      `Preferred demo time: ${contactForm.preferredTime || 'Not specified'}`,
-      '',
-      'Message:',
-      contactForm.message || 'Not specified',
-    ].join('\n');
+  const showModule = (id: string) => {
+    const module = modules.find((item) => item.id === id);
+    if (module) setActiveModule(module);
+    scrollTo("modules");
+  };
 
-    window.location.href = `mailto:Anupama.Bhat@acvsolutions.in?subject=${encodeURIComponent(
-      `Aura enquiry - ${contactForm.company || contactForm.name || 'Website lead'}`
-    )}&body=${encodeURIComponent(body)}`;
+  const submitContact = (event: FormEvent) => {
+    event.preventDefault();
+    const body = `Hi Anupama,\n\nI would like to explore AuraHR.\n\nName: ${contact.name}\nCompany: ${contact.company}\nEmail: ${contact.email}\n\n${contact.message}`;
+    window.location.href = `mailto:Anupama.Bhat@acvsolutions.in?subject=${encodeURIComponent(`AuraHR enquiry — ${contact.company}`)}&body=${encodeURIComponent(body)}`;
   };
 
   return (
-    <div className="bg-white text-gray-900">
+    <div className="aura-site">
       <nav
-        className={`fixed inset-x-0 top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur transition-shadow ${
-          scrolled ? 'shadow-sm' : ''
-        }`}
+        className={`aura-nav ${scrolled ? "aura-nav--scrolled" : ""}`}
+        aria-label="Main navigation"
       >
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <button onClick={() => scrollToSection('top')} className="flex items-center">
-            <img
-              src={brand.logo}
-              alt={brand.fullName}
-              className="h-14 w-auto object-contain transition-all"
-            />
+        <div className="aura-shell aura-nav__inner">
+          <button
+            className="aura-lockup"
+            onClick={() => scrollTo("top")}
+            aria-label="AuraHR home"
+          >
+            <img src="/brand/aura/aura-logo-exact-transparent.png" alt="Aura" />
+            <span className="aura-product-name"><small>Product</small>Aura<span>HR</span></span>
           </button>
-
-          <div className="hidden items-center gap-1 rounded-full border border-gray-200 bg-white/80 p-1 text-sm font-semibold text-gray-600 shadow-sm lg:flex">
-            {navigation.map((item) => (
-              <button
-                key={item.target}
-                onClick={() => scrollToSection(item.target)}
-                className={`rounded-full px-4 py-2 transition ${
-                  activeSection === item.target
-                    ? 'bg-primary-600 text-white shadow-sm'
-                    : 'hover:bg-primary-50 hover:text-primary-700'
-                }`}
-              >
-                {item.label}
+          <div className="aura-nav__links">
+            {navItems.map(([label, id]) => (
+              <button key={id} onClick={() => scrollTo(id)}>
+                {label}
               </button>
             ))}
           </div>
-
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="aura-nav__actions">
             <button
-              onClick={() => navigate('/login')}
-              className="px-4 py-2 text-sm font-semibold text-gray-700 hover:text-primary-700"
+              className="aura-text-button"
+              onClick={() => navigate("/login")}
             >
-              Sign In
+              Sign in
             </button>
             <button
-              onClick={() => navigate('/register')}
-              className="rounded-md bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-700"
+              className="aura-button aura-button--small"
+              onClick={() => scrollTo("contact")}
             >
-              Sign Up / Register
+              Book a walkthrough
             </button>
           </div>
-
           <button
-            onClick={() => setMobileMenuOpen((open) => !open)}
-            className="text-gray-800 lg:hidden"
-            aria-label="Open menu"
+            className="aura-menu"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-expanded={menuOpen}
+            aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
+            {menuOpen ? <XMarkIcon /> : <Bars3Icon />}
           </button>
         </div>
-
-        {mobileMenuOpen && (
-          <div className="border-t border-gray-200 bg-white px-4 py-4 shadow-lg lg:hidden">
-            <div className="flex flex-col gap-2 text-left text-sm font-semibold text-gray-700">
-              {navigation.map((item) => (
-                <button
-                  key={item.target}
-                  onClick={() => scrollToSection(item.target)}
-                  className={`rounded-md px-3 py-3 text-left ${
-                    activeSection === item.target ? 'bg-primary-50 text-primary-800' : 'hover:bg-gray-50'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-              <div className="mt-2 grid gap-2 border-t border-gray-100 pt-3">
-                <button onClick={() => navigate('/login')} className="rounded-md border border-gray-300 px-4 py-3">
-                  Sign In
-                </button>
-                <button onClick={() => navigate('/register')} className="rounded-md bg-primary-600 px-4 py-3 text-white">
-                  Sign Up / Register
-                </button>
-              </div>
-            </div>
+        {menuOpen && (
+          <div className="aura-mobile-menu">
+            {navItems.map(([label, id]) => (
+              <button key={id} onClick={() => scrollTo(id)}>
+                {label}
+              </button>
+            ))}
+            <button onClick={() => navigate("/login")}>Sign in</button>
           </div>
         )}
       </nav>
 
-      <header id="top" className="relative overflow-hidden bg-white pt-16">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_9%_11%,rgba(37,99,235,0.16),transparent_28%),radial-gradient(circle_at_88%_18%,rgba(14,165,233,0.13),transparent_28%),linear-gradient(135deg,rgba(248,253,255,1),rgba(230,244,250,0.9))]" />
-        <div className="relative mx-auto flex min-h-[calc(100svh-5rem)] max-w-7xl items-center px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
-          <div className="grid w-full overflow-hidden rounded-md border border-white/80 bg-white/72 shadow-2xl shadow-primary-900/10 backdrop-blur lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="flex items-center p-5 sm:p-7 lg:p-7 xl:p-8">
-              <div className="max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-wide text-primary-700">{brand.descriptor}</p>
-              <h1 className="mt-3 max-w-3xl text-[1.95rem] font-bold leading-[1.12] text-gray-950 sm:text-5xl sm:leading-[1.12] lg:text-[3.05rem] xl:text-[3.25rem]">
-                {brand.name}
-              </h1>
-              <p className="mt-2 text-xl font-semibold text-primary-800 sm:text-2xl">{brand.tagline}</p>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-700 sm:text-base lg:text-base lg:leading-6">
-                Connected HR operations, trusted company knowledge, and context-aware assistance in one focused
-                platform. {brand.promise}
-              </p>
-
-              <div className="mt-3 flex flex-wrap gap-2">
-                {[
-                  { label: 'Fast implementation', path: '/platform/implementation-ready' },
-                  { label: 'Human HR journeys', path: '/platform/human-hr-journeys' },
-                  { label: 'Tenant-safe operations', path: '/platform/workflow-depth' },
-                ].map((item) => (
-                  <button
-                    key={item.label}
-                    onClick={() => navigate(item.path)}
-                    className="rounded-full border border-primary-100 bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-800 transition hover:border-primary-300 hover:bg-primary-100"
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-
-              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                <button
-                  onClick={() => navigate('/register')}
-                  className="inline-flex items-center justify-center rounded-md bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary-900/15 hover:bg-primary-700"
-                >
-                  Register company
-                  <ArrowRightIcon className="ml-2 h-4 w-4" />
-                </button>
-                <button
-                  onClick={requestDemo}
-                  className="inline-flex items-center justify-center rounded-md border border-primary-200 bg-white/75 px-5 py-2.5 text-sm font-semibold text-primary-800 shadow-sm backdrop-blur hover:border-primary-300 hover:bg-white"
-                >
-                  Request demo
-                </button>
-              </div>
-
-              <div className="mt-[34px] hidden gap-3 md:grid md:grid-cols-3">
-                {personaCards.map((card) => (
-                  <div
-                    key={card.title}
-                    className="rounded-md border border-gray-200/80 bg-white/86 p-3 shadow-md shadow-primary-900/5 backdrop-blur"
-                  >
-                    <card.icon className="h-5 w-5 text-primary-700" />
-                    <h2 className="mt-2 text-sm font-bold leading-tight text-gray-950">{card.title}</h2>
-                    <p className="mt-2 overflow-hidden text-[11px] leading-4 text-gray-600 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]">
-                      {card.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[11px] font-semibold text-primary-900 md:hidden">
-                <div className="rounded-md border border-primary-100 bg-white/80 px-2 py-2">GCCs</div>
-                <div className="rounded-md border border-primary-100 bg-white/80 px-2 py-2">SMEs</div>
-                <div className="rounded-md border border-primary-100 bg-white/80 px-2 py-2">Startups</div>
-              </div>
-              </div>
+      <header id="top" className="aura-hero">
+        <div className="aura-orb aura-orb--one" />
+        <div className="aura-orb aura-orb--two" />
+        <div className="aura-shell aura-hero__grid">
+          <div className="aura-hero__copy">
+            <div className="aura-kicker">
+              <SparklesIcon /> People operations, beautifully clear
             </div>
-
-            <div className="order-first flex flex-col bg-white lg:order-none lg:h-[560px] xl:h-[580px]">
-              <div className="relative h-36 flex-none sm:h-52 lg:min-h-0 lg:flex-1">
-                <img
-                  src="/images/Hero-Images/hero-happy-employees.jpg"
-                  alt="Employees collaborating in a modern workplace"
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-950/18 via-transparent to-transparent lg:bg-gradient-to-r lg:from-primary-50/25 lg:via-transparent lg:to-transparent" />
-              </div>
-              <div className="bg-primary-50/80 pt-3">
-                <div className="rounded-md border border-gray-200/80 bg-white/86 p-3 shadow-md shadow-primary-900/5 backdrop-blur lg:min-h-36">
-                  <p className="text-xs font-bold uppercase tracking-wide text-primary-700">Practical HRMS</p>
-                  <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs leading-5 text-gray-700 lg:text-sm">
-                    <span>Focused on</span>
-                    {['HR operations', 'lifecycle workflows', 'documents', 'collaboration', 'adoption'].map((attribute, index) => (
-                      <span key={attribute} className="inline-flex items-center">
-                        <span className="rounded-full border border-primary-100 bg-primary-50 px-2 py-0.5 text-[11px] font-semibold text-primary-800 lg:text-xs">
-                          {attribute}
-                        </span>
-                        {index < 4 && <span className="ml-1 text-gray-400">,</span>}
-                      </span>
-                    ))}
-                    <span>.</span>
+            <h1>
+              Your people. Their journeys. <em>One beautiful workspace.</em>
+            </h1>
+            <p>
+              AuraHR brings employee journeys, everyday operations, documents,
+              and collaboration into one calm, connected workspace—built for
+              ambitious teams in India.
+            </p>
+            <div className="aura-hero__actions">
+              <button
+                className="aura-button"
+                onClick={() => scrollTo("walkthrough")}
+              >
+                Watch the product story <ArrowRightIcon />
+              </button>
+              <button
+                className="aura-button aura-button--ghost"
+                onClick={() => showModule("manu")}
+              >
+                Meet Manu, our AI
+              </button>
+            </div>
+            <div className="aura-trust-row">
+              <span>
+                <CheckCircleIcon /> Human-centred by design
+              </span>
+              <span>
+                <FingerPrintIcon /> Tenant-safe
+              </span>
+              <span>
+                <DocumentTextIcon /> Audit-ready records
+              </span>
+            </div>
+          </div>
+          <div className="aura-product-stage" aria-roledescription="carousel" aria-label="AuraHR highlights" onMouseEnter={() => setHeroPaused(true)} onMouseLeave={() => setHeroPaused(false)}>
+            <div className="aura-stage__glow" />
+            <div className="aura-hero-carousel">
+              <div className={`aura-hero-slide aura-hero-slide--product ${heroSlide === 0 ? "is-active" : ""}`} aria-hidden={heroSlide !== 0}>
+                <div className="aura-browser">
+                  <div className="aura-browser__bar">
+                    <i /><i /><i /><span>app.aurahrms.com</span>
                   </div>
+                  <img src="/images/Product-Screenshots/latest/dashboard.png" alt="AuraHR role-aware dashboard" />
+                </div>
+                <div className="aura-float-card aura-float-card--top">
+                  <span className="aura-float-icon"><CheckCircleIcon /></span>
+                  <div><b>Lifecycle complete</b><small>Probation milestone recorded</small></div>
+                </div>
+                <div className="aura-float-card aura-float-card--bottom">
+                  <span className="aura-avatars"><i>A</i><i>R</i><i>S</i></span>
+                  <div><b>One connected team</b><small>HR · Managers · Employees</small></div>
+                </div>
+              </div>
+
+              <div className={`aura-hero-slide aura-hero-slide--manu ${heroSlide === 1 ? "is-active" : ""}`} aria-hidden={heroSlide !== 1}>
+                <div className="aura-manu-copy">
+                  <span>The AI of AuraHR</span>
+                  <h2>Meet Manu.</h2>
+                  <p>Context-aware help, thoughtful drafts and trusted answers—inside the work.</p>
+                  <button onClick={() => showModule("manu")}>Discover Manu <ArrowRightIcon /></button>
+                </div>
+                <div className="aura-manu-halo" />
+                <img className="aura-manu-portrait" src="/images/assistant/manu-avatar.png" alt="Manu, the AuraHR AI assistant" />
+                <div className="aura-manu-thought"><SparklesIcon /><span><b>Good morning.</b> I found three probation reviews that need attention.</span></div>
+              </div>
+
+              <div className={`aura-hero-slide aura-hero-slide--people ${heroSlide === 2 ? "is-active" : ""}`} aria-hidden={heroSlide !== 2}>
+                <img src="/images/Hero-Images/aura-people-team-v2.jpg" alt="An Indian people operations team collaborating" />
+                <div className="aura-people-overlay">
+                  <span>Designed around people</span>
+                  <h2>Serious HR. A genuinely human experience.</h2>
+                  <p>Clear for employees, managers, HR teams and leadership.</p>
+                </div>
+              </div>
+
+              <div className={`aura-hero-slide aura-hero-slide--brand ${heroSlide === 3 ? "is-active" : ""}`} aria-hidden={heroSlide !== 3}>
+                <div className="aura-brand-evolution" aria-label="The Aura infinity mark evolving into the Aura identity">
+                  <span className="aura-brand-orbit aura-brand-orbit--one" />
+                  <span className="aura-brand-orbit aura-brand-orbit--two" />
+                  <img className="aura-brand-mark" src="/brand/aura/aura-mark-exact-white.png" alt="" />
+                  <img className="aura-brand-reveal" src="/brand/aura/aura-logo-exact-white.png" alt="Aura" />
+                </div>
+                <div className="aura-brand-story">
+                  <span>Infinite human potential</span>
+                  <h2>Aura</h2>
+                  <p>The living identity behind AuraHR—clarity, continuity and care in every people journey.</p>
+                  <b>AuraHR <i>·</i> The people operating system</b>
                 </div>
               </div>
             </div>
+
+            <div className="aura-carousel-controls">
+              <button aria-label="Previous highlight" onClick={() => { setHeroPaused(true); setHeroSlide((heroSlide + 3) % 4); }}><ChevronLeftIcon /></button>
+              <div className="aura-carousel-dots" role="tablist" aria-label="Choose highlight">
+                {["Product", "Manu", "People", "Aura"].map((label, index) => (
+                  <button key={label} role="tab" aria-label={label} aria-selected={heroSlide === index} className={heroSlide === index ? "is-active" : ""} onClick={() => { setHeroPaused(true); setHeroSlide(index); }}><span>{label}</span></button>
+                ))}
+              </div>
+              <button aria-label="Next highlight" onClick={() => { setHeroPaused(true); setHeroSlide((heroSlide + 1) % 4); }}><ChevronRightIcon /></button>
+            </div>
           </div>
+        </div>
+        <div className="aura-shell aura-hero__foot">
+          <span>Made for the moments that matter</span>
+          <div />
+          <span>Onboard</span>
+          <span>Support</span>
+          <span>Grow</span>
+          <span>Celebrate</span>
         </div>
       </header>
 
       <main>
-        <section id="platform" className="bg-gray-50 px-4 py-16 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-              <div className="max-w-3xl">
-              <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Platform capabilities</p>
-              <h2 className="mt-3 text-4xl font-bold text-gray-900">The HR foundation for a company that is ready to operate.</h2>
-              <p className="mt-4 text-lg leading-8 text-gray-600">
-                Aura is organized around the operating moments HR teams handle every week: clean data,
-                employee self-service, manager approvals, HR exceptions, documents, communication, and leadership visibility.
+        <section id="product" className="aura-section aura-product">
+          <div className="aura-shell">
+            <div className="aura-section-heading">
+              <span>The AuraHR platform</span>
+              <h2>
+                Everything your people team needs.
+                <br />
+                Nothing it doesn’t.
+              </h2>
+              <p>
+                Purposeful tools, connected by a single employee story and a
+                design language people enjoy using.
               </p>
-              </div>
-              <div className="grid gap-2 rounded-md border border-gray-200 bg-white p-1 text-sm font-semibold text-gray-600 shadow-sm sm:grid-cols-2 lg:grid-cols-4">
-                {[
-                  { id: 'depth', label: 'Current Product Depth' },
-                  { id: 'capabilities', label: 'Platform Capabilities' },
-                  { id: 'modules', label: 'Explore Modules' },
-                  { id: 'trust', label: 'Trust & Control' },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActivePlatformTab(tab.id as 'depth' | 'capabilities' | 'modules' | 'trust')}
-                    className={`rounded-md px-4 py-2.5 text-left transition sm:text-center ${
-                      activePlatformTab === tab.id ? 'bg-primary-600 text-white shadow-sm' : 'hover:bg-primary-50 hover:text-primary-700'
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
             </div>
-
-            {activePlatformTab === 'depth' && (
-              <div className="mt-10 overflow-hidden rounded-md border border-gray-200 bg-white shadow-xl">
-                <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
-                  <div className="p-6 sm:p-8 lg:p-10">
-                    <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Current product depth</p>
-                    <h3 className="mt-3 text-3xl font-bold text-gray-900">
-                      Not a brochure tool. A working HR operating layer.
-                    </h3>
-                    <p className="mt-4 text-base leading-7 text-gray-600">
-                      Aura already supports registration, onboarding, employee records, masters, attendance, leave,
-                      probation, performance, exit, HR Connect, reports, documents, demo mode, role-based dashboards,
-                      and production tenant pilots.
-                    </p>
-                    <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                      {[
-                        'Owner implementation console',
-                        'HR operations workspace',
-                        'Manager approval queue',
-                        'Employee self-service',
-                        'Demo data mode',
-                        'Production pilot import',
-                      ].map((item) => (
-                        <div key={item} className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                          <CheckCircleIcon className="h-5 w-5 flex-none text-success-600" />
-                          {item}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="bg-gray-950 p-4 sm:p-6">
-                    <BrandedScreenshot
-                      src="/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png"
-                      alt="Aura dashboard sample"
-                      className="h-full min-h-[300px] w-full rounded-md"
-                      imageClassName="h-full min-h-[300px] w-full rounded-md object-cover object-left-top"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activePlatformTab === 'capabilities' && (
-              <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {platformPillars.map((feature) => (
-                  <button
-                    key={feature.id}
-                    onClick={() => navigate(`/platform/${feature.id}`)}
-                    className="group rounded-md border border-gray-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-primary-300 hover:shadow-lg"
+            <div className="aura-feature-grid">
+              {features.map(({ icon: Icon, route, title, copy }, index) => (
+                <button key={title} className="aura-feature-card" onClick={() => navigate(route)}>
+                  <div
+                    className={`aura-feature-icon aura-feature-icon--${index + 1}`}
                   >
-                    <feature.icon className="h-7 w-7 text-primary-700" />
-                    <h3 className="mt-5 text-lg font-bold text-gray-900 group-hover:text-primary-700">{feature.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-gray-600">{feature.description}</p>
-                    <span className="mt-5 inline-flex items-center text-sm font-semibold text-primary-700">
-                      Open page
-                      <ArrowRightIcon className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {activePlatformTab === 'modules' && (
-              <div className="mt-10">
-                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Explore the modules</p>
-                <h3 className="mt-2 text-2xl font-bold text-gray-900">Each capability opens into a focused product page.</h3>
-                <div className="mt-6 grid gap-6 lg:grid-cols-3">
-                  {capabilities.map((capability) => (
-                    <article
-                      key={capability.title}
-                      onClick={() => navigate(`/features/${capability.moduleId}`)}
-                      className="group cursor-pointer overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-                    >
-                      <BrandedScreenshot
-                        src={capability.image}
-                        alt={`${capability.title} visual`}
-                        className="h-44 bg-gray-100"
-                        imageClassName="h-full w-full object-cover object-left-top"
-                      />
-                      <div className="p-6">
-                        <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-md bg-primary-50 text-primary-700">
-                          <capability.icon className="h-6 w-6" />
-                        </div>
-                        <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary-700">{capability.title}</h3>
-                        <p className="mt-3 text-sm leading-6 text-gray-600">{capability.description}</p>
-                        <div className="mt-5 flex flex-wrap gap-2">
-                          {capability.points.map((point) => (
-                            <span key={point} className="rounded-md bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">
-                              {point}
-                            </span>
-                          ))}
-                        </div>
-                        <div className="mt-5 inline-flex items-center text-sm font-semibold text-primary-700">
-                          View capability
-                          <ArrowRightIcon className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activePlatformTab === 'trust' && (
-              <div className="mt-10 grid gap-8 lg:grid-cols-3">
-                <div className="lg:col-span-1">
-                  <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Trust and control</p>
-                  <h3 className="mt-3 text-3xl font-bold text-gray-900">The essentials commercial buyers ask for.</h3>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
-                  {[
-                    {
-                      title: 'Authentic multi-tenancy',
-                      description: 'Tenant-aware data access and production pilot workflows keep company records separated.',
-                      icon: FingerPrintIcon,
-                    },
-                    {
-                      title: 'Role-based UX',
-                      description: 'Owners, HR managers, senior employees, managers, and employees see the work that matters to them.',
-                      icon: UserPlusIcon,
-                    },
-                    {
-                      title: 'Operational evidence',
-                      description: 'Visual QA, screenshots, workflow reports, and seeded demo journeys support investor and customer demos.',
-                      icon: DocumentTextIcon,
-                    },
-                    {
-                      title: 'Security-conscious account flows',
-                      description: 'Login, profile management, password change, reset hooks, and invite flows are treated as product-critical paths.',
-                      icon: LockClosedIcon,
-                    },
-                  ].map((item) => (
-                    <div key={item.title} className="rounded-md border border-gray-200 bg-white p-6 shadow-sm">
-                      <item.icon className="h-7 w-7 text-primary-700" />
-                      <h4 className="mt-4 text-lg font-bold text-gray-900">{item.title}</h4>
-                      <p className="mt-2 text-sm leading-6 text-gray-600">{item.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section id="journeys" className="bg-white px-4 py-16 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <div>
-                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Registration to adoption</p>
-              <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div className="max-w-3xl">
-                  <h2 className="text-4xl font-bold text-gray-900">A simple path from first visit to mature HR operations.</h2>
-                  <p className="mt-4 text-lg leading-8 text-gray-600">
-                  The onboarding journey is designed to feel obvious: register, configure, migrate, operate,
-                  train with demo mode, and then scale the HR operating model.
-                </p>
-                </div>
-                <button
-                  onClick={() => navigate('/register')}
-                  className="inline-flex items-center justify-center rounded-md bg-primary-600 px-5 py-3 font-semibold text-white hover:bg-primary-700"
-                >
-                  Start registration
-                  <ArrowRightIcon className="ml-2 h-5 w-5" />
+                    <Icon />
+                  </div>
+                  <h3>{title}</h3>
+                  <p>{copy}</p>
+                  <span className="aura-feature-card__link">
+                    Discover more <ArrowRightIcon />
+                  </span>
                 </button>
-              </div>
-
-              <div className="mt-8 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                  {adoptionJourneys.map((journey, index) => (
-                    <article
-                      key={journey.id}
-                      onClick={() => navigate(`/journeys/${journey.id}`)}
-                    className="group cursor-pointer rounded-md border border-gray-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:border-primary-200 hover:shadow-lg"
-                    >
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-primary-600 text-sm font-bold text-white">
-                        {String(index + 1).padStart(2, '0')}
-                        </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <journey.icon className="h-5 w-5 text-primary-700" />
-                          <p className="text-xs font-semibold uppercase tracking-wide text-primary-700">{journey.shortTitle}</p>
-                        </div>
-                        <h3 className="mt-1 text-base font-bold leading-snug text-gray-900 group-hover:text-primary-700">{journey.title}</h3>
-                      </div>
-                    </div>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-[120px_1fr]">
-                      <div className="relative h-24 overflow-hidden rounded-md bg-gray-100">
-                          <img src={journey.image} alt={journey.title} className="h-full w-full object-cover" />
-                        </div>
-                      <div>
-                        <p className="text-sm leading-6 text-gray-600">{journey.description}</p>
-                        <div className="mt-3 inline-flex items-center text-sm font-semibold text-primary-700">
-                            View adoption stage
-                            <ArrowRightIcon className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
-                          </div>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="unique" className="bg-gray-50 px-4 py-16 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-              <div className="max-w-3xl">
-                <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">
-                  {activeUniqueTab === 'unique' ? 'What is unique' : 'Key differentiators'}
-                </p>
-                <h2 className="mt-3 text-4xl font-bold text-gray-900">
-                  {activeUniqueTab === 'unique'
-                    ? 'Focused HR software that avoids the all-in-one trap.'
-                    : 'Three product choices that make Aura feel different.'}
-                </h2>
-                <p className="mt-4 text-lg leading-8 text-gray-600">
-                  {activeUniqueTab === 'unique'
-                    ? 'Aura is intentionally human-centric, HR-focused, and ecosystem-friendly. It gives each persona a clean workspace while leaving room for the customer’s existing payroll, recruitment, finance, identity, and collaboration systems.'
-                    : 'The strongest parts of Aura are the connective ideas that make HR work easier: context-rich collaboration, document-backed lifecycle actions, and timeline-led process UX.'}
-                </p>
-              </div>
-              <div className="grid gap-2 rounded-md border border-gray-200 bg-white p-1 text-sm font-semibold text-gray-600 shadow-sm sm:grid-cols-2">
-                {[
-                  { id: 'unique', label: 'What is Unique' },
-                  { id: 'differentiators', label: 'Key Differentiators' },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveUniqueTab(tab.id as 'unique' | 'differentiators')}
-                    className={`rounded-md px-4 py-2.5 text-left transition sm:text-center ${
-                      activeUniqueTab === tab.id ? 'bg-primary-600 text-white shadow-sm' : 'hover:bg-primary-50 hover:text-primary-700'
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {activeUniqueTab === 'unique' && (
-              <div className="mt-10 grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
-                <div>
-                <div className="mt-8 rounded-md border border-primary-200 bg-primary-700 p-6 text-white shadow-lg">
-                  <p className="text-sm font-semibold uppercase tracking-wide text-primary-100">Scope discipline</p>
-                  <h3 className="mt-2 text-2xl font-bold">Payroll and recruitment are not missing. They are intentionally left out.</h3>
-                  <p className="mt-3 text-sm leading-6 text-primary-50">
-                    For GCCs, SMEs, and startups, this is an advantage. Customers can keep their preferred payroll,
-                    ATS, finance, and communication stack while Aura becomes the focused people-operations layer
-                    for lifecycle, workflows, documents, collaboration, and reporting.
-                  </p>
-                </div>
-              </div>
-
-                <div className="grid gap-4">
-                  {[
-                    {
-                      title: 'Intuitive by role',
-                      description: 'Owners, HR teams, managers, and employees see focused dashboards instead of one overloaded workspace.',
-                      icon: UserGroupIcon,
-                    },
-                    {
-                      title: 'Human-centric UX',
-                      description: 'The product follows real HR moments: joining, attendance, leave, probation, performance, documents, communication, and exit.',
-                      icon: SparklesIcon,
-                    },
-                    {
-                      title: 'Built for GCCs, SMEs, and startups',
-                      description: 'The platform supports serious implementation without forcing enterprise-suite complexity on teams that need speed and clarity.',
-                      icon: GlobeAltIcon,
-                    },
-                    {
-                      title: 'Co-exists instead of locking customers in',
-                      description: 'Leaving payroll and recruitment out of core scope makes integration easier and avoids forcing buyers into one complex HR monolith.',
-                      icon: ChatBubbleLeftRightIcon,
-                    },
-                  ].map((item) => (
-                    <div key={item.title} className="grid gap-4 rounded-md border border-gray-200 bg-white p-5 shadow-sm sm:grid-cols-[48px_1fr]">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary-50 text-primary-700">
-                        <item.icon className="h-7 w-7" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-900">{item.title}</h3>
-                        <p className="mt-2 text-sm leading-6 text-gray-600">{item.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeUniqueTab === 'differentiators' && (
-              <div className="mt-10">
-                <div className="grid gap-5 lg:grid-cols-3">
-                  {differentiators.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => navigate(`/differentiators/${item.id}`)}
-                      className="group rounded-md border border-gray-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:border-primary-300 hover:shadow-lg"
-                    >
-                        <item.icon className="h-7 w-7 text-primary-700" />
-                        <h4 className="mt-4 text-lg font-bold leading-tight text-gray-900">{item.title}</h4>
-                        <p className="mt-3 line-clamp-4 text-sm leading-6 text-gray-600">{item.description}</p>
-                      <span className="mt-5 inline-flex items-center text-sm font-semibold text-primary-700">
-                        View differentiator
-                        <ArrowRightIcon className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section id="pricing" className="bg-gray-50 px-4 py-20 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <div className="max-w-3xl">
-              <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Commercial path</p>
-              <h2 className="mt-3 text-4xl font-bold text-gray-900">Start with a pilot. Grow into production.</h2>
-              <p className="mt-4 text-lg leading-8 text-gray-600">
-                Pricing should support evaluation, real-company pilots, and implementation-heavy GCC rollouts.
-              </p>
-            </div>
-
-            <div className="mt-10 grid gap-6 lg:grid-cols-3">
-              {pricingPlans.map((plan) => (
-                <article
-                  key={plan.name}
-                  className={`rounded-md border bg-white p-7 shadow-sm ${
-                    plan.featured ? 'border-primary-600 ring-2 ring-primary-100' : 'border-gray-200'
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
-                      <p className="mt-2 text-sm leading-6 text-gray-600">{plan.description}</p>
-                    </div>
-                    {plan.featured && <span className="rounded-md bg-success-50 px-2.5 py-1 text-xs font-bold text-success-700">Best fit</span>}
-                  </div>
-                  <div className="mt-6 text-3xl font-bold text-gray-900">{plan.price}</div>
-                  <ul className="mt-6 space-y-3">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex gap-2 text-sm text-gray-700">
-                        <CheckCircleIcon className="mt-0.5 h-5 w-5 flex-none text-success-600" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <button
-                    onClick={plan.name === 'GCC Launch' ? requestDemo : () => navigate('/register')}
-                    className={`mt-7 w-full rounded-md px-4 py-3 font-semibold ${
-                      plan.featured ? 'bg-primary-600 text-white hover:bg-primary-700' : 'border border-gray-300 text-gray-800 hover:border-primary-300'
-                    }`}
-                  >
-                    {plan.action}
-                  </button>
-                </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="contact" className="bg-white px-4 py-20 sm:px-6 lg:px-8">
-          <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-primary-700">Contact us</p>
-              <h2 className="mt-3 text-4xl font-bold text-gray-900">Request a focused Aura conversation.</h2>
-              <p className="mt-4 text-lg leading-8 text-gray-600">
-                Share your context and a preferred time slot. For now, the enquiry will be routed by email to
-                Anupama Bhat while we build the full lead-management admin panel later.
+        <section id="platform" className="aura-section aura-platform-depth">
+          <div className="aura-shell">
+            <div className="aura-section-heading aura-section-heading--left">
+              <span>The platform beneath the experience</span>
+              <h2>The HR foundation for a company ready to operate.</h2>
+              <p>
+                AuraHR is not a collection of disconnected forms. It brings
+                implementation, human workflows, operational depth, and
+                leadership visibility into one accountable operating layer.
               </p>
-              <div className="mt-8 rounded-md border border-primary-100 bg-primary-50 p-5">
-                <h3 className="text-base font-bold text-gray-900">Best for</h3>
-                <div className="mt-4 grid gap-3 text-sm text-gray-700">
-                  {['Western MNCs planning India GCCs', 'Indian SMEs professionalizing HR', 'Startups building HR operating discipline'].map((item) => (
-                    <div key={item} className="flex gap-2">
-                      <CheckCircleIcon className="mt-0.5 h-5 w-5 flex-none text-success-600" />
-                      {item}
-                    </div>
+            </div>
+            <div className="aura-platform-map" aria-label="AuraHR platform pillars">
+              <div className="aura-platform-map__core">
+                <img src={brand.reversedMark} alt="" />
+                <strong>AuraHR</strong>
+                <span>One employee story</span>
+              </div>
+              {platformPillars.map((pillar, index) => {
+                const Icon = pillar.icon;
+                return (
+                  <button
+                    key={pillar.id}
+                    className={`aura-platform-node aura-platform-node--${index + 1}`}
+                    onClick={() => navigate(`/platform/${pillar.id}`)}
+                  >
+                    <span><Icon /></span>
+                    <b>{pillar.title}</b>
+                    <small>{pillar.description}</small>
+                    <em>Explore pillar <ArrowRightIcon /></em>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="aura-depth-strip">
+              <div>
+                <strong>A working HR operating layer</strong>
+                <span>Registration · employee records · attendance · leave · lifecycle · collaboration · reports</span>
+              </div>
+              <div>
+                {["Owner implementation console", "Role-aware workspaces", "Production-ready tenancy"].map((item) => (
+                  <span key={item}><CheckCircleIcon /> {item}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="aura-section aura-modules">
+          <div id="modules" className="aura-shell aura-modules__content">
+            <div className="aura-section-heading aura-section-heading--left">
+              <span>See AuraHR at work</span>
+              <h2 className="aura-modules__title">Designed around real HR moments.</h2>
+              <p>
+                Explore the connected modules that turn day-to-day people
+                operations into calm, accountable journeys.
+              </p>
+            </div>
+            <div
+              className="aura-module-tabs"
+              role="tablist"
+              aria-label="AuraHR modules"
+            >
+              {modules.map((module) => (
+                <button
+                  key={module.id}
+                  role="tab"
+                  aria-selected={activeModule.id === module.id}
+                  onClick={() => setActiveModule(module)}
+                >
+                  {module.label}
+                </button>
+              ))}
+            </div>
+            <div className="aura-module-stage">
+              <div className="aura-module-copy">
+                <span className="aura-eyebrow">{activeModule.eyebrow}</span>
+                <h3>{activeModule.title}</h3>
+                <p>{activeModule.copy}</p>
+                <ul>
+                  {activeModule.points.map((point) => (
+                    <li key={point}>
+                      <CheckCircleIcon />
+                      {point}
+                    </li>
                   ))}
+                </ul>
+                <button
+                  className="aura-button aura-button--ghost"
+                  onClick={() => scrollTo("contact")}
+                >
+                  Explore this journey <ArrowRightIcon />
+                </button>
+              </div>
+              <div className="aura-module-screen" key={activeModule.id}>
+                <div className="aura-module-screen__bar">
+                  <i />
+                  <i />
+                  <i />
+                  <span>{activeModule.label}</span>
+                </div>
+                <img
+                  src={activeModule.image}
+                  alt={`${activeModule.label} in AuraHR`}
+                />
+              </div>
+            </div>
+            <p className="aura-demo-note">
+              <SparklesIcon /> Product views use representative demo data. Your
+              AuraHR workspace is configured around your organization, roles,
+              and policies.
+            </p>
+          </div>
+        </section>
+
+        <section id="unique" className="aura-section aura-unique">
+          <div className="aura-shell">
+            <div className="aura-unique__hero">
+              <div className="aura-unique__image">
+                <img
+                  src="/images/Hero-Images/aura-people-team-v2.jpg"
+                  alt="A collaborative people team at work"
+                />
+                <div className="aura-unique__quote">
+                  <SparklesIcon />
+                  <span>Built around how HR actually happens—not around software menus.</span>
+                </div>
+              </div>
+              <div className="aura-unique__copy">
+                <span className="aura-eyebrow">What makes AuraHR different</span>
+                <h2>Serious operational depth, with a genuinely human interface.</h2>
+                <p>
+                  Employees request. Managers approve. HR resolves exceptions.
+                  Leadership reviews outcomes. AuraHR gives each role the right
+                  context while preserving one connected record underneath.
+                </p>
+            <div className="aura-trust-stack">
+                  <button onClick={() => navigate('/stories/authentic-multi-tenancy')}><FingerPrintIcon /><span><b>Authentic multi-tenancy</b><small>Company records and demo journeys remain safely separated.</small></span><ArrowRightIcon /></button>
+                  <button onClick={() => navigate('/stories/role-based-experience')}><UserPlusIcon /><span><b>Role-based experience</b><small>Focused workspaces for owners, HR, managers, and employees.</small></span><ArrowRightIcon /></button>
+                  <button onClick={() => navigate('/stories/trust-by-design')}><LockClosedIcon /><span><b>Trust by design</b><small>Account flows, evidence, ownership, and audit context are product-critical.</small></span><ArrowRightIcon /></button>
                 </div>
               </div>
             </div>
+            <div className="aura-differentiator-grid">
+              {differentiators.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button key={item.id} onClick={() => navigate(`/differentiators/${item.id}`)}>
+                    <span><Icon /></span>
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                    <em>See why it matters <ArrowRightIcon /></em>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
-            <form onSubmit={handleContactSubmit} className="rounded-md border border-gray-200 bg-gray-50 p-5 shadow-sm sm:p-6">
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="text-sm font-semibold text-gray-700">
-                  Name
-                  <input
-                    required
-                    value={contactForm.name}
-                    onChange={(event) => setContactForm((form) => ({ ...form, name: event.target.value }))}
-                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="Your name"
-                  />
-                </label>
-                <label className="text-sm font-semibold text-gray-700">
-                  Company
-                  <input
-                    required
-                    value={contactForm.company}
-                    onChange={(event) => setContactForm((form) => ({ ...form, company: event.target.value }))}
-                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="Company name"
-                  />
-                </label>
-                <label className="text-sm font-semibold text-gray-700">
-                  Work email
-                  <input
-                    required
-                    type="email"
-                    value={contactForm.email}
-                    onChange={(event) => setContactForm((form) => ({ ...form, email: event.target.value }))}
-                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="name@company.com"
-                  />
-                </label>
-                <label className="text-sm font-semibold text-gray-700">
-                  Phone
-                  <input
-                    value={contactForm.phone}
-                    onChange={(event) => setContactForm((form) => ({ ...form, phone: event.target.value }))}
-                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="+91 ..."
-                  />
-                </label>
-                <label className="text-sm font-semibold text-gray-700 md:col-span-2">
-                  What are you exploring?
-                  <select
-                    value={contactForm.interest}
-                    onChange={(event) => setContactForm((form) => ({ ...form, interest: event.target.value }))}
-                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                  >
-                    <option>GCC launch</option>
-                    <option>SME HR operations</option>
-                    <option>Startup HR scale-up</option>
-                    <option>Product demo</option>
-                    <option>Implementation discussion</option>
-                  </select>
-                </label>
-                <label className="text-sm font-semibold text-gray-700">
-                  Preferred date
-                  <input
-                    type="date"
-                    value={contactForm.preferredDate}
-                    onChange={(event) => setContactForm((form) => ({ ...form, preferredDate: event.target.value }))}
-                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                  />
-                </label>
-                <label className="text-sm font-semibold text-gray-700">
-                  Preferred time
-                  <input
-                    type="time"
-                    value={contactForm.preferredTime}
-                    onChange={(event) => setContactForm((form) => ({ ...form, preferredTime: event.target.value }))}
-                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                  />
-                </label>
-                <label className="text-sm font-semibold text-gray-700 md:col-span-2">
-                  Message
-                  <textarea
-                    value={contactForm.message}
-                    onChange={(event) => setContactForm((form) => ({ ...form, message: event.target.value }))}
-                    className="mt-2 min-h-28 w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                    placeholder="Tell us what you want to evaluate, implement, or discuss."
-                  />
-                </label>
-              </div>
-              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <button type="submit" className="inline-flex items-center justify-center rounded-md bg-primary-600 px-5 py-3 font-semibold text-white hover:bg-primary-700">
-                  Send enquiry
-                  <ArrowRightIcon className="ml-2 h-5 w-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate('/register')}
-                  className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-5 py-3 font-semibold text-gray-800 hover:border-primary-300 hover:text-primary-700"
-                >
-                  Sign Up / Register
-                </button>
-              </div>
-              <p className="mt-4 text-xs leading-5 text-gray-500">
-                This temporary form opens an email draft to Anupama.Bhat@acvsolutions.in. Lead capture, analytics, and admin workflows will be added later.
+        <section id="adoption" className="aura-section aura-adoption">
+          <div className="aura-shell">
+            <div className="aura-section-heading">
+              <span>Ease of adoption</span>
+              <h2>From first visit to mature HR operations.</h2>
+              <p>
+                A clear implementation path makes adoption feel natural:
+                register, configure, migrate, operate, train safely, and scale.
               </p>
+            </div>
+            <div className="aura-adoption-path" aria-label="AuraHR adoption journey">
+              {adoptionJourneys.map((journey, index) => {
+                const Icon = journey.icon;
+                return (
+                  <button key={journey.id} onClick={() => navigate(`/journeys/${journey.id}`)}>
+                    <span className="aura-adoption-path__number">0{index + 1}</span>
+                    <span className="aura-adoption-path__icon"><Icon /></span>
+                    <b>{journey.shortTitle}</b>
+                    <small>{journey.description}</small>
+                    <em>Open journey <ArrowRightIcon /></em>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="aura-adoption-story">
+              <div>
+                <span className="aura-eyebrow">Adoption confidence</span>
+                <h3>Train with good data. Go live with clarity.</h3>
+                <p>
+                  AuraHR’s curated demo workspace lets buyers, leaders, HR
+                  teams, managers, and employees learn complete journeys
+                  without touching live company records.
+                </p>
+                <button className="aura-button aura-button--ghost" onClick={() => navigate("/journeys/demo-and-training")}>Explore demo-led adoption <ArrowRightIcon /></button>
+              </div>
+              <img src="/images/Hero-Images/aura-employee-welcome-v2.jpg" alt="A new employee being welcomed by colleagues" />
+            </div>
+          </div>
+        </section>
+
+        <section id="capabilities" className="aura-section aura-capabilities">
+          <div className="aura-shell">
+            <div className="aura-section-heading">
+              <span>More than a system of record</span>
+              <h2>One workspace. The full people-operations story.</h2>
+              <p>
+                From workforce evidence to onboarding and leadership insight,
+                AuraHR keeps every important moment connected to the people it
+                serves.
+              </p>
+            </div>
+            <div className="aura-capability-grid">
+              {capabilityStories.map((story) => (
+                <button key={story.title} onClick={() => navigate(`/stories/${story.id}`)}>
+                  <div className="aura-capability-screen">
+                    <img src={story.image} alt={`${story.eyebrow} in AuraHR`} />
+                  </div>
+                  <div className="aura-capability-copy">
+                    <span className="aura-eyebrow">{story.eyebrow}</span>
+                    <h3>{story.title}</h3>
+                    <p>{story.copy}</p>
+                    <span className="aura-card-link">Explore capability <ArrowRightIcon /></span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="people" className="aura-section aura-people-story">
+          <div className="aura-shell">
+            <div className="aura-people-story__grid">
+              <div className="aura-people-story__copy">
+                <span className="aura-eyebrow">Built for ambitious teams</span>
+                <h2>Technology that supports the people behind the work.</h2>
+                <p>
+                  Western MNCs building India GCCs, Indian SMEs
+                  professionalizing HR, and new-age teams scaling quickly all
+                  need the same thing: enough structure to inspire confidence,
+                  without losing warmth or speed.
+                </p>
+                <button className="aura-button" onClick={() => scrollTo("contact")}>Plan your AuraHR journey <ArrowRightIcon /></button>
+              </div>
+              <div className="aura-people-collage">
+                <img src="/images/Hero-Images/aura-leadership-team-v2.jpg" alt="Leadership team reviewing people operations" />
+                <img src="/images/Hero-Images/aura-people-team-v2.jpg" alt="Employees collaborating in a modern workplace" />
+                <div><GlobeAltIcon /><b>Global governance</b><span>Local operating clarity</span></div>
+                <div><BuildingOffice2Icon /><b>Practical adoption</b><span>Built for real HR teams</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="aura-section aura-showcase">
+          <div className="aura-shell aura-showcase__grid">
+            <div className="aura-showcase__copy">
+              <span className="aura-eyebrow">One source of truth</span>
+              <h2>Every employee journey, visible at a glance.</h2>
+              <p>
+                AuraHR turns milestones, performance moments, and changes into
+                an elegant timeline. Teams get context. Employees get
+                continuity. Leaders get confidence.
+              </p>
+              <ul>
+                <li>
+                  <CheckCircleIcon />
+                  Complete employee 360° view
+                </li>
+                <li>
+                  <CheckCircleIcon />
+                  Document-backed lifecycle events
+                </li>
+                <li>
+                  <CheckCircleIcon />
+                  Clear ownership and audit trails
+                </li>
+              </ul>
+              <button className="aura-button aura-button--ghost" onClick={() => navigate('/features/probation')}>
+                Explore lifecycle visibility <ArrowRightIcon />
+              </button>
+            </div>
+            <div className="aura-showcase__screen">
+              <img
+                src="/images/Product-Screenshots/latest/probation.png"
+                alt="Probation management journey in AuraHR"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section id="why" className="aura-section aura-why">
+          <div className="aura-shell aura-why__grid">
+            <div className="aura-why__visual">
+              <div className="aura-ring">
+                <span>
+                  <img src={brand.reversedMark} alt="" />
+                </span>
+                <i>Clarity</i>
+                <i>Care</i>
+                <i>Control</i>
+              </div>
+            </div>
+            <div className="aura-why__copy">
+              <span className="aura-eyebrow aura-eyebrow--light">
+                Why AuraHR
+              </span>
+              <h2>
+                Serious HR operations.
+                <br />A genuinely human experience.
+              </h2>
+              <p>
+                Most systems make people adapt to software. AuraHR does the
+                reverse: focused role-based spaces, familiar journeys, and
+                thoughtful details that make adoption feel natural.
+              </p>
+              <div className="aura-metric-grid">
+                <button onClick={() => navigate('/stories/authentic-multi-tenancy')}>
+                  <strong>One</strong>
+                  <span>connected people workspace</span>
+                </button>
+                <button onClick={() => navigate('/stories/role-based-experience')}>
+                  <strong>Every</strong>
+                  <span>role gets a focused view</span>
+                </button>
+                <button onClick={() => navigate('/stories/trust-by-design')}>
+                  <strong>Zero</strong>
+                  <span>need for HR-suite clutter</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="roles" className="aura-section aura-journeys">
+          <div className="aura-shell">
+            <div className="aura-section-heading">
+              <span>One platform, four clear perspectives</span>
+              <h2>
+                Focused for every role.
+                <br />
+                Connected for the whole company.
+              </h2>
+            </div>
+            <div className="aura-journey-grid">
+              <button onClick={() => navigate('/stories/employees')}>
+                <span>01</span>
+                <h3>Employees</h3>
+                <p>
+                  Self-service, documents, leave, attendance, conversations,
+                  goals, and personal milestones—without HR dependency.
+                </p>
+                <span className="aura-card-link">Explore employee experience <ArrowRightIcon /></span>
+              </button>
+              <button onClick={() => navigate('/stories/managers')}>
+                <span>02</span>
+                <h3>Managers</h3>
+                <p>
+                  Team context, approvals, performance conversations, probation
+                  decisions, and actions that never lose their owner.
+                </p>
+                <span className="aura-card-link">Explore manager experience <ArrowRightIcon /></span>
+              </button>
+              <button onClick={() => navigate('/stories/hr-teams')}>
+                <span>03</span>
+                <h3>HR teams</h3>
+                <p>
+                  Governed records, workflows, exceptions, communication,
+                  templates, cases, and audit-ready operational control.
+                </p>
+                <span className="aura-card-link">Explore HR experience <ArrowRightIcon /></span>
+              </button>
+              <button onClick={() => navigate('/stories/leadership')}>
+                <span>04</span>
+                <h3>Leadership</h3>
+                <p>
+                  Reliable workforce signals, organizational memory, readiness
+                  views, and clarity without spreadsheet archaeology.
+                </p>
+                <span className="aura-card-link">Explore leadership view <ArrowRightIcon /></span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section id="teams" className="aura-section aura-teams">
+          <div className="aura-shell">
+            <div className="aura-section-heading aura-section-heading--left">
+              <span>Built for your next chapter</span>
+              <h2>Start strong. Grow with clarity.</h2>
+            </div>
+            <div className="aura-audience-grid">
+              {audiences.map((item, index) => (
+                <button key={item.title} onClick={() => navigate(`/stories/${item.id}`)}>
+                  <span>
+                    0{index + 1} · {item.eyebrow}
+                  </span>
+                  <h3>{item.title}</h3>
+                  <p>{item.copy}</p>
+                  <ArrowRightIcon />
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="walkthrough" className="aura-section aura-walkthrough">
+          <div className="aura-shell">
+            <div className="aura-walkthrough__heading">
+              <div>
+                <span className="aura-eyebrow">The AuraHR product walkthrough</span>
+                <h2>See one employee story become one connected company story.</h2>
+              </div>
+              <p>Our guided film will bring the product, Manu and the real HR moments between joining and exit into one concise journey.</p>
+            </div>
+            <div className="aura-video-stage">
+              <video key={activeWalkthrough.id} className="aura-walkthrough-video" controls preload="metadata" poster="/brand/aura/aura-social-card.png">
+                <source src={activeWalkthrough.source} type="video/mp4" />
+                <track kind="captions" src={activeWalkthrough.captions} srcLang="en" label="English" default />
+                Your browser does not support embedded video.
+              </video>
+              <div className="aura-video-chapters" aria-label="Choose a walkthrough film">
+                {walkthroughFilms.map((film) => (
+                  <button key={film.id} className={activeWalkthrough.id === film.id ? 'is-active' : ''} onClick={() => setActiveWalkthrough(film)}>
+                    <span>{film.number}</span><b>{film.title}</b><small>{film.subtitle}</small>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" className="aura-section aura-contact">
+          <div className="aura-shell aura-contact__panel">
+            <div>
+              <span className="aura-eyebrow aura-eyebrow--light">
+                Let’s talk people
+              </span>
+              <h2>See what clearer HR feels like.</h2>
+              <p>
+                Tell us where your team is today. We’ll show you how AuraHR can
+                help you build a more connected tomorrow.
+              </p>
+              <div className="aura-contact__note">
+                <SparklesIcon />
+                <span>
+                  <b>A focused, practical walkthrough</b>
+                  <small>
+                    No generic sales deck. We’ll discuss your real HR journeys.
+                  </small>
+                </span>
+              </div>
+            </div>
+            <form onSubmit={submitContact}>
+              <label>
+                Your name
+                <input
+                  required
+                  value={contact.name}
+                  onChange={(e) =>
+                    setContact({ ...contact, name: e.target.value })
+                  }
+                  placeholder="Your name"
+                />
+              </label>
+              <label>
+                Company
+                <input
+                  required
+                  value={contact.company}
+                  onChange={(e) =>
+                    setContact({ ...contact, company: e.target.value })
+                  }
+                  placeholder="Company name"
+                />
+              </label>
+              <label className="aura-form-wide">
+                Work email
+                <input
+                  required
+                  type="email"
+                  value={contact.email}
+                  onChange={(e) =>
+                    setContact({ ...contact, email: e.target.value })
+                  }
+                  placeholder="you@company.com"
+                />
+              </label>
+              <label className="aura-form-wide">
+                What would you like to improve?
+                <textarea
+                  value={contact.message}
+                  onChange={(e) =>
+                    setContact({ ...contact, message: e.target.value })
+                  }
+                  placeholder="Tell us a little about your team…"
+                />
+              </label>
+              <button className="aura-button aura-form-wide" type="submit">
+                Book my walkthrough <ArrowRightIcon />
+              </button>
             </form>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-gray-200 bg-white px-4 py-12 text-gray-600 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
+      <footer className="aura-footer">
+        <div className="aura-shell aura-footer__inner">
           <div>
-            <img src={brand.logo} alt={brand.fullName} className="h-24 w-auto object-contain" />
-            <p className="mt-4 max-w-md text-sm leading-6 text-gray-600">
-              Aura helps organizations launch, operate, and improve HR with strong workflows, role clarity,
-              and a practical path from pilot to production.
-            </p>
+            <div className="aura-lockup aura-lockup--light">
+              <img src={brand.reversedMark} alt="" />
+              <span>
+                Aura<span>HR</span>
+              </span>
+            </div>
+            <p>People operations. Humanly intelligent.</p>
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">Platform</h3>
-            <div className="mt-3 space-y-2 text-sm">
-              <button onClick={() => scrollToSection('platform')} className="block hover:text-primary-700">Capabilities</button>
-              <button onClick={() => scrollToSection('journeys')} className="block hover:text-primary-700">User journeys</button>
-              <button onClick={() => scrollToSection('unique')} className="block hover:text-primary-700">What is unique</button>
-              <button onClick={() => scrollToSection('pricing')} className="block hover:text-primary-700">Pricing</button>
-            </div>
+            <b>Product</b>
+            <button onClick={() => scrollTo("product")}>Platform</button>
+            <button onClick={() => scrollTo("why")}>Why AuraHR</button>
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">Access</h3>
-            <div className="mt-3 space-y-2 text-sm">
-              <button onClick={() => navigate('/register')} className="block hover:text-primary-700">Register</button>
-              <button onClick={() => navigate('/login')} className="block hover:text-primary-700">Login</button>
-              <button onClick={requestDemo} className="block hover:text-primary-700">Request demo</button>
-            </div>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900">Audience</h3>
-            <div className="mt-3 space-y-2 text-sm text-gray-600">
-              <div>India GCC launch teams</div>
-              <div>Indian SMEs</div>
-              <div>Scaling startups</div>
-            </div>
+            <b>Company</b>
+            <button onClick={() => scrollTo("contact")}>Contact</button>
+            <button onClick={() => navigate("/login")}>Customer sign in</button>
           </div>
         </div>
-        <div className="mx-auto mt-10 max-w-7xl border-t border-gray-200 pt-6 text-sm text-gray-500">
-          © 2026 Aura by ACV Solutions. {brand.tagline}
+        <div className="aura-shell aura-footer__bottom">
+          <span>© 2026 AuraHR by ACV Solutions</span>
+          <span>Clarity for every people journey.</span>
         </div>
       </footer>
     </div>

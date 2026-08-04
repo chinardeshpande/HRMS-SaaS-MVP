@@ -11,6 +11,7 @@ const FeatureDetail = lazy(() => import('./pages/FeatureDetail'));
 const DifferentiatorDetail = lazy(() => import('./pages/DifferentiatorDetail'));
 const AdoptionJourneyDetail = lazy(() => import('./pages/AdoptionJourneyDetail'));
 const PlatformPillarDetail = lazy(() => import('./pages/PlatformPillarDetail'));
+const MarketingStoryDetail = lazy(() => import('./pages/MarketingStoryDetail'));
 const ModernLogin = lazy(() => import('./pages/ModernLogin'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
@@ -139,6 +140,7 @@ function App() {
                 <Route path="/differentiators/:differentiatorId" element={<DifferentiatorDetail />} />
                 <Route path="/platform/:pillarId" element={<PlatformPillarDetail />} />
                 <Route path="/journeys/:journeyId" element={<AdoptionJourneyDetail />} />
+                <Route path="/stories/:storyId" element={<MarketingStoryDetail />} />
 
                 {/* Onboarding route (requires verified admin session) */}
                 <Route path="/onboarding-wizard" element={protectedElement('/onboarding-wizard', <OnboardingWizard />)} />

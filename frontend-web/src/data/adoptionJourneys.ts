@@ -28,8 +28,8 @@ export const adoptionJourneys: AdoptionJourney[] = [
     description: 'Create the tenant, verify the owner account, and establish the first HR admin workspace.',
     detail:
       'Aura starts with a clean company registration flow. The first HR owner creates the organization, verifies identity, and enters a guided workspace that is ready for onboarding, configuration, and controlled user creation.',
-    image: '/images/Hero-Images/hero-leadership.jpg',
-    screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png',
+    image: '/images/Hero-Images/aura-leadership-team-v2.jpg',
+    screenshot: '/images/Product-Screenshots/latest/dashboard.png',
     icon: BuildingOffice2Icon,
     steps: [
       'Register the company and primary HR owner.',
@@ -51,7 +51,7 @@ export const adoptionJourneys: AdoptionJourney[] = [
     detail:
       'The implementation layer converts HR policy into usable product structure: departments, designations, org relationships, approval paths, and document templates. This is where Aura becomes specific to the company instead of remaining generic software.',
     image: '/images/Module-Headers/organization-header.jpg',
-    screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.18-AM.png',
+    screenshot: '/images/Product-Screenshots/latest/document-library.png',
     icon: Cog6ToothIcon,
     steps: [
       'Create or import departments, designations, and locations.',
@@ -72,8 +72,8 @@ export const adoptionJourneys: AdoptionJourney[] = [
     description: 'Import employee records, attach reporting context, and invite people into role-specific workspaces.',
     detail:
       'Aura supports serious pilot adoption by treating employee import as implementation work, not a one-off spreadsheet upload. Employee records, managers, roles, and access are brought together so the team can begin using the platform with confidence.',
-    image: '/images/Hero-Images/hero-team-collaboration.jpg',
-    screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.15.14-AM.png',
+    image: '/images/Hero-Images/aura-people-team-v2.jpg',
+    screenshot: '/images/Product-Screenshots/latest/employee-register.png',
     icon: UserPlusIcon,
     steps: [
       'Prepare the employee master file.',
@@ -95,7 +95,7 @@ export const adoptionJourneys: AdoptionJourney[] = [
     detail:
       'Once setup is complete, the platform moves into daily HR operations. Employees perform self-service actions, managers approve team requests, HR handles exceptions and bulk updates, and leadership sees operational health through dashboards and reports.',
     image: '/images/Module-Headers/attendance-header.jpg',
-    screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.04-AM.png',
+    screenshot: '/images/Product-Screenshots/latest/attendance.png',
     icon: ClipboardDocumentCheckIcon,
     steps: [
       'Employees submit attendance, leave, document, and lifecycle requests.',
@@ -117,7 +117,7 @@ export const adoptionJourneys: AdoptionJourney[] = [
     detail:
       'Aura can show a complete good-data workspace without polluting the customer tenant. Demo mode supports investor walkthroughs, customer demos, HR team training, and user confidence before real company data is fully adopted.',
     image: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.42-AM.png',
-    screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.42-AM.png',
+    screenshot: '/images/Product-Screenshots/latest/dashboard.png',
     icon: PresentationChartLineIcon,
     steps: [
       'Switch into demo mode from the workspace.',
@@ -138,8 +138,8 @@ export const adoptionJourneys: AdoptionJourney[] = [
     description: 'Use reports, lifecycle history, documents, HR Connect, and analytics to mature operations over time.',
     detail:
       'The platform is meant to grow with the organization. As the company adds people and processes, Aura keeps lifecycle history, documents, role-based views, reports, and HR communication connected to the same employee record.',
-    image: '/images/Hero-Images/hero-happy-employees.jpg',
-    screenshot: '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.06-AM.png',
+    image: '/images/Hero-Images/aura-employee-welcome-v2.jpg',
+    screenshot: '/images/Product-Screenshots/latest/analytics.png',
     icon: UserGroupIcon,
     steps: [
       'Review monthly HR reports and operational exceptions.',

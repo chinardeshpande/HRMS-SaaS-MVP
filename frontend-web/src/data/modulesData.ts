@@ -39,10 +39,7 @@ export const modules: Module[] = [
     gradient: 'from-primary-500 to-primary-700',
     color: 'blue',
     headerImage: '/images/Module-Headers/dashboard-header.jpg',
-    screenshots: [
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.33-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.42-AM.png',
-    ],
+    screenshots: ['/images/Product-Screenshots/latest/dashboard.png', '/images/Product-Screenshots/latest/analytics.png'],
     keyFeatures: [
       'Real-time workforce analytics',
       'Customizable widgets and KPIs',
@@ -66,11 +63,7 @@ export const modules: Module[] = [
     gradient: 'from-primary-500 to-primary-700',
     color: 'blue',
     headerImage: '/images/Module-Headers/employee-management-header.jpg',
-    screenshots: [
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.15.14-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.15.25-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.15.34-AM.png',
-    ],
+    screenshots: ['/images/Product-Screenshots/latest/employee-register.png', '/images/Product-Screenshots/latest/document-library.png'],
     keyFeatures: [
       'Comprehensive employee profiles',
       'Document management and storage',
@@ -94,11 +87,7 @@ export const modules: Module[] = [
     gradient: 'from-primary-500 to-primary-700',
     color: 'blue',
     headerImage: '/images/Module-Headers/onboarding-header.jpg',
-    screenshots: [
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.18.08-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.18.14-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.18.19-AM.png',
-    ],
+    screenshots: ['/images/Product-Screenshots/latest/onboarding.png', '/images/Product-Screenshots/latest/employee-register.png'],
     keyFeatures: [
       'Pre-boarding portal for new hires',
       'Automated task assignment and tracking',
@@ -122,11 +111,7 @@ export const modules: Module[] = [
     gradient: 'from-primary-500 to-primary-700',
     color: 'blue',
     headerImage: '/images/Module-Headers/attendance-header.jpg',
-    screenshots: [
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.04-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.14-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.18-AM.png',
-    ],
+    screenshots: ['/images/Product-Screenshots/latest/attendance.png', '/images/Product-Screenshots/latest/calendar.png'],
     keyFeatures: [
       'Multiple clock-in methods (Biometric, GPS, Manual)',
       'Real-time attendance tracking',
@@ -150,11 +135,7 @@ export const modules: Module[] = [
     gradient: 'from-primary-500 to-primary-700',
     color: 'blue',
     headerImage: '/images/Module-Headers/leave-management-header.jpg',
-    screenshots: [
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.19.47-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.20.02-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.20.18-AM.png',
-    ],
+    screenshots: ['/images/Product-Screenshots/latest/leave.png', '/images/Product-Screenshots/latest/calendar.png'],
     keyFeatures: [
       'Multiple leave types configuration',
       'Automated leave accrual',
@@ -178,11 +159,7 @@ export const modules: Module[] = [
     gradient: 'from-primary-500 to-primary-700',
     color: 'blue',
     headerImage: '/images/Module-Headers/performance-header.jpg',
-    screenshots: [
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.16.58-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.17.14-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.17.21-AM.png',
-    ],
+    screenshots: ['/images/Product-Screenshots/latest/performance.png', '/images/Product-Screenshots/latest/probation.png'],
     keyFeatures: [
       'Goal setting and OKR tracking',
       '360-degree feedback system',
@@ -206,10 +183,7 @@ export const modules: Module[] = [
     gradient: 'from-primary-500 to-primary-700',
     color: 'blue',
     headerImage: '/images/Module-Headers/probation-header.jpg',
-    screenshots: [
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.18.26-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.18.44-AM.png',
-    ],
+    screenshots: ['/images/Product-Screenshots/latest/probation.png', '/images/Product-Screenshots/latest/performance.png'],
     keyFeatures: [
       'Automated probation tracking',
       'Scheduled review reminders',
@@ -233,10 +207,7 @@ export const modules: Module[] = [
     gradient: 'from-primary-500 to-primary-700',
     color: 'blue',
     headerImage: '/images/Module-Headers/exit-management-header.jpg',
-    screenshots: [
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.19.21-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.19.34-AM.png',
-    ],
+    screenshots: ['/images/Product-Screenshots/latest/exit-management.png', '/images/Product-Screenshots/latest/document-library.png'],
     keyFeatures: [
       'Exit interview scheduling and tracking',
       'Asset return management',
@@ -260,10 +231,7 @@ export const modules: Module[] = [
     gradient: 'from-primary-500 to-primary-700',
     color: 'blue',
     headerImage: '/images/Module-Headers/hr-connect-header.jpg',
-    screenshots: [
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.20.43-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.21.10-AM.png',
-    ],
+    screenshots: ['/images/Product-Screenshots/latest/hr-connect.png'],
     keyFeatures: [
       'Social feed and announcements',
       'Group creation and management',
@@ -287,9 +255,7 @@ export const modules: Module[] = [
     gradient: 'from-primary-500 to-primary-700',
     color: 'blue',
     headerImage: '/images/Module-Headers/organization-header.jpg',
-    screenshots: [
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.15.53-AM.png',
-    ],
+    screenshots: ['/images/Product-Screenshots/latest/employee-register.png'],
     keyFeatures: [
       'Department hierarchy management',
       'Designation levels and roles',
@@ -313,9 +279,7 @@ export const modules: Module[] = [
     gradient: 'from-primary-500 to-primary-700',
     color: 'blue',
     headerImage: '/images/Module-Headers/calendar-header.jpg',
-    screenshots: [
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.21.16-AM.png',
-    ],
+    screenshots: ['/images/Product-Screenshots/latest/calendar.png'],
     keyFeatures: [
       'Company-wide calendar',
       'Holiday calendar management',
@@ -339,11 +303,7 @@ export const modules: Module[] = [
     gradient: 'from-primary-500 to-primary-700',
     color: 'blue',
     headerImage: '/images/Module-Headers/settings-header.jpg',
-    screenshots: [
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.07.53-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.06-AM.png',
-      '/images/Product-Screenshots/Screenshot-2026-03-26-at-10.08.18-AM.png',
-    ],
+    screenshots: ['/images/Product-Screenshots/latest/dashboard.png', '/images/Product-Screenshots/latest/analytics.png'],
     keyFeatures: [
       'Subscription plan management',
       'Payment methods and billing',

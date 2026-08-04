@@ -1,6 +1,6 @@
 export const brand = {
-  name: 'Aura',
-  fullName: 'Aura by ACV Solutions',
+  name: 'AuraHR',
+  fullName: 'AuraHR by ACV Solutions',
   descriptor: 'People Operations Platform',
   tagline: 'People operations. Humanly intelligent.',
   promise: 'Clarity for every people journey.',

@@ -1,0 +1,72 @@
+.aura-marketing-detail {
+  --detail-violet: #7146f5;
+  --detail-sky: #3eb7ed;
+  --detail-deep: #102f4a;
+  color: #17293b;
+  background:
+    radial-gradient(circle at 88% 8%, rgba(118, 77, 244, .14), transparent 27%),
+    linear-gradient(180deg, #fbfbff, #f4f2ff 60%, #fff);
+}
+
+.aura-marketing-detail nav {
+  height: 70px;
+  border-color: rgba(112, 82, 220, .12) !important;
+  background: rgba(255,255,255,.88) !important;
+  backdrop-filter: blur(22px) !important;
+  box-shadow: 0 10px 30px rgba(37, 31, 76, .04);
+}
+
+.aura-marketing-detail nav > div { height: 70px !important; }
+.aura-marketing-detail nav img { height: 38px !important; }
+.aura-marketing-detail nav button:last-child {
+  border: 0 !important;
+  border-radius: 12px !important;
+  color: white !important;
+  background: linear-gradient(115deg, var(--detail-violet), var(--detail-sky)) !important;
+  box-shadow: 0 12px 28px rgba(92, 69, 218, .2);
+}
+
+.aura-marketing-detail header { padding-top: 70px !important; }
+.aura-marketing-detail header > div {
+  background-color: transparent !important;
+}
+.aura-marketing-detail header h1 {
+  color: var(--detail-deep) !important;
+  letter-spacing: -.045em;
+  line-height: 1.04 !important;
+}
+.aura-marketing-detail header p { color: #60758a; }
+.aura-marketing-detail header img { border-radius: 22px; }
+
+.aura-marketing-detail main section:nth-child(odd) {
+  background-color: transparent !important;
+}
+.aura-marketing-detail main section:nth-child(even) {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(113,70,245,.13), transparent 30%),
+    var(--detail-deep) !important;
+}
+.aura-marketing-detail main section:nth-child(even) h2 { color: white !important; }
+
+.aura-marketing-detail main [class*="rounded-md"],
+.aura-marketing-detail main [class*="rounded-lg"] {
+  border-radius: 17px !important;
+}
+.aura-marketing-detail main [class*="border-gray-200"] {
+  border-color: rgba(111, 82, 220, .14) !important;
+}
+.aura-marketing-detail main [class*="shadow"] {
+  box-shadow: 0 20px 50px rgba(52, 43, 101, .09) !important;
+}
+.aura-marketing-detail main svg { color: var(--detail-violet); }
+.aura-marketing-detail main button,
+.aura-marketing-detail main .btn-primary {
+  border-radius: 12px !important;
+}
+.aura-marketing-detail main img { border-radius: 14px; }
+
+@media (max-width: 700px) {
+  .aura-marketing-detail nav { height: 64px; }
+  .aura-marketing-detail nav > div { height: 64px !important; }
+  .aura-marketing-detail header { padding-top: 64px !important; }
+}

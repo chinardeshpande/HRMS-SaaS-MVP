@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-  ArrowLeftIcon,
   CheckCircleIcon,
   ChevronDownIcon,
 } from '@heroicons/react/24/outline';
 import BrandedScreenshot from '../components/landing/BrandedScreenshot';
+import MarketingNav from '../components/landing/MarketingNav';
 import { getModuleById } from '../data/modulesData';
+import './MarketingDetail.css';
 
 
 export default function FeatureDetail() {
@@ -43,39 +44,11 @@ export default function FeatureDetail() {
   };
 
   return (
-    <div className="bg-white min-h-screen">
-      {/* Navigation */}
-      <nav className="fixed w-full bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-14">
-            <div className="flex items-center space-x-4">
-              <img
-                src="/brand/aura/aura-logo-exact-transparent.png"
-                alt="Aura"
-                className="h-8 w-auto cursor-pointer"
-                onClick={() => navigate('/')}
-              />
-              <button
-                onClick={() => navigate('/')}
-                className="flex items-center space-x-1 text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                <ArrowLeftIcon className="h-3.5 w-3.5" />
-                <span className="text-xs font-medium">Back</span>
-              </button>
-            </div>
-
-            <button
-              onClick={() => navigate('/login')}
-              className="btn btn-primary text-sm py-2 px-4"
-            >
-              Start Free Trial
-            </button>
-          </div>
-        </div>
-      </nav>
+    <div className="aura-marketing-detail bg-white min-h-screen">
+      <MarketingNav context="Product tour" />
 
       {/* Hero Section with Header Image - Ultra Compact */}
-      <section className="pt-14 relative">
+      <section className="pt-[70px] relative">
         <div className="relative h-[220px] overflow-hidden">
           <img
             src={module.headerImage}
@@ -202,27 +175,25 @@ export default function FeatureDetail() {
             Ready to Transform {module.title}?
           </h2>
           <p className="text-sm text-white/90 mb-4">
-            Bring your people operations into Aura. Start your free 14-day trial today.
+            See how this capability fits your team, operating model, and implementation journey.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/', { state: { scrollTo: 'contact' } })}
               className="btn bg-white text-primary-600 hover:bg-gray-100 text-sm py-2 px-5"
             >
-              Start Free Trial
+              Book a walkthrough
             </button>
             <button
               onClick={() => window.location.href = `mailto:sales@aurahrms.com?subject=Schedule%20Demo%20-%20${encodeURIComponent(module.title)}&body=Hi%2C%0A%0AI%20would%20like%20to%20schedule%20a%20demo%20for%20${encodeURIComponent(module.title)}.%0A%0ACompany%20Name%3A%20%0ANumber%20of%20Employees%3A%20%0APreferred%20Date%2FTime%3A%20%0A%0AThank%20you!`}
               className="btn btn-outline border-white text-white hover:bg-white hover:text-primary-600 text-sm py-2 px-5"
             >
-              Talk to an Expert
+              Email our team
             </button>
           </div>
 
-          <p className="text-white/80 text-xs mt-3">
-            No credit card required • 14-day free trial • Cancel anytime
-          </p>
+          <p className="text-white/80 text-xs mt-3">A guided conversation shaped around your HR priorities.</p>
         </div>
       </section>
     </div>
