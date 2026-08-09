@@ -109,3 +109,22 @@ Required controls:
 - Attendance and leave workflows work for at least one employee-manager-HR approval chain.
 - Documents can be generated for at least one employee.
 - Reports reflect imported ACV data.
+
+## Repeatable Role/Login Evidence
+
+Generate the acceptance report, screenshots, and raw recordings against the isolated test
+database, then compose the narrated walkthrough:
+
+```bash
+QA_BASE_URL=http://localhost:5178 \
+QA_API_URL=http://localhost:3200/api/v1 \
+QA_OUT_DIR=/private/tmp/aurahrms-role-evidence \
+node scripts/qa/role-journey-evidence.mjs
+
+bash scripts/qa/compose-role-evidence-video.sh \
+  /private/tmp/aurahrms-role-evidence
+```
+
+The runner uses only synthetic identities seeded into `hrms_saas_test`. Generated reports,
+screenshots, and recordings remain outside the repository by default so that production PII
+cannot be committed accidentally.

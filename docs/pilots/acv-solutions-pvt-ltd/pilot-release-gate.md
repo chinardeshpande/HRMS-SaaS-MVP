@@ -41,6 +41,10 @@ exact commit):
 - Backend TypeScript production build: passed.
 - Frontend Vite production build: passed.
 - Playwright: 61 tests passed, 2 intentionally skipped.
+- Role/login acceptance evidence: 27 scenarios passed across unauthenticated, system-admin,
+  HR-admin, manager, employee, and isolation-tenant journeys. The reusable evidence runner
+  captures asserted screenshots and raw screen recordings; the companion composer produces
+  a narrated walkthrough. Synthetic test identities and data are used throughout.
 - Database startup resilience unit coverage: 6 tests passed.
 - `git diff --check`: passed.
 - Frontend has no Jest test files; browser behavior is covered by Playwright rather than an
