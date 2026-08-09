@@ -172,6 +172,11 @@ class AttendanceService {
     return response.data;
   }
 
+  async reopenToday(reason: string): Promise<Attendance> {
+    const response = await api.post('/attendance/reopen-today', { reason });
+    return response.data;
+  }
+
   /**
    * Employee: Get my attendance history
    */

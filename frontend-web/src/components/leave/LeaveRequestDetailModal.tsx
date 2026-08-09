@@ -42,7 +42,9 @@ interface LeaveRequestDetailModalProps {
   onClose: () => void;
   onApprove?: (comments?: string) => void;
   onReject?: (comments?: string) => void;
+  onCancel?: () => void;
   canApprove: boolean;
+  canCancel?: boolean;
 }
 
 export const LeaveRequestDetailModal = ({
@@ -51,7 +53,9 @@ export const LeaveRequestDetailModal = ({
   onClose,
   onApprove,
   onReject,
+  onCancel,
   canApprove,
+  canCancel = false,
 }: LeaveRequestDetailModalProps) => {
   const [showApproveConfirm, setShowApproveConfirm] = useState(false);
   const [showRejectConfirm, setShowRejectConfirm] = useState(false);
@@ -263,6 +267,21 @@ export const LeaveRequestDetailModal = ({
           )}
 
           {/* Action Buttons */}
+          {canCancel && request.status === 'pending' && (
+            <div className="flex items-center justify-end pt-4 border-t border-gray-200">
+              <button
+                onClick={() => {
+                  if (window.confirm('Cancel this pending leave request? The reserved leave balance will be restored.')) {
+                    onCancel?.();
+                  }
+                }}
+                className="px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors"
+              >
+                Cancel request
+              </button>
+            </div>
+          )}
+
           {canApprove && request.status === 'pending' && !showApproveConfirm && !showRejectConfirm && (
             <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
               <button

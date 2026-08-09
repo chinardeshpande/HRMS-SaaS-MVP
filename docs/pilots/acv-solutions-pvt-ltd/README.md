@@ -2,7 +2,9 @@
 
 ## Objective
 
-Implement AuroraHR as a controlled real-organization pilot for ACV Solutions Pvt Ltd using real employee data, real roles, real reporting relationships, and production-grade validation before credentials are shared with ACV leadership, HR, managers, and employees.
+Implement AuraHR as a controlled real-organization pilot for ACV Solutions Pvt Ltd using real employee data, real roles, real reporting relationships, and production-grade validation before credentials are shared with ACV leadership, HR, managers, and employees.
+
+The final go/no-go record is the [ACV Pilot Release Gate](pilot-release-gate.md).
 
 This pilot must be treated differently from demo data. Demo tenants are disposable. ACV data is confidential production data and must be handled with explicit controls, backups, validation logs, and a rollback plan.
 
@@ -68,6 +70,19 @@ Known constraints to manage during pilot:
 - Bulk import creates active employees and users with a generated default password path; credential activation must be tested before broad release.
 - Payment gateway/subscription can be configured for pilot state, but full commercial billing should not be treated as final unless separately validated.
 - Real email delivery and invitation flows must be tested with a small group before company-wide rollout.
+- The ACV pilot uses the agreed General Shift. Multi-shift rostering is deferred.
+- Calendar holidays are informational during the pilot; an attendance-consuming holiday master is deferred.
+
+## Pilot Candidate Improvements
+
+The pilot-readiness candidate adds the following guarded workflows:
+
+- HR can choose full onboarding or direct employee-register entry for an already-onboarded person.
+- Employees can cancel their own pending leave request.
+- A rejected leave request no longer blocks a corrected request for the same date.
+- Managers can review pending, approved, rejected, and cancelled leave history for their team.
+- An employee can reopen today's attendance after an accidental clock-out, with a required reason and audit metadata.
+- Database startup retries transient connection failures with bounded backoff, without replaying business queries or writes.
 
 ## Data Security
 

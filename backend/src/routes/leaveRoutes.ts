@@ -31,7 +31,7 @@ router.put(
 router.get(
   '/all-requests',
   authenticate,
-  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
+  authorize(UserRole.MANAGER, UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
   leaveController.getAllRequests
 );
 

@@ -152,8 +152,13 @@ export default function ModernEmployees() {
     setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 5000);
   };
 
-  const handleAddEmployeeSuccess = () => {
-    showNotification('Employee created successfully and added to onboarding workflow', 'success');
+  const handleAddEmployeeSuccess = (entryMode: 'onboarding' | 'direct') => {
+    showNotification(
+      entryMode === 'direct'
+        ? 'Employee added directly to the employee register'
+        : 'Candidate created successfully and added to onboarding workflow',
+      'success'
+    );
     fetchEmployees();
     fetchStats();
   };
@@ -512,8 +517,8 @@ export default function ModernEmployees() {
                     <UserPlusIcon className="h-6 w-6 text-primary-600" />
                   </div>
                   <div className="ml-4 text-left">
-                    <h3 className="text-sm font-semibold text-gray-900">Add Single Employee</h3>
-                    <p className="text-xs text-gray-500 mt-1">Use wizard to add one employee at a time</p>
+                    <h3 className="text-sm font-semibold text-gray-900">Add One Person</h3>
+                    <p className="text-xs text-gray-500 mt-1">Choose complete onboarding or direct employee entry</p>
                   </div>
                 </button>
 

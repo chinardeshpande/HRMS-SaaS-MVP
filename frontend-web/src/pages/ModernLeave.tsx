@@ -226,9 +226,9 @@ export default function ModernLeave() {
         setTeamStats(teamStatsData);
 
       } else if (isManager) {
-        // Manager: Get pending approvals for their team
-        const pendingApprovals = await leaveService.getPendingApprovals();
-        console.log('✅ Pending approvals for my team:', pendingApprovals);
+        // Manager: Get complete request history for their team
+        const pendingApprovals = await leaveService.getAllRequests();
+        console.log('✅ Leave history for my team:', pendingApprovals);
 
         // CRITICAL: Filter out current user's requests
         const teamOnlyRequests = pendingApprovals.filter(
@@ -331,6 +331,18 @@ export default function ModernLeave() {
 
     // Refresh my leave data
     await fetchMyLeaveData();
+  };
+
+  const handleCancelLeave = async (leaveId: string) => {
+    try {
+      await leaveService.cancelLeave(leaveId);
+      setShowDetailModal(false);
+      setSelectedRequest(null);
+      await fetchMyLeaveData();
+      showNotification('Pending leave request cancelled', 'success');
+    } catch (err: any) {
+      showNotification(err.response?.data?.error || err.message || 'Failed to cancel leave request', 'error');
+    }
   };
 
   /**
@@ -1304,8 +1316,10 @@ export default function ModernLeave() {
           }}
           request={selectedRequest}
           canApprove={canApprove && activeView === 'approvals'}
+          canCancel={activeView === 'my-leave' && selectedRequest.status === 'pending'}
           onApprove={(comments) => handleApproveReject(selectedRequest.leaveId, 'approved', comments)}
           onReject={(comments) => handleApproveReject(selectedRequest.leaveId, 'rejected', comments)}
+          onCancel={() => handleCancelLeave(selectedRequest.leaveId)}
         />
       )}
 

@@ -42,6 +42,23 @@ test.describe('Employee Register & Profile Access', () => {
       }
       // If no clickable employee, page still loaded (seed data may not be in frontend DB)
     });
+
+    test('E05: single-person entry defaults to complete onboarding and offers explicit direct entry', async ({ page }) => {
+      await page.goto(ROUTES.EMPLOYEES);
+      await page.getByRole('button', { name: /add employee/i }).click();
+      await page.getByRole('button', { name: /add one person/i }).click();
+
+      const onboardingChoice = page.getByRole('button', { name: /complete onboarding/i });
+      const directChoice = page.getByRole('button', { name: /add directly to register/i });
+
+      await expect(onboardingChoice).toBeVisible();
+      await expect(directChoice).toBeVisible();
+      await expect(onboardingChoice).toHaveClass(/border-primary-600/);
+
+      await directChoice.click();
+      await expect(directChoice).toHaveClass(/border-primary-600/);
+      await expect(page.getByText(/existing employee whose onboarding is already complete/i)).toBeVisible();
+    });
   });
 
   test.describe('Employee role', () => {

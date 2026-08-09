@@ -79,5 +79,22 @@ describe('Attendance Basic Flow', () => {
     expect(clockOut.body.success).toBe(true);
     expect(clockOut.body.data.checkOut).toBeTruthy();
     expect(Number(clockOut.body.data.workMinutes)).toBeGreaterThanOrEqual(0);
+
+    const missingReason = await authPost('/attendance/reopen-today', ctx.token).send({ reason: '' });
+    expect(missingReason.status).toBe(400);
+    expect(missingReason.body.error).toContain('reason is required');
+
+    const reopen = await authPost('/attendance/reopen-today', ctx.token).send({
+      reason: 'Accidental clock-out during QA',
+    });
+    expect(reopen.status).toBe(200);
+    expect(reopen.body.data.checkIn).toBeTruthy();
+    expect(reopen.body.data.checkOut).toBeFalsy();
+    expect(reopen.body.data.status).toBe('present');
+    expect(reopen.body.data.isManualOverride).toBe(true);
+    expect(reopen.body.data.overrideReason).toContain('Accidental clock-out during QA');
+
+    const closeReopenedAttendance = await authPost('/attendance/clock-out', ctx.token).send({});
+    expect(closeReopenedAttendance.status).toBe(200);
   });
 });

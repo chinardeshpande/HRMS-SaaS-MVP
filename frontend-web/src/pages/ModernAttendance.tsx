@@ -381,6 +381,19 @@ export default function ModernAttendance() {
     }
   };
 
+  const handleReopenToday = async () => {
+    const reason = window.prompt('Why are you reopening today\'s attendance?', 'Accidental clock-out');
+    if (!reason?.trim()) return;
+
+    try {
+      await attendanceService.reopenToday(reason.trim());
+      showNotification('Today\'s attendance is open again', 'success');
+      await fetchData();
+    } catch (error: any) {
+      showNotification(error.message || 'Failed to reopen attendance', 'error');
+    }
+  };
+
   const handleRegularizationRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -796,6 +809,8 @@ export default function ModernAttendance() {
 
   const filteredMyAttendance = filterAttendanceRecords(myAttendance);
   const myAttendanceByDate = new Map(myAttendance.map((record) => [getRecordDateKey(record), record]));
+  const todayAttendance = myAttendanceByDate.get(toISODate(new Date()));
+  const canReopenToday = Boolean(todayAttendance?.checkIn && todayAttendance?.checkOut);
   const mySelectedRange = getMyDateRange();
   const myAttendanceRows = getDateRangeDays(mySelectedRange.start, mySelectedRange.end).map((date) => ({
     date,
@@ -992,10 +1007,20 @@ export default function ModernAttendance() {
                       Apply Leave
                     </button>
                     {!clockedIn ? (
-                      <button onClick={handleClockIn} className="btn btn-primary justify-center">
-                        <ClockIcon className="h-4 w-4 mr-1.5" />
-                        Clock In
-                      </button>
+                      <div className="grid gap-2 sm:flex">
+                        {canReopenToday && (
+                          <button onClick={handleReopenToday} className="btn btn-secondary justify-center">
+                            <ClockIcon className="h-4 w-4 mr-1.5" />
+                            Reopen accidental clock-out
+                          </button>
+                        )}
+                        {!canReopenToday && (
+                          <button onClick={handleClockIn} className="btn btn-primary justify-center">
+                            <ClockIcon className="h-4 w-4 mr-1.5" />
+                            Clock In
+                          </button>
+                        )}
+                      </div>
                     ) : (
                       <button onClick={handleClockOut} className="btn btn-danger justify-center">
                         <ClockIcon className="h-4 w-4 mr-1.5" />
@@ -2008,7 +2033,10 @@ export default function ModernAttendance() {
           <div className="card max-w-2xl w-full my-8 max-h-[90vh] flex flex-col">
             <div className="card-body p-6 overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900">Request Attendance Regularization</h3>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">Request Attendance Regularization</h3>
+                  <p className="mt-1 text-xs text-gray-500">Use this governed request to correct an attendance time. Your manager or HR must approve the edit.</p>
+                </div>
                 <button onClick={() => setShowRegularizationModal(false)} className="text-gray-400 hover:text-gray-600">
                   <XMarkIcon className="h-6 w-6" />
                 </button>

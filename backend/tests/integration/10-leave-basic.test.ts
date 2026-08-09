@@ -36,7 +36,7 @@ describe('Leave Basic Flow', () => {
     expect(res.body.success).toBe(true);
   });
 
-  it('employee cannot view all leave requests (HR-only)', async () => {
+  it('employee cannot view all leave requests', async () => {
     const ctx = await loginAs(TEST_ACCOUNTS.EMPLOYEE);
     requireAuth(ctx, TEST_ACCOUNTS.EMPLOYEE.label);
 
@@ -59,6 +59,16 @@ describe('Leave Basic Flow', () => {
     const res = await authGet('/leave/pending-approvals', ctx.token);
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
+  });
+
+  it('manager can view complete leave history for their team', async () => {
+    const ctx = await loginAs(TEST_ACCOUNTS.MANAGER);
+    requireAuth(ctx, TEST_ACCOUNTS.MANAGER.label);
+
+    const res = await authGet('/leave/all-requests', ctx.token);
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.data)).toBe(true);
   });
 
   it('HR admin CAN view all leave requests', async () => {
@@ -121,6 +131,77 @@ describe('Leave Basic Flow', () => {
     const sickAfter = afterBalance.body.data.find((balance: any) => balance.leaveType === 'sick');
     expect(Number(sickAfter.used)).toBe(Number(sickBefore.used) + 1);
     expect(Number(sickAfter.pending)).toBe(Number(sickBefore.pending));
+  });
+
+  it('employee can cancel their own pending leave and recover pending balance', async () => {
+    const employee = await loginAs(TEST_ACCOUNTS.EMPLOYEE);
+    const manager = await loginAs(TEST_ACCOUNTS.MANAGER);
+    requireAuth(employee, TEST_ACCOUNTS.EMPLOYEE.label);
+    requireAuth(manager, TEST_ACCOUNTS.MANAGER.label);
+
+    const beforeBalance = await authGet('/leave/my-balance', employee.token);
+    const casualBefore = beforeBalance.body.data.find((balance: any) => balance.leaveType === 'casual');
+
+    const apply = await authPost('/leave/apply', employee.token).send({
+      leaveType: 'casual',
+      startDate: '2026-12-17',
+      endDate: '2026-12-17',
+      reason: 'QA pending cancellation path',
+    });
+    expect(apply.status).toBe(200);
+
+    const unauthorizedCancel = await authPut(`/leave/${apply.body.data.leaveId}/cancel`, manager.token).send({});
+    expect(unauthorizedCancel.status).toBe(400);
+
+    const cancel = await authPut(`/leave/${apply.body.data.leaveId}/cancel`, employee.token).send({});
+    expect(cancel.status).toBe(200);
+    expect(cancel.body.data.status).toBe(LeaveStatus.CANCELLED);
+
+    const afterBalance = await authGet('/leave/my-balance', employee.token);
+    const casualAfter = afterBalance.body.data.find((balance: any) => balance.leaveType === 'casual');
+    expect(Number(casualAfter.pending)).toBe(Number(casualBefore.pending));
+  });
+
+  it('rejected leave does not block a new request for the same date', async () => {
+    const employee = await loginAs(TEST_ACCOUNTS.EMPLOYEE);
+    const manager = await loginAs(TEST_ACCOUNTS.MANAGER);
+    requireAuth(employee, TEST_ACCOUNTS.EMPLOYEE.label);
+    requireAuth(manager, TEST_ACCOUNTS.MANAGER.label);
+
+    const first = await authPost('/leave/apply', employee.token).send({
+      leaveType: 'sick',
+      startDate: '2026-12-18',
+      endDate: '2026-12-18',
+      reason: 'Initial request requiring correction',
+    });
+    expect(first.status).toBe(200);
+
+    const reject = await authPut(`/leave/${first.body.data.leaveId}/approve`, manager.token).send({
+      status: LeaveStatus.REJECTED,
+      comments: 'Please use the correct leave category',
+    });
+    expect(reject.status).toBe(200);
+    expect(reject.body.data.status).toBe(LeaveStatus.REJECTED);
+
+    const managerHistory = await authGet('/leave/all-requests', manager.token);
+    expect(managerHistory.status).toBe(200);
+    expect(
+      managerHistory.body.data.some(
+        (request: any) => request.leaveId === first.body.data.leaveId && request.status === LeaveStatus.REJECTED
+      )
+    ).toBe(true);
+
+    const reapplied = await authPost('/leave/apply', employee.token).send({
+      leaveType: 'casual',
+      startDate: '2026-12-18',
+      endDate: '2026-12-18',
+      reason: 'Corrected leave category',
+    });
+    expect(reapplied.status).toBe(200);
+    expect(reapplied.body.data.status).toBe(LeaveStatus.PENDING);
+    expect(reapplied.body.data.leaveId).not.toBe(first.body.data.leaveId);
+
+    await authPut(`/leave/${reapplied.body.data.leaveId}/cancel`, employee.token).send({});
   });
 
   it('employee cannot apply for leave beyond available balance', async () => {

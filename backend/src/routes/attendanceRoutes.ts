@@ -20,6 +20,7 @@ const attendanceImportUpload = multer({
 // Employee routes - All authenticated employees can access
 router.post('/clock-in', authenticate, attendanceController.clockIn);
 router.post('/clock-out', authenticate, attendanceController.clockOut);
+router.post('/reopen-today', authenticate, attendanceController.reopenToday);
 router.get('/my-attendance', authenticate, attendanceController.getMyAttendance);
 
 router.get(

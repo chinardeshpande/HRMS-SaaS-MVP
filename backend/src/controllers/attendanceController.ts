@@ -141,6 +141,23 @@ export class AttendanceController {
     }
   }
 
+  async reopenToday(req: Request, res: Response) {
+    try {
+      const employeeId = (req as any).user.employeeId;
+      const tenantId = (req as any).user.tenantId;
+      const { reason } = req.body;
+      const attendance = await attendanceService.reopenToday(employeeId, tenantId, reason);
+
+      res.json({
+        success: true,
+        data: attendance,
+        message: 'Attendance reopened successfully',
+      });
+    } catch (error: any) {
+      res.status(400).json({ success: false, error: error.message });
+    }
+  }
+
   /**
    * @swagger
    * /attendance/my-attendance:
