@@ -21,18 +21,18 @@ export interface PayrollTaxStatement {
 }
 
 const payrollOperationsService = {
-  async listCycles(): Promise<PayrollCycle[]> { return (await api.get('/payroll-operations/cycles')).data.data; },
-  async getCycle(id: string): Promise<PayrollCycleDetail> { return (await api.get(`/payroll-operations/cycles/${id}`)).data.data; },
-  async createCycle(payload: Partial<PayrollCycle>): Promise<PayrollCycle> { return (await api.post('/payroll-operations/cycles', payload)).data.data; },
+  async listCycles(): Promise<PayrollCycle[]> { return (await api.get<PayrollCycle[]>('/payroll-operations/cycles')).data; },
+  async getCycle(id: string): Promise<PayrollCycleDetail> { return (await api.get<PayrollCycleDetail>(`/payroll-operations/cycles/${id}`)).data; },
+  async createCycle(payload: Partial<PayrollCycle>): Promise<PayrollCycle> { return (await api.post<PayrollCycle>('/payroll-operations/cycles', payload)).data; },
   async transition(id: string, status: PayrollCycleStatus, payload: Record<string, unknown> = {}): Promise<PayrollCycle> {
-    return (await api.post(`/payroll-operations/cycles/${id}/transitions`, { ...payload, status })).data.data;
+    return (await api.post<PayrollCycle>(`/payroll-operations/cycles/${id}/transitions`, { ...payload, status })).data;
   },
   async revise(id: string, note: string): Promise<PayrollCycle> {
-    return (await api.post(`/payroll-operations/cycles/${id}/revisions`, { note })).data.data;
+    return (await api.post<PayrollCycle>(`/payroll-operations/cycles/${id}/revisions`, { note })).data;
   },
-  async listTaxStatements(): Promise<PayrollTaxStatement[]> { return (await api.get('/payroll-operations/tax-statements')).data.data; },
+  async listTaxStatements(): Promise<PayrollTaxStatement[]> { return (await api.get<PayrollTaxStatement[]>('/payroll-operations/tax-statements')).data; },
   async saveTaxStatement(payload: Partial<PayrollTaxStatement>): Promise<PayrollTaxStatement> {
-    return (await api.put('/payroll-operations/tax-statements', payload)).data.data;
+    return (await api.put<PayrollTaxStatement>('/payroll-operations/tax-statements', payload)).data;
   },
 };
 
