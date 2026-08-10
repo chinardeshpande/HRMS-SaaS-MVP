@@ -751,6 +751,83 @@ export default function ModernDashboard() {
 
   const urgentCommandCount = commandGroups.flatMap((group) => group.actions).filter((action) => action.tone === 'urgent').length;
 
+  const managerCommandGroups = [
+    {
+      name: 'Approvals', context: 'Decisions waiting for you', icon: BellAlertIcon, accent: 'from-rose-500 to-orange-400', soft: 'bg-rose-50 text-rose-700',
+      actions: [
+        { title: `${personaData.pendingLeaveApprovals.length} leave request${personaData.pendingLeaveApprovals.length === 1 ? '' : 's'} to decide`, detail: 'Review dates, team coverage and employee context.', due: commandDate(0), path: '/leave?filter=pending', tone: personaData.pendingLeaveApprovals.length ? 'urgent' : 'clear' },
+        { title: `${personaData.pendingRegularizations.length} attendance correction${personaData.pendingRegularizations.length === 1 ? '' : 's'} to review`, detail: 'Resolve exceptions while the context is still fresh.', due: commandDate(0), path: '/attendance?filter=pending', tone: personaData.pendingRegularizations.length ? 'urgent' : 'clear' },
+      ],
+    },
+    {
+      name: 'Team Today', context: 'Availability and coverage', icon: UsersIcon, accent: 'from-teal-400 to-cyan-500', soft: 'bg-teal-50 text-teal-700',
+      actions: [
+        { title: 'Check today’s team coverage', detail: `${stats?.presentToday || 0} present · ${stats?.absentToday || 0} absent · ${stats?.onLeaveToday || 0} on leave.`, due: commandDate(0), path: '/attendance', tone: stats?.absentToday ? 'due' : 'clear' },
+        { title: 'Look ahead at leave and calendar events', detail: 'Spot coverage pressure before it becomes an exception.', due: commandDate(1), path: '/calendar', tone: 'planned' },
+      ],
+    },
+    {
+      name: 'Performance', context: 'Conversations and growth', icon: TrophyIcon, accent: 'from-violet-500 to-fuchsia-500', soft: 'bg-violet-50 text-violet-700',
+      actions: [
+        { title: 'Continue team performance conversations', detail: `${stats?.activeProbation || 0} active probation/review moment${stats?.activeProbation === 1 ? '' : 's'} in view.`, due: commandDate(2), path: '/performance', tone: stats?.activeProbation ? 'due' : 'planned' },
+        { title: 'Review confirmation milestones', detail: `${stats?.probationEndingSoon || 0} decision${stats?.probationEndingSoon === 1 ? '' : 's'} approaching.`, due: commandDate(3), path: '/probation', tone: stats?.probationEndingSoon ? 'due' : 'clear' },
+      ],
+    },
+    {
+      name: 'Joining Support', context: 'Help new people land well', icon: UserPlusIcon, accent: 'from-amber-400 to-orange-500', soft: 'bg-amber-50 text-amber-700',
+      actions: [
+        { title: `Support ${newJoinersThisMonth} new joiner${newJoinersThisMonth === 1 ? '' : 's'} this month`, detail: 'Check owners, introductions and first-week readiness.', due: commandDate(2), path: '/onboarding', tone: newJoinersThisMonth ? 'due' : 'clear' },
+      ],
+    },
+    {
+      name: 'Team Conversations', context: 'Stay connected', icon: ChatBubbleLeftRightIcon, accent: 'from-blue-500 to-indigo-500', soft: 'bg-blue-50 text-blue-700',
+      actions: [
+        { title: 'Catch up on team conversations', detail: `${personaData.unreadMessages} unread message${personaData.unreadMessages === 1 ? '' : 's'} and recent HR updates.`, due: commandDate(0), path: '/hr-connect', tone: personaData.unreadMessages ? 'urgent' : 'due' },
+        { title: 'Recognise or update your team', detail: 'Share progress, context or appreciation in HR Connect.', due: commandDate(2), path: '/hr-connect', tone: 'planned' },
+      ],
+    },
+  ].map((group) => ({ ...group, actions: [...group.actions].sort((a, b) => a.due.getTime() - b.due.getTime()) }));
+
+  const employeeCommandGroups = [
+    {
+      name: 'My Attendance', context: 'Today and recent corrections', icon: ClockIcon, accent: 'from-teal-400 to-cyan-500', soft: 'bg-teal-50 text-teal-700',
+      actions: [
+        { title: 'Mark or review today’s attendance', detail: `${formatHours(getAttendanceMinutes('week'))} recorded this week.`, due: commandDate(0), path: '/attendance', tone: 'due' },
+        { title: 'Request a past attendance correction', detail: 'Explain the change and send it through approval.', due: commandDate(0), path: '/attendance', tone: 'planned' },
+      ],
+    },
+    {
+      name: 'My Leave', context: 'Balance and requests', icon: CalendarDaysIcon, accent: 'from-sky-400 to-blue-500', soft: 'bg-blue-50 text-blue-700',
+      actions: [
+        { title: 'Plan or request leave', detail: `${totalAvailableLeave} days available · ${totalPendingLeaveDays} pending.`, due: commandDate(0), path: '/leave', tone: totalPendingLeaveDays ? 'due' : 'planned' },
+        { title: 'See upcoming holidays', detail: `${companyHolidaysThisMonth} company holiday${companyHolidaysThisMonth === 1 ? '' : 's'} this month.`, due: commandDate(2), path: '/calendar', tone: 'planned' },
+      ],
+    },
+    {
+      name: 'My Documents', context: 'Payslips and employment records', icon: DocumentTextIcon, accent: 'from-violet-500 to-indigo-500', soft: 'bg-violet-50 text-violet-700',
+      actions: [
+        { title: 'Open my HR document wallet', detail: 'Payslips, Form 16 and employment documents in one place.', due: commandDate(1), path: '/my-hr-documents', tone: 'planned' },
+        { title: 'Request an employment document', detail: 'Ask HR for a letter, certificate or exit document.', due: commandDate(2), path: '/my-hr-documents', tone: 'planned' },
+      ],
+    },
+    {
+      name: 'My Requests', context: 'Follow through to closure', icon: ClipboardDocumentCheckIcon, accent: 'from-amber-400 to-orange-500', soft: 'bg-amber-50 text-amber-700',
+      actions: [
+        { title: `Track ${stats?.pendingApprovals || 0} pending request${stats?.pendingApprovals === 1 ? '' : 's'}`, detail: 'See what is waiting, approved or needs more context.', due: commandDate(0), path: '/leave', tone: stats?.pendingApprovals ? 'due' : 'clear' },
+      ],
+    },
+    {
+      name: 'My Workplace', context: 'Updates and conversations', icon: ChatBubbleLeftRightIcon, accent: 'from-fuchsia-500 to-pink-500', soft: 'bg-fuchsia-50 text-fuchsia-700',
+      actions: [
+        { title: 'Catch up on HR Connect', detail: `${personaData.unreadMessages} unread message${personaData.unreadMessages === 1 ? '' : 's'} and company updates.`, due: commandDate(0), path: '/hr-connect', tone: personaData.unreadMessages ? 'urgent' : 'due' },
+        { title: 'See my people calendar', detail: 'Holidays, events and personal HR milestones.', due: commandDate(1), path: '/calendar', tone: 'planned' },
+      ],
+    },
+  ].map((group) => ({ ...group, actions: [...group.actions].sort((a, b) => a.due.getTime() - b.due.getTime()) }));
+
+  const personalCommandGroups = isManager ? managerCommandGroups : employeeCommandGroups;
+  const personalUrgentCount = personalCommandGroups.flatMap((group) => group.actions).filter((action) => action.tone === 'urgent').length;
+
   // Loading state
   if (loading) {
     return (
@@ -938,8 +1015,99 @@ export default function ModernDashboard() {
         </div>
       )}
 
+      {(isManager || isEmployee) && (
+        <div className="mb-5 space-y-5">
+          <section className={`relative overflow-hidden rounded-[28px] border border-white/80 px-6 py-6 text-white shadow-[0_24px_60px_rgba(76,56,140,0.18)] sm:px-8 ${isManager ? 'bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-900' : 'bg-gradient-to-br from-indigo-950 via-violet-900 to-fuchsia-800'}`}>
+            <div className="absolute -right-16 -top-24 h-64 w-64 rounded-full bg-cyan-300/20 blur-3xl" />
+            <div className="relative grid gap-5 lg:grid-cols-[1fr_340px] lg:items-center">
+              <div>
+                <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-cyan-200">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-cyan-300" />
+                  Now · {today.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+                </div>
+                <h1 className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">
+                  {isManager ? 'What needs my attention across the team?' : 'What can I do for myself today?'}
+                </h1>
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-indigo-100 sm:text-base">
+                  {isManager
+                    ? 'Decisions, team moments and conversations—ordered around what helps your people move forward.'
+                    : 'Your attendance, leave, documents and workplace conversations—clear, personal and ready when you are.'}
+                </p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold">{personalUrgentCount} urgent now</span>
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold">
+                    {isManager ? `${personaData.pendingLeaveApprovals.length + personaData.pendingRegularizations.length} decisions waiting` : `${stats?.pendingApprovals || 0} requests in progress`}
+                  </span>
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold">
+                    {isManager ? `${stats?.presentToday || 0} team members present` : `${totalAvailableLeave} leave days available`}
+                  </span>
+                </div>
+              </div>
+              <div className="relative min-h-[140px] rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-xl">
+                <SparklesIcon className="h-5 w-5 text-cyan-300" />
+                <p className="mt-3 text-xs font-bold uppercase tracking-[0.18em] text-cyan-100">Manu’s {isManager ? 'team brief' : 'personal brief'}</p>
+                <p className="mt-2 pr-16 text-lg font-semibold leading-7">
+                  {isManager
+                    ? 'Clear today’s decisions first. Then make space for the conversations only you can lead.'
+                    : 'Start with today. Your requests, records and next steps are all within reach.'}
+                </p>
+                <div className="absolute -bottom-9 -right-1 h-36 w-28 overflow-hidden" aria-hidden="true">
+                  <img src={isManager ? '/images/assistant/peeks/manu-review.png' : '/images/assistant/peeks/manu-welcome.png'} alt="" className="h-full w-full object-contain object-bottom opacity-90" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">{isManager ? 'Manager command centre' : 'My AuraHR'}</p>
+              <h2 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-950">{isManager ? 'Lead the moments that matter' : 'Today, on my terms'}</h2>
+            </div>
+            <p className="max-w-xl text-sm text-slate-500">Every card is an action, not a report. Open it, complete the journey and return to what matters.</p>
+          </div>
+
+          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {personalCommandGroups.map((group) => (
+              <article key={group.name} className="group relative overflow-hidden rounded-2xl border border-white/90 bg-white/80 p-5 shadow-[0_14px_36px_rgba(77,62,137,0.09)] backdrop-blur transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(77,62,137,0.15)]">
+                <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${group.accent}`} />
+                <header className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`rounded-xl p-2.5 ${group.soft}`}><group.icon className="h-5 w-5" /></div>
+                    <div><h3 className="font-bold text-slate-950">{group.name}</h3><p className="text-xs text-slate-500">{group.context}</p></div>
+                  </div>
+                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">{group.actions.length}</span>
+                </header>
+                <div className="mt-4 space-y-2.5">
+                  {group.actions.map((action) => (
+                    <button key={action.title} onClick={() => navigate(action.path)} className="flex w-full items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/80 p-3 text-left transition hover:border-violet-200 hover:bg-violet-50/70">
+                      <span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${action.tone === 'urgent' ? 'bg-rose-500 shadow-[0_0_0_4px_rgba(244,63,94,0.12)]' : action.tone === 'clear' ? 'bg-emerald-400' : action.tone === 'due' ? 'bg-amber-400' : 'bg-violet-400'}`} />
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-start justify-between gap-2">
+                          <span className="text-sm font-semibold leading-5 text-slate-900">{action.title}</span>
+                          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${action.tone === 'urgent' ? 'bg-rose-100 text-rose-700' : 'bg-white text-slate-500'}`}>{formatCommandDate(action.due)}</span>
+                        </span>
+                        <span className="mt-1 block text-xs leading-5 text-slate-500">{action.detail}</span>
+                      </span>
+                      <ArrowRightIcon className="mt-1 h-4 w-4 shrink-0 text-slate-400" />
+                    </button>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </section>
+        </div>
+      )}
+
       {!(isOwner || isHr) && (
       <>
+
+      <div className="mb-3 flex items-end justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-600">Live snapshot</p>
+          <h2 className="mt-1 text-lg font-bold text-slate-950">{isManager ? 'My team right now' : 'My current position'}</h2>
+        </div>
+        <span className="text-xs text-slate-500">Updates from your AuraHR workspace</span>
+      </div>
 
       {/* Stats Grid - Narrower cards */}
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -1021,44 +1189,6 @@ export default function ModernDashboard() {
           </div>
         ))}
       </div>
-
-      {/* Employee self-service workbench */}
-      {isEmployee && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          <>
-            <div className="card">
-              <div className="card-header">
-                <h2 className="text-lg font-semibold text-gray-900">My Self-Service</h2>
-              </div>
-              <div className="card-body grid grid-cols-1 gap-3">
-                <button onClick={() => navigate('/attendance')} className="btn btn-outline-primary justify-start">Clock in/out and timesheet</button>
-                <button onClick={() => navigate('/leave')} className="btn btn-outline-primary justify-start">Apply for leave</button>
-                <button onClick={() => navigate('/my-hr-documents')} className="btn btn-outline-primary justify-start">My HR documents</button>
-                <button onClick={() => navigate('/hr-connect')} className="btn btn-outline-primary justify-start">HR Connect</button>
-              </div>
-            </div>
-            <div className="card">
-              <div className="card-header">
-                <h2 className="text-lg font-semibold text-gray-900">My Leave Balances</h2>
-              </div>
-              <div className="card-body space-y-3">
-                {personaData.leaveBalances.length === 0 ? (
-                  <p className="text-sm text-gray-500">No leave balance data available.</p>
-                ) : (
-                  personaData.leaveBalances.slice(0, 4).map((balance) => (
-                    <div key={balance.balanceId} className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
-                      <span className="text-sm font-medium capitalize text-gray-700">{balance.leaveType.replace('_', ' ')}</span>
-                      <span className="text-sm font-semibold text-gray-900">
-                        {balance.available ?? Math.max(0, balance.totalAllocated + balance.carriedForward - balance.used - balance.pending)} days
-                      </span>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </>
-        </div>
-      )}
 
       {/* Main content grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
