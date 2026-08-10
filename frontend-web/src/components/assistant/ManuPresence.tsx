@@ -1,95 +1,69 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
-interface PresenceStory {
+type ManuMood = 'welcome' | 'thoughtful' | 'celebrate' | 'review';
+
+interface ManuScene {
   match: RegExp;
-  eyebrow: string;
-  title: string;
-  note: string;
-  image: string;
-  imagePosition: string;
+  mood: ManuMood;
+  label: string;
+  placement: 'right-edge' | 'bottom-right' | 'bottom-center' | 'upper-right';
 }
 
-const stories: PresenceStory[] = [
-  {
-    match: /attendance/i,
-    eyebrow: 'Manu watches the clock with you',
-    title: 'Every attendance moment stays explainable.',
-    note: 'Mark today, review exceptions, and keep corrections visible to the right approver.',
-    image: '/images/assistant/contextual/manu-attendance.png',
-    imagePosition: '72% center',
-  },
-  {
-    match: /document|compensation|payroll|payslip|exit/i,
-    eyebrow: 'Manu keeps the paper trail close',
-    title: 'Documents, approvals and hand-offs stay connected.',
-    note: 'A calm visual guide—not an invisible automation. You remain in control of every action.',
-    image: '/images/assistant/contextual/manu-documents-payroll.png',
-    imagePosition: '28% center',
-  },
-  {
-    match: /report|readiness|employee|dashboard|settings/i,
-    eyebrow: 'Manu notices what needs attention',
-    title: 'See the gaps before they become surprises.',
-    note: 'Use the visible records and reports below; Manu adds context without changing the underlying workflow.',
-    image: '/images/assistant/contextual/manu-insights.png',
-    imagePosition: '78% center',
-  },
-  {
-    match: /leave|onboarding|probation|performance/i,
-    eyebrow: 'Manu stays beside the journey',
-    title: 'Human decisions deserve clear context.',
-    note: 'Follow the workflow below and keep approvals, evidence and ownership explicit.',
-    image: '/images/assistant/contextual/manu-attendance.png',
-    imagePosition: '72% center',
-  },
+const scenes: ManuScene[] = [
+  { match: /dashboard|welcome/i, mood: 'welcome', label: 'Manu welcoming you into today’s work', placement: 'right-edge' },
+  { match: /attendance|leave|calendar/i, mood: 'thoughtful', label: 'Manu thoughtfully reviewing time and attendance', placement: 'bottom-right' },
+  { match: /document|compensation|payroll|payslip|exit/i, mood: 'review', label: 'Manu gently reminding you to review the details', placement: 'upper-right' },
+  { match: /onboarding|probation|performance|promote/i, mood: 'celebrate', label: 'Manu celebrating a people milestone', placement: 'bottom-center' },
+  { match: /report|readiness|employee|master|settings|organization/i, mood: 'thoughtful', label: 'Manu looking closely at workforce insights', placement: 'bottom-right' },
+  { match: /.*/, mood: 'welcome', label: 'Manu peeking in to accompany your work', placement: 'right-edge' },
 ];
 
+const imageByMood: Record<ManuMood, string> = {
+  welcome: '/images/assistant/peeks/manu-welcome.png',
+  thoughtful: '/images/assistant/peeks/manu-thoughtful.png',
+  celebrate: '/images/assistant/peeks/manu-celebrate.png',
+  review: '/images/assistant/peeks/manu-review.png',
+};
+
+const placementClasses: Record<ManuScene['placement'], string> = {
+  'right-edge': 'right-[-38px] top-[34%] w-[170px] xl:w-[205px]',
+  'bottom-right': 'bottom-[-28px] right-[86px] w-[155px] xl:w-[190px]',
+  'bottom-center': 'bottom-[-34px] right-[22%] w-[160px] xl:w-[200px]',
+  'upper-right': 'right-[-44px] top-[22%] w-[165px] xl:w-[205px]',
+};
+
+/**
+ * A purely visual Manu layer. It never opens the assistant, captures clicks,
+ * reads page data, or performs actions. The route only selects her mood.
+ */
 export default function ManuPresence() {
-  const location = useLocation();
-  const story = useMemo(
-    () => stories.find((candidate) => candidate.match.test(location.pathname)),
-    [location.pathname]
-  );
-  const [dismissedPath, setDismissedPath] = useState<string | null>(null);
-
-  useEffect(() => {
-    setDismissedPath(null);
-  }, [location.pathname]);
-
-  if (!story || dismissedPath === location.pathname) return null;
+  const { pathname } = useLocation();
+  const scene = useMemo(() => scenes.find((candidate) => candidate.match.test(pathname))!, [pathname]);
 
   return (
-    <aside
-      aria-label="Context from Manu"
-      className="pointer-events-none fixed right-5 top-28 z-30 hidden w-[330px] overflow-hidden rounded-[28px] border border-white/80 bg-white/90 shadow-[0_24px_70px_rgba(84,65,160,0.24)] backdrop-blur-xl 2xl:block"
+    <div
+      className={`pointer-events-none fixed z-20 hidden select-none lg:block ${placementClasses[scene.placement]}`}
+      aria-label={scene.label}
+      role="img"
     >
-      <div
-        className="relative h-44 bg-cover bg-no-repeat"
-        style={{ backgroundImage: `url(${story.image})`, backgroundPosition: story.imagePosition }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/50 to-transparent" />
-        <div className="absolute left-5 top-5 max-w-[175px]">
-          <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.13em] text-violet-700 shadow-sm">
-            <SparklesIcon className="h-3.5 w-3.5" />
-            Manu is here
-          </div>
-          <p className="text-sm font-extrabold leading-snug text-slate-900">{story.eyebrow}</p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setDismissedPath(location.pathname)}
-          className="pointer-events-auto absolute right-3 top-3 rounded-full bg-white/85 p-1.5 text-slate-500 shadow-sm transition hover:bg-white hover:text-slate-900"
-          aria-label="Hide Manu on this screen"
-        >
-          <XMarkIcon className="h-4 w-4" />
-        </button>
-      </div>
-      <div className="px-5 py-4">
-        <h2 className="text-base font-extrabold leading-snug text-slate-900">{story.title}</h2>
-        <p className="mt-1.5 text-xs leading-relaxed text-slate-600">{story.note}</p>
-      </div>
-    </aside>
+      <div className="absolute bottom-2 left-1/2 h-12 w-4/5 -translate-x-1/2 rounded-full bg-violet-300/20 blur-2xl" />
+      <img
+        key={`${scene.mood}-${scene.placement}`}
+        src={imageByMood[scene.mood]}
+        alt=""
+        aria-hidden="true"
+        className="relative h-auto w-full drop-shadow-[0_18px_24px_rgba(76,56,140,0.20)] motion-safe:animate-[manu-peek_520ms_cubic-bezier(0.22,1,0.36,1)]"
+      />
+      <style>{`
+        @keyframes manu-peek {
+          from { opacity: 0; transform: translateY(22px) scale(.94); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          [aria-label^="Manu"] img { animation: none !important; }
+        }
+      `}</style>
+    </div>
   );
 }
