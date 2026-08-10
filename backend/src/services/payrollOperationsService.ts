@@ -146,6 +146,36 @@ class PayrollOperationsService {
     });
   }
 
+  async addCycleNote(tenantId: string, payrollCycleId: string, actorUserId: string, note: unknown, category?: unknown) {
+    const cycle = await this.cycleRepo.findOne({ where: { tenantId, payrollCycleId }, select: { payrollCycleId: true } });
+    if (!cycle) return null;
+    const safeNote = clean(note, 4000);
+    if (!safeNote) throw new Error('A collaboration message is required');
+    const safeCategory = clean(category, 40) || 'general';
+    return this.eventRepo.save(this.eventRepo.create({
+      tenantId,
+      payrollCycleId,
+      actorUserId,
+      action: 'collaboration_note',
+      note: safeNote,
+      details: { category: safeCategory },
+    }));
+  }
+
+  async addCycleArtifact(tenantId: string, payrollCycleId: string, actorUserId: string, artifact: Record<string, unknown>) {
+    const cycle = await this.cycleRepo.findOne({ where: { tenantId, payrollCycleId }, select: { payrollCycleId: true } });
+    if (!cycle) return null;
+    return this.eventRepo.save(this.eventRepo.create({
+      tenantId, payrollCycleId, actorUserId, action: 'artifact_uploaded',
+      note: `Payroll artifact uploaded: ${clean(artifact.fileName, 240)}`,
+      details: artifact,
+    }));
+  }
+
+  async getCycleArtifact(tenantId: string, payrollCycleId: string, payrollCycleEventId: string) {
+    return this.eventRepo.findOne({ where: { tenantId, payrollCycleId, payrollCycleEventId, action: 'artifact_uploaded' } });
+  }
+
   async upsertTaxStatement(tenantId: string, actorUserId: string, input: Partial<PayrollTaxStatement>) {
     if (!input.employeeId || !input.financialYear || !input.statementType) throw new Error('Employee, financial year and statement type are required');
     const employee = await AppDataSource.getRepository(Employee).findOne({

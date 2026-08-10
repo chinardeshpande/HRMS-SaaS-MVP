@@ -157,6 +157,7 @@ const InvitationsTab: React.FC<{ openComposerKey?: number }> = ({ openComposerKe
       hr_admin: 'HR Admin',
       manager: 'Manager',
       employee: 'Employee',
+      payroll_partner: 'Payroll Partner',
     };
     return roleMap[role] || role;
   };
@@ -419,6 +420,7 @@ const InvitationsTab: React.FC<{ openComposerKey?: number }> = ({ openComposerKe
                   <option value="manager">Manager</option>
                   <option value="hr_admin">HR Admin</option>
                   <option value="system_admin">System Admin</option>
+                  <option value="payroll_partner">Payroll Partner</option>
                 </select>
               </div>
 

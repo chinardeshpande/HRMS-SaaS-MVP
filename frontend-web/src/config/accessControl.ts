@@ -38,6 +38,8 @@ export interface NavItemConfig extends AccessRule {
 
 export const ADMIN_ROLES = [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN];
 export const MANAGER_PLUS_ROLES = [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN, UserRole.MANAGER];
+export const CORE_ROLES = [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN, UserRole.MANAGER, UserRole.EMPLOYEE];
+export const PAYROLL_ROLES = [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN, UserRole.PAYROLL_PARTNER];
 
 const normalizeRole = (role?: UserRole | string | null): string => String(role || '').toLowerCase();
 
@@ -53,7 +55,7 @@ export const canAccessRoles = (
 };
 
 export const routeAccessRules: AccessRule[] = [
-  { path: '/dashboard' },
+  { path: '/dashboard', roles: CORE_ROLES },
   { path: '/acv-readiness', roles: ADMIN_ROLES },
   { path: '/onboarding-wizard', roles: ADMIN_ROLES },
   { path: '/employees', roles: MANAGER_PLUS_ROLES },
@@ -61,8 +63,8 @@ export const routeAccessRules: AccessRule[] = [
   { path: '/master-data', roles: ADMIN_ROLES },
   { path: '/departments', roles: ADMIN_ROLES },
   { path: '/designations', roles: ADMIN_ROLES },
-  { path: '/attendance' },
-  { path: '/leave' },
+  { path: '/attendance', roles: CORE_ROLES },
+  { path: '/leave', roles: CORE_ROLES },
   { path: '/performance', roles: MANAGER_PLUS_ROLES },
   { path: '/performance/:reviewId', roles: MANAGER_PLUS_ROLES },
   { path: '/onboarding', roles: ADMIN_ROLES },
@@ -72,16 +74,16 @@ export const routeAccessRules: AccessRule[] = [
   { path: '/probation/case/:probationId', roles: MANAGER_PLUS_ROLES },
   { path: '/exit', roles: MANAGER_PLUS_ROLES },
   { path: '/exit/:exitId', roles: MANAGER_PLUS_ROLES },
-  { path: '/calendar' },
-  { path: '/hr-connect' },
-  { path: '/chat/:conversationId' },
-  { path: '/ticket/:ticketId' },
-  { path: '/groups' },
+  { path: '/calendar', roles: CORE_ROLES },
+  { path: '/hr-connect', roles: CORE_ROLES },
+  { path: '/chat/:conversationId', roles: CORE_ROLES },
+  { path: '/ticket/:ticketId', roles: CORE_ROLES },
+  { path: '/groups', roles: CORE_ROLES },
   { path: '/reports', roles: ADMIN_ROLES },
   { path: '/documents', roles: MANAGER_PLUS_ROLES },
-  { path: '/my-hr-documents' },
-  { path: '/org-chart' },
-  { path: '/payroll-operations', roles: ADMIN_ROLES },
+  { path: '/my-hr-documents', roles: CORE_ROLES },
+  { path: '/org-chart', roles: CORE_ROLES },
+  { path: '/payroll-operations', roles: PAYROLL_ROLES },
   {
     path: '/settings',
     roles: ADMIN_ROLES,
@@ -89,16 +91,16 @@ export const routeAccessRules: AccessRule[] = [
     deniedMessage:
       'Organization, billing, user management, and policy settings require HR administrator access. Your personal HR actions remain available from the main workspace modules.',
   },
-  { path: '/edit-profile' },
+  { path: '/edit-profile', roles: CORE_ROLES },
   { path: '/transfer', roles: ADMIN_ROLES },
   { path: '/promote', roles: ADMIN_ROLES },
   { path: '/compensation', roles: ADMIN_ROLES },
   { path: '/performance-review', roles: MANAGER_PLUS_ROLES },
-  { path: '/employee-attendance' },
+  { path: '/employee-attendance', roles: CORE_ROLES },
 ];
 
 export const navigationItems: NavItemConfig[] = [
-  { name: 'Dashboard', href: '/dashboard', path: '/dashboard', icon: HomeIcon },
+  { name: 'Dashboard', href: '/dashboard', path: '/dashboard', icon: HomeIcon, roles: CORE_ROLES },
   {
     name: 'ACV Readiness',
     href: '/acv-readiness',
@@ -187,7 +189,7 @@ export const navigationItems: NavItemConfig[] = [
     href: '/payroll-operations',
     path: '/payroll-operations',
     icon: BanknotesIcon,
-    roles: ADMIN_ROLES,
+    roles: PAYROLL_ROLES,
   },
   {
     name: 'Settings',
@@ -202,7 +204,9 @@ export const filterNavItemsForRole = (
   items: NavItemConfig[],
   userRole: UserRole | string | undefined | null
 ): NavItemConfig[] =>
-  items
+  (normalizeRole(userRole) === 'payroll_partner'
+    ? items.filter((item) => item.path === '/payroll-operations')
+    : items)
     .filter((item) => canAccessRoles(userRole, item.roles))
     .map((item) => ({
       ...item,

@@ -4,6 +4,7 @@ export enum UserRole {
   MANAGER = 'MANAGER',
   HR_ADMIN = 'HR_ADMIN',
   SYSTEM_ADMIN = 'SYSTEM_ADMIN',
+  PAYROLL_PARTNER = 'PAYROLL_PARTNER',
 }
 
 // User interface

@@ -32,6 +32,8 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const [demoSwitching, setDemoSwitching] = useState(false);
   const [organizationSettings, setOrganizationSettings] = useState<OrganizationSettings | null>(null);
+  const isPayrollPartner = String(user?.role || '').toLowerCase() === 'payroll_partner';
+  const homePath = isPayrollPartner ? '/payroll-operations' : '/dashboard';
 
   const navigation = filterNavItemsForRole(navigationItems, user?.role);
   const assetBaseUrl = API_BASE_URL.replace('/api/v1', '');
@@ -141,13 +143,13 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
               src={DEFAULT_PLATFORM_LOGO}
               alt={brand.fullName}
               className="h-[68px] w-auto cursor-pointer object-contain"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate(homePath)}
             />
           </div>
 
           {/* Navigation */}
           <nav data-testid="primary-navigation" className="mt-8 flex-1 px-3 space-y-1">
-            <div className="mb-4 px-3">
+            {!isPayrollPartner && <div className="mb-4 px-3">
               <button
                 onClick={handleDemoToggle}
                 disabled={demoSwitching}
@@ -164,7 +166,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                   Demo workspace: {user?.tenant?.companyName || 'Aura Demo'}
                 </p>
               )}
-            </div>
+            </div>}
             {navigation.map((item) => {
               const hasChildren = item.children && item.children.length > 0;
               const isExpanded = expandedMenus.includes(item.name);
@@ -293,11 +295,11 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                     src={DEFAULT_PLATFORM_LOGO}
                     alt={brand.fullName}
                     className="h-10 w-auto cursor-pointer"
-                    onClick={() => { navigate('/dashboard'); setSidebarOpen(false); }}
+                    onClick={() => { navigate(homePath); setSidebarOpen(false); }}
                   />
                 </div>
                 <nav className="mt-5 px-2 space-y-1">
-                  <button
+                  {!isPayrollPartner && <button
                     onClick={() => {
                       handleDemoToggle();
                       setSidebarOpen(false);
@@ -310,7 +312,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                     } disabled:cursor-not-allowed disabled:opacity-60`}
                   >
                     {isDemoMode ? 'Return to my account' : 'Switch to demo mode'}
-                  </button>
+                  </button>}
                   {navigation.map((item) => {
                     const hasChildren = item.children && item.children.length > 0;
                     const isExpanded = expandedMenus.includes(item.name);
@@ -486,8 +488,8 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
           </div>
         </main>
       </div>
-      <ManuPresence />
-      <ManuAssistant user={user} tenantName={tenantBrand.companyName} />
+      {!isPayrollPartner && <ManuPresence />}
+      {!isPayrollPartner && <ManuAssistant user={user} tenantName={tenantBrand.companyName} />}
     </div>
   );
 };

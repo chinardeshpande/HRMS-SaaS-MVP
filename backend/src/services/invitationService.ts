@@ -386,6 +386,7 @@ export class InvitationService {
       [UserRole.HR_ADMIN]: 'HR Administrator',
       [UserRole.MANAGER]: 'Manager',
       [UserRole.EMPLOYEE]: 'Employee',
+      [UserRole.PAYROLL_PARTNER]: 'Payroll Partner',
     };
     return roleMap[role] || role;
   }
