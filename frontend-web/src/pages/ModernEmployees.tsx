@@ -262,53 +262,6 @@ export default function ModernEmployees() {
         </div>
       )}
 
-      {/* Page header */}
-      <section className="ui-experiment-hero mb-5 p-5 sm:p-6">
-        <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="mb-3 flex flex-wrap gap-2">
-              <span className="ui-experiment-pill">
-                <UsersIcon className="h-4 w-4 text-indigo-600" />
-                Employee Register
-              </span>
-              <span className="ui-experiment-pill">
-                <CheckCircleIcon className="h-4 w-4 text-teal-600" />
-                {stats?.active || 0} active
-              </span>
-            </div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-gray-950 sm:text-3xl">
-              Workforce memory, cleanly searchable.
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-gray-600">
-              Keep employee identity, reporting lines, status, department, designation, and implementation data in one governed register.
-            </p>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-[1fr_1.1fr] lg:w-[31rem]">
-            <div className="ui-hr-illustration hidden sm:block" aria-hidden="true">
-              <span className="person-a" />
-              <span className="person-b" />
-              <span className="task-card" />
-              <span className="spark-one" />
-              <span className="spark-two" />
-            </div>
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-1">
-            <div className="ui-visual-tile p-3">
-              <p className="text-xs font-bold text-gray-500">Total</p>
-              <p className="mt-2 text-2xl font-extrabold text-gray-950">{stats?.total || 0}</p>
-            </div>
-            <div className="ui-visual-tile p-3">
-              <p className="text-xs font-bold text-gray-500">Active</p>
-              <p className="mt-2 text-2xl font-extrabold text-teal-600">{stats?.active || 0}</p>
-            </div>
-            <div className="ui-visual-tile p-3">
-              <p className="text-xs font-bold text-gray-500">Exited</p>
-              <p className="mt-2 text-2xl font-extrabold text-rose-600">{stats?.exited || 0}</p>
-            </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Stats Grid - matching dashboard style */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
         {statCards.map((stat, index) => (
