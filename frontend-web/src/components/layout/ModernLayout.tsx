@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ManuAssistant from '../assistant/ManuAssistant';
+import ManuPresence from '../assistant/ManuPresence';
 import DemoJourneyPanel from '../demo/DemoJourneyPanel';
 import { filterNavItemsForRole, navigationItems, NavItemConfig } from '../../config/accessControl';
 import settingsService, { OrganizationSettings } from '../../services/settingsService';
@@ -485,6 +486,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
           </div>
         </main>
       </div>
+      <ManuPresence />
       <ManuAssistant user={user} tenantName={tenantBrand.companyName} />
     </div>
   );

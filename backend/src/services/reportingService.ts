@@ -146,7 +146,10 @@ export interface MissingDocumentsData {
   employeeCode: string;
   department: string;
   missingDocuments: string[];
+  missingInformation: string[];
   documentCount: number;
+  informationGapCount: number;
+  totalGapCount: number;
   criticality: 'high' | 'medium' | 'low';
 }
 
@@ -706,16 +709,21 @@ export class ReportingService {
       const missingDocuments = mandatoryDocuments.filter(
         (doc) => !uploadedTypes.includes(doc)
       );
+      const missingInformation = this.getEmployeeMissingMasterFields(employee);
+      const totalGapCount = missingDocuments.length + missingInformation.length;
 
-      if (missingDocuments.length > 0) {
+      if (totalGapCount > 0) {
         results.push({
           employeeId: employee.employeeId,
           employeeName: employee.fullName,
           employeeCode: employee.employeeCode,
           department: employee.department?.name || 'Unassigned',
           missingDocuments,
+          missingInformation,
           documentCount: missingDocuments.length,
-          criticality: missingDocuments.length >= 3 ? 'high' : missingDocuments.length >= 2 ? 'medium' : 'low',
+          informationGapCount: missingInformation.length,
+          totalGapCount,
+          criticality: totalGapCount >= 4 ? 'high' : totalGapCount >= 2 ? 'medium' : 'low',
         });
       }
     }

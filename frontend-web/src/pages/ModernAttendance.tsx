@@ -2309,7 +2309,7 @@ export default function ModernAttendance() {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-gray-950">Import attendance</h3>
-                  <p className="text-xs text-gray-600">Daily, weekly, or monthly CSV data</p>
+                  <p className="text-xs text-gray-600">Daily, weekly, or monthly CSV or Excel data</p>
                 </div>
               </div>
               <button
@@ -2342,12 +2342,12 @@ export default function ModernAttendance() {
 
                   <div>
                     <label htmlFor="attendance-import-file" className="text-xs font-bold uppercase tracking-wide text-primary-700">
-                      2. Choose CSV file
+                      2. Choose attendance file
                     </label>
                     <input
                       id="attendance-import-file"
                       type="file"
-                      accept=".csv,text/csv"
+                      accept=".csv,.xls,.xlsx,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                       onChange={handleFileUpload}
                       className="mt-2 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm file:mr-3 file:rounded file:border-0 file:bg-primary-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-primary-800"
                     />
@@ -2454,7 +2454,7 @@ export default function ModernAttendance() {
                           <div>
                             <p className="text-sm font-bold text-red-900">Correct the invalid rows</p>
                             <p className="mt-0.5 text-xs text-red-800">
-                              The import stays locked until the CSV has no validation errors.
+                              The import stays locked until the file has no validation errors.
                             </p>
                           </div>
                         </div>

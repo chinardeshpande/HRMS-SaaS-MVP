@@ -234,6 +234,7 @@ const EMPLOYEE_DOCUMENT_CATEGORIES: Array<{ id: EmployeeDocumentCategory | 'all'
   { id: 'employment_letter', name: 'Employment letters' },
   { id: 'compensation', name: 'Compensation' },
   { id: 'payslip', name: 'Payslips' },
+  { id: 'form16', name: 'Form 16' },
   { id: 'policy_acknowledgement', name: 'Policy acknowledgements' },
   { id: 'performance', name: 'Performance' },
   { id: 'exit', name: 'Exit' },

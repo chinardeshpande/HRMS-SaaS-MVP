@@ -14,6 +14,7 @@ import { LeaveRequest } from '../models/LeaveRequest';
 import { AttendancePolicy } from '../models/AttendancePolicy';
 import { Attendance } from '../models/Attendance';
 import { TimeEntryEdit } from '../models/TimeEntryEdit';
+import { BiometricAttendanceConfig } from '../models/BiometricAttendanceConfig';
 // Onboarding & Probation entities
 import { Candidate } from '../models/Candidate';
 import { OnboardingCase } from '../models/OnboardingCase';
@@ -82,6 +83,10 @@ import { DigitalLibrary } from '../models/DigitalLibrary';
 import { DocumentCategory } from '../models/DocumentCategory';
 import { CompanyDocument } from '../models/CompanyDocument';
 import { EmployeeDocument } from '../models/EmployeeDocument';
+import { EmployeeDocumentRequest } from '../models/EmployeeDocumentRequest';
+import { PayrollCycle } from '../models/PayrollCycle';
+import { PayrollCycleEvent } from '../models/PayrollCycleEvent';
+import { PayrollTaxStatement } from '../models/PayrollTaxStatement';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -105,6 +110,7 @@ export const AppDataSource = new DataSource({
     AttendancePolicy,
     Attendance,
     TimeEntryEdit,
+    BiometricAttendanceConfig,
     // Onboarding & Probation
     Candidate,
     OnboardingCase,
@@ -173,6 +179,10 @@ export const AppDataSource = new DataSource({
     DocumentCategory,
     CompanyDocument,
     EmployeeDocument,
+    EmployeeDocumentRequest,
+    PayrollCycle,
+    PayrollCycleEvent,
+    PayrollTaxStatement,
   ],
   migrations: ['dist/backend/src/migrations-v2/*.js'],
   subscribers: [],

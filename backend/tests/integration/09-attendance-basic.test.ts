@@ -1,4 +1,4 @@
-import { TEST_ACCOUNTS, loginAs, authGet, authPost, requireAuth } from '../helpers/testSetup';
+import { TEST_ACCOUNTS, loginAs, authGet, authPost, authPut, requireAuth } from '../helpers/testSetup';
 
 describe('Attendance Basic Flow', () => {
   it('unauthenticated request to attendance is rejected', async () => {
@@ -96,5 +96,32 @@ describe('Attendance Basic Flow', () => {
 
     const closeReopenedAttendance = await authPost('/attendance/clock-out', ctx.token).send({});
     expect(closeReopenedAttendance.status).toBe(200);
+  });
+
+  it('employee can request a retrospective attendance correction and manager can approve it', async () => {
+    const employee = await loginAs(TEST_ACCOUNTS.EMPLOYEE);
+    const manager = await loginAs(TEST_ACCOUNTS.MANAGER);
+    requireAuth(employee, TEST_ACCOUNTS.EMPLOYEE.label);
+    requireAuth(manager, TEST_ACCOUNTS.MANAGER.label);
+
+    const request = await authPost('/attendance/regularization/request', employee.token).send({
+      date: '2026-07-15',
+      requestedCheckIn: '2026-07-15T09:00:00.000Z',
+      requestedCheckOut: '2026-07-15T18:00:00.000Z',
+      reason: 'Biometric device did not sync',
+    });
+    expect(request.status).toBe(200);
+    expect(request.body.data.status).toBe('pending');
+
+    const pending = await authGet('/attendance/regularization/pending', manager.token);
+    expect(pending.status).toBe(200);
+    expect(pending.body.data.some((item: any) => item.editId === request.body.data.editId)).toBe(true);
+
+    const approve = await authPut(
+      `/attendance/regularization/${request.body.data.editId}/approve`,
+      manager.token
+    ).send({ comments: 'Verified' });
+    expect(approve.status).toBe(200);
+    expect(approve.body.data.status).toBe('approved');
   });
 });

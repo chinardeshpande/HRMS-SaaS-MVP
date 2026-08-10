@@ -33,7 +33,9 @@ export default function ModernEmployees() {
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState<string>('');
-  const [selectedStatus, setSelectedStatus] = useState<string>('');
+  // Pilot register opens on the operational workforce. Historical records remain
+  // one click away without mixing exited employees into day-to-day work.
+  const [selectedStatus, setSelectedStatus] = useState<string>('active');
   const [showFilters, setShowFilters] = useState(false);
 
   // Notification
@@ -334,6 +336,26 @@ export default function ModernEmployees() {
       </div>
 
       {/* Actions Bar */}
+      <div className="mb-4 inline-flex rounded-lg border border-gray-200 bg-white p-1" role="tablist" aria-label="Employee register view">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={selectedStatus === 'active'}
+          onClick={() => setSelectedStatus('active')}
+          className={`rounded-md px-4 py-2 text-sm font-semibold ${selectedStatus === 'active' ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+        >
+          Active employees ({stats?.active || 0})
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={selectedStatus === 'exited'}
+          onClick={() => setSelectedStatus('exited')}
+          className={`rounded-md px-4 py-2 text-sm font-semibold ${selectedStatus === 'exited' ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'}`}
+        >
+          Historical / exited ({stats?.exited || 0})
+        </button>
+      </div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex-1 max-w-lg">
           <div className="relative">
@@ -413,7 +435,9 @@ export default function ModernEmployees() {
       {/* Employee List - Card based like dashboard */}
       <div className="card">
         <div className="card-header flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">All Employees ({employees.length})</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            {selectedStatus === 'active' ? 'Active Employees' : selectedStatus === 'exited' ? 'Historical / Exited Employees' : 'All Employees'} ({employees.length})
+          </h2>
         </div>
         <div className="card-body p-0">
           {loading ? (

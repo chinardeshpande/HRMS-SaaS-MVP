@@ -80,6 +80,13 @@ export default function ModernLogin() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex">
       {/* Left side - Branding and features */}
       <div className="hidden lg:flex lg:flex-1 bg-gradient-to-br from-primary-600 to-primary-800 p-12 relative overflow-hidden">
+        <img
+          src="/images/assistant/contextual/manu-attendance.png"
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[68%_center] opacity-30 mix-blend-screen"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-900/90 via-primary-800/70 to-primary-700/20" />
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>

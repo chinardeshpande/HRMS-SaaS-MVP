@@ -28,7 +28,7 @@ interface InviteFormData {
   departmentId?: string;
 }
 
-const InvitationsTab: React.FC = () => {
+const InvitationsTab: React.FC<{ openComposerKey?: number }> = ({ openComposerKey = 0 }) => {
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -46,6 +46,10 @@ const InvitationsTab: React.FC = () => {
   useEffect(() => {
     loadInvitations();
   }, []);
+
+  useEffect(() => {
+    if (openComposerKey > 0) setShowModal(true);
+  }, [openComposerKey]);
 
   const loadInvitations = async () => {
     try {

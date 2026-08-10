@@ -15,6 +15,7 @@ import {
   DocumentTextIcon,
   ChatBubbleLeftRightIcon,
   DocumentDuplicateIcon,
+  BanknotesIcon,
 } from '@heroicons/react/24/outline';
 import { UserRole } from '../types';
 
@@ -80,6 +81,7 @@ export const routeAccessRules: AccessRule[] = [
   { path: '/documents', roles: MANAGER_PLUS_ROLES },
   { path: '/my-hr-documents' },
   { path: '/org-chart' },
+  { path: '/payroll-operations', roles: ADMIN_ROLES },
   {
     path: '/settings',
     roles: ADMIN_ROLES,
@@ -178,6 +180,13 @@ export const navigationItems: NavItemConfig[] = [
     href: '/reports',
     path: '/reports',
     icon: DocumentTextIcon,
+    roles: ADMIN_ROLES,
+  },
+  {
+    name: 'Payroll Operations',
+    href: '/payroll-operations',
+    path: '/payroll-operations',
+    icon: BanknotesIcon,
     roles: ADMIN_ROLES,
   },
   {

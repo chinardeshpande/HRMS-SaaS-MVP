@@ -62,6 +62,14 @@ export interface DepartmentAttendance {
 export type AttendanceImportAction = 'create' | 'update' | 'unchanged' | 'skip' | 'error';
 export type AttendanceImportConflictPolicy = 'skip' | 'overwrite';
 
+export interface BiometricImportConfig {
+  configId?: string;
+  formatName: string;
+  headerRow: number;
+  sheetName?: string;
+  columnMapping: Record<'employeeCode' | 'date' | 'status' | 'checkIn' | 'checkOut' | 'workMinutes' | 'location' | 'notes', string>;
+}
+
 export interface AttendanceImportPreview {
   fileName: string;
   conflictPolicy: AttendanceImportConflictPolicy;
@@ -130,6 +138,15 @@ export interface TimeEntryEdit {
 }
 
 class AttendanceService {
+  async getImportConfig(): Promise<BiometricImportConfig> {
+    const response = await api.get('/attendance/import/config');
+    return response.data;
+  }
+
+  async saveImportConfig(config: BiometricImportConfig): Promise<BiometricImportConfig> {
+    const response = await api.put('/attendance/import/config', config);
+    return response.data;
+  }
   async previewImport(
     file: File,
     conflictPolicy: AttendanceImportConflictPolicy

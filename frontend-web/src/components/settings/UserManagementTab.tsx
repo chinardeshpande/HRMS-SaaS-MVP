@@ -15,6 +15,12 @@ export default function UserManagementTab() {
   const { user } = useAuth();
   const isSystemAdmin = String(user?.role || '').toUpperCase() === 'SYSTEM_ADMIN';
   const [activeSubTab, setActiveSubTab] = useState<UserManagementSubTab>('users');
+  const [invitationComposerKey, setInvitationComposerKey] = useState(0);
+
+  const startInvitation = () => {
+    setActiveSubTab('invitations');
+    setInvitationComposerKey((current) => current + 1);
+  };
 
   const subTabs = [
     {
@@ -88,8 +94,8 @@ export default function UserManagementTab() {
 
         {/* Sub-Tab Content */}
         <div className="p-6">
-          {activeSubTab === 'users' && <UsersTab />}
-          {activeSubTab === 'invitations' && <InvitationsTab />}
+          {activeSubTab === 'users' && <UsersTab onInviteUser={startInvitation} />}
+          {activeSubTab === 'invitations' && <InvitationsTab openComposerKey={invitationComposerKey} />}
           {activeSubTab === 'roles' && <RolesPermissionsTab />}
         </div>
       </div>

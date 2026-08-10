@@ -16,6 +16,22 @@ import attendanceImportService, {
  */
 
 export class AttendanceController {
+  async getImportConfig(req: Request, res: Response) {
+    try {
+      res.json({ success: true, data: await attendanceImportService.getConfig(req.user!.tenantId) });
+    } catch (error: any) {
+      res.status(400).json({ success: false, error: error.message });
+    }
+  }
+
+  async saveImportConfig(req: Request, res: Response) {
+    try {
+      const config = await attendanceImportService.saveConfig(req.user!.tenantId, req.body);
+      res.json({ success: true, data: config, message: 'Biometric import format saved' });
+    } catch (error: any) {
+      res.status(400).json({ success: false, error: error.message });
+    }
+  }
   async downloadImportTemplate(req: Request, res: Response) {
     const csv = [
       'employeeCode,date,status,checkIn,checkOut,workMinutes,location,notes',
@@ -30,7 +46,7 @@ export class AttendanceController {
 
   async previewImport(req: Request, res: Response) {
     try {
-      if (!req.file) throw new Error('CSV file is required');
+      if (!req.file) throw new Error('Attendance file is required');
       const tenantId = req.user!.tenantId;
       const conflictPolicy = (req.body.conflictPolicy === 'overwrite' ? 'overwrite' : 'skip') as AttendanceImportConflictPolicy;
       const preview = await attendanceImportService.preview(
@@ -47,7 +63,7 @@ export class AttendanceController {
 
   async commitImport(req: Request, res: Response) {
     try {
-      if (!req.file) throw new Error('CSV file is required');
+      if (!req.file) throw new Error('Attendance file is required');
       const conflictPolicy = (req.body.conflictPolicy === 'overwrite' ? 'overwrite' : 'skip') as AttendanceImportConflictPolicy;
       const result = await attendanceImportService.commit(
         req.user!.tenantId,

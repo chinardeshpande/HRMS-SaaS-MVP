@@ -10,10 +10,10 @@ const attendanceImportUpload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (_req, file, callback) => {
     const isCsv =
-      file.originalname.toLowerCase().endsWith('.csv') ||
-      ['text/csv', 'application/csv', 'application/vnd.ms-excel', 'text/plain'].includes(file.mimetype);
+      /\.(csv|xlsx|xls)$/i.test(file.originalname) ||
+      ['text/csv', 'application/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/plain'].includes(file.mimetype);
     if (isCsv) callback(null, true);
-    else callback(new Error('Only CSV attendance files are allowed'));
+    else callback(new Error('Only CSV or Excel attendance files are allowed'));
   },
 });
 
@@ -22,6 +22,19 @@ router.post('/clock-in', authenticate, attendanceController.clockIn);
 router.post('/clock-out', authenticate, attendanceController.clockOut);
 router.post('/reopen-today', authenticate, attendanceController.reopenToday);
 router.get('/my-attendance', authenticate, attendanceController.getMyAttendance);
+
+router.get(
+  '/import/config',
+  authenticate,
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
+  attendanceController.getImportConfig
+);
+router.put(
+  '/import/config',
+  authenticate,
+  authorize(UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN),
+  attendanceController.saveImportConfig
+);
 
 router.get(
   '/import/template',

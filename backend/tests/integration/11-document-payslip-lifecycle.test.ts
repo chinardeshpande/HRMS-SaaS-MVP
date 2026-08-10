@@ -56,6 +56,42 @@ const expectAuditEvent = async (tenantId: string, entityId: string, action: stri
 };
 
 describe('Document and Payslip Lifecycle API', () => {
+  it('employee can request employment and exit documents while HR processes the tenant-scoped queue', async () => {
+    const employee = await loginAs(TEST_ACCOUNTS.EMPLOYEE);
+    const hr = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
+    const orbit = await loginAs(TEST_ACCOUNTS.SECOND_TENANT_ADMIN);
+    requireAuth(employee, TEST_ACCOUNTS.EMPLOYEE.label);
+    requireAuth(hr, TEST_ACCOUNTS.HR_ADMIN.label);
+    requireAuth(orbit, TEST_ACCOUNTS.SECOND_TENANT_ADMIN.label);
+
+    const create = await authPost('/employee-documents/requests', employee.token).send({
+      documentType: 'experience_letter',
+      purpose: 'exit',
+      details: 'Synthetic pilot request',
+    });
+    expect(create.status).toBe(201);
+    expect(create.body.data.employeeId).toBe(employee.employeeId);
+
+    const mine = await authGet('/employee-documents/requests/my', employee.token);
+    expect(mine.status).toBe(200);
+    expect(mine.body.data.requests.some((row: any) => row.requestId === create.body.data.requestId)).toBe(true);
+
+    const queue = await authGet('/employee-documents/requests', hr.token);
+    expect(queue.status).toBe(200);
+    expect(queue.body.data.requests.some((row: any) => row.requestId === create.body.data.requestId)).toBe(true);
+
+    const start = await authPut(`/employee-documents/requests/${create.body.data.requestId}`, hr.token).send({
+      status: 'in_progress',
+      responseNotes: 'HR is preparing this document.',
+    });
+    expect(start.status).toBe(200);
+    expect(start.body.data.status).toBe('in_progress');
+
+    const orbitQueue = await authGet('/employee-documents/requests', orbit.token);
+    expect(orbitQueue.status).toBe(200);
+    expect(orbitQueue.body.data.requests.some((row: any) => row.requestId === create.body.data.requestId)).toBe(false);
+  });
+
   it('HR admin can upload, list, download, audit, update, verify, and archive an employee document', async () => {
     const hr = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
     const employee = await loginAs(TEST_ACCOUNTS.EMPLOYEE);

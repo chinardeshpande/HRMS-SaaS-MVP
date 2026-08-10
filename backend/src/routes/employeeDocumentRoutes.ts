@@ -10,6 +10,10 @@ import {
   EmployeeDocumentStatus,
   EmployeeDocumentVerificationStatus,
 } from '../models/EmployeeDocument';
+import { AppDataSource } from '../config/database';
+import { Employee } from '../models/Employee';
+import { EmployeeDocumentRequest, EmployeeDocumentRequestStatus } from '../models/EmployeeDocumentRequest';
+import { EmployeeDocument } from '../models/EmployeeDocument';
 
 const router = Router();
 router.use(authenticate);
@@ -82,6 +86,93 @@ const parsePayload = (body: Record<string, any>) => ({
   verificationStatus: body.verificationStatus as EmployeeDocumentVerificationStatus,
   notes: body.notes,
   metadata: parseMetadata(body.metadata),
+});
+
+const documentRequestRepo = () => AppDataSource.getRepository(EmployeeDocumentRequest);
+
+router.get('/requests/my', async (req: Request, res: Response) => {
+  if (!req.user!.employeeId) return deny(res);
+  const requests = await documentRequestRepo().find({
+    where: { tenantId: req.user!.tenantId, employeeId: req.user!.employeeId },
+    relations: ['fulfilledDocument'],
+    order: { createdAt: 'DESC' },
+  });
+  return res.json({ success: true, data: { requests } });
+});
+
+router.get('/requests', hrOnly, async (req: Request, res: Response) => {
+  const where: any = { tenantId: req.user!.tenantId };
+  if (req.query.status) where.status = req.query.status;
+  if (req.query.employeeId) where.employeeId = req.query.employeeId;
+  const requests = await documentRequestRepo().find({
+    where,
+    relations: ['employee', 'fulfilledDocument'],
+    order: { createdAt: 'DESC' },
+  });
+  return res.json({ success: true, data: { requests } });
+});
+
+router.post('/requests', async (req: Request, res: Response) => {
+  try {
+    const employeeId = isHrUser(req) && req.body.employeeId ? req.body.employeeId : req.user!.employeeId;
+    if (!employeeId) return deny(res);
+    if (!req.body.documentType) {
+      return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Document type is required' } });
+    }
+    if (!['employment', 'exit'].includes(req.body.purpose || 'employment')) {
+      return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Purpose must be employment or exit' } });
+    }
+    const employee = await AppDataSource.getRepository(Employee).findOne({
+      where: { tenantId: req.user!.tenantId, employeeId },
+    });
+    if (!employee) {
+      return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Employee not found' } });
+    }
+    const request = await documentRequestRepo().save(documentRequestRepo().create({
+      tenantId: req.user!.tenantId,
+      employeeId,
+      requestedBy: req.user!.userId,
+      documentType: String(req.body.documentType).trim(),
+      purpose: req.body.purpose || 'employment',
+      details: req.body.details || null,
+      status: EmployeeDocumentRequestStatus.REQUESTED,
+    }));
+    return res.status(201).json({ success: true, data: request, message: 'Document request submitted to HR' });
+  } catch (error: any) {
+    return res.status(400).json({ success: false, error: { code: 'DOCUMENT_REQUEST_ERROR', message: error.message } });
+  }
+});
+
+router.put('/requests/:requestId', hrOnly, async (req: Request, res: Response) => {
+  const request = await documentRequestRepo().findOne({
+    where: { tenantId: req.user!.tenantId, requestId: req.params.requestId },
+  });
+  if (!request) return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Document request not found' } });
+  const allowed = Object.values(EmployeeDocumentRequestStatus);
+  if (!allowed.includes(req.body.status)) {
+    return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Invalid document request status' } });
+  }
+  request.status = req.body.status;
+  request.responseNotes = req.body.responseNotes ?? request.responseNotes;
+  if (req.body.fulfilledDocumentId) {
+    const fulfilledDocument = await AppDataSource.getRepository(EmployeeDocument).findOne({
+      where: {
+        tenantId: req.user!.tenantId,
+        employeeId: request.employeeId,
+        documentId: req.body.fulfilledDocumentId,
+      },
+    });
+    if (!fulfilledDocument) {
+      return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Fulfilled document must belong to this employee and tenant' } });
+    }
+    request.fulfilledDocumentId = fulfilledDocument.documentId;
+  }
+  if ([EmployeeDocumentRequestStatus.FULFILLED, EmployeeDocumentRequestStatus.REJECTED, EmployeeDocumentRequestStatus.CANCELLED].includes(request.status)) {
+    request.resolvedBy = req.user!.userId;
+    request.resolvedAt = new Date();
+  }
+  const saved = await documentRequestRepo().save(request);
+  return res.json({ success: true, data: saved, message: 'Document request updated' });
 });
 
 router.get('/employees/:employeeId', async (req: Request, res: Response) => {

@@ -1,497 +1,140 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
 import { ModernLayout } from '../components/layout/ModernLayout';
-import DocumentViewerModal from '../components/common/DocumentViewerModal';
-import { digitalLibraryService, LibraryItem } from '../services/digitalLibraryService';
-import { documentCategoryService, DocumentCategory } from '../services/documentCategoryService';
-import {
-  ArrowDownTrayIcon,
-  TrashIcon,
-  DocumentIcon,
-  PhotoIcon,
-  VideoCameraIcon,
-  MusicalNoteIcon,
-  MagnifyingGlassIcon,
-  FolderIcon,
-  PlusIcon,
-  XMarkIcon,
-  EyeIcon,
-} from '@heroicons/react/24/outline';
+import { useAuth } from '../context/AuthContext';
+import { employeeDocumentService, EmployeeDocument, EmployeeDocumentRequest } from '../services/employeeDocumentService';
+import { compensationService, Payslip } from '../services/compensationService';
+import { ArrowDownTrayIcon, DocumentTextIcon, PlusIcon } from '@heroicons/react/24/outline';
 
-const MyHRDocuments: React.FC = () => {
-  const navigate = useNavigate();
-  const [documents, setDocuments] = useState<LibraryItem[]>([]);
-  const [allDocuments, setAllDocuments] = useState<LibraryItem[]>([]); // Store all docs for counts
+const documentTypeOptions = [
+  ['employment_letter', 'Employment / appointment letter'],
+  ['experience_letter', 'Experience letter'],
+  ['relieving_letter', 'Relieving letter'],
+  ['form16', 'Form 16'],
+  ['payslip', 'Payslip'],
+  ['other', 'Other HR document'],
+] as const;
+
+export default function MyHRDocuments() {
+  const { user } = useAuth();
+  const employeeId = user?.employeeId;
+  const [documents, setDocuments] = useState<EmployeeDocument[]>([]);
+  const [payslips, setPayslips] = useState<Payslip[]>([]);
+  const [requests, setRequests] = useState<EmployeeDocumentRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedFormat, setSelectedFormat] = useState<string>('all');
-  const [stats, setStats] = useState<any>(null);
-  const [dbCategories, setDbCategories] = useState<DocumentCategory[]>([]);
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [newCategoryDescription, setNewCategoryDescription] = useState('');
-  const [viewingDocument, setViewingDocument] = useState<LibraryItem | null>(null);
+  const [error, setError] = useState('');
+  const [showRequest, setShowRequest] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ documentType: 'employment_letter', purpose: 'employment' as 'employment' | 'exit', details: '' });
 
-  const fileFormats = [
-    { id: 'all', label: 'All Formats' },
-    { id: 'image', label: 'Images' },
-    { id: 'document', label: 'Documents' },
-    { id: 'video', label: 'Videos' },
-    { id: 'audio', label: 'Audio' },
-    { id: 'other', label: 'Other' },
-  ];
-
-  useEffect(() => {
-    loadDocuments();
-  }, [selectedCategory, selectedFormat, searchTerm]);
-
-  useEffect(() => {
-    loadAllDocuments();
-    loadStats();
-    loadCategories();
-  }, []);
-
-  const loadCategories = async () => {
+  const load = async () => {
+    if (!employeeId) return setLoading(false);
+    setLoading(true);
+    setError('');
     try {
-      const fetchedCategories = await documentCategoryService.getCategories();
-      setDbCategories(fetchedCategories);
-    } catch (error) {
-      console.error('Failed to load categories:', error);
-    }
-  };
-
-  const handleCreateCategory = async () => {
-    if (!newCategoryName.trim()) return;
-
-    try {
-      await documentCategoryService.createCategory({
-        name: newCategoryName,
-        description: newCategoryDescription || undefined,
-      });
-
-      // Reload categories
-      await loadCategories();
-
-      // Close modal and reset form
-      setShowCategoryModal(false);
-      setNewCategoryName('');
-      setNewCategoryDescription('');
-    } catch (error: any) {
-      console.error('Failed to create category:', error);
-      alert(error.message || 'Failed to create category');
-    }
-  };
-
-  const loadAllDocuments = async () => {
-    try {
-      const response = await digitalLibraryService.getLibraryItems({});
-      setAllDocuments(response.items || []);
-    } catch (error) {
-      console.error('Failed to load all documents for counts:', error);
-    }
-  };
-
-  const loadDocuments = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const params: any = {};
-
-      if (selectedCategory !== 'all') {
-        params.category = selectedCategory;
-      }
-
-      if (searchTerm) {
-        params.searchTerm = searchTerm;
-      }
-
-      const response = await digitalLibraryService.getLibraryItems(params);
-      let filteredDocs = response.items || [];
-
-      // Client-side filtering by format
-      if (selectedFormat !== 'all') {
-        filteredDocs = filteredDocs.filter(doc => doc.resourceType === selectedFormat);
-      }
-
-      setDocuments(filteredDocs);
-
-      // Update all documents if no filters applied
-      if (selectedCategory === 'all' && !searchTerm && selectedFormat === 'all') {
-        setAllDocuments(response.items || []);
-      }
-    } catch (error: any) {
-      console.error('Failed to load documents:', error);
-      setError(error.message || 'Failed to load documents');
-      setDocuments([]);
+      const [employeeDocuments, compensation, documentRequests] = await Promise.all([
+        employeeDocumentService.list(employeeId, { status: 'active' }),
+        compensationService.getEmployeeCompensation(employeeId),
+        employeeDocumentService.getMyRequests(),
+      ]);
+      setDocuments(employeeDocuments);
+      setPayslips(compensation.payslips || []);
+      setRequests(documentRequests);
+    } catch (cause: any) {
+      setError(cause.response?.data?.error?.message || cause.message || 'Unable to load your HR documents');
     } finally {
       setLoading(false);
     }
   };
 
-  const loadStats = async () => {
+  useEffect(() => { load(); }, [employeeId]);
+
+  const form16Documents = useMemo(() => documents.filter((document) => document.category === 'form16'), [documents]);
+  const otherDocuments = useMemo(() => documents.filter((document) => document.category !== 'form16' && document.category !== 'payslip'), [documents]);
+
+  const submitRequest = async () => {
+    setSaving(true);
+    setError('');
     try {
-      const statsData = await digitalLibraryService.getLibraryStats();
-      setStats(statsData);
-    } catch (error) {
-      console.error('Failed to load stats:', error);
-      // Don't set error for stats failure, just log it
+      await employeeDocumentService.requestDocument(form);
+      setShowRequest(false);
+      setForm({ documentType: 'employment_letter', purpose: 'employment', details: '' });
+      setRequests(await employeeDocumentService.getMyRequests());
+    } catch (cause: any) {
+      setError(cause.response?.data?.error?.message || cause.message || 'Unable to submit document request');
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleDownload = async (doc: LibraryItem) => {
-    try {
-      const response = await digitalLibraryService.downloadFromLibrary(doc.libraryId);
-
-      // Download file
-      const link = document.createElement('a');
-      link.href = response.fileUrl.startsWith('http')
-        ? response.fileUrl
-        : new URL(response.fileUrl, window.location.origin).toString();
-      link.download = doc.fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Reload to update download count
-      loadDocuments();
-    } catch (error) {
-      console.error('Failed to download document:', error);
-      alert('Failed to download document');
-    }
-  };
-
-  const handleDelete = async (doc: LibraryItem) => {
-    if (!window.confirm(`Are you sure you want to delete "${doc.fileName}"?`)) {
-      return;
-    }
-
-    try {
-      await digitalLibraryService.deleteLibraryItem(doc.libraryId);
-      loadDocuments();
-      loadStats();
-    } catch (error) {
-      console.error('Failed to delete document:', error);
-      alert('Failed to delete document');
-    }
-  };
-
-  const getResourceIcon = (resourceType: string) => {
-    switch (resourceType.toLowerCase()) {
-      case 'image':
-        return <PhotoIcon className="w-6 h-6" />;
-      case 'video':
-        return <VideoCameraIcon className="w-6 h-6" />;
-      case 'audio':
-        return <MusicalNoteIcon className="w-6 h-6" />;
-      default:
-        return <DocumentIcon className="w-6 h-6" />;
-    }
-  };
-
-  const getResourceIconColor = (resourceType: string) => {
-    switch (resourceType.toLowerCase()) {
-      case 'image':
-        return 'bg-green-50 text-green-600';
-      case 'video':
-        return 'bg-purple-50 text-purple-600';
-      case 'audio':
-        return 'bg-orange-50 text-orange-600';
-      default:
-        return 'bg-blue-50 text-blue-600';
-    }
-  };
-
-  const getCategoryCount = (categoryId: string) => {
-    if (categoryId === 'all') return allDocuments.length;
-    return allDocuments.filter(doc => doc.category === categoryId).length;
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+  const downloadPayslip = async (payslip: Payslip) => {
+    const attachment = payslip.attachments?.find((item) => item.isPrimary) || payslip.attachments?.[0];
+    if (!attachment) return setError('This payslip record does not yet have a downloadable file. Request it from HR below.');
+    await compensationService.downloadAttachment(attachment);
   };
 
   return (
     <ModernLayout>
-      <div className="space-y-4">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">My HR Documents</h1>
-          <p className="text-sm text-gray-500 mt-1">Access and manage all your saved HR documents</p>
-        </div>
-
-        {/* Compact Filters Row */}
-        <div className="flex flex-col md:flex-row gap-3">
-          {/* Search Bar */}
-          <div className="relative flex-1">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search documents..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            />
-          </div>
-
-          {/* Category Filter Dropdown */}
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 sm:min-w-[160px]"
-            >
-              <option value="all">All Categories ({getCategoryCount('all')})</option>
-              {dbCategories.map((cat) => (
-                <option key={cat.categoryId} value={cat.name}>
-                  {cat.name} ({getCategoryCount(cat.name)})
-                </option>
-              ))}
-            </select>
-
-            {/* Format Filter Dropdown */}
-            <select
-              value={selectedFormat}
-              onChange={(e) => setSelectedFormat(e.target.value)}
-              className="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 sm:min-w-[140px]"
-            >
-              {fileFormats.map((format) => (
-                <option key={format.id} value={format.id}>
-                  {format.label}
-                </option>
-              ))}
-            </select>
-
-            {/* Add Category Button */}
-            <button
-              onClick={() => setShowCategoryModal(true)}
-              className="flex shrink-0 items-center gap-1 rounded-lg border border-blue-200 px-3 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-50"
-              title="Add Category"
-            >
-              <PlusIcon className="w-4 h-4" />
-              <span className="hidden lg:inline">Category</span>
+      <div className="space-y-6">
+        <section className="ui-experiment-hero p-6">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-600">Employee self-service</p>
+              <h1 className="mt-2 text-3xl font-extrabold text-gray-950">My HR documents</h1>
+              <p className="mt-2 max-w-2xl text-sm text-gray-600">Payslips, Form 16, employment letters and exit documents—available from one protected workspace.</p>
+            </div>
+            <button className="btn btn-primary" onClick={() => setShowRequest(true)} disabled={!employeeId}>
+              <PlusIcon className="mr-2 h-5 w-5" /> Request a document
             </button>
           </div>
-        </div>
+        </section>
 
-        {/* Error State */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <svg className="w-10 h-10 mx-auto mb-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h3 className="text-base font-semibold text-gray-900 mb-1">Failed to Load Documents</h3>
-            <p className="text-sm text-gray-600 mb-3">{error}</p>
-            <button
-              onClick={loadDocuments}
-              className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors"
-            >
-              Try Again
-            </button>
-          </div>
-        )}
+        {!employeeId && <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">This account is not linked to an employee profile. Ask an administrator to complete the user–employee link.</div>}
+        {error && <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">{error}</div>}
+        {loading ? <div className="p-12 text-center text-gray-500">Loading your document workspace…</div> : employeeId && <>
+          <DocumentSection title="Payslips" empty="No employee-visible payslips are available yet.">
+            {payslips.map((payslip) => <DocumentCard key={payslip.payslipId} title={`Payslip — ${String(payslip.month).padStart(2, '0')}/${payslip.year}`} subtitle={payslip.attachments?.length ? 'File available' : 'Record available · file pending'} onDownload={() => downloadPayslip(payslip)} />)}
+          </DocumentSection>
+          <DocumentSection title="Form 16" empty="No Form 16 has been published yet.">
+            {form16Documents.map((document) => <DocumentCard key={document.documentId} title={document.title} subtitle={document.issueDate || document.createdAt} onDownload={() => employeeDocumentService.download(document)} />)}
+          </DocumentSection>
+          <DocumentSection title="Employment and exit documents" empty="No employment or exit documents are available yet.">
+            {otherDocuments.map((document) => <DocumentCard key={document.documentId} title={document.title} subtitle={`${document.category.replace(/_/g, ' ')} · ${document.verificationStatus}`} onDownload={() => employeeDocumentService.download(document)} />)}
+          </DocumentSection>
 
-        {/* Documents Grid */}
-        {!error && loading ? (
-          <div className="flex items-center justify-center h-48">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
-          </div>
-        ) : !error && documents.length === 0 ? (
-          <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-            <FolderIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <h3 className="text-base font-semibold text-gray-900 mb-1">No documents found</h3>
-            <p className="text-sm text-gray-500 mb-3">
-              {searchTerm || selectedCategory !== 'all' || selectedFormat !== 'all'
-                ? 'Try adjusting your filters or search term'
-                : 'Start saving documents from HR Connect to build your library'}
-            </p>
-            <button
-              onClick={() => navigate('/hr-connect')}
-              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Go to HR Connect
-            </button>
-          </div>
-        ) : !error ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {documents.map((doc) => (
-              <div
-                key={doc.libraryId}
-                className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-200"
-              >
-                <div className="p-4">
-                  {/* Icon */}
-                  <div className="flex justify-center mb-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getResourceIconColor(doc.resourceType)}`}>
-                      {getResourceIcon(doc.resourceType)}
-                    </div>
-                  </div>
-
-                  {/* Category Badge */}
-                  {doc.category && (
-                    <div className="flex justify-center mb-2">
-                      <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-full capitalize">
-                        {doc.category}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Title */}
-                  <h3 className="text-center font-semibold text-sm text-gray-900 mb-2 line-clamp-1" title={doc.fileName}>
-                    {doc.fileName}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-center text-xs text-gray-500 mb-3 line-clamp-2 min-h-[2rem]">
-                    {doc.description || 'No description'}
-                  </p>
-
-                  {/* Metadata */}
-                  <div className="text-xs text-gray-500 mb-3 space-y-0.5">
-                    <div className="flex justify-between">
-                      <span>Size:</span>
-                      <span className="font-medium text-gray-700">{formatFileSize(doc.fileSize)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Saved:</span>
-                      <span className="font-medium text-gray-700">{formatDate(doc.createdAt)}</span>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setViewingDocument(doc)}
-                      className="flex-1 px-3 py-1.5 bg-white border border-gray-200 text-gray-700 text-xs font-medium rounded-md hover:bg-gray-50 transition-colors inline-flex items-center justify-center gap-1"
-                    >
-                      <EyeIcon className="h-3.5 w-3.5" />
-                      View
-                    </button>
-                    <button
-                      onClick={() => handleDownload(doc)}
-                      className="flex-1 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                      Download
-                    </button>
-                    <button
-                      onClick={() => handleDelete(doc)}
-                      className="px-2 py-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                      title="Delete"
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                    </button>
-                  </div>
+          <section className="card">
+            <div className="card-header"><h2 className="text-lg font-semibold">My document requests</h2></div>
+            <div className="card-body space-y-3">
+              {requests.length === 0 ? <p className="text-sm text-gray-500">No requests raised yet.</p> : requests.map((request) => (
+                <div key={request.requestId} className="flex flex-col justify-between gap-2 rounded-lg border border-gray-200 p-4 sm:flex-row sm:items-center">
+                  <div><p className="font-semibold text-gray-900">{request.documentType.replace(/_/g, ' ')}</p><p className="text-xs text-gray-500">{request.purpose} · {new Date(request.createdAt).toLocaleDateString('en-IN')}</p>{request.responseNotes && <p className="mt-1 text-sm text-gray-600">HR: {request.responseNotes}</p>}</div>
+                  <span className="badge badge-gray capitalize">{request.status.replace(/_/g, ' ')}</span>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : null}
+              ))}
+            </div>
+          </section>
+        </>}
       </div>
 
-      {/* Add Category Modal */}
-      {showCategoryModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" onClick={() => setShowCategoryModal(false)}>
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="text-base font-semibold text-gray-900">Add New Category</h3>
-              <button
-                onClick={() => setShowCategoryModal(false)}
-                className="text-gray-400 hover:text-gray-500 transition-colors"
-              >
-                <XMarkIcon className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="p-4 space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  placeholder="e.g., Payroll, Training"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description (optional)
-                </label>
-                <textarea
-                  value={newCategoryDescription}
-                  onChange={(e) => setNewCategoryDescription(e.target.value)}
-                  placeholder="Add a brief description..."
-                  rows={2}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 p-4 border-t bg-gray-50">
-              <button
-                onClick={() => setShowCategoryModal(false)}
-                className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreateCategory}
-                disabled={!newCategoryName.trim()}
-                className={`px-3 py-1.5 text-sm font-medium text-white rounded-md transition-colors ${
-                  newCategoryName.trim()
-                    ? 'bg-blue-600 hover:bg-blue-700'
-                    : 'bg-gray-300 cursor-not-allowed'
-                }`}
-              >
-                Create
-              </button>
-            </div>
+      {showRequest && <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/60 p-4">
+        <div className="w-full max-w-lg rounded-xl bg-white shadow-2xl">
+          <div className="border-b p-5"><h2 className="text-xl font-bold">Request an HR document</h2><p className="mt-1 text-sm text-gray-500">Use Employment for current-service needs or Exit for separation documents.</p></div>
+          <div className="space-y-4 p-5">
+            <label className="block text-sm font-medium">Document type<select className="input mt-2" value={form.documentType} onChange={(event) => setForm({ ...form, documentType: event.target.value })}>{documentTypeOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+            <label className="block text-sm font-medium">Purpose<select className="input mt-2" value={form.purpose} onChange={(event) => setForm({ ...form, purpose: event.target.value as 'employment' | 'exit' })}><option value="employment">During employment</option><option value="exit">Exit / separation</option></select></label>
+            <label className="block text-sm font-medium">Details<textarea className="input mt-2" rows={3} value={form.details} onChange={(event) => setForm({ ...form, details: event.target.value })} placeholder="Period, financial year, reason or deadline" /></label>
           </div>
+          <div className="flex justify-end gap-3 border-t bg-gray-50 p-4"><button className="btn btn-secondary" onClick={() => setShowRequest(false)}>Cancel</button><button className="btn btn-primary" disabled={saving} onClick={submitRequest}>{saving ? 'Submitting…' : 'Submit request'}</button></div>
         </div>
-      )}
-
-      <DocumentViewerModal
-        document={
-          viewingDocument
-            ? {
-                title: viewingDocument.fileName,
-                fileName: viewingDocument.fileName,
-                fileType: viewingDocument.fileType,
-                fileSize: viewingDocument.fileSize,
-                uploadedAt: viewingDocument.createdAt,
-                category: viewingDocument.category || viewingDocument.resourceType,
-                status: viewingDocument.accessLevel,
-                description: viewingDocument.description,
-                metadata: [
-                  { label: 'Downloads', value: viewingDocument.downloadCount },
-                  { label: 'Views', value: viewingDocument.viewCount },
-                  { label: 'Source', value: viewingDocument.sourceType },
-                ],
-              }
-            : null
-        }
-        loadBlob={viewingDocument ? () => digitalLibraryService.getBlob(viewingDocument) : null}
-        onClose={() => setViewingDocument(null)}
-        onDownload={viewingDocument ? () => handleDownload(viewingDocument) : undefined}
-      />
+      </div>}
     </ModernLayout>
   );
-};
+}
 
-export default MyHRDocuments;
+function DocumentSection({ title, empty, children }: { title: string; empty: string; children: React.ReactNode }) {
+  const entries = Array.isArray(children) ? children : [children];
+  return <section className="card"><div className="card-header"><h2 className="text-lg font-semibold">{title}</h2></div><div className="card-body grid gap-3 md:grid-cols-2 xl:grid-cols-3">{entries.length === 0 ? <p className="text-sm text-gray-500">{empty}</p> : children}</div></section>;
+}
+
+function DocumentCard({ title, subtitle, onDownload }: { title: string; subtitle: string; onDownload: () => void }) {
+  return <div className="flex items-center gap-3 rounded-xl border border-gray-200 p-4"><div className="rounded-lg bg-primary-50 p-3"><DocumentTextIcon className="h-6 w-6 text-primary-600" /></div><div className="min-w-0 flex-1"><p className="truncate font-semibold text-gray-900">{title}</p><p className="truncate text-xs capitalize text-gray-500">{subtitle}</p></div><button className="rounded-lg p-2 text-gray-500 hover:bg-gray-100" title="Download" onClick={onDownload}><ArrowDownTrayIcon className="h-5 w-5" /></button></div>;
+}
