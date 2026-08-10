@@ -153,6 +153,48 @@ export class AttendanceService {
   }
 
   /**
+   * Employee: reopen today's attendance after an accidental clock-out.
+   * This preserves the original check-in and is deliberately not a
+   * multi-session attendance implementation.
+   */
+  async reopenToday(employeeId: string, tenantId: string, reason: string) {
+    if (!employeeId) {
+      throw new Error('Employee profile is required to reopen attendance');
+    }
+    if (!reason?.trim()) {
+      throw new Error('A reason is required to reopen attendance');
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const attendance = await this.attendanceRepository.findOne({
+      where: { employeeId, tenantId, date: today },
+    });
+
+    if (!attendance?.checkIn) {
+      throw new Error('No clock-in record found for today');
+    }
+    if (!attendance.checkOut) {
+      throw new Error('Attendance is already open');
+    }
+
+    // TypeORM ignores `undefined` on update; explicit null is required to
+    // persist reopening the nullable timestamp column.
+    attendance.checkOut = null as unknown as Date;
+    attendance.workMinutes = 0;
+    attendance.overtimeMinutes = 0;
+    attendance.isEarlyOut = false;
+    attendance.earlyMinutes = 0;
+    attendance.status = AttendanceStatus.PRESENT;
+    attendance.isManualOverride = true;
+    attendance.overriddenBy = employeeId;
+    attendance.overriddenAt = new Date();
+    attendance.overrideReason = `Employee reopened accidental clock-out: ${reason.trim()}`;
+
+    return await this.attendanceRepository.save(attendance);
+  }
+
+  /**
    * Employee: Get my attendance history
    */
   async getMyAttendance(

@@ -100,6 +100,17 @@ describe('HR Analytics and Reporting Sanity', () => {
   });
 
   describe('core metric correctness and empty states', () => {
+    it('missing-document report is restricted to active employees and exposes master-data gaps', async () => {
+      const hr = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
+      requireAuth(hr, TEST_ACCOUNTS.HR_ADMIN.label);
+
+      const res = await authGet('/reports/missing-documents', hr.token);
+      expect(res.status).toBe(200);
+      expect(res.body.data.results.every((row: any) => row.employeeStatus === undefined || row.employeeStatus === 'active')).toBe(true);
+      expect(res.body.data.results.every((row: any) => Array.isArray(row.missingInformation))).toBe(true);
+      expect(res.body.data.results.every((row: any) => Number(row.totalGapCount) === Number(row.informationGapCount) + Number(row.documentCount))).toBe(true);
+    });
+
     it('leave balance respects gender-restricted leave eligibility', async () => {
       const hr = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
       requireAuth(hr, TEST_ACCOUNTS.HR_ADMIN.label);

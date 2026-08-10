@@ -75,7 +75,8 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "typeorm": "^0.3.19",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "exceljs": "^4.4.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

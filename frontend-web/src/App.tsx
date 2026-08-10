@@ -54,6 +54,7 @@ const ModernReports = lazy(() => import('./pages/ModernReports'));
 const ModernDocuments = lazy(() => import('./pages/ModernDocuments'));
 const ModernOrgChart = lazy(() => import('./pages/ModernOrgChart'));
 const MyHRDocuments = lazy(() => import('./pages/MyHRDocuments'));
+const PayrollOperations = lazy(() => import('./pages/PayrollOperations'));
 
 // Employee Action Pages
 const ModernEditProfile = lazy(() => import('./pages/ModernEditProfile'));
@@ -173,6 +174,7 @@ function App() {
                 <Route path="/documents" element={protectedElement('/documents', <ModernDocuments />)} />
                 <Route path="/my-hr-documents" element={protectedElement('/my-hr-documents', <MyHRDocuments />)} />
                 <Route path="/org-chart" element={protectedElement('/org-chart', <ModernOrgChart />)} />
+                <Route path="/payroll-operations" element={protectedElement('/payroll-operations', <PayrollOperations />)} />
                 <Route path="/settings" element={protectedElement('/settings', <ModernSettings />)} />
 
                 {/* Employee Action routes */}

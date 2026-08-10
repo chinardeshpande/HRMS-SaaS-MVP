@@ -10,11 +10,12 @@ import {
 import departmentService, { Department } from '../../services/departmentService';
 import designationService, { Designation } from '../../services/designationService';
 import onboardingService from '../../services/onboardingService';
+import employeeService from '../../services/employeeService';
 
 interface AddEmployeeWizardProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (entryMode: 'onboarding' | 'direct') => void;
 }
 
 export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmployeeWizardProps) {
@@ -24,6 +25,7 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
   const [designations, setDesignations] = useState<Designation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [entryMode, setEntryMode] = useState<'onboarding' | 'direct'>('onboarding');
 
   // Inline create designation
   const [showAddDesignation, setShowAddDesignation] = useState(false);
@@ -32,6 +34,7 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
   const [creatingDesignation, setCreatingDesignation] = useState(false);
 
   const [formData, setFormData] = useState({
+    employeeCode: '',
     // Step 1: Basic Information
     firstName: '',
     lastName: '',
@@ -145,6 +148,10 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
         return true;
 
       case 2:
+        if (entryMode === 'direct' && !formData.employeeCode.trim()) {
+          setError('Employee code is required for direct entry');
+          return false;
+        }
         if (!formData.departmentId) {
           setError('Department is required');
           return false;
@@ -153,7 +160,7 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
           setError('Designation is required');
           return false;
         }
-        if (!formData.offeredSalary || parseFloat(formData.offeredSalary) <= 0) {
+        if (entryMode === 'onboarding' && (!formData.offeredSalary || parseFloat(formData.offeredSalary) <= 0)) {
           setError('Valid salary is required');
           return false;
         }
@@ -190,7 +197,8 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
     setError(null);
 
     try {
-      // Create candidate record which will start onboarding workflow
+      // Full onboarding creates a candidate. Direct entry creates the employee
+      // master record immediately and intentionally bypasses candidate workflow.
       const candidateData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -213,9 +221,37 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
         emergencyContactRelation: formData.emergencyContactRelation || undefined,
       };
 
+      if (entryMode === 'direct') {
+        const employee = await employeeService.create({
+          employeeCode: formData.employeeCode.trim(),
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          dateOfBirth: formData.dateOfBirth || undefined,
+          gender: formData.gender || undefined,
+          departmentId: formData.departmentId,
+          designationId: formData.designationId,
+          dateOfJoining: formData.expectedJoinDate,
+          employmentType: formData.employmentType,
+          workLocation: formData.workLocation || undefined,
+          address: [formData.address, formData.city, formData.state, formData.pincode]
+            .filter(Boolean)
+            .join(', ') || undefined,
+          emergencyContact: formData.emergencyContactName || undefined,
+          emergencyPhone: formData.emergencyContactPhone || undefined,
+          status: 'active',
+        });
+
+        onSuccess('direct');
+        onClose();
+        navigate(`/employees/${employee.employeeId}`);
+        return;
+      }
+
       const response = await onboardingService.createCandidate(candidateData);
 
-      onSuccess();
+      onSuccess('onboarding');
       onClose();
 
       // Navigate to the candidate's onboarding page
@@ -237,7 +273,9 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
 
   const resetForm = () => {
     setCurrentStep(1);
+    setEntryMode('onboarding');
     setFormData({
+      employeeCode: '',
       firstName: '',
       lastName: '',
       email: '',
@@ -294,6 +332,28 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
           </div>
 
           {/* Progress Steps */}
+          <div className="border-b border-gray-200 bg-white px-6 py-4">
+            <p className="mb-3 text-sm font-semibold text-gray-900">Choose how to add this person</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => setEntryMode('onboarding')}
+                className={`rounded-lg border-2 p-3 text-left transition-colors ${entryMode === 'onboarding' ? 'border-primary-600 bg-primary-50' : 'border-gray-200 hover:border-gray-300'}`}
+              >
+                <span className="block text-sm font-semibold text-gray-900">Complete onboarding</span>
+                <span className="mt-1 block text-xs text-gray-600">Start with offer, documents, verification and joining. Recommended.</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setEntryMode('direct')}
+                className={`rounded-lg border-2 p-3 text-left transition-colors ${entryMode === 'direct' ? 'border-primary-600 bg-primary-50' : 'border-gray-200 hover:border-gray-300'}`}
+              >
+                <span className="block text-sm font-semibold text-gray-900">Add directly to register</span>
+                <span className="mt-1 block text-xs text-gray-600">For an existing employee whose onboarding is already complete.</span>
+              </button>
+            </div>
+          </div>
+
           <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
             <div className="flex items-center justify-between">
               {steps.map((step, index) => (
@@ -439,6 +499,21 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
             {/* Step 2: Job Information */}
             {currentStep === 2 && (
               <div className="space-y-4">
+                {entryMode === 'direct' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Employee Code <span className="text-danger-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="employeeCode"
+                      value={formData.employeeCode}
+                      onChange={handleInputChange}
+                      className="input"
+                      placeholder="e.g. ACV/EMP/0022"
+                    />
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -489,24 +564,26 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
+                  {entryMode === 'onboarding' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Annual Salary <span className="text-danger-500">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        name="offeredSalary"
+                        value={formData.offeredSalary}
+                        onChange={handleInputChange}
+                        className="input"
+                        placeholder="50000"
+                        min="0"
+                        step="1000"
+                      />
+                    </div>
+                  )}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Annual Salary <span className="text-danger-500">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      name="offeredSalary"
-                      value={formData.offeredSalary}
-                      onChange={handleInputChange}
-                      className="input"
-                      placeholder="50000"
-                      min="0"
-                      step="1000"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Expected Join Date <span className="text-danger-500">*</span>
+                      {entryMode === 'direct' ? 'Date of Joining' : 'Expected Join Date'} <span className="text-danger-500">*</span>
                     </label>
                     <input
                       type="date"
@@ -646,8 +723,9 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
               <div className="space-y-6">
                 <div className="rounded-lg bg-primary-50 border border-primary-200 p-4">
                   <p className="text-sm text-primary-800">
-                    Please review the information below. Once submitted, the employee will be added to the system and
-                    automatically enrolled in the onboarding workflow.
+                    {entryMode === 'direct'
+                      ? 'Please review the information below. This person will be added directly to the employee register without an onboarding case.'
+                      : 'Please review the information below. Once submitted, the person will be enrolled in the complete onboarding workflow.'}
                   </p>
                 </div>
 
@@ -655,6 +733,12 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-3">Basic Information</h3>
                     <dl className="grid grid-cols-2 gap-4">
+                      {entryMode === 'direct' && (
+                        <div>
+                          <dt className="text-sm font-medium text-gray-500">Employee Code</dt>
+                          <dd className="text-sm text-gray-900">{formData.employeeCode}</dd>
+                        </div>
+                      )}
                       <div>
                         <dt className="text-sm font-medium text-gray-500">Name</dt>
                         <dd className="text-sm text-gray-900">{formData.firstName} {formData.lastName}</dd>
@@ -691,12 +775,14 @@ export default function AddEmployeeWizard({ isOpen, onClose, onSuccess }: AddEmp
                           {designations.find(d => d.designationId === formData.designationId)?.name || '-'}
                         </dd>
                       </div>
+                      {entryMode === 'onboarding' && (
+                        <div>
+                          <dt className="text-sm font-medium text-gray-500">Annual Salary</dt>
+                          <dd className="text-sm text-gray-900">₹{parseFloat(formData.offeredSalary).toLocaleString('en-IN')}</dd>
+                        </div>
+                      )}
                       <div>
-                        <dt className="text-sm font-medium text-gray-500">Annual Salary</dt>
-                        <dd className="text-sm text-gray-900">${parseFloat(formData.offeredSalary).toLocaleString()}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-sm font-medium text-gray-500">Expected Join Date</dt>
+                        <dt className="text-sm font-medium text-gray-500">{entryMode === 'direct' ? 'Date of Joining' : 'Expected Join Date'}</dt>
                         <dd className="text-sm text-gray-900">{formData.expectedJoinDate}</dd>
                       </div>
                     </dl>

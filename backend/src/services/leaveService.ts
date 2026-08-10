@@ -137,8 +137,8 @@ export class LeaveService {
       .createQueryBuilder('leave')
       .where('leave.employeeId = :employeeId', { employeeId })
       .andWhere('leave.tenantId = :tenantId', { tenantId })
-      .andWhere('leave.status != :cancelled', {
-        cancelled: LeaveStatus.CANCELLED,
+      .andWhere('leave.status IN (:...blockingStatuses)', {
+        blockingStatuses: [LeaveStatus.PENDING, LeaveStatus.APPROVED],
       })
       .andWhere(
         '((leave.startDate BETWEEN :startDate AND :endDate) OR (leave.endDate BETWEEN :startDate AND :endDate) OR (:startDate BETWEEN leave.startDate AND leave.endDate))',

@@ -10,7 +10,7 @@ import {
   PencilIcon,
 } from '@heroicons/react/24/outline';
 
-export default function UsersTab() {
+export default function UsersTab({ onInviteUser }: { onInviteUser?: () => void }) {
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
@@ -135,21 +135,9 @@ export default function UsersTab() {
 
     setActionLoading(true);
     try {
-      if (editingUser) {
-        // Update user via employee API
-        await api.put(`/employees/${editingUser.employeeId}`, userFormData);
-        alert('User updated successfully!');
-      } else {
-        // Create employee record with user account
-        const employeeData = {
-          ...userFormData,
-          createUser: true,
-          userRole: userFormData.userRole,
-          password: 'TempPassword@123', // Temporary password - user should change it
-        };
-        await api.post('/employees', employeeData);
-        alert('User created successfully! Default password: TempPassword@123 (user should change this)');
-      }
+      if (!editingUser) return;
+      await api.put(`/employees/${editingUser.employeeId}`, userFormData);
+      alert('User updated successfully!');
       await loadData();
       setShowUserModal(false);
       setEditingUser(null);
@@ -238,28 +226,13 @@ export default function UsersTab() {
           ))}
         </select>
 
-        {/* Add User Button */}
+        {/* Invite User Button */}
         <button
-          onClick={() => {
-            setEditingUser(null);
-            setUserFormData({
-              firstName: '',
-              lastName: '',
-              email: '',
-              phone: '',
-              employeeCode: '',
-              departmentId: '',
-              designationId: '',
-              roleId: '',
-              userRole: 'employee',
-              dateOfJoining: new Date().toISOString().split('T')[0],
-            });
-            setShowUserModal(true);
-          }}
+          onClick={onInviteUser}
           className="btn btn-primary flex items-center justify-center space-x-2 whitespace-nowrap"
         >
           <UserPlusIcon className="h-5 w-5" />
-          <span>Add User</span>
+          <span>Invite User</span>
         </button>
       </div>
 
@@ -451,15 +424,15 @@ export default function UsersTab() {
         </div>
       )}
 
-      {/* Add/Edit User Modal */}
-      {showUserModal && (
+      {/* Edit User Modal */}
+      {showUserModal && editingUser && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex min-h-screen items-center justify-center p-4">
             <div className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" onClick={() => setShowUserModal(false)} />
             <div className="relative w-full max-w-2xl transform overflow-hidden rounded-xl bg-white shadow-2xl transition-all">
               <div className="border-b border-gray-200 bg-gradient-to-r from-purple-600 to-indigo-700 px-6 py-4">
                 <h2 className="text-xl font-bold text-white">
-                  {editingUser ? 'Edit User' : 'Add New User'}
+                  Edit User
                 </h2>
               </div>
               <div className="p-6 max-h-[70vh] overflow-y-auto">
@@ -538,25 +511,6 @@ export default function UsersTab() {
                       ))}
                     </select>
                   </div>
-                  {!editingUser && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">System Access Level *</label>
-                      <select
-                        value={userFormData.userRole}
-                        onChange={(e) => setUserFormData({ ...userFormData, userRole: e.target.value })}
-                        className="input w-full"
-                        required
-                      >
-                        <option value="employee">Employee</option>
-                        <option value="manager">Manager</option>
-                        <option value="hr_admin">HR Admin</option>
-                        <option value="system_admin">System Admin</option>
-                      </select>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Determines what they can access in the system
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 flex items-center justify-end space-x-3">
@@ -564,7 +518,7 @@ export default function UsersTab() {
                   Cancel
                 </button>
                 <button onClick={handleSaveUser} disabled={actionLoading} className="btn btn-primary">
-                  {actionLoading ? 'Saving...' : editingUser ? 'Update User' : 'Create User'}
+                  {actionLoading ? 'Saving...' : 'Update User'}
                 </button>
               </div>
             </div>

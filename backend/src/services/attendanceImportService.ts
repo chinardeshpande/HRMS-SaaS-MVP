@@ -1,9 +1,11 @@
 import { parse } from 'csv-parse/sync';
+import ExcelJS from 'exceljs';
 import { In } from 'typeorm';
 import { AppDataSource } from '../config/database';
 import { Attendance, AttendanceStatus } from '../models/Attendance';
 import { AuditLog } from '../models/AuditLog';
 import { Employee } from '../models/Employee';
+import { BiometricAttendanceConfig, BiometricColumnMapping } from '../models/BiometricAttendanceConfig';
 
 export type AttendanceImportConflictPolicy = 'skip' | 'overwrite';
 export type AttendanceImportAction = 'create' | 'update' | 'unchanged' | 'skip' | 'error';
@@ -50,6 +52,11 @@ interface RawAttendanceRow {
   location?: string;
   notes?: string;
 }
+
+export const DEFAULT_BIOMETRIC_COLUMN_MAPPING: BiometricColumnMapping = {
+  employeeCode: 'employeeCode', date: 'date', status: 'status', checkIn: 'checkIn',
+  checkOut: 'checkOut', workMinutes: 'workMinutes', location: 'location', notes: 'notes',
+};
 
 const STATUS_ALIASES: Record<string, AttendanceStatus> = {
   p: AttendanceStatus.PRESENT,
@@ -131,25 +138,89 @@ const sameInstant = (left?: Date | string, right?: string) => {
 };
 
 class AttendanceImportService {
+  async getConfig(tenantId: string): Promise<Partial<BiometricAttendanceConfig>> {
+    const existing = await AppDataSource.getRepository(BiometricAttendanceConfig).findOne({ where: { tenantId } });
+    return existing || {
+      tenantId,
+      formatName: 'Default biometric format',
+      headerRow: 1,
+      columnMapping: DEFAULT_BIOMETRIC_COLUMN_MAPPING,
+    };
+  }
+
+  async saveConfig(
+    tenantId: string,
+    data: Pick<BiometricAttendanceConfig, 'formatName' | 'headerRow' | 'sheetName' | 'columnMapping'>
+  ) {
+    if (!data.formatName?.trim()) throw new Error('Format name is required');
+    if (!Number.isInteger(data.headerRow) || data.headerRow < 1 || data.headerRow > 25) {
+      throw new Error('Header row must be between 1 and 25');
+    }
+    const mapping = { ...DEFAULT_BIOMETRIC_COLUMN_MAPPING, ...data.columnMapping };
+    for (const required of ['employeeCode', 'date', 'status'] as const) {
+      if (!mapping[required]?.trim()) throw new Error(`${required} column mapping is required`);
+    }
+    const repo = AppDataSource.getRepository(BiometricAttendanceConfig);
+    const current = await repo.findOne({ where: { tenantId } });
+    return repo.save(repo.create({ ...current, ...data, formatName: data.formatName.trim(), tenantId, columnMapping: mapping }));
+  }
+
+  private async parseRecords(tenantId: string, fileName: string, fileBuffer: Buffer): Promise<RawAttendanceRow[]> {
+    const config = await this.getConfig(tenantId);
+    const extension = fileName.toLowerCase().split('.').pop();
+    let sourceRecords: Record<string, unknown>[];
+
+    try {
+      if (extension === 'xlsx') {
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(fileBuffer as unknown as ExcelJS.Buffer);
+        const worksheet = config.sheetName ? workbook.getWorksheet(config.sheetName) : workbook.worksheets[0];
+        if (!worksheet) throw new Error('Workbook contains no matching worksheet');
+        const headerRowNumber = Math.max(1, Number(config.headerRow || 1));
+        const headers = (worksheet.getRow(headerRowNumber).values as unknown[]).slice(1).map((value) => String(value ?? ''));
+        sourceRecords = [];
+        worksheet.eachRow((row, rowNumber) => {
+          if (rowNumber <= headerRowNumber) return;
+          const values = (row.values as unknown[]).slice(1);
+          if (values.every((value) => value === null || value === undefined || value === '')) return;
+          sourceRecords.push(Object.fromEntries(headers.map((header, index) => [header, values[index] ?? ''])));
+        });
+      } else if (extension === 'xls') {
+        throw new Error('Legacy XLS files are not accepted. Export the device data as CSV or XLSX.');
+      } else {
+        sourceRecords = parse(fileBuffer.toString('utf-8'), {
+          bom: true,
+          columns: (headers: string[]) => headers.map(normalizeHeader),
+          from_line: Number(config.headerRow || 1),
+          skip_empty_lines: true,
+          trim: true,
+        }) as Record<string, unknown>[];
+      }
+    } catch (error: any) {
+      throw new Error(`Attendance file parsing failed: ${error.message}`);
+    }
+
+    const mapping = { ...DEFAULT_BIOMETRIC_COLUMN_MAPPING, ...(config.columnMapping || {}) };
+    return sourceRecords.map((source) => {
+      const normalized = new Map(Object.entries(source).map(([key, value]) => [normalizeHeader(key), String(value ?? '')]));
+      const value = (field: keyof BiometricColumnMapping) => normalized.get(normalizeHeader(mapping[field])) || '';
+      return {
+        employeeCode: value('employeeCode'), date: value('date'), status: value('status'),
+        checkIn: value('checkIn'), checkOut: value('checkOut'), workMinutes: value('workMinutes'),
+        location: value('location'), notes: value('notes'),
+      };
+    });
+  }
+
   async preview(
     tenantId: string,
     fileName: string,
     fileBuffer: Buffer,
     conflictPolicy: AttendanceImportConflictPolicy
   ): Promise<AttendanceImportPreview> {
-    let records: RawAttendanceRow[];
-    try {
-      records = parse(fileBuffer.toString('utf-8'), {
-        bom: true,
-        columns: (headers: string[]) => headers.map(normalizeHeader),
-        skip_empty_lines: true,
-        trim: true,
-      }) as RawAttendanceRow[];
-    } catch (error: any) {
-      throw new Error(`CSV parsing failed: ${error.message}`);
-    }
+    const records = await this.parseRecords(tenantId, fileName, fileBuffer);
 
-    if (records.length === 0) throw new Error('CSV file contains no attendance rows');
+    if (records.length === 0) throw new Error('Attendance file contains no attendance rows');
     if (records.length > 10000) throw new Error('A maximum of 10,000 attendance rows can be imported at once');
 
     const employeeCodes = Array.from(
@@ -316,7 +387,7 @@ class AttendanceImportService {
         attendance.isManualOverride = true;
         attendance.overriddenBy = actorEmployeeId;
         attendance.overriddenAt = new Date();
-        attendance.overrideReason = `Attendance CSV import: ${fileName}`;
+        attendance.overrideReason = `Attendance file import: ${fileName}`;
         await attendanceRepo.save(attendance);
       }
 
@@ -343,6 +414,14 @@ class AttendanceImportService {
     return {
       ...preview,
       imported: rowsToSave.length,
+      committedAt: new Date().toISOString(),
+      auditSummary: {
+        action: 'attendance_import',
+        fileName,
+        conflictPolicy,
+        dateRange: preview.dateRange,
+        ...preview.summary,
+      },
       message: rowsToSave.length
         ? `${rowsToSave.length} attendance rows imported successfully`
         : 'No attendance changes were required',

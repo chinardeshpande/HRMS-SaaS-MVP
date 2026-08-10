@@ -18,6 +18,7 @@ import PaymentsTab from '../components/settings/PaymentsTab';
 import UserManagementTab from '../components/settings/UserManagementTab';
 import BusinessRulesTab from '../components/settings/BusinessRulesTab';
 import EmployeeSettingsTab from '../components/settings/EmployeeSettingsTab';
+import BiometricAttendanceTab from '../components/settings/BiometricAttendanceTab';
 
 type SettingsTab =
   | 'employee-preferences'
@@ -25,7 +26,8 @@ type SettingsTab =
   | 'organization'
   | 'payments'
   | 'user-management'
-  | 'business-rules';
+  | 'business-rules'
+  | 'attendance-import';
 
 function ModernSettingsContent() {
   const { user } = useAuth();
@@ -123,6 +125,13 @@ function ModernSettingsContent() {
       description: 'HR policies and workflows',
       roles: [UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
     },
+    {
+      id: 'attendance-import' as SettingsTab,
+      name: 'Attendance Import',
+      icon: DocumentTextIcon,
+      description: 'Configure biometric file mappings',
+      roles: [UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
+    },
   ];
 
   // Filter tabs based on user role
@@ -181,6 +190,7 @@ function ModernSettingsContent() {
               {activeTab === 'payments' && <PaymentsTab />}
               {activeTab === 'user-management' && <UserManagementTab />}
               {activeTab === 'business-rules' && <BusinessRulesTab />}
+              {activeTab === 'attendance-import' && <BiometricAttendanceTab />}
             </ErrorBoundary>
           </div>
         </div>

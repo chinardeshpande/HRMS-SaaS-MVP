@@ -16,6 +16,7 @@ import type {
   CompanyDocumentVerificationStatus,
 } from '../services/companyDocumentService';
 import api from '../services/api';
+import employeeDocumentService, { type EmployeeDocumentRequest, type EmployeeDocumentRequestStatus } from '../services/employeeDocumentService';
 import { useAuth } from '../context/AuthContext';
 import {
   DocumentTextIcon,
@@ -85,7 +86,7 @@ interface DocumentTemplate {
   variables: string[];
 }
 
-type ViewMode = 'templates' | 'manager' | 'history' | 'companyVault';
+type ViewMode = 'templates' | 'manager' | 'history' | 'companyVault' | 'requests';
 type DocumentDisplayMode = 'list' | 'cards';
 
 interface TemplateData {
@@ -149,6 +150,8 @@ export default function ModernDocuments() {
   const [documentDisplayMode, setDocumentDisplayMode] = useState<DocumentDisplayMode>('list');
   const [viewingCompanyDocument, setViewingCompanyDocument] = useState<CompanyDocument | null>(null);
   const [viewingGeneratedDocument, setViewingGeneratedDocument] = useState<DocumentHistory | null>(null);
+  const [documentRequests, setDocumentRequests] = useState<EmployeeDocumentRequest[]>([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
 
   // Template Manager States
   const [editingTemplate, setEditingTemplate] = useState<TemplateData | null>(null);
@@ -202,6 +205,32 @@ export default function ModernDocuments() {
       fetchHistory();
     }
   }, [user, viewMode]);
+
+  useEffect(() => {
+    if (user && viewMode === 'requests') fetchDocumentRequests();
+  }, [user, viewMode]);
+
+  const fetchDocumentRequests = async () => {
+    try {
+      setRequestsLoading(true);
+      setDocumentRequests(await employeeDocumentService.getRequests());
+    } catch (error) {
+      setNotification({ type: 'error', message: 'Failed to load employee document requests.' });
+    } finally {
+      setRequestsLoading(false);
+    }
+  };
+
+  const updateDocumentRequest = async (requestId: string, status: EmployeeDocumentRequestStatus) => {
+    const responseNotes = window.prompt('Optional note for the employee') || undefined;
+    try {
+      await employeeDocumentService.updateRequest(requestId, { status, responseNotes });
+      await fetchDocumentRequests();
+      setNotification({ type: 'success', message: 'Document request updated.' });
+    } catch (error) {
+      setNotification({ type: 'error', message: 'Unable to update this document request.' });
+    }
+  };
 
   useEffect(() => {
     if (user && viewMode === 'companyVault') {
@@ -471,7 +500,7 @@ export default function ModernDocuments() {
                 ? 'Template Manager'
                 : viewMode === 'history'
                 ? 'Generated Documents'
-                : 'Company Document Vault'}
+                : viewMode === 'companyVault' ? 'Company Document Vault' : 'Employee Document Requests'}
             </h1>
             <p className="mt-2 text-sm text-gray-600">
               {viewMode === 'templates'
@@ -480,7 +509,7 @@ export default function ModernDocuments() {
                 ? 'View, edit, and customize document templates'
                 : viewMode === 'history'
                 ? 'Review document generation history and download prior output'
-                : 'Manage tenant-level HR, statutory, policy, and compliance memory'}
+                : viewMode === 'companyVault' ? 'Manage tenant-level HR, statutory, policy, and compliance memory' : 'Track employment and exit document requests raised by employees'}
             </p>
           </div>
           <div className="flex w-full items-center gap-3 sm:w-auto">
@@ -530,11 +559,40 @@ export default function ModernDocuments() {
                 <BuildingOfficeIcon className="h-4 w-4" />
                 Company Vault
               </button>
+              <button
+                onClick={() => setViewMode('requests')}
+                className={`inline-flex items-center gap-2 whitespace-nowrap px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === 'requests' ? 'bg-primary-600 text-white shadow-sm' : 'text-gray-700 hover:bg-gray-100'}`}
+              >
+                <DocumentCheckIcon className="h-4 w-4" /> Requests
+              </button>
             </div>
           </div>
         </div>
 
         {/* Templates View */}
+        {viewMode === 'requests' && (
+          <section className="card">
+            <div className="card-body space-y-3">
+              {requestsLoading ? <p className="py-8 text-center text-gray-500">Loading requests…</p> : documentRequests.length === 0 ? <p className="py-8 text-center text-gray-500">No employee document requests yet.</p> : documentRequests.map((request) => (
+                <div key={request.requestId} className="flex flex-col gap-3 rounded-xl border border-gray-200 p-4 lg:flex-row lg:items-center lg:justify-between">
+                  <div>
+                    <p className="font-semibold text-gray-900">{request.documentType.replace(/_/g, ' ')}</p>
+                    <p className="text-sm text-gray-600">{request.employee ? `${request.employee.firstName} ${request.employee.lastName} · ${request.employee.employeeCode}` : request.employeeId}</p>
+                    <p className="mt-1 text-xs text-gray-500 capitalize">{request.purpose} · {new Date(request.createdAt).toLocaleDateString('en-IN')} · {request.status.replace(/_/g, ' ')}</p>
+                    {request.details && <p className="mt-2 text-sm text-gray-600">{request.details}</p>}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <a className="btn btn-secondary" href={`/employees/${request.employeeId}`}>Open employee</a>
+                    {request.status === 'requested' && <button className="btn btn-secondary" onClick={() => updateDocumentRequest(request.requestId, 'in_progress')}>Start</button>}
+                    {!['fulfilled', 'rejected', 'cancelled'].includes(request.status) && <button className="btn btn-primary" onClick={() => updateDocumentRequest(request.requestId, 'fulfilled')}>Mark fulfilled</button>}
+                    {!['fulfilled', 'rejected', 'cancelled'].includes(request.status) && <button className="btn btn-secondary" onClick={() => updateDocumentRequest(request.requestId, 'rejected')}>Reject</button>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {viewMode === 'templates' && (
           <>
             {/* Templates Grid */}

@@ -8,7 +8,7 @@ interface AuthContextType {
   tokens: AuthTokens | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   logout: () => void;
   refreshToken: () => Promise<void>;
   startDemo: (persona?: DemoPersonaKey) => Promise<void>;
@@ -60,12 +60,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   };
 
-  const persistSession = (userData: User, tokenData: AuthTokens): void => {
+  const persistSession = (userData: User, tokenData: AuthTokens): User => {
     const trustedUser = userFromToken(userData, tokenData) || userData;
     setUser(trustedUser);
     setTokens(tokenData);
     localStorage.setItem('user', JSON.stringify(trustedUser));
     localStorage.setItem('tokens', JSON.stringify(tokenData));
+    return trustedUser;
   };
 
   useEffect(() => {
@@ -114,7 +115,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loadUser();
   }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
+  const login = async (email: string, password: string): Promise<User> => {
     try {
       console.log('🔐 Attempting login for:', email);
 
@@ -137,10 +138,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('✅ User data extracted:', userData);
       console.log('✅ Tokens extracted:', { hasToken: !!tokenData.token, hasRefresh: !!tokenData.refreshToken });
 
-      persistSession(userData, tokenData);
+      const trustedUser = persistSession(userData, tokenData);
       localStorage.removeItem('preDemoSession');
 
       console.log('✅ Login successful - user and tokens stored');
+      return trustedUser;
     } catch (error: any) {
       console.error('❌ Login error details:', {
         message: error.message,

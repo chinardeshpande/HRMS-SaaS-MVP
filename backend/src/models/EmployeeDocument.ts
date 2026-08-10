@@ -19,6 +19,7 @@ export enum EmployeeDocumentCategory {
   EMPLOYMENT_LETTER = 'employment_letter',
   COMPENSATION = 'compensation',
   PAYSLIP = 'payslip',
+  FORM_16 = 'form16',
   POLICY_ACKNOWLEDGEMENT = 'policy_acknowledgement',
   PERFORMANCE = 'performance',
   EXIT = 'exit',
@@ -137,4 +138,3 @@ export class EmployeeDocument {
   @UpdateDateColumn()
   updatedAt!: Date;
 }
-

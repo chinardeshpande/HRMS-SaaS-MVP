@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import {
   ArrowDownTrayIcon,
@@ -17,10 +18,11 @@ import {
   TableCellsIcon,
 } from '@heroicons/react/24/outline';
 import api from '../services/api';
+import settingsService, { OrganizationSettings } from '../services/settingsService';
 
 type WorkbenchTab = 'builder' | 'saved';
 type ViewMode = 'table' | 'summary' | 'visual';
-type ExportFormat = 'csv' | 'json' | 'print';
+type ExportFormat = 'csv' | 'json' | 'print' | 'html' | 'excel';
 type ChartType = 'bar' | 'pie' | 'line';
 type AggregationMode = 'count' | 'sum' | 'average';
 
@@ -178,18 +180,18 @@ const TOPICS: AnalyticsTopic[] = [
   },
   {
     id: 'documents',
-    title: 'Document completeness',
-    purpose: 'Identify employee document gaps and compliance readiness issues.',
-    prompt: 'Show missing employee documents and compliance gaps.',
+    title: 'Active employee gaps',
+    purpose: 'Identify missing employee information and document evidence for active employees.',
+    prompt: 'Show active employees with missing profile information or documents.',
     endpoint: '/reports/missing-documents',
     reportType: 'missing_documents',
     category: 'compliance',
     icon: DocumentDuplicateIcon,
     tone: 'pink',
-    suggestedColumns: ['employeeName', 'department', 'missingDocuments', 'criticality'],
+    suggestedColumns: ['employeeName', 'department', 'missingInformation', 'missingDocuments', 'totalGapCount', 'criticality'],
     defaultGroupBy: 'criticality',
-    measureField: 'documentCount',
-    measureLabel: 'Missing documents',
+    measureField: 'totalGapCount',
+    measureLabel: 'Open gaps',
     aggregation: 'sum',
   },
   {
@@ -268,6 +270,8 @@ const buildContextualNarrative = (topic: AnalyticsTopic, data: any, rowCount: nu
 };
 
 export default function ModernReports() {
+  const navigate = useNavigate();
+  const [organization, setOrganization] = useState<OrganizationSettings | null>(null);
   const [activeTab, setActiveTab] = useState<WorkbenchTab>('builder');
   const [question, setQuestion] = useState(TOPICS[0].prompt);
   const [selectedTopicId, setSelectedTopicId] = useState(TOPICS[0].id);
@@ -362,6 +366,7 @@ export default function ModernReports() {
 
   useEffect(() => {
     loadSavedReports();
+    settingsService.getOrganizationSettings().then(setOrganization).catch(() => setOrganization(null));
   }, []);
 
   useEffect(() => {
@@ -487,6 +492,23 @@ export default function ModernReports() {
     }
 
     const columns = exportColumns.length ? exportColumns : availableColumns;
+    const escapeHtml = (value: string) => value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(selectedTopic.title)}</title><style>body{font-family:Arial,sans-serif;color:#17203a;padding:32px}header{border-bottom:3px solid #7657ef;margin-bottom:24px;padding-bottom:16px}h1{margin:0}small{color:#64748b}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #dbe3f0;padding:8px;text-align:left}th{background:#f4f1ff}tr:nth-child(even){background:#f8fafc}</style></head><body><header><h1>${escapeHtml(organization?.companyName || 'AuraHR')}</h1><p>${escapeHtml(selectedTopic.title)}</p><small>Generated ${new Date().toLocaleString('en-IN')}</small></header><table><thead><tr>${columns.map((column) => `<th>${escapeHtml(getColumnLabel(column))}</th>`).join('')}</tr></thead><tbody>${exportRows.map((row) => `<tr>${columns.map((column) => `<td>${escapeHtml(flattenValue(row[column]))}</td>`).join('')}</tr>`).join('')}</tbody></table></body></html>`;
+
+    if (format === 'html') {
+      downloadBlob(new Blob([html], { type: 'text/html;charset=utf-8' }), `${filenameBase}.html`);
+      return;
+    }
+
+    if (format === 'excel') {
+      downloadBlob(new Blob([html], { type: 'application/vnd.ms-excel' }), `${filenameBase}.xls`);
+      return;
+    }
+
     const csv = [
       columns.map(getColumnLabel).join(','),
       ...exportRows.map((row) =>
@@ -497,6 +519,15 @@ export default function ModernReports() {
       ),
     ].join('\n');
     downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), `${filenameBase}.csv`);
+  };
+
+  const shareReport = (channel: 'email' | 'chat') => {
+    const summary = `${organization?.companyName || 'AuraHR'} — ${selectedTopic.title}\n${rows.length} source rows; ${groupBy ? `grouped by ${labelize(groupBy)}` : 'ungrouped view'}.`;
+    if (channel === 'email') {
+      window.location.href = `mailto:?subject=${encodeURIComponent(`${selectedTopic.title} — HR report`)}&body=${encodeURIComponent(`${summary}\n\nOpen AuraHR to view the governed source report.`)}`;
+      return;
+    }
+    navigate('/chat', { state: { sharedReport: { title: selectedTopic.title, summary, topicId: selectedTopic.id } } });
   };
 
   const downloadBlob = (blob: Blob, filename: string) => {
@@ -627,14 +658,23 @@ export default function ModernReports() {
       <div className="mx-auto max-w-[1500px] space-y-4 p-4 lg:p-5">
         <section className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div>
+            <div className="flex items-center gap-3">
+              {organization?.logo && (
+                <img
+                  src={organization.logo}
+                  alt={`${organization.companyName || 'Tenant'} logo`}
+                  className="h-11 w-11 rounded-xl border border-slate-200 bg-white object-contain p-1"
+                />
+              )}
+              <div>
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary-700">HR Analytics</p>
-                <h1 className="text-xl font-bold text-slate-950">Conversational report workbench</h1>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary-700">Curated HR reporting</p>
+                <h1 className="text-xl font-bold text-slate-950">Gold-standard report workbench</h1>
               </div>
               <p className="mt-1 max-w-4xl text-xs text-slate-600">
-                Build HR views from a business question, then shape, visualize, export, or save them as reusable templates.
+                Start from a governed HR report, then filter, group, visualize, export, save or share it—without depending on AI.
               </p>
+              </div>
             </div>
             <div className="inline-flex w-fit rounded-lg border border-slate-200 bg-slate-50 p-1">
               <button
@@ -684,7 +724,7 @@ export default function ModernReports() {
                 </div>
 
                 <div className="min-w-0">
-                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wide text-slate-500">Ask Manu</label>
+                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wide text-slate-500">Report objective</label>
                   <textarea
                     value={question}
                     onChange={(event) => setQuestion(event.target.value)}
@@ -700,8 +740,8 @@ export default function ModernReports() {
                     disabled={loading || !question.trim()}
                     className="btn-primary flex h-10 w-full items-center justify-center gap-1.5 whitespace-nowrap px-3 text-xs disabled:opacity-60"
                   >
-                    <SparklesIcon className="h-4 w-4" />
-                    {loading ? 'Building...' : 'Build'}
+                    <DocumentChartBarIcon className="h-4 w-4" />
+                    {loading ? 'Running...' : 'Run report'}
                   </button>
                 </div>
               </div>
@@ -870,8 +910,21 @@ export default function ModernReports() {
                         </summary>
                         <div className="absolute right-0 z-20 mt-2 w-36 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl">
                           <button onClick={() => exportData('csv')} className="block w-full rounded-lg px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-50">CSV</button>
+                          <button onClick={() => exportData('excel')} className="block w-full rounded-lg px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-50">Excel</button>
+                          <button onClick={() => exportData('html')} className="block w-full rounded-lg px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-50">HTML</button>
                           <button onClick={() => exportData('json')} className="block w-full rounded-lg px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-50">JSON</button>
                           <button onClick={() => exportData('print')} className="block w-full rounded-lg px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-50">Print / PDF</button>
+                        </div>
+                      </details>
+                      <details className="relative shrink-0">
+                        <summary className="flex h-9 cursor-pointer list-none items-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700">
+                          <ChatBubbleLeftRightIcon className="h-4 w-4" />
+                          Share
+                        </summary>
+                        <div className="absolute right-0 z-20 mt-2 w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl">
+                          <button onClick={() => shareReport('email')} className="block w-full rounded-lg px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-50">Email summary</button>
+                          <button onClick={() => shareReport('chat')} className="block w-full rounded-lg px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-50">Share in internal chat</button>
+                          <button onClick={() => exportData('csv')} className="block w-full rounded-lg px-3 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-slate-50">Google Sheets hand-off</button>
                         </div>
                       </details>
                       <button

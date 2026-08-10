@@ -1,4 +1,5 @@
 import { api, API_PREFIX, loginAs, requireAuth, TEST_ACCOUNTS } from '../helpers/testSetup';
+import ExcelJS from 'exceljs';
 
 const attendanceCsv = [
   'employeeCode,date,status,checkIn,checkOut,workMinutes,location,notes',
@@ -60,6 +61,8 @@ describe('Attendance CSV import', () => {
     const commit = await postImportFile('/attendance/import/commit', ctx.token, attendanceCsv);
     expect(commit.status).toBe(200);
     expect(commit.body.data.imported).toBe(3);
+    expect(commit.body.data.auditSummary).toMatchObject({ action: 'attendance_import', creates: 3, errors: 0 });
+    expect(commit.body.data.committedAt).toBeTruthy();
 
     const secondPreview = await postImportFile('/attendance/import/preview', ctx.token, attendanceCsv);
     expect(secondPreview.status).toBe(200);
@@ -78,5 +81,38 @@ describe('Attendance CSV import', () => {
 
     const res = await postImportFile('/attendance/import/preview', ctx.token, attendanceCsv);
     expect(res.status).toBe(403);
+  });
+
+  it('uses a tenant-configured biometric mapping for an XLSX dry-run and commit', async () => {
+    const ctx = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
+    requireAuth(ctx, TEST_ACCOUNTS.HR_ADMIN.label);
+
+    const mapping = {
+      employeeCode: 'Personnel No', date: 'Punch Date', status: 'Day Status',
+      checkIn: 'First In', checkOut: 'Last Out', workMinutes: 'Minutes',
+      location: 'Work Site', notes: 'Remark',
+    };
+    const saveConfig = await api.put(`${API_PREFIX}/attendance/import/config`)
+      .set('Authorization', `Bearer ${ctx.token}`)
+      .send({ formatName: 'ACV biometric', headerRow: 1, sheetName: 'Monthly', columnMapping: mapping });
+    expect(saveConfig.status).toBe(200);
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Monthly');
+    sheet.addRow(['Personnel No', 'Punch Date', 'Day Status', 'First In', 'Last Out', 'Minutes', 'Work Site', 'Remark']);
+    sheet.addRow(['QA/ACV/0004', '2031-02-03', 'P', '09:10', '18:10', '540', 'Office', 'XLSX import']);
+    const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
+
+    const preview = await api.post(`${API_PREFIX}/attendance/import/preview`)
+      .set('Authorization', `Bearer ${ctx.token}`).field('conflictPolicy', 'skip')
+      .attach('file', buffer, { filename: 'monthly.xlsx', contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    expect(preview.status).toBe(200);
+    expect(preview.body.data.summary).toMatchObject({ creates: 1, errors: 0, ready: 1 });
+
+    const commit = await api.post(`${API_PREFIX}/attendance/import/commit`)
+      .set('Authorization', `Bearer ${ctx.token}`).field('conflictPolicy', 'skip')
+      .attach('file', buffer, { filename: 'monthly.xlsx', contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    expect(commit.status).toBe(200);
+    expect(commit.body.data.imported).toBe(1);
   });
 });

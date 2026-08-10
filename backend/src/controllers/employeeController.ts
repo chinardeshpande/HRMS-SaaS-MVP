@@ -196,6 +196,11 @@ export const createEmployee = async (req: Request, res: Response) => {
       dateOfJoining,
       probationEndDate,
       employmentType,
+      workLocation,
+      maritalStatus,
+      nationality,
+      emergencyContact,
+      emergencyPhone,
       status,
       createUser,
       userRole,
@@ -254,6 +259,11 @@ export const createEmployee = async (req: Request, res: Response) => {
       dateOfJoining,
       probationEndDate,
       employmentType: employmentType || 'Full-Time',
+      workLocation,
+      maritalStatus,
+      nationality,
+      emergencyContact,
+      emergencyPhone,
       status: status || 'active',
     });
 

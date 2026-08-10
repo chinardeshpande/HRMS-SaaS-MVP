@@ -14,6 +14,7 @@ import { LeaveRequest } from '../models/LeaveRequest';
 import { AttendancePolicy } from '../models/AttendancePolicy';
 import { Attendance } from '../models/Attendance';
 import { TimeEntryEdit } from '../models/TimeEntryEdit';
+import { BiometricAttendanceConfig } from '../models/BiometricAttendanceConfig';
 // Onboarding & Probation entities
 import { Candidate } from '../models/Candidate';
 import { OnboardingCase } from '../models/OnboardingCase';
@@ -82,6 +83,10 @@ import { DigitalLibrary } from '../models/DigitalLibrary';
 import { DocumentCategory } from '../models/DocumentCategory';
 import { CompanyDocument } from '../models/CompanyDocument';
 import { EmployeeDocument } from '../models/EmployeeDocument';
+import { EmployeeDocumentRequest } from '../models/EmployeeDocumentRequest';
+import { PayrollCycle } from '../models/PayrollCycle';
+import { PayrollCycleEvent } from '../models/PayrollCycleEvent';
+import { PayrollTaxStatement } from '../models/PayrollTaxStatement';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -105,6 +110,7 @@ export const AppDataSource = new DataSource({
     AttendancePolicy,
     Attendance,
     TimeEntryEdit,
+    BiometricAttendanceConfig,
     // Onboarding & Probation
     Candidate,
     OnboardingCase,
@@ -173,30 +179,115 @@ export const AppDataSource = new DataSource({
     DocumentCategory,
     CompanyDocument,
     EmployeeDocument,
+    EmployeeDocumentRequest,
+    PayrollCycle,
+    PayrollCycleEvent,
+    PayrollTaxStatement,
   ],
   migrations: ['dist/backend/src/migrations-v2/*.js'],
   subscribers: [],
   // Connection pool configuration
   extra: {
-    max: 20, // Maximum number of clients in the pool
-    min: 2, // Minimum number of clients in the pool
-    idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-    connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
+    max: config.database.poolMax,
+    min: config.database.poolMin,
+    idleTimeoutMillis: config.database.idleTimeoutMs,
+    connectionTimeoutMillis: config.database.connectionTimeoutMs,
+    keepAlive: config.database.keepAlive,
+    keepAliveInitialDelayMillis: config.database.keepAliveInitialDelayMs,
   },
 });
 
-export const initializeDatabase = async (): Promise<void> => {
-  try {
-    await AppDataSource.initialize();
-    logger.info('✅ Database connection established successfully');
+type DatabaseInitialization = () => Promise<unknown>;
+type Sleep = (delayMs: number) => Promise<void>;
 
-    if (config.nodeEnv === 'development') {
-      logger.info('📊 Database synchronization enabled');
+const transientDatabaseErrorCodes = new Set([
+  '08000',
+  '08001',
+  '08003',
+  '08004',
+  '08006',
+  '08007',
+  '08P01',
+  '53300',
+  '57P03',
+  'ECONNREFUSED',
+  'ECONNRESET',
+  'EHOSTUNREACH',
+  'ENETUNREACH',
+  'ETIMEDOUT',
+]);
+
+const sleep: Sleep = (delayMs) => new Promise((resolve) => setTimeout(resolve, delayMs));
+
+export const isTransientDatabaseError = (error: unknown): boolean => {
+  if (!error || typeof error !== 'object') return false;
+
+  const code = 'code' in error ? String(error.code) : '';
+  if (transientDatabaseErrorCodes.has(code)) return true;
+
+  const message = 'message' in error ? String(error.message).toLowerCase() : '';
+  return [
+    'connection terminated unexpectedly',
+    'connection timeout',
+    'connect timeout',
+    'the database system is starting up',
+  ].some((fragment) => message.includes(fragment));
+};
+
+export const initializeDatabaseWithRetry = async (
+  initialize: DatabaseInitialization,
+  wait: Sleep = sleep
+): Promise<void> => {
+  const maxAttempts = Math.max(1, config.database.initMaxAttempts);
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      await initialize();
+      logger.info('Database connection established', {
+        event: 'database.initialize.success',
+        attempt,
+        maxAttempts,
+      });
+
+      if (config.nodeEnv === 'development') {
+        logger.info('Database synchronization enabled');
+      }
+      return;
+    } catch (error) {
+      const transient = isTransientDatabaseError(error);
+      if (!transient || attempt === maxAttempts) {
+        logger.error('Database initialization failed', {
+          event: 'database.initialize.failed',
+          attempt,
+          maxAttempts,
+          transient,
+          errorCode: error && typeof error === 'object' && 'code' in error
+            ? String(error.code)
+            : undefined,
+        });
+        throw error;
+      }
+
+      const delayMs = Math.min(
+        config.database.initRetryBaseMs * (2 ** (attempt - 1)),
+        config.database.initRetryMaxMs
+      );
+      logger.warn('Transient database initialization failure; retry scheduled', {
+        event: 'database.initialize.retry',
+        attempt,
+        maxAttempts,
+        delayMs,
+        errorCode: error && typeof error === 'object' && 'code' in error
+          ? String(error.code)
+          : undefined,
+      });
+      await wait(delayMs);
     }
-  } catch (error) {
-    logger.error('❌ Error initializing database connection:', error);
-    throw error;
   }
+};
+
+export const initializeDatabase = async (): Promise<void> => {
+  await initializeDatabaseWithRetry(() => AppDataSource.initialize());
 };
 
 export const closeDatabase = async (): Promise<void> => {

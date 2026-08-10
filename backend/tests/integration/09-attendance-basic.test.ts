@@ -1,4 +1,4 @@
-import { TEST_ACCOUNTS, loginAs, authGet, authPost, requireAuth } from '../helpers/testSetup';
+import { TEST_ACCOUNTS, loginAs, authGet, authPost, authPut, requireAuth } from '../helpers/testSetup';
 
 describe('Attendance Basic Flow', () => {
   it('unauthenticated request to attendance is rejected', async () => {
@@ -79,5 +79,49 @@ describe('Attendance Basic Flow', () => {
     expect(clockOut.body.success).toBe(true);
     expect(clockOut.body.data.checkOut).toBeTruthy();
     expect(Number(clockOut.body.data.workMinutes)).toBeGreaterThanOrEqual(0);
+
+    const missingReason = await authPost('/attendance/reopen-today', ctx.token).send({ reason: '' });
+    expect(missingReason.status).toBe(400);
+    expect(missingReason.body.error).toContain('reason is required');
+
+    const reopen = await authPost('/attendance/reopen-today', ctx.token).send({
+      reason: 'Accidental clock-out during QA',
+    });
+    expect(reopen.status).toBe(200);
+    expect(reopen.body.data.checkIn).toBeTruthy();
+    expect(reopen.body.data.checkOut).toBeFalsy();
+    expect(reopen.body.data.status).toBe('present');
+    expect(reopen.body.data.isManualOverride).toBe(true);
+    expect(reopen.body.data.overrideReason).toContain('Accidental clock-out during QA');
+
+    const closeReopenedAttendance = await authPost('/attendance/clock-out', ctx.token).send({});
+    expect(closeReopenedAttendance.status).toBe(200);
+  });
+
+  it('employee can request a retrospective attendance correction and manager can approve it', async () => {
+    const employee = await loginAs(TEST_ACCOUNTS.EMPLOYEE);
+    const manager = await loginAs(TEST_ACCOUNTS.MANAGER);
+    requireAuth(employee, TEST_ACCOUNTS.EMPLOYEE.label);
+    requireAuth(manager, TEST_ACCOUNTS.MANAGER.label);
+
+    const request = await authPost('/attendance/regularization/request', employee.token).send({
+      date: '2026-07-15',
+      requestedCheckIn: '2026-07-15T09:00:00.000Z',
+      requestedCheckOut: '2026-07-15T18:00:00.000Z',
+      reason: 'Biometric device did not sync',
+    });
+    expect(request.status).toBe(200);
+    expect(request.body.data.status).toBe('pending');
+
+    const pending = await authGet('/attendance/regularization/pending', manager.token);
+    expect(pending.status).toBe(200);
+    expect(pending.body.data.some((item: any) => item.editId === request.body.data.editId)).toBe(true);
+
+    const approve = await authPut(
+      `/attendance/regularization/${request.body.data.editId}/approve`,
+      manager.token
+    ).send({ comments: 'Verified' });
+    expect(approve.status).toBe(200);
+    expect(approve.body.data.status).toBe('approved');
   });
 });

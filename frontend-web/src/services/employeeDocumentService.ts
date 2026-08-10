@@ -9,6 +9,7 @@ export type EmployeeDocumentCategory =
   | 'employment_letter'
   | 'compensation'
   | 'payslip'
+  | 'form16'
   | 'policy_acknowledgement'
   | 'performance'
   | 'exit'
@@ -59,6 +60,21 @@ export interface EmployeeDocumentPayload {
   status?: EmployeeDocumentStatus;
   verificationStatus?: EmployeeDocumentVerificationStatus;
   notes?: string;
+}
+
+export type EmployeeDocumentRequestStatus = 'requested' | 'in_progress' | 'fulfilled' | 'rejected' | 'cancelled';
+export interface EmployeeDocumentRequest {
+  requestId: string;
+  employeeId: string;
+  documentType: string;
+  purpose: 'employment' | 'exit';
+  details?: string | null;
+  status: EmployeeDocumentRequestStatus;
+  responseNotes?: string | null;
+  createdAt: string;
+  resolvedAt?: string | null;
+  employee?: { employeeId: string; employeeCode: string; firstName: string; lastName: string; email: string };
+  fulfilledDocument?: EmployeeDocument | null;
 }
 
 class EmployeeDocumentService {
@@ -126,6 +142,26 @@ class EmployeeDocumentService {
     link.download = document.originalFileName || document.fileName;
     link.click();
     URL.revokeObjectURL(url);
+  }
+
+  async getMyRequests(): Promise<EmployeeDocumentRequest[]> {
+    const response = await api.get('/employee-documents/requests/my');
+    return response.data?.requests || [];
+  }
+
+  async requestDocument(payload: { documentType: string; purpose: 'employment' | 'exit'; details?: string }): Promise<EmployeeDocumentRequest> {
+    const response = await api.post('/employee-documents/requests', payload);
+    return response.data!;
+  }
+
+  async getRequests(params?: { status?: EmployeeDocumentRequestStatus; employeeId?: string }): Promise<EmployeeDocumentRequest[]> {
+    const response = await api.get('/employee-documents/requests', { params });
+    return response.data?.requests || [];
+  }
+
+  async updateRequest(requestId: string, payload: { status: EmployeeDocumentRequestStatus; responseNotes?: string; fulfilledDocumentId?: string }): Promise<EmployeeDocumentRequest> {
+    const response = await api.put(`/employee-documents/requests/${requestId}`, payload);
+    return response.data!;
   }
 }
 

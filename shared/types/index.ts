@@ -16,6 +16,7 @@ export enum UserRole {
   MANAGER = 'manager',
   HR_ADMIN = 'hr_admin',
   SYSTEM_ADMIN = 'system_admin',
+  PAYROLL_PARTNER = 'payroll_partner',
 }
 
 export enum EmploymentStatus {

@@ -4,6 +4,11 @@ import path from 'path';
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../../.env') });
 
+const integerEnv = (name: string, fallback: number, minimum: number): number => {
+  const parsed = Number.parseInt(process.env[name] || '', 10);
+  return Number.isFinite(parsed) && parsed >= minimum ? parsed : fallback;
+};
+
 interface Config {
   // Server
   nodeEnv: string;
@@ -18,6 +23,15 @@ interface Config {
     user: string;
     password: string;
     ssl: boolean;
+    poolMax: number;
+    poolMin: number;
+    idleTimeoutMs: number;
+    connectionTimeoutMs: number;
+    keepAlive: boolean;
+    keepAliveInitialDelayMs: number;
+    initMaxAttempts: number;
+    initRetryBaseMs: number;
+    initRetryMaxMs: number;
   };
 
   // JWT
@@ -90,6 +104,15 @@ export const config: Config = {
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'postgres',
     ssl: process.env.DB_SSL === 'true',
+    poolMax: integerEnv('DB_POOL_MAX', 10, 1),
+    poolMin: integerEnv('DB_POOL_MIN', 0, 0),
+    idleTimeoutMs: integerEnv('DB_IDLE_TIMEOUT_MS', 30000, 1),
+    connectionTimeoutMs: integerEnv('DB_CONNECTION_TIMEOUT_MS', 10000, 1),
+    keepAlive: process.env.DB_KEEP_ALIVE !== 'false',
+    keepAliveInitialDelayMs: integerEnv('DB_KEEP_ALIVE_INITIAL_DELAY_MS', 10000, 0),
+    initMaxAttempts: integerEnv('DB_INIT_MAX_ATTEMPTS', 5, 1),
+    initRetryBaseMs: integerEnv('DB_INIT_RETRY_BASE_MS', 1000, 1),
+    initRetryMaxMs: integerEnv('DB_INIT_RETRY_MAX_MS', 8000, 1),
   },
 
   // JWT
