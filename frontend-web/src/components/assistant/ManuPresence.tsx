@@ -7,16 +7,16 @@ interface ManuScene {
   match: RegExp;
   mood: ManuMood;
   label: string;
-  placement: 'right-edge' | 'bottom-right' | 'bottom-center' | 'upper-right';
+  placement: 'seam-high' | 'seam-mid' | 'seam-low' | 'seam-bottom';
 }
 
 const scenes: ManuScene[] = [
-  { match: /dashboard|welcome/i, mood: 'welcome', label: 'Manu welcoming you into today’s work', placement: 'right-edge' },
-  { match: /attendance|leave|calendar/i, mood: 'thoughtful', label: 'Manu thoughtfully reviewing time and attendance', placement: 'bottom-right' },
-  { match: /document|compensation|payroll|payslip|exit/i, mood: 'review', label: 'Manu gently reminding you to review the details', placement: 'upper-right' },
-  { match: /onboarding|probation|performance|promote/i, mood: 'celebrate', label: 'Manu celebrating a people milestone', placement: 'bottom-center' },
-  { match: /report|readiness|employee|master|settings|organization/i, mood: 'thoughtful', label: 'Manu looking closely at workforce insights', placement: 'bottom-right' },
-  { match: /.*/, mood: 'welcome', label: 'Manu peeking in to accompany your work', placement: 'right-edge' },
+  { match: /dashboard|welcome/i, mood: 'welcome', label: 'Manu welcoming you into today’s work', placement: 'seam-mid' },
+  { match: /attendance|leave|calendar/i, mood: 'thoughtful', label: 'Manu thoughtfully reviewing time and attendance', placement: 'seam-low' },
+  { match: /document|compensation|payroll|payslip|exit/i, mood: 'review', label: 'Manu gently reminding you to review the details', placement: 'seam-high' },
+  { match: /onboarding|probation|performance|promote/i, mood: 'celebrate', label: 'Manu celebrating a people milestone', placement: 'seam-bottom' },
+  { match: /report|readiness|employee|master|settings|organization/i, mood: 'thoughtful', label: 'Manu looking closely at workforce insights', placement: 'seam-low' },
+  { match: /.*/, mood: 'welcome', label: 'Manu peeking in to accompany your work', placement: 'seam-mid' },
 ];
 
 const imageByMood: Record<ManuMood, string> = {
@@ -27,10 +27,13 @@ const imageByMood: Record<ManuMood, string> = {
 };
 
 const placementClasses: Record<ManuScene['placement'], string> = {
-  'right-edge': 'right-[-38px] top-[34%] w-[170px] xl:w-[205px]',
-  'bottom-right': 'bottom-[-28px] right-[86px] w-[155px] xl:w-[190px]',
-  'bottom-center': 'bottom-[-34px] right-[22%] w-[160px] xl:w-[200px]',
-  'upper-right': 'right-[-44px] top-[22%] w-[165px] xl:w-[205px]',
+  // The desktop navigation is 256px wide. Starting Manu at ~216px lets
+  // her peek over its right edge while keeping the content-side footprint
+  // compact and permanently clear of the assistant launcher.
+  'seam-high': 'left-[212px] top-[23%] w-[158px] xl:left-[216px] xl:w-[190px]',
+  'seam-mid': 'left-[214px] top-[38%] w-[154px] xl:left-[218px] xl:w-[185px]',
+  'seam-low': 'left-[216px] top-[55%] w-[150px] xl:left-[220px] xl:w-[180px]',
+  'seam-bottom': 'bottom-[38px] left-[214px] w-[154px] xl:left-[218px] xl:w-[185px]',
 };
 
 /**
