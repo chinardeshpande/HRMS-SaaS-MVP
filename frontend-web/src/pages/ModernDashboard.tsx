@@ -29,6 +29,8 @@ import {
   CreditCardIcon,
   ChevronDownIcon,
   BellAlertIcon,
+  ArrowRightIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext';
 import activityService, { Activity } from '../services/activityService';
@@ -654,6 +656,101 @@ export default function ModernDashboard() {
     ],
   }[persona] : [];
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const commandDate = (offset: number) => {
+    const date = new Date(today);
+    date.setDate(date.getDate() + offset);
+    return date;
+  };
+  const formatCommandDate = (date: Date) => {
+    const diff = Math.round((date.getTime() - today.getTime()) / 86400000);
+    if (diff === 0) return 'Today';
+    if (diff === 1) return 'Tomorrow';
+    return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  };
+
+  const commandGroups = [
+    {
+      name: 'Payroll',
+      context: 'Month-end readiness',
+      icon: CreditCardIcon,
+      accent: 'from-violet-500 to-indigo-500',
+      soft: 'bg-violet-50 text-violet-700',
+      actions: [
+        { title: 'Prepare the monthly payroll hand-off', detail: 'Review salary inputs, revisions and partner checklist.', due: commandDate(1), path: '/payroll-operations', tone: 'planned' },
+        { title: 'Confirm this month’s salary date', detail: `Current working date: ${salaryDateThisMonth}.`, due: commandDate(3), path: '/payroll-operations', tone: 'planned' },
+      ],
+    },
+    {
+      name: 'Attendance',
+      context: 'Today’s exceptions',
+      icon: ClockIcon,
+      accent: 'from-teal-400 to-cyan-500',
+      soft: 'bg-teal-50 text-teal-700',
+      actions: [
+        { title: `Resolve ${personaData.pendingRegularizations.length} attendance regularization${personaData.pendingRegularizations.length === 1 ? '' : 's'}`, detail: 'Review employee corrections before the attendance cut-off.', due: commandDate(0), path: '/attendance?filter=pending', tone: personaData.pendingRegularizations.length ? 'urgent' : 'clear' },
+        { title: 'Review today’s attendance coverage', detail: `${stats?.presentToday || 0} present · ${stats?.absentToday || 0} absent · ${todayAttendanceBreakdown.wfh} WFH.`, due: commandDate(0), path: '/attendance', tone: 'due' },
+      ],
+    },
+    {
+      name: 'Leave',
+      context: 'Approvals and coverage',
+      icon: CalendarDaysIcon,
+      accent: 'from-sky-400 to-blue-500',
+      soft: 'bg-blue-50 text-blue-700',
+      actions: [
+        { title: `Act on ${personaData.pendingLeaveApprovals.length || stats?.pendingLeaveApprovals || 0} pending leave request${(personaData.pendingLeaveApprovals.length || stats?.pendingLeaveApprovals || 0) === 1 ? '' : 's'}`, detail: 'Protect team coverage and close employee requests.', due: commandDate(0), path: '/leave?filter=pending', tone: (personaData.pendingLeaveApprovals.length || stats?.pendingLeaveApprovals || 0) ? 'urgent' : 'clear' },
+        { title: 'Scan upcoming leave and holidays', detail: `${companyHolidaysThisMonth} company holiday${companyHolidaysThisMonth === 1 ? '' : 's'} this month.`, due: commandDate(2), path: '/calendar', tone: 'planned' },
+      ],
+    },
+    {
+      name: 'Recruitment',
+      context: 'Open roles and movement',
+      icon: BriefcaseIcon,
+      accent: 'from-fuchsia-500 to-pink-500',
+      soft: 'bg-fuchsia-50 text-fuchsia-700',
+      actions: [
+        { title: 'Review open positions and candidate movement', detail: 'Check offers, BGV progress and candidates awaiting a decision.', due: commandDate(1), path: '/onboarding', tone: 'due' },
+      ],
+    },
+    {
+      name: 'Onboarding',
+      context: 'Joining readiness',
+      icon: UserPlusIcon,
+      accent: 'from-amber-400 to-orange-500',
+      soft: 'bg-amber-50 text-amber-700',
+      actions: [
+        { title: `Prepare ${newJoinersThisMonth} upcoming joiner${newJoinersThisMonth === 1 ? '' : 's'}`, detail: 'Confirm documents, owners and first-day readiness.', due: commandDate(2), path: '/onboarding', tone: newJoinersThisMonth ? 'due' : 'clear' },
+        { title: 'Check probation milestones', detail: `${stats?.probationEndingSoon || 0} confirmation decision${stats?.probationEndingSoon === 1 ? '' : 's'} approaching.`, due: commandDate(4), path: '/probation', tone: stats?.probationEndingSoon ? 'due' : 'planned' },
+      ],
+    },
+    {
+      name: 'Employee Lifecycle',
+      context: 'Moments that need ownership',
+      icon: ArrowPathIcon,
+      accent: 'from-emerald-400 to-green-500',
+      soft: 'bg-emerald-50 text-emerald-700',
+      actions: [
+        { title: 'Review lifecycle cases and transitions', detail: 'Promotions, transfers, performance moments and exits in one queue.', due: commandDate(3), path: '/performance', tone: 'planned' },
+        { title: `Track ${stats?.upcomingExits || 0} upcoming exit${stats?.upcomingExits === 1 ? '' : 's'}`, detail: 'Keep handover, assets and final documentation moving.', due: commandDate(5), path: '/exit', tone: stats?.upcomingExits ? 'due' : 'clear' },
+      ],
+    },
+    {
+      name: 'Employee Engagement',
+      context: 'Listen and communicate',
+      icon: ChatBubbleLeftRightIcon,
+      accent: 'from-rose-400 to-pink-500',
+      soft: 'bg-rose-50 text-rose-700',
+      actions: [
+        { title: 'Check the HR Connect pulse', detail: `${personaData.hrConnectPosts.length} recent post${personaData.hrConnectPosts.length === 1 ? '' : 's'} · ${personaData.unreadMessages} unread message${personaData.unreadMessages === 1 ? '' : 's'}.`, due: commandDate(0), path: '/hr-connect', tone: personaData.unreadMessages ? 'urgent' : 'due' },
+        { title: 'Share a people update', detail: 'Recognise progress, clarify policy or invite a conversation.', due: commandDate(2), path: '/hr-connect', tone: 'planned' },
+      ],
+    },
+  ].map((group) => ({ ...group, actions: [...group.actions].sort((a, b) => a.due.getTime() - b.due.getTime()) }));
+
+  const urgentCommandCount = commandGroups.flatMap((group) => group.actions).filter((action) => action.tone === 'urgent').length;
+
   // Loading state
   if (loading) {
     return (
@@ -712,6 +809,137 @@ export default function ModernDashboard() {
           </div>
         </div>
       )}
+
+      {(isOwner || isHr) && (
+        <div className="space-y-5">
+          <section className="relative overflow-hidden rounded-[28px] border border-white/80 bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-900 px-6 py-6 text-white shadow-[0_24px_60px_rgba(76,56,140,0.20)] sm:px-8">
+            <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl" />
+            <div className="absolute bottom-[-80px] left-[38%] h-52 w-52 rounded-full bg-fuchsia-400/20 blur-3xl" />
+            <div className="relative grid gap-6 lg:grid-cols-[1fr_360px] lg:items-center">
+              <div>
+                <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-cyan-300">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-cyan-300" />
+                  Now · {today.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+                </div>
+                <h1 className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">
+                  What should I focus on or resolve today?
+                </h1>
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-indigo-100 sm:text-base">
+                  Your people-operation priorities, sequenced by urgency and connected directly to the work that closes them.
+                </p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold">
+                    {urgentCommandCount} urgent now
+                  </span>
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold">
+                    {personaData.pendingLeaveApprovals.length + personaData.pendingRegularizations.length} approvals waiting
+                  </span>
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold">
+                    {newJoinersThisMonth} joiners this month
+                  </span>
+                </div>
+              </div>
+              <div className="relative min-h-[142px] rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-xl">
+                <SparklesIcon className="h-5 w-5 text-cyan-300" />
+                <p className="mt-3 text-xs font-bold uppercase tracking-[0.18em] text-cyan-200">Manu’s focus brief</p>
+                <p className="mt-2 text-lg font-semibold leading-7">
+                  Start with today’s exceptions. Then protect payroll, joining readiness and employee response times.
+                </p>
+                <div className="absolute -bottom-9 -right-2 h-36 w-28 overflow-hidden" aria-hidden="true">
+                  <img src="/images/assistant/peeks/manu-thoughtful.png" alt="" className="h-full w-full object-contain object-bottom opacity-90" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">HR command centre</p>
+              <h2 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-950">What can I do today?</h2>
+            </div>
+            <p className="max-w-xl text-sm text-slate-500">Each reminder opens the relevant AuraHR workspace. Dates closest to now appear first within every function.</p>
+          </div>
+
+          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {commandGroups.map((group, groupIndex) => (
+              <article
+                key={group.name}
+                className={`group relative overflow-hidden rounded-2xl border border-white/90 bg-white/80 p-5 shadow-[0_14px_36px_rgba(77,62,137,0.09)] backdrop-blur transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(77,62,137,0.15)] ${groupIndex === 0 ? 'md:col-span-2 xl:col-span-1' : ''}`}
+              >
+                <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${group.accent}`} />
+                <header className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`rounded-xl p-2.5 ${group.soft}`}>
+                      <group.icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-950">{group.name}</h3>
+                      <p className="text-xs text-slate-500">{group.context}</p>
+                    </div>
+                  </div>
+                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">{group.actions.length}</span>
+                </header>
+
+                <div className="mt-4 space-y-2.5">
+                  {group.actions.map((action) => (
+                    <button
+                      key={action.title}
+                      onClick={() => navigate(action.path)}
+                      className="flex w-full items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/80 p-3 text-left transition hover:border-violet-200 hover:bg-violet-50/70"
+                    >
+                      <span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${action.tone === 'urgent' ? 'bg-rose-500 shadow-[0_0_0_4px_rgba(244,63,94,0.12)]' : action.tone === 'clear' ? 'bg-emerald-400' : action.tone === 'due' ? 'bg-amber-400' : 'bg-violet-400'}`} />
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-start justify-between gap-2">
+                          <span className="text-sm font-semibold leading-5 text-slate-900">{action.title}</span>
+                          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${action.tone === 'urgent' ? 'bg-rose-100 text-rose-700' : 'bg-white text-slate-500'}`}>
+                            {formatCommandDate(action.due)}
+                          </span>
+                        </span>
+                        <span className="mt-1 block text-xs leading-5 text-slate-500">{action.detail}</span>
+                      </span>
+                      <ArrowRightIcon className="mt-1 h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5" />
+                    </button>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </section>
+
+          <section className="grid gap-4 lg:grid-cols-[1.4fr_0.6fr]">
+            <div className="rounded-2xl border border-white/90 bg-white/80 p-5 shadow-[0_14px_36px_rgba(77,62,137,0.08)]">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-600">Live operating pulse</p>
+                  <h3 className="mt-1 text-lg font-bold text-slate-950">Today at a glance</h3>
+                </div>
+                <button onClick={() => navigate('/reports')} className="text-xs font-bold text-violet-600 hover:text-violet-700">Open reports</button>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {[
+                  ['Active people', stats?.activeEmployees || 0],
+                  ['Present today', stats?.presentToday || 0],
+                  ['Pending actions', stats?.pendingApprovals || 0],
+                  ['Upcoming exits', stats?.upcomingExits || 0],
+                ].map(([label, value]) => (
+                  <div key={label} className="rounded-xl bg-gradient-to-br from-slate-50 to-violet-50 p-3">
+                    <p className="text-2xl font-extrabold text-slate-950">{value}</p>
+                    <p className="mt-1 text-xs font-medium text-slate-500">{label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <button onClick={() => navigate('/calendar')} className="rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 p-5 text-left text-white shadow-[0_14px_36px_rgba(14,165,233,0.20)] transition hover:-translate-y-0.5">
+              <CalendarDaysIcon className="h-6 w-6" />
+              <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-cyan-100">Next checkpoint</p>
+              <p className="mt-1 text-xl font-bold">Open the people calendar</p>
+              <p className="mt-2 text-sm text-cyan-50">See joining dates, leave, holidays and lifecycle reminders together.</p>
+            </button>
+          </section>
+        </div>
+      )}
+
+      {!(isOwner || isHr) && (
+      <>
 
       {/* Stats Grid - Narrower cards */}
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -955,6 +1183,8 @@ export default function ModernDashboard() {
           </div>
         </div>
       </div>
+      </>
+      )}
     </ModernLayout>
   );
 }

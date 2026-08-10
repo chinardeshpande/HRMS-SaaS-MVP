@@ -7,11 +7,10 @@ interface ManuScene {
   match: RegExp;
   mood: ManuMood;
   label: string;
-  placement: 'seam-dashboard' | 'seam-high' | 'seam-mid' | 'seam-low' | 'seam-bottom';
+  placement: 'seam-high' | 'seam-mid' | 'seam-low' | 'seam-bottom';
 }
 
 const scenes: ManuScene[] = [
-  { match: /dashboard/i, mood: 'welcome', label: 'Manu welcoming you into today’s work', placement: 'seam-dashboard' },
   { match: /welcome/i, mood: 'welcome', label: 'Manu welcoming you into today’s work', placement: 'seam-mid' },
   { match: /attendance|leave|calendar/i, mood: 'thoughtful', label: 'Manu thoughtfully reviewing time and attendance', placement: 'seam-low' },
   { match: /document|compensation|payroll|payslip|exit/i, mood: 'review', label: 'Manu gently reminding you to review the details', placement: 'seam-high' },
@@ -31,7 +30,6 @@ const placementClasses: Record<ManuScene['placement'], string> = {
   // The desktop navigation is 256px wide. Starting Manu at ~216px lets
   // her peek over its right edge while keeping the content-side footprint
   // compact and permanently clear of the assistant launcher.
-  'seam-dashboard': 'left-[148px] top-[38%] w-[154px] xl:left-[152px] xl:w-[185px]',
   'seam-high': 'left-[212px] top-[23%] w-[158px] xl:left-[216px] xl:w-[190px]',
   'seam-mid': 'left-[214px] top-[38%] w-[154px] xl:left-[218px] xl:w-[185px]',
   'seam-low': 'left-[216px] top-[55%] w-[150px] xl:left-[220px] xl:w-[180px]',
@@ -45,6 +43,10 @@ const placementClasses: Record<ManuScene['placement'], string> = {
 export default function ManuPresence() {
   const { pathname } = useLocation();
   const scene = useMemo(() => scenes.find((candidate) => candidate.match.test(pathname))!, [pathname]);
+
+  // The command-centre dashboard contains Manu in its own focus brief.
+  // Avoid showing a second decorative pose over the actionable content.
+  if (/\/dashboard\/?$/i.test(pathname)) return null;
 
   return (
     <div
