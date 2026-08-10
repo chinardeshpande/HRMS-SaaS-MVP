@@ -30,7 +30,7 @@ export default function BiometricAttendanceTab() {
     <div className="space-y-5">
       <div>
         <h2 className="text-lg font-bold text-gray-900">Biometric attendance import</h2>
-        <p className="mt-1 text-sm text-gray-500">Map the column headings exported by your biometric system. CSV, XLS and XLSX monthly files are validated in dry-run before commit.</p>
+        <p className="mt-1 text-sm text-gray-500">Map the column headings exported by your biometric system. CSV and XLSX monthly files are validated in dry-run before commit.</p>
       </div>
       <div className="grid gap-4 md:grid-cols-3">
         <label className="text-sm font-semibold text-gray-700">Format name

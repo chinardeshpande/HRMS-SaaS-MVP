@@ -5,7 +5,7 @@ Status: local candidate in draft PR #89. Production is unchanged.
 ## Delivered candidate scope
 
 - Employee attendance marking and retrospective correction approvals.
-- Tenant-configurable CSV/XLS/XLSX biometric attendance import with preview, validation, conflict handling, transactional commit, and audit evidence.
+- Tenant-configurable CSV/XLSX biometric attendance import with preview, validation, conflict handling, transactional commit, and audit evidence. Legacy binary XLS is rejected; devices should export CSV or XLSX.
 - Employee self-service access to payslips, Form 16, employment documents, and exit documents.
 - Employee-to-HR document request and fulfilment workflow.
 - Active-employee information and document gap report.

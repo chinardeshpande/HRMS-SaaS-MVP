@@ -10,10 +10,10 @@ const attendanceImportUpload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (_req, file, callback) => {
     const isCsv =
-      /\.(csv|xlsx|xls)$/i.test(file.originalname) ||
-      ['text/csv', 'application/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/plain'].includes(file.mimetype);
+      /\.(csv|xlsx)$/i.test(file.originalname) ||
+      ['text/csv', 'application/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/plain'].includes(file.mimetype);
     if (isCsv) callback(null, true);
-    else callback(new Error('Only CSV or Excel attendance files are allowed'));
+    else callback(new Error('Only CSV or XLSX attendance files are allowed'));
   },
 });
 

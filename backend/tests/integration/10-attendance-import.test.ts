@@ -1,5 +1,5 @@
 import { api, API_PREFIX, loginAs, requireAuth, TEST_ACCOUNTS } from '../helpers/testSetup';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 const attendanceCsv = [
   'employeeCode,date,status,checkIn,checkOut,workMinutes,location,notes',
@@ -97,13 +97,11 @@ describe('Attendance CSV import', () => {
       .send({ formatName: 'ACV biometric', headerRow: 1, sheetName: 'Monthly', columnMapping: mapping });
     expect(saveConfig.status).toBe(200);
 
-    const workbook = XLSX.utils.book_new();
-    const sheet = XLSX.utils.json_to_sheet([{
-      'Personnel No': 'QA/ACV/0004', 'Punch Date': '2031-02-03', 'Day Status': 'P',
-      'First In': '09:10', 'Last Out': '18:10', Minutes: '540', 'Work Site': 'Office', Remark: 'XLSX import',
-    }]);
-    XLSX.utils.book_append_sheet(workbook, sheet, 'Monthly');
-    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Monthly');
+    sheet.addRow(['Personnel No', 'Punch Date', 'Day Status', 'First In', 'Last Out', 'Minutes', 'Work Site', 'Remark']);
+    sheet.addRow(['QA/ACV/0004', '2031-02-03', 'P', '09:10', '18:10', '540', 'Office', 'XLSX import']);
+    const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
 
     const preview = await api.post(`${API_PREFIX}/attendance/import/preview`)
       .set('Authorization', `Bearer ${ctx.token}`).field('conflictPolicy', 'skip')

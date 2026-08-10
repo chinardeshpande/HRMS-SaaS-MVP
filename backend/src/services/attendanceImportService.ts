@@ -1,5 +1,5 @@
 import { parse } from 'csv-parse/sync';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { In } from 'typeorm';
 import { AppDataSource } from '../config/database';
 import { Attendance, AttendanceStatus } from '../models/Attendance';
@@ -171,15 +171,22 @@ class AttendanceImportService {
     let sourceRecords: Record<string, unknown>[];
 
     try {
-      if (extension === 'xlsx' || extension === 'xls') {
-        const workbook = XLSX.read(fileBuffer, { type: 'buffer', cellDates: false });
-        const sheetName = config.sheetName && workbook.SheetNames.includes(config.sheetName)
-          ? config.sheetName
-          : workbook.SheetNames[0];
-        if (!sheetName) throw new Error('Workbook contains no worksheets');
-        sourceRecords = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {
-          defval: '', raw: false, dateNF: 'yyyy-mm-dd', range: Math.max(0, Number(config.headerRow || 1) - 1),
-        }) as Record<string, unknown>[];
+      if (extension === 'xlsx') {
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(fileBuffer as unknown as ExcelJS.Buffer);
+        const worksheet = config.sheetName ? workbook.getWorksheet(config.sheetName) : workbook.worksheets[0];
+        if (!worksheet) throw new Error('Workbook contains no matching worksheet');
+        const headerRowNumber = Math.max(1, Number(config.headerRow || 1));
+        const headers = (worksheet.getRow(headerRowNumber).values as unknown[]).slice(1).map((value) => String(value ?? ''));
+        sourceRecords = [];
+        worksheet.eachRow((row, rowNumber) => {
+          if (rowNumber <= headerRowNumber) return;
+          const values = (row.values as unknown[]).slice(1);
+          if (values.every((value) => value === null || value === undefined || value === '')) return;
+          sourceRecords.push(Object.fromEntries(headers.map((header, index) => [header, values[index] ?? ''])));
+        });
+      } else if (extension === 'xls') {
+        throw new Error('Legacy XLS files are not accepted. Export the device data as CSV or XLSX.');
       } else {
         sourceRecords = parse(fileBuffer.toString('utf-8'), {
           bom: true,
