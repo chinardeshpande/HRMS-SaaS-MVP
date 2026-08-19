@@ -41,6 +41,8 @@ export const ADMIN_ROLES = [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN];
 export const MANAGER_PLUS_ROLES = [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN, UserRole.MANAGER];
 export const CORE_ROLES = [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN, UserRole.MANAGER, UserRole.EMPLOYEE];
 export const PAYROLL_ROLES = [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN, UserRole.PAYROLL_PARTNER];
+// Company-wide records are maintained by HR. Managers retain access only to personal/team workflows.
+export const DOCUMENT_LIBRARY_ROLES = ADMIN_ROLES;
 
 const normalizeRole = (role?: UserRole | string | null): string => String(role || '').toLowerCase();
 
@@ -82,7 +84,7 @@ export const routeAccessRules: AccessRule[] = [
   { path: '/ticket/:ticketId', roles: CORE_ROLES },
   { path: '/groups', roles: CORE_ROLES },
   { path: '/reports', roles: ADMIN_ROLES },
-  { path: '/documents', roles: ADMIN_ROLES },
+  { path: '/documents', roles: DOCUMENT_LIBRARY_ROLES },
   { path: '/my-hr-documents', roles: CORE_ROLES },
   { path: '/org-chart', roles: CORE_ROLES },
   { path: '/payroll-operations', roles: PAYROLL_ROLES },
@@ -123,7 +125,7 @@ export const navigationItems: NavItemConfig[] = [
     href: '/documents',
     path: '/documents',
     icon: DocumentDuplicateIcon,
-    roles: ADMIN_ROLES,
+    roles: DOCUMENT_LIBRARY_ROLES,
   },
   {
     name: 'Employee Lifecycle',
