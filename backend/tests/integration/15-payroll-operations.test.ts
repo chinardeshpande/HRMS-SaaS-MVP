@@ -13,11 +13,13 @@ describe('External payroll partner operations', () => {
     expect(res.body.data.boundary).toMatch(/does not calculate payroll/i);
   });
 
-  it('runs review, owner approval, partner, bank and payslip milestones with history', async () => {
+  it('runs HR approval, partner, bank and payslip milestones with history', async () => {
     const hr = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
     const owner = await loginAs(TEST_ACCOUNTS.SYSTEM_ADMIN);
+    const payrollPartner = await loginAs(TEST_ACCOUNTS.PAYROLL_PARTNER);
     requireAuth(hr, 'HR admin');
     requireAuth(owner, 'Owner');
+    requireAuth(payrollPartner, 'Payroll partner');
 
     const created = await authPost('/payroll-operations/cycles', hr.token).send({
       month: 8, year: 2026, partnerName: 'Synthetic Payroll Partner', employeeCount: 4,
@@ -28,15 +30,17 @@ describe('External payroll partner operations', () => {
 
     expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, hr.token)
       .send({ status: PayrollCycleStatus.UNDER_REVIEW })).status).toBe(200);
-    const deniedApproval = await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, hr.token)
-      .send({ status: PayrollCycleStatus.APPROVED_FOR_PARTNER });
-    expect(deniedApproval.status).toBe(403);
-    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, owner.token)
+    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, hr.token)
       .send({ status: PayrollCycleStatus.APPROVED_FOR_PARTNER })).status).toBe(200);
-    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, hr.token)
+    expect((await authPost('/payroll-operations/cycles', payrollPartner.token).send({
+      month: 9, year: 2026, partnerName: 'Synthetic Payroll Partner', employeeCount: 4,
+    })).status).toBe(403);
+    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, payrollPartner.token)
       .send({ status: PayrollCycleStatus.PARTNER_PROCESSING, partnerReference: 'PARTNER-SYNTHETIC-1' })).status).toBe(200);
-    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, hr.token)
+    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, payrollPartner.token)
       .send({ status: PayrollCycleStatus.BANK_APPROVAL_PENDING })).status).toBe(200);
+    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, payrollPartner.token)
+      .send({ status: PayrollCycleStatus.PAID, bankReference: 'PARTNER-BANK-SYNTHETIC-1' })).status).toBe(403);
     expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, owner.token)
       .send({ status: PayrollCycleStatus.PAID, bankReference: 'BANK-SYNTHETIC-1' })).status).toBe(200);
     expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, hr.token)

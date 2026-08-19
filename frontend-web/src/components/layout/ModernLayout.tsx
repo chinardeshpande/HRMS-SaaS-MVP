@@ -15,6 +15,7 @@ import {
   BellIcon,
   MagnifyingGlassIcon,
   ChevronDownIcon,
+  KeyIcon,
 } from '@heroicons/react/24/outline';
 
 interface ModernLayoutProps {
@@ -32,6 +33,9 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const [demoSwitching, setDemoSwitching] = useState(false);
   const [organizationSettings, setOrganizationSettings] = useState<OrganizationSettings | null>(null);
+  const [showPasswordChangeReminder, setShowPasswordChangeReminder] = useState(() =>
+    Boolean((location.state as { passwordChangeReminder?: boolean } | null)?.passwordChangeReminder)
+  );
   const isPayrollPartner = String(user?.role || '').toLowerCase() === 'payroll_partner';
   const homePath = isPayrollPartner ? '/payroll-operations' : '/dashboard';
 
@@ -482,6 +486,24 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
                   currentPath={location.pathname}
                   onNavigate={(route) => navigate(route)}
                 />
+              )}
+              {showPasswordChangeReminder && !isDemoMode && (
+                <div className="mb-5 flex flex-col gap-3 rounded-xl border border-primary-200 bg-primary-50 p-4 text-primary-900 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-start gap-3">
+                    <KeyIcon className="mt-0.5 h-5 w-5 shrink-0 text-primary-700" aria-hidden="true" />
+                    <p className="text-sm">
+                      For your account security, we recommend changing your password from the Profile page. You can continue using AuraHR without changing it now.
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 gap-3 text-sm font-semibold">
+                    <button type="button" onClick={() => navigate('/edit-profile')} className="text-primary-700 hover:text-primary-900">
+                      Change password
+                    </button>
+                    <button type="button" onClick={() => setShowPasswordChangeReminder(false)} className="text-primary-700 hover:text-primary-900">
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
               )}
               {children}
             </div>

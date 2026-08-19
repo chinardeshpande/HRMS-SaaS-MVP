@@ -27,6 +27,7 @@ export const TEST_PASSWORD = 'ACV@2026!';
 export const TEST_USERS = {
   SYSTEM_ADMIN: 'system.admin@acv.test',
   HR_ADMIN: 'hr.admin@acv.test',
+  PAYROLL_PARTNER: 'payroll.partner@acv.test',
   MANAGER: 'manager@acv.test',
   EMPLOYEE: 'employee@acv.test',
   SECOND_TENANT_ADMIN: 'admin@orbit.test',
@@ -440,6 +441,7 @@ const seedAcvTenant = async () => {
     UserRole.HR_ADMIN,
     hrAdminEmployee.employeeId
   );
+  await saveUser(acv.tenantId, TEST_USERS.PAYROLL_PARTNER, 'Synthetic Payroll Partner', UserRole.PAYROLL_PARTNER);
   await saveUser(acv.tenantId, TEST_USERS.MANAGER, 'Aniket Manager', UserRole.MANAGER, manager.employeeId);
   await saveUser(acv.tenantId, TEST_USERS.EMPLOYEE, 'Surekha Employee', UserRole.EMPLOYEE, employee.employeeId);
   await saveUser(acv.tenantId, TEST_USERS.INACTIVE, 'Inactive QA User', UserRole.EMPLOYEE, employee.employeeId, false);
