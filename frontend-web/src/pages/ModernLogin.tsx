@@ -34,7 +34,7 @@ export default function ModernLogin() {
       const loggedInUser = await login(email, password);
       const destination = String(loggedInUser.role).toLowerCase() === 'payroll_partner' ? '/payroll-operations' : '/dashboard';
       console.log('✅ Login successful, navigating to role workspace');
-      navigate(destination);
+      navigate(destination, { state: { passwordChangeReminder: true } });
     } catch (err: any) {
       console.error('❌ Login failed:', err);
       const errorMessage = err.message || err.response?.data?.error?.message || 'Invalid credentials';

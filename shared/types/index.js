@@ -11,6 +11,7 @@ var UserRole;
     UserRole["MANAGER"] = "manager";
     UserRole["HR_ADMIN"] = "hr_admin";
     UserRole["SYSTEM_ADMIN"] = "system_admin";
+    UserRole["PAYROLL_PARTNER"] = "payroll_partner";
 })(UserRole || (exports.UserRole = UserRole = {}));
 var EmploymentStatus;
 (function (EmploymentStatus) {

@@ -33,7 +33,6 @@ import {
   SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext';
-import activityService, { Activity } from '../services/activityService';
 import calendarService, { CalendarEvent } from '../services/calendarService';
 import attendanceService, { Attendance, TimeEntryEdit } from '../services/attendanceService';
 import leaveService, { LeaveBalance, LeaveRequest } from '../services/leaveService';
@@ -118,7 +117,6 @@ export default function ModernDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [recentActivities, setRecentActivities] = useState<Activity[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<CalendarEvent[]>([]);
   const [personaData, setPersonaData] = useState<PersonaDashboardData>(emptyPersonaData);
   const [operationsData, setOperationsData] = useState<OperationsDashboardData>(emptyOperationsData);
@@ -142,7 +140,6 @@ export default function ModernDashboard() {
 
   useEffect(() => {
     fetchDashboardStats();
-    fetchRecentActivities();
     fetchUpcomingEvents();
     fetchPersonaDashboardData();
     fetchOperationsDashboardData();
@@ -178,15 +175,6 @@ export default function ModernDashboard() {
       };
     }
   }, [showApprovalsDropdown]);
-
-  const fetchRecentActivities = async () => {
-    try {
-      const activities = await activityService.getRecentActivities();
-      setRecentActivities(activities.slice(0, 6)); // Show top 6 activities
-    } catch (error) {
-      console.error('Error fetching activities:', error);
-    }
-  };
 
   const fetchUpcomingEvents = async () => {
     try {
@@ -249,26 +237,6 @@ export default function ModernDashboard() {
       activeEmployees: activeEmployees.status === 'fulfilled' ? activeEmployees.value : [],
       monthEvents: monthEvents.status === 'fulfilled' ? monthEvents.value : [],
     });
-  };
-
-  const getActivityIcon = (type: string) => {
-    const iconMap: Record<string, any> = {
-      onboarding: { icon: UserPlusIcon, color: 'text-blue-600', bg: 'bg-blue-100' },
-      leave_approval: { icon: CheckCircleIcon, color: 'text-green-600', bg: 'bg-green-100' },
-      performance_review: { icon: TrophyIcon, color: 'text-purple-600', bg: 'bg-purple-100' },
-      promotion: { icon: ArrowTrendingUpIcon, color: 'text-indigo-600', bg: 'bg-indigo-100' },
-      transfer: { icon: ArrowPathIcon, color: 'text-orange-600', bg: 'bg-orange-100' },
-      increment: { icon: CurrencyDollarIcon, color: 'text-emerald-600', bg: 'bg-emerald-100' },
-      bonus: { icon: CurrencyDollarIcon, color: 'text-teal-600', bg: 'bg-teal-100' },
-      exit: { icon: ArrowRightOnRectangleIcon, color: 'text-red-600', bg: 'bg-red-100' },
-      training: { icon: AcademicCapIcon, color: 'text-cyan-600', bg: 'bg-cyan-100' },
-      new_post: { icon: MegaphoneIcon, color: 'text-pink-600', bg: 'bg-pink-100' },
-      new_chat_message: { icon: ChatBubbleLeftRightIcon, color: 'text-blue-600', bg: 'bg-blue-100' },
-      new_ticket: { icon: TicketIcon, color: 'text-orange-600', bg: 'bg-orange-100' },
-      ticket_update: { icon: TicketIcon, color: 'text-green-600', bg: 'bg-green-100' },
-      other: { icon: BriefcaseIcon, color: 'text-gray-600', bg: 'bg-gray-100' },
-    };
-    return iconMap[type] || iconMap.other;
   };
 
   const getEventBadgeColor = (type: string) => {
@@ -365,22 +333,6 @@ export default function ModernDashboard() {
     const salaryDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
     return salaryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   })();
-
-  const getRelativeTime = (timestamp: string) => {
-    const now = new Date();
-    const activityTime = new Date(timestamp);
-    const diffMs = now.getTime() - activityTime.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays} days ago`;
-    return activityTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
 
   const approvalOptions = [
     {
@@ -1058,56 +1010,45 @@ export default function ModernDashboard() {
             </div>
           </section>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">{isManager ? 'Manager command centre' : 'My AuraHR'}</p>
-              <h2 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-950">{isManager ? 'Lead the moments that matter' : 'Today, on my terms'}</h2>
-            </div>
-            <p className="max-w-xl text-sm text-slate-500">Every card is an action, not a report. Open it, complete the journey and return to what matters.</p>
-          </div>
-
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {personalCommandGroups.map((group) => (
-              <article key={group.name} className="group relative overflow-hidden rounded-2xl border border-white/90 bg-white/80 p-5 shadow-[0_14px_36px_rgba(77,62,137,0.09)] backdrop-blur transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(77,62,137,0.15)]">
-                <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${group.accent}`} />
-                <header className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className={`rounded-xl p-2.5 ${group.soft}`}><group.icon className="h-5 w-5" /></div>
-                    <div><h3 className="font-bold text-slate-950">{group.name}</h3><p className="text-xs text-slate-500">{group.context}</p></div>
-                  </div>
-                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">{group.actions.length}</span>
-                </header>
-                <div className="mt-4 space-y-2.5">
-                  {group.actions.map((action) => (
-                    <button key={action.title} onClick={() => navigate(action.path)} className="flex w-full items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/80 p-3 text-left transition hover:border-violet-200 hover:bg-violet-50/70">
-                      <span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${action.tone === 'urgent' ? 'bg-rose-500 shadow-[0_0_0_4px_rgba(244,63,94,0.12)]' : action.tone === 'clear' ? 'bg-emerald-400' : action.tone === 'due' ? 'bg-amber-400' : 'bg-violet-400'}`} />
-                      <span className="min-w-0 flex-1">
-                        <span className="flex items-start justify-between gap-2">
-                          <span className="text-sm font-semibold leading-5 text-slate-900">{action.title}</span>
-                          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${action.tone === 'urgent' ? 'bg-rose-100 text-rose-700' : 'bg-white text-slate-500'}`}>{formatCommandDate(action.due)}</span>
-                        </span>
-                        <span className="mt-1 block text-xs leading-5 text-slate-500">{action.detail}</span>
-                      </span>
-                      <ArrowRightIcon className="mt-1 h-4 w-4 shrink-0 text-slate-400" />
-                    </button>
-                  ))}
+            {!isManager && (<>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">My AuraHR</p>
+                  <h2 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-950">Today, on my terms</h2>
                 </div>
-              </article>
-            ))}
-          </section>
+                <p className="max-w-xl text-sm text-slate-500">Every card is an action, not a report. Open it, complete the journey and return to what matters.</p>
+              </div>
+              <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {personalCommandGroups.map((group) => (
+                  <article key={group.name} className="group relative overflow-hidden rounded-2xl border border-white/90 bg-white/80 p-5 shadow-[0_14px_36px_rgba(77,62,137,0.09)] backdrop-blur transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(77,62,137,0.15)]">
+                    <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${group.accent}`} />
+                    <header className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3"><div className={`rounded-xl p-2.5 ${group.soft}`}><group.icon className="h-5 w-5" /></div><div><h3 className="font-bold text-slate-950">{group.name}</h3><p className="text-xs text-slate-500">{group.context}</p></div></div>
+                      <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">{group.actions.length}</span>
+                    </header>
+                    <div className="mt-4 space-y-2.5">{group.actions.map((action) => (
+                      <button key={action.title} onClick={() => navigate(action.path)} className="flex w-full items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/80 p-3 text-left transition hover:border-violet-200 hover:bg-violet-50/70"><span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${action.tone === 'urgent' ? 'bg-rose-500 shadow-[0_0_0_4px_rgba(244,63,94,0.12)]' : action.tone === 'clear' ? 'bg-emerald-400' : action.tone === 'due' ? 'bg-amber-400' : 'bg-violet-400'}`} /><span className="min-w-0 flex-1"><span className="flex items-start justify-between gap-2"><span className="text-sm font-semibold leading-5 text-slate-900">{action.title}</span><span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${action.tone === 'urgent' ? 'bg-rose-100 text-rose-700' : 'bg-white text-slate-500'}`}>{formatCommandDate(action.due)}</span></span><span className="mt-1 block text-xs leading-5 text-slate-500">{action.detail}</span></span><ArrowRightIcon className="mt-1 h-4 w-4 shrink-0 text-slate-400" /></button>
+                    ))}</div>
+                  </article>
+                ))}
+              </section>
+            </>
+          )}
         </div>
       )}
 
       {!(isOwner || isHr) && (
       <>
 
-      <div className="mb-3 flex items-end justify-between">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-600">Live snapshot</p>
-          <h2 className="mt-1 text-lg font-bold text-slate-950">{isManager ? 'My team right now' : 'My current position'}</h2>
+      {!isManager && (
+        <div className="mb-3 flex items-end justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-600">Live snapshot</p>
+            <h2 className="mt-1 text-lg font-bold text-slate-950">My current position</h2>
+          </div>
+          <span className="text-xs text-slate-500">Updates from your AuraHR workspace</span>
         </div>
-        <span className="text-xs text-slate-500">Updates from your AuraHR workspace</span>
-      </div>
+      )}
 
       {/* Stats Grid - Narrower cards */}
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -1190,66 +1131,29 @@ export default function ModernDashboard() {
         ))}
       </div>
 
-      {/* Main content grid */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Recent Activities */}
-        <div className="lg:col-span-2">
-          <div className="card">
-            <div className="card-header flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-              <span className="text-xs text-gray-500">Based on your role and team</span>
+      {/* Main content */}
+      <div className={`grid grid-cols-1 gap-6 ${isManager ? 'lg:grid-cols-[minmax(0,2.2fr)_minmax(280px,0.8fr)]' : 'lg:grid-cols-2'}`}>
+        {isManager && (
+          <section className="overflow-hidden rounded-2xl border border-white/90 bg-white/80 shadow-[0_14px_36px_rgba(77,62,137,0.09)] backdrop-blur">
+            <header className="border-b border-slate-100 px-5 py-5 sm:px-6">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">Manager command centre</p>
+              <div className="mt-1 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <h2 className="text-2xl font-extrabold tracking-tight text-slate-950">Lead the moments that matter</h2>
+                <p className="max-w-md text-sm text-slate-500">Your decisions and team actions, in one clear queue.</p>
+              </div>
+            </header>
+            <div className="divide-y divide-slate-100">
+              {personalCommandGroups.flatMap((group) => group.actions.map((action) => (
+                <button key={`${group.name}-${action.title}`} onClick={() => navigate(action.path)} className="flex w-full items-start gap-3 px-5 py-4 text-left transition hover:bg-violet-50/70 sm:px-6">
+                  <span className={`mt-0.5 rounded-xl p-2.5 ${group.soft}`}><group.icon className="h-5 w-5" /></span>
+                  <span className="min-w-0 flex-1"><span className="flex flex-wrap items-center justify-between gap-2"><span className="text-sm font-semibold text-slate-900">{action.title}</span><span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${action.tone === 'urgent' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-500'}`}>{formatCommandDate(action.due)}</span></span><span className="mt-1 block text-xs font-semibold text-violet-600">{group.name}</span><span className="mt-1 block text-xs leading-5 text-slate-500">{action.detail}</span></span>
+                  <ArrowRightIcon className="mt-1 h-4 w-4 shrink-0 text-slate-400" />
+                </button>
+              )))}
             </div>
-            <div className="card-body p-0">
-              {recentActivities.length === 0 ? (
-                <div className="p-12 text-center">
-                  <ClipboardDocumentCheckIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No recent activities</p>
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-200">
-                  {recentActivities.map((activity) => {
-                    const iconConfig = getActivityIcon(activity.type);
-                    const IconComponent = iconConfig.icon;
-                    const isClickable = !!activity.navigationUrl;
-                    return (
-                      <div
-                        key={activity.activityId}
-                        onClick={() => isClickable && navigate(activity.navigationUrl!)}
-                        className={`p-4 hover:bg-gray-50 transition-colors ${isClickable ? 'cursor-pointer' : ''}`}
-                      >
-                        <div className="flex items-start space-x-4">
-                          <div className={`${iconConfig.bg} rounded-lg p-2 flex-shrink-0`}>
-                            <IconComponent className={`h-5 w-5 ${iconConfig.color}`} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900">{activity.message}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <p className="text-sm text-gray-500">{getRelativeTime(activity.timestamp)}</p>
-                              {activity.departmentName && (
-                                <>
-                                  <span className="text-gray-300">•</span>
-                                  <span className="text-xs text-gray-500">{activity.departmentName}</span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                          {isClickable && (
-                            <div className="flex-shrink-0">
-                              <ArrowTrendingUpIcon className="h-4 w-4 text-gray-400 transform rotate-45" />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* HR Connect Feeds */}
-        <div className="space-y-6 lg:col-span-1">
+          </section>
+        )}
+        <div className={isManager ? 'space-y-6' : 'grid gap-6 sm:grid-cols-2 lg:col-span-2'}>
           <div className="card">
             <div className="card-header flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">HR Connect Feeds</h2>

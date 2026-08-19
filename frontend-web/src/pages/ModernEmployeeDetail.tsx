@@ -253,10 +253,16 @@ const DEFAULT_EMPLOYEE_DOCUMENT_FORM: EmployeeDocumentPayload = {
   notes: '',
 };
 
-export default function ModernEmployeeDetail() {
+interface ModernEmployeeDetailProps {
+  employeeId?: string;
+  selfService?: boolean;
+}
+
+export default function ModernEmployeeDetail({ employeeId, selfService = false }: ModernEmployeeDetailProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id } = useParams<{ id: string }>();
+  const { id: routeEmployeeId } = useParams<{ id: string }>();
+  const id = employeeId || routeEmployeeId;
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'personal' | 'professional' | 'history' | 'documents' | 'compensation'>('personal');
   const [employee, setEmployee] = useState<EmployeeDetail | null>(null);
@@ -455,7 +461,7 @@ export default function ModernEmployeeDetail() {
   useEffect(() => {
     const fetchEmployee = async () => {
       if (!id) {
-        navigate('/employees');
+        navigate(selfService ? '/dashboard' : '/employees');
         return;
       }
 
@@ -487,7 +493,7 @@ export default function ModernEmployeeDetail() {
     };
 
     fetchEmployee();
-  }, [id, navigate]);
+  }, [id, navigate, selfService]);
 
   // Fetch professional history
   const fetchProfessionalHistory = async () => {
@@ -1001,10 +1007,12 @@ export default function ModernEmployeeDetail() {
 
   return (
     <ModernLayout>
-      <button onClick={handleBack} className="btn btn-secondary mb-4">
-        <ArrowLeftIcon className="h-4 w-4 mr-2" />
-        Back
-      </button>
+      {!selfService && (
+        <button onClick={handleBack} className="btn btn-secondary mb-4">
+          <ArrowLeftIcon className="h-4 w-4 mr-2" />
+          Back
+        </button>
+      )}
 
       {/* Compact Header Card */}
       <div className="ui-experiment-profile-card card mb-4 overflow-hidden">
@@ -1125,7 +1133,7 @@ export default function ModernEmployeeDetail() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2">
+        {!selfService && <div className="flex flex-wrap items-center gap-2">
           {/* Show Save/Cancel buttons when editing */}
           {(isEditingPersonal || isEditingProfessional) ? (
             <div className="flex flex-wrap items-center gap-2">
@@ -1200,7 +1208,7 @@ export default function ModernEmployeeDetail() {
               </button>
             </>
           )}
-        </div>
+        </div>}
       </div>
 
       {/* Main Content Card */}

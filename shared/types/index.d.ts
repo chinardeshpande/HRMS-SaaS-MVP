@@ -8,7 +8,8 @@ export declare enum UserRole {
     EMPLOYEE = "employee",
     MANAGER = "manager",
     HR_ADMIN = "hr_admin",
-    SYSTEM_ADMIN = "system_admin"
+    SYSTEM_ADMIN = "system_admin",
+    PAYROLL_PARTNER = "payroll_partner"
 }
 export declare enum EmploymentStatus {
     ACTIVE = "active",

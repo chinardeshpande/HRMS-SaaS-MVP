@@ -30,6 +30,13 @@ export const TEST_ACCOUNTS: Record<string, TestUser> = {
     expectedRole: 'hr_admin',
     expectedTenantName: 'ACV Solutions Pvt Ltd',
   },
+  PAYROLL_PARTNER: {
+    label: 'ACV Payroll Partner',
+    email: TEST_USERS.PAYROLL_PARTNER,
+    password: TEST_PASSWORD,
+    expectedRole: 'payroll_partner',
+    expectedTenantName: 'ACV Solutions Pvt Ltd',
+  },
   MANAGER: {
     label: 'ACV Manager',
     email: TEST_USERS.MANAGER,
