@@ -167,6 +167,7 @@ function App() {
                 <Route path="/ticket/:ticketId" element={protectedElement('/ticket/:ticketId', <TicketDetails />)} />
                 <Route path="/groups" element={protectedElement('/groups', <GroupManagement />)} />
                 <Route path="/reports" element={protectedElement('/reports', <ModernReports />)} />
+                <Route path="/master-data" element={protectedElement('/master-data', <ModernSettings />)} />
                 <Route path="/documents" element={protectedElement('/documents', <ModernDocuments />)} />
                 <Route path="/my-hr-documents" element={protectedElement('/my-hr-documents', <MyHRDocuments />)} />
                 <Route path="/org-chart" element={protectedElement('/org-chart', <ModernOrgChart />)} />

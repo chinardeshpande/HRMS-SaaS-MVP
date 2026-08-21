@@ -78,6 +78,8 @@ export const routeAccessRules: AccessRule[] = [
   { path: '/ticket/:ticketId', roles: CORE_ROLES },
   { path: '/groups', roles: CORE_ROLES },
   { path: '/reports', roles: ADMIN_ROLES },
+  // Preserve the legacy master-data URL while keeping the current Settings > Masters experience.
+  { path: '/master-data', roles: ADMIN_ROLES },
   { path: '/documents', roles: DOCUMENT_LIBRARY_ROLES },
   { path: '/my-hr-documents', roles: CORE_ROLES },
   { path: '/org-chart', roles: CORE_ROLES },
