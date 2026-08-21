@@ -96,6 +96,36 @@ export interface HeadcountData {
   percentage: number;
 }
 
+export interface DemographicData {
+  employeeId: string;
+  employeeName: string;
+  employeeCode: string;
+  department: string;
+  designation: string;
+  gender: string;
+  ageBand: string;
+  maritalStatus: string;
+  workLocation: string;
+  employmentType: string;
+  status: string;
+}
+
+export interface LifecycleData {
+  employeeId: string;
+  employeeName: string;
+  employeeCode: string;
+  department: string;
+  designation: string;
+  manager: string;
+  dateOfJoining: Date;
+  probationEndDate?: Date;
+  lifecycleStage: string;
+  tenureMonths: number;
+  status: string;
+  exitState?: string;
+  lastWorkingDate?: Date;
+}
+
 export interface JoinersLeaversData {
   month: string;
   joiners: number;
@@ -433,6 +463,96 @@ export class ReportingService {
       count: parseInt(row.count),
       percentage: total > 0 ? Math.round((parseInt(row.count) / total) * 100 * 10) / 10 : 0,
     }));
+  }
+
+  /**
+   * Report: Workforce demographics. Raw employee-level fields are intentionally
+   * returned so the workbench can group them by any approved dimension.
+   */
+  async getDemographicsReport(
+    access: ReportAccessContext,
+    filters: ReportFilters
+  ): Promise<DemographicData[]> {
+    const query = this.employeeRepo
+      .createQueryBuilder('employee')
+      .leftJoin('employee.department', 'department')
+      .leftJoin('employee.designation', 'designation')
+      .where('employee.tenantId = :tenantId', { tenantId: access.tenantId })
+      .select([
+        'employee."employeeId" as "employeeId"',
+        'employee."firstName" || \' \' || employee."lastName" as "employeeName"',
+        'employee."employeeCode" as "employeeCode"',
+        'COALESCE(department.name, \'Unassigned\') as "department"',
+        'COALESCE(designation.name, \'Not specified\') as "designation"',
+        'COALESCE(employee.gender, \'Not specified\') as "gender"',
+        `CASE
+          WHEN employee."dateOfBirth" IS NULL THEN 'Not specified'
+          WHEN DATE_PART('year', AGE(CURRENT_DATE, employee."dateOfBirth")) < 25 THEN 'Under 25'
+          WHEN DATE_PART('year', AGE(CURRENT_DATE, employee."dateOfBirth")) < 35 THEN '25–34'
+          WHEN DATE_PART('year', AGE(CURRENT_DATE, employee."dateOfBirth")) < 45 THEN '35–44'
+          WHEN DATE_PART('year', AGE(CURRENT_DATE, employee."dateOfBirth")) < 55 THEN '45–54'
+          ELSE '55+'
+        END as "ageBand"`,
+        'COALESCE(employee."maritalStatus", \'Not specified\') as "maritalStatus"',
+        'COALESCE(employee."workLocation", \'Not specified\') as "workLocation"',
+        'COALESCE(employee."employmentType", \'Not specified\') as "employmentType"',
+        'employee.status as "status"',
+      ])
+      .orderBy('employee."employeeCode"', 'ASC');
+
+    if (filters.departmentIds?.length) {
+      query.andWhere('employee."departmentId" IN (:...departmentIds)', { departmentIds: filters.departmentIds });
+    }
+    if (filters.status?.length) {
+      query.andWhere('employee.status IN (:...status)', { status: filters.status });
+    }
+    this.applyEmployeeScope(query, 'employee', access);
+    return query.getRawMany();
+  }
+
+  /** Report: a current, evidence-backed employee lifecycle register. */
+  async getLifecycleReport(
+    access: ReportAccessContext,
+    filters: ReportFilters
+  ): Promise<LifecycleData[]> {
+    const query = this.employeeRepo
+      .createQueryBuilder('employee')
+      .leftJoin('employee.department', 'department')
+      .leftJoin('employee.designation', 'designation')
+      .leftJoin('employee.manager', 'manager')
+      .leftJoin('exit_cases', 'exit_case', 'exit_case."employeeId" = employee."employeeId" AND exit_case."tenantId" = employee."tenantId"')
+      .where('employee.tenantId = :tenantId', { tenantId: access.tenantId })
+      .select([
+        'employee."employeeId" as "employeeId"',
+        'employee."firstName" || \' \' || employee."lastName" as "employeeName"',
+        'employee."employeeCode" as "employeeCode"',
+        'COALESCE(department.name, \'Unassigned\') as "department"',
+        'COALESCE(designation.name, \'Not specified\') as "designation"',
+        `COALESCE(manager."firstName" || ' ' || manager."lastName", 'Not assigned') as "manager"`,
+        'employee."dateOfJoining" as "dateOfJoining"',
+        'employee."probationEndDate" as "probationEndDate"',
+        `CASE
+          WHEN employee.status = 'exited' THEN 'Exited'
+          WHEN exit_case."currentState" IS NOT NULL THEN 'Exit in progress'
+          WHEN employee."probationEndDate" IS NOT NULL AND employee."probationEndDate" >= CURRENT_DATE THEN 'Probation'
+          WHEN employee."dateOfJoining" >= (CURRENT_DATE - INTERVAL '90 days') THEN 'New joiner'
+          ELSE 'Active employment'
+        END as "lifecycleStage"`,
+        'GREATEST(0, DATE_PART(\'year\', AGE(CURRENT_DATE, employee."dateOfJoining")) * 12 + DATE_PART(\'month\', AGE(CURRENT_DATE, employee."dateOfJoining")))::integer as "tenureMonths"',
+        'employee.status as "status"',
+        'exit_case."currentState" as "exitState"',
+        'exit_case."lastWorkingDate" as "lastWorkingDate"',
+      ])
+      .orderBy('employee."dateOfJoining"', 'DESC');
+
+    if (filters.departmentIds?.length) {
+      query.andWhere('employee."departmentId" IN (:...departmentIds)', { departmentIds: filters.departmentIds });
+    }
+    if (filters.status?.length) {
+      query.andWhere('employee.status IN (:...status)', { status: filters.status });
+    }
+    this.applyEmployeeScope(query, 'employee', access);
+    return query.getRawMany();
   }
 
   /**

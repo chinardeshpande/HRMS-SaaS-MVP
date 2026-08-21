@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent, type ReactNode } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import { useAuth } from '../context/AuthContext';
@@ -256,9 +256,14 @@ const DEFAULT_EMPLOYEE_DOCUMENT_FORM: EmployeeDocumentPayload = {
 interface ModernEmployeeDetailProps {
   employeeId?: string;
   selfService?: boolean;
+  embedded?: boolean;
 }
 
-export default function ModernEmployeeDetail({ employeeId, selfService = false }: ModernEmployeeDetailProps) {
+function EmployeeDetailShell({ children, embedded }: { children: ReactNode; embedded: boolean }) {
+  return embedded ? <>{children}</> : <ModernLayout>{children}</ModernLayout>;
+}
+
+export default function ModernEmployeeDetail({ employeeId, selfService = false, embedded = false }: ModernEmployeeDetailProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { id: routeEmployeeId } = useParams<{ id: string }>();
@@ -592,21 +597,21 @@ export default function ModernEmployeeDetail({ employeeId, selfService = false }
   // Loading state
   if (loading) {
     return (
-      <ModernLayout>
+      <EmployeeDetailShell embedded={embedded}>
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-primary-600 mb-4"></div>
             <p className="text-gray-600">Loading employee details...</p>
           </div>
         </div>
-      </ModernLayout>
+      </EmployeeDetailShell>
     );
   }
 
   // Error state
   if (error || !employee) {
     return (
-      <ModernLayout>
+      <EmployeeDetailShell embedded={embedded}>
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Employee Not Found</h2>
@@ -617,7 +622,7 @@ export default function ModernEmployeeDetail({ employeeId, selfService = false }
             </button>
           </div>
         </div>
-      </ModernLayout>
+      </EmployeeDetailShell>
     );
   }
 
@@ -1006,7 +1011,7 @@ export default function ModernEmployeeDetail({ employeeId, selfService = false }
   };
 
   return (
-    <ModernLayout>
+    <EmployeeDetailShell embedded={embedded}>
       {!selfService && (
         <button onClick={handleBack} className="btn btn-secondary mb-4">
           <ArrowLeftIcon className="h-4 w-4 mr-2" />
@@ -2092,6 +2097,6 @@ export default function ModernEmployeeDetail({ employeeId, selfService = false }
         onClose={() => setViewingEmployeeDocument(null)}
         onDownload={viewingEmployeeDocument ? () => handleDownloadEmployeeDocument(viewingEmployeeDocument) : undefined}
       />
-    </ModernLayout>
+    </EmployeeDetailShell>
   );
 }

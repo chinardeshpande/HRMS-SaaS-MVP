@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { ModernLayout } from '../components/layout/ModernLayout';
 import {
   BriefcaseIcon,
@@ -32,7 +32,11 @@ const tabs: Array<{ id: MasterTab; label: string; icon: typeof BuildingOfficeIco
   { id: 'designations', label: 'Designations', icon: BriefcaseIcon },
 ];
 
-export default function ModernMasterData() {
+function MasterDataShell({ children, embedded }: { children: ReactNode; embedded: boolean }) {
+  return embedded ? <>{children}</> : <ModernLayout>{children}</ModernLayout>;
+}
+
+export default function ModernMasterData({ embedded = false }: { embedded?: boolean }) {
   const [activeTab, setActiveTab] = useState<MasterTab>('departments');
   const [departments, setDepartments] = useState<Department[]>([]);
   const [designations, setDesignations] = useState<Designation[]>([]);
@@ -221,7 +225,7 @@ export default function ModernMasterData() {
   };
 
   return (
-    <ModernLayout>
+    <MasterDataShell embedded={embedded}>
       <div className="space-y-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -492,6 +496,6 @@ export default function ModernMasterData() {
           </div>
         </div>
       )}
-    </ModernLayout>
+    </MasterDataShell>
   );
 }

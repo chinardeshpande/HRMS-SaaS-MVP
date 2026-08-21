@@ -129,6 +129,50 @@ export class ReportingController {
     }
   }
 
+  async getDemographics(req: Request, res: Response) {
+    try {
+      const access = this.getAccessContext(req);
+      const status = req.query.status ? (req.query.status as string).split(',') : ['active'];
+      const results = await reportingService.getDemographicsReport(access, { status });
+      res.json({
+        success: true,
+        data: {
+          report: 'Workforce Demographics',
+          summary: { totalEmployees: results.length, representedDepartments: new Set(results.map((row) => row.department)).size, recordedGender: results.filter((row) => row.gender !== 'Not specified').length },
+          results,
+          totalRecords: results.length,
+        },
+      });
+    } catch (error: any) {
+      logger.error('Error fetching demographics report:', error);
+      res.status(500).json({ success: false, error: { message: error.message || 'Failed to fetch demographics report' } });
+    }
+  }
+
+  async getLifecycle(req: Request, res: Response) {
+    try {
+      const access = this.getAccessContext(req);
+      const results = await reportingService.getLifecycleReport(access, {});
+      res.json({
+        success: true,
+        data: {
+          report: 'Employee Lifecycle Register',
+          summary: {
+            totalEmployees: results.length,
+            newJoiners: results.filter((row) => row.lifecycleStage === 'New joiner').length,
+            onProbation: results.filter((row) => row.lifecycleStage === 'Probation').length,
+            exitInProgress: results.filter((row) => row.lifecycleStage === 'Exit in progress').length,
+          },
+          results,
+          totalRecords: results.length,
+        },
+      });
+    } catch (error: any) {
+      logger.error('Error fetching lifecycle report:', error);
+      res.status(500).json({ success: false, error: { message: error.message || 'Failed to fetch lifecycle report' } });
+    }
+  }
+
   /**
    * GET /api/reports/joiners-leavers
    */

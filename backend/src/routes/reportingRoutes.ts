@@ -41,6 +41,18 @@ router.get(
   reportingController.getHeadcount.bind(reportingController)
 );
 
+router.get(
+  '/demographics',
+  authorize(UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN, UserRole.MANAGER),
+  reportingController.getDemographics.bind(reportingController)
+);
+
+router.get(
+  '/lifecycle',
+  authorize(UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN, UserRole.MANAGER),
+  reportingController.getLifecycle.bind(reportingController)
+);
+
 /**
  * @route   GET /api/reports/joiners-leavers
  * @desc    Get joiners and leavers report

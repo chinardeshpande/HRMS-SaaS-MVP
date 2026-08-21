@@ -6,13 +6,10 @@ import {
   CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
   ChartBarIcon,
-  ClipboardDocumentListIcon,
   UserPlusIcon,
   ArrowRightStartOnRectangleIcon,
-  UserIcon,
   Cog6ToothIcon,
   BriefcaseIcon,
-  BuildingOfficeIcon,
   DocumentTextIcon,
   ChatBubbleLeftRightIcon,
   DocumentDuplicateIcon,
@@ -59,12 +56,9 @@ export const canAccessRoles = (
 
 export const routeAccessRules: AccessRule[] = [
   { path: '/dashboard', roles: CORE_ROLES },
-  { path: '/my-profile', roles: CORE_ROLES },
-  { path: '/acv-readiness', roles: ADMIN_ROLES },
   { path: '/onboarding-wizard', roles: ADMIN_ROLES },
   { path: '/employees', roles: ADMIN_ROLES },
   { path: '/employees/:id', roles: ADMIN_ROLES },
-  { path: '/master-data', roles: ADMIN_ROLES },
   { path: '/departments', roles: ADMIN_ROLES },
   { path: '/designations', roles: ADMIN_ROLES },
   { path: '/attendance', roles: CORE_ROLES },
@@ -84,6 +78,8 @@ export const routeAccessRules: AccessRule[] = [
   { path: '/ticket/:ticketId', roles: CORE_ROLES },
   { path: '/groups', roles: CORE_ROLES },
   { path: '/reports', roles: ADMIN_ROLES },
+  // Preserve the legacy master-data URL while keeping the current Settings > Masters experience.
+  { path: '/master-data', roles: ADMIN_ROLES },
   { path: '/documents', roles: DOCUMENT_LIBRARY_ROLES },
   { path: '/my-hr-documents', roles: CORE_ROLES },
   { path: '/org-chart', roles: CORE_ROLES },
@@ -105,14 +101,6 @@ export const routeAccessRules: AccessRule[] = [
 
 export const navigationItems: NavItemConfig[] = [
   { name: 'Dashboard', href: '/dashboard', path: '/dashboard', icon: HomeIcon, roles: CORE_ROLES },
-  { name: 'My Profile', href: '/my-profile', path: '/my-profile', icon: UserIcon, roles: CORE_ROLES },
-  {
-    name: 'ACV Readiness',
-    href: '/acv-readiness',
-    path: '/acv-readiness',
-    icon: ClipboardDocumentListIcon,
-    roles: ADMIN_ROLES,
-  },
   {
     name: 'Employee Register',
     href: '/employees',
@@ -175,13 +163,6 @@ export const navigationItems: NavItemConfig[] = [
   { name: 'Leave', href: '/leave', path: '/leave', icon: ClipboardDocumentCheckIcon, roles: CORE_ROLES },
   { name: 'HR Connect', href: '/hr-connect', path: '/hr-connect', icon: ChatBubbleLeftRightIcon },
   { name: 'Calendar', href: '/calendar', path: '/calendar', icon: CalendarDaysIcon },
-  {
-    name: 'Masters',
-    href: '/master-data',
-    path: '/master-data',
-    icon: BuildingOfficeIcon,
-    roles: ADMIN_ROLES,
-  },
   {
     name: 'HR Analytics',
     href: '/reports',

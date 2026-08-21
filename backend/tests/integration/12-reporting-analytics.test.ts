@@ -16,6 +16,8 @@ describe('HR Analytics and Reporting Sanity', () => {
 
       const reportEndpoints = [
         '/reports/headcount',
+        '/reports/demographics',
+        '/reports/lifecycle',
         `/reports/attendance-summary?startDate=${yesterdayIso}&endDate=${todayIso}`,
         '/reports/leave-balance',
         '/reports/memory-readiness',
@@ -46,6 +48,24 @@ describe('HR Analytics and Reporting Sanity', () => {
   });
 
   describe('tenant and manager scoping', () => {
+    it('provides dedicated demographics and lifecycle reports with manager-scoped employee rows', async () => {
+      const manager = await loginAs(TEST_ACCOUNTS.MANAGER);
+      requireAuth(manager, TEST_ACCOUNTS.MANAGER.label);
+
+      const demographics = await authGet('/reports/demographics', manager.token);
+      const lifecycle = await authGet('/reports/lifecycle', manager.token);
+
+      expect(demographics.status).toBe(200);
+      expect(demographics.body.data.report).toBe('Workforce Demographics');
+      expect(demographics.body.data.totalRecords).toBe(2);
+      expect(demographics.body.data.results.every((row: any) => row.employeeName !== 'Anupama Bhat')).toBe(true);
+
+      expect(lifecycle.status).toBe(200);
+      expect(lifecycle.body.data.report).toBe('Employee Lifecycle Register');
+      expect(lifecycle.body.data.totalRecords).toBe(2);
+      expect(lifecycle.body.data.results.every((row: any) => row.lifecycleStage)).toBe(true);
+    });
+
     it('headcount is tenant scoped for ACV and second tenant', async () => {
       const acv = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
       const orbit = await loginAs(TEST_ACCOUNTS.SECOND_TENANT_ADMIN);

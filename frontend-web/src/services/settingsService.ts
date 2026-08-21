@@ -74,6 +74,12 @@ export interface OrganizationSettings {
   customFields?: Record<string, any>;
 }
 
+export interface TenantIdentity {
+  companyName: string;
+  logo?: string;
+  branding?: OrganizationSettings['branding'];
+}
+
 export interface PaymentHistory {
   paymentId: string;
   tenantId: string;
@@ -208,6 +214,14 @@ class SettingsService {
   }
 
   // ==================== ORGANIZATION ====================
+
+  async getTenantIdentity(): Promise<TenantIdentity> {
+    const response = await api.get<TenantIdentity>('/settings/identity');
+    if (!response.success || !response.data) {
+      throw new Error(response.error?.message || 'Unable to load organization identity');
+    }
+    return response.data;
+  }
 
   async getOrganizationSettings(): Promise<OrganizationSettings> {
     const response = await api.get('/settings/organization');
