@@ -5,7 +5,7 @@ import ManuAssistant from '../assistant/ManuAssistant';
 import ManuPresence from '../assistant/ManuPresence';
 import DemoJourneyPanel from '../demo/DemoJourneyPanel';
 import { filterNavItemsForRole, navigationItems, NavItemConfig } from '../../config/accessControl';
-import settingsService, { OrganizationSettings } from '../../services/settingsService';
+import settingsService, { TenantIdentity } from '../../services/settingsService';
 import { brand } from '../../config/brand';
 import { API_BASE_URL } from '../../config/runtime';
 import {
@@ -32,7 +32,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const [demoSwitching, setDemoSwitching] = useState(false);
-  const [organizationSettings, setOrganizationSettings] = useState<OrganizationSettings | null>(null);
+  const [organizationSettings, setOrganizationSettings] = useState<TenantIdentity | null>(null);
   const [showPasswordChangeReminder, setShowPasswordChangeReminder] = useState(() =>
     Boolean((location.state as { passwordChangeReminder?: boolean } | null)?.passwordChangeReminder)
   );
@@ -86,7 +86,7 @@ export const ModernLayout = ({ children }: ModernLayoutProps) => {
       }
 
       try {
-        const settings = await settingsService.getOrganizationSettings();
+        const settings = await settingsService.getTenantIdentity();
         if (!cancelled) {
           setOrganizationSettings(settings);
         }

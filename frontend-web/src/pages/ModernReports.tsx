@@ -14,13 +14,13 @@ import {
   DocumentDuplicateIcon,
   FunnelIcon,
   PresentationChartLineIcon,
-  SparklesIcon,
   TableCellsIcon,
 } from '@heroicons/react/24/outline';
 import api from '../services/api';
 import settingsService, { OrganizationSettings } from '../services/settingsService';
+import { useAuth } from '../context/AuthContext';
 
-type WorkbenchTab = 'builder' | 'saved';
+type WorkbenchTab = 'catalogue' | 'builder' | 'saved';
 type ViewMode = 'table' | 'summary' | 'visual';
 type ExportFormat = 'csv' | 'json' | 'print' | 'html' | 'excel';
 type ChartType = 'bar' | 'pie' | 'line';
@@ -132,6 +132,36 @@ const TOPICS: AnalyticsTopic[] = [
     aggregation: 'sum',
   },
   {
+    id: 'demographics',
+    title: 'Workforce demographics',
+    purpose: 'Explore representation, age bands, work location, employment type and workforce composition from live employee records.',
+    prompt: 'Show active workforce demographics by department, gender, age band, work location and employment type.',
+    endpoint: '/reports/demographics',
+    reportType: 'headcount',
+    category: 'workforce',
+    icon: ChartBarIcon,
+    tone: 'cyan',
+    suggestedColumns: ['employeeName', 'department', 'gender', 'ageBand', 'workLocation', 'employmentType'],
+    defaultGroupBy: 'gender',
+    measureLabel: 'Employees',
+    aggregation: 'count',
+  },
+  {
+    id: 'lifecycle',
+    title: 'Employee lifecycle',
+    purpose: 'Follow real employee milestones: joining, probation, active employment and exit progress.',
+    prompt: 'Show the current employee lifecycle register by stage, department and tenure.',
+    endpoint: '/reports/lifecycle',
+    reportType: 'headcount',
+    category: 'workforce',
+    icon: ArrowPathIcon,
+    tone: 'indigo',
+    suggestedColumns: ['employeeName', 'department', 'designation', 'manager', 'dateOfJoining', 'lifecycleStage', 'tenureMonths', 'status'],
+    defaultGroupBy: 'lifecycleStage',
+    measureLabel: 'Employees',
+    aggregation: 'count',
+  },
+  {
     id: 'confirmation',
     title: 'Probation and confirmations',
     purpose: 'Find employees whose probation confirmation is due or overdue.',
@@ -194,21 +224,19 @@ const TOPICS: AnalyticsTopic[] = [
     measureLabel: 'Open gaps',
     aggregation: 'sum',
   },
-  {
-    id: 'memory',
-    title: 'ACV memory readiness',
-    purpose: 'Validate employee master, company documents, compensation, and payslip coverage.',
-    prompt: 'Show ACV implementation memory readiness and missing data.',
-    endpoint: '/reports/memory-readiness',
-    reportType: 'missing_documents',
-    category: 'compliance',
-    icon: SparklesIcon,
-    tone: 'cyan',
-    suggestedColumns: ['employeeName', 'employeeStatus', 'department', 'designation', 'missingMasterFields', 'readinessStatus'],
-    defaultGroupBy: 'readinessStatus',
-    measureLabel: 'Employees',
-    aggregation: 'count',
-  },
+];
+
+const FEATURED_REPORTS = [
+  ['Workforce atlas', 'Employee register', 'Departmental composition, employment mix and location profile.', 'headcount'],
+  ['People movement ledger', 'Attrition & trends', 'Joiners, leavers and monthly workforce movement.', 'movement'],
+  ['The demographic edit', 'Demographics', 'Live workforce representation across age, gender, location and employment type.', 'demographics'],
+  ['Life at work', 'Employee lifecycle', 'Live joining, probation, active employment and exit progression.', 'lifecycle'],
+  ['Leave, considered', 'Leave intelligence', 'Leave balances, usage and policy utilization.', 'leave'],
+  ['The attendance journal', 'Time & attendance', 'Presence, regularity and attendance patterns.', 'attendance'],
+  ['Confirmation register', 'Probation', 'Upcoming and overdue confirmation decisions.', 'confirmation'],
+  ['Performance pulse', 'Performance', 'Appraisal completion and overdue review actions.', 'performance'],
+  ['Data readiness', 'Compliance', 'Employee records that need documentation or master-data attention.', 'documents'],
+  ['Exit lens', 'Attrition', 'Attrition volume, rates and separation patterns.', 'attrition'],
 ];
 
 const toneClasses: Record<string, { bg: string; border: string; text: string; soft: string; bar: string }> = {
@@ -271,6 +299,7 @@ const buildContextualNarrative = (topic: AnalyticsTopic, data: any, rowCount: nu
 
 export default function ModernReports() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [organization, setOrganization] = useState<OrganizationSettings | null>(null);
   const [activeTab, setActiveTab] = useState<WorkbenchTab>('builder');
   const [question, setQuestion] = useState(TOPICS[0].prompt);
@@ -287,6 +316,16 @@ export default function ModernReports() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedReports, setSavedReports] = useState<SavedReportCard[]>([]);
+
+  const visibleTopics = useMemo(() => {
+    const role = String(user?.role || '').toUpperCase();
+    if (role !== 'MANAGER') return TOPICS;
+    return TOPICS.filter((topic) => !['movement', 'attrition', 'documents'].includes(topic.id));
+  }, [user?.role]);
+  const visibleFeaturedReports = useMemo(
+    () => FEATURED_REPORTS.filter(([, , , topicId]) => visibleTopics.some((topic) => topic.id === topicId)),
+    [visibleTopics]
+  );
 
   const selectedTopic = TOPICS.find((topic) => topic.id === selectedTopicId) || TOPICS[0];
   const rows = useMemo(() => extractRows(reportData), [reportData]);
@@ -475,6 +514,14 @@ export default function ModernReports() {
     setGroupBy('');
     setViewMode('table');
     setChartType('bar');
+  };
+
+  const openFeaturedReport = (topicId: string) => {
+    const topic = TOPICS.find((item) => item.id === topicId);
+    if (!topic) return;
+    selectTopic(topic);
+    setActiveTab('builder');
+    runWorkbench(topic, topic.prompt);
   };
 
   const exportData = (format: ExportFormat) => {
@@ -678,6 +725,12 @@ export default function ModernReports() {
             </div>
             <div className="inline-flex w-fit rounded-lg border border-slate-200 bg-slate-50 p-1">
               <button
+                onClick={() => setActiveTab('catalogue')}
+                className={`rounded-md px-3 py-1.5 text-xs font-semibold ${activeTab === 'catalogue' ? 'bg-white text-primary-700 shadow-sm' : 'text-slate-600'}`}
+              >
+                Report collection
+              </button>
+              <button
                 onClick={() => setActiveTab('builder')}
                 className={`rounded-md px-3 py-1.5 text-xs font-semibold ${activeTab === 'builder' ? 'bg-white text-primary-700 shadow-sm' : 'text-slate-600'}`}
               >
@@ -699,7 +752,25 @@ export default function ModernReports() {
           </div>
         )}
 
-        {activeTab === 'builder' ? (
+        {activeTab === 'catalogue' ? (
+          <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="border-b border-slate-100 pb-4">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary-700">Curated HR reporting</p>
+              <h2 className="mt-1 text-2xl font-bold text-slate-950">Report collection</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Open a report to load its live data, then use the visual, table, and export tools to create a board-ready view.</p>
+            </div>
+            <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {visibleFeaturedReports.map(([title, category, description, topicId], index) => (
+                  <button key={title} onClick={() => openFeaturedReport(topicId)} className="group rounded-xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-md">
+                    <span className="text-xs font-bold uppercase tracking-[0.14em] text-primary-700">Report {String(index + 1).padStart(2, '0')} · {category}</span>
+                    <span className="mt-4 block text-lg font-bold text-slate-950">{title}</span>
+                    <span className="mt-2 block text-sm leading-5 text-slate-600">{description}</span>
+                    <span className="mt-5 block text-xs font-bold uppercase tracking-[0.14em] text-primary-700">Open live report →</span>
+                  </button>
+                ))}
+            </div>
+          </section>
+        ) : activeTab === 'builder' ? (
           <>
             <section className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
               <div className="grid grid-cols-1 gap-2 xl:grid-cols-[280px_1fr_108px] xl:items-start">
@@ -715,7 +786,7 @@ export default function ModernReports() {
                     }}
                     className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
                   >
-                    {TOPICS.map((topic) => (
+                    {visibleTopics.map((topic) => (
                       <option key={topic.id} value={topic.id}>
                         {topic.title}
                       </option>

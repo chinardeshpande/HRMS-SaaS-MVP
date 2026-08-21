@@ -28,7 +28,6 @@ import {
   Settings as SettingsIcon,
   AccountCircle,
   Logout,
-  Storage as MasterDataIcon,
   AccountTree as OrgChartIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -47,12 +46,6 @@ interface MenuItem {
 
 const allMenuItems: MenuItem[] = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' }, // All roles
-  {
-    text: 'Master Data',
-    icon: <MasterDataIcon />,
-    path: '/master-data',
-    roles: [UserRole.SYSTEM_ADMIN, UserRole.HR_ADMIN]
-  },
   {
     text: 'Employees',
     icon: <PeopleIcon />,

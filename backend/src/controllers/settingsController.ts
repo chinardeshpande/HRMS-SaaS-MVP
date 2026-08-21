@@ -8,6 +8,8 @@ import { PermissionModule } from '../models/Permission';
 import leavePolicyService from '../services/leavePolicyService';
 import attendancePolicyService from '../services/attendancePolicyService';
 import identityMappingService from '../services/identityMappingService';
+import { AppDataSource } from '../config/database';
+import { Tenant } from '../models/Tenant';
 
 // ==================== SUBSCRIPTION CONTROLLERS ====================
 
@@ -274,6 +276,51 @@ export const cancelSubscription = async (req: Request, res: Response) => {
 };
 
 // ==================== ORGANIZATION SETTINGS CONTROLLERS ====================
+
+// Available to all authenticated users: this intentionally exposes only the visual
+// identity needed to brand their workspace, not organization-management settings.
+export const getTenantIdentity = async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+      });
+    }
+
+    const [settings, tenant] = await Promise.all([
+      settingsService.getOrganizationSettings(tenantId),
+      AppDataSource.getRepository(Tenant).findOne({ where: { tenantId } }),
+    ]);
+
+    if (!settings && !tenant) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'NOT_FOUND', message: 'Organization identity not found' },
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        companyName: settings?.companyName || tenant?.companyName || '',
+        logo: settings?.logo || settings?.branding?.logoUrl || tenant?.logoUrl || '',
+        branding: {
+          primaryColor: settings?.branding?.primaryColor || tenant?.primaryColor || '',
+          secondaryColor: settings?.branding?.secondaryColor || '',
+          accentColor: settings?.branding?.accentColor || '',
+        },
+      },
+    });
+  } catch (error: any) {
+    console.error('Error fetching tenant identity:', error);
+    return res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'Unable to load organization identity' },
+    });
+  }
+};
 
 export const getOrganizationSettings = async (req: Request, res: Response) => {
   try {

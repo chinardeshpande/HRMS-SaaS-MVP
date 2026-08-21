@@ -1,5 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { ModernLayout } from '../components/layout/ModernLayout';
+import ModernEmployeeDetail from './ModernEmployeeDetail';
+import { useAuth } from '../context/AuthContext';
 import accountService from '../services/accountService';
 import { User } from '../types';
 import { API_BASE_URL } from '../config/runtime';
@@ -43,6 +45,8 @@ const PROFILE_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const PROFILE_PHOTO_MAX_SIZE = 2 * 1024 * 1024;
 
 export default function ModernEditProfile() {
+  const { user: authenticatedUser } = useAuth();
+  const [activeSection, setActiveSection] = useState<'profile' | 'edit'>('profile');
   const [user, setUser] = useState<User | null>(null);
   const [profileForm, setProfileForm] = useState<ProfileForm>({
     fullName: '',
@@ -178,13 +182,68 @@ export default function ModernEditProfile() {
     }
   };
 
+  const sectionTabs = (
+    <div className="border-b border-gray-200">
+      <nav className="flex gap-6" aria-label="Profile sections">
+        <button
+          type="button"
+          onClick={() => setActiveSection('profile')}
+          className={`border-b-2 px-1 py-3 text-sm font-medium transition-colors ${
+            activeSection === 'profile'
+              ? 'border-primary-600 text-primary-700'
+              : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+          }`}
+        >
+          My Profile
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveSection('edit')}
+          className={`border-b-2 px-1 py-3 text-sm font-medium transition-colors ${
+            activeSection === 'edit'
+              ? 'border-primary-600 text-primary-700'
+              : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+          }`}
+        >
+          Edit Profile
+        </button>
+      </nav>
+    </div>
+  );
+
+  if (activeSection === 'profile') {
+    return (
+      <ModernLayout>
+        <div className="mx-auto max-w-7xl space-y-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
+            <p className="mt-1 text-sm text-gray-600">View your employee profile or update your personal information.</p>
+          </div>
+          {sectionTabs}
+          {authenticatedUser?.employeeId ? (
+            <ModernEmployeeDetail employeeId={authenticatedUser.employeeId} selfService embedded />
+          ) : (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-center">
+              <h2 className="text-xl font-semibold text-amber-900">Profile not linked yet</h2>
+              <p className="mt-2 text-sm text-amber-800">
+                Your login is not currently linked to an employee profile. Please contact your HR administrator.
+              </p>
+            </div>
+          )}
+        </div>
+      </ModernLayout>
+    );
+  }
+
   return (
     <ModernLayout>
       <div className="mx-auto max-w-5xl space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My profile</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
           <p className="mt-1 text-sm text-gray-600">Manage your account, personal details, and sign-in security.</p>
         </div>
+
+        {sectionTabs}
 
         {notice && (
           <div

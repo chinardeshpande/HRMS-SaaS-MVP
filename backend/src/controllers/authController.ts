@@ -11,14 +11,16 @@ import identityMappingService from '../services/identityMappingService';
 import { storageProvider, tenantDocumentKey } from '../services/storage';
 import { isRefreshTokenPayload, signRefreshToken } from '../services/tokenService';
 
-const serializeUser = (user: User) => ({
+const serializeUser = async (user: User) => ({
   userId: user.userId,
   tenantId: user.tenantId,
   email: user.email,
   fullName: user.fullName,
   role: user.role,
   employeeId: user.employeeId,
-  profilePhotoUrl: user.profilePhotoUrl,
+  profilePhotoUrl: user.profilePhotoUrl
+    ? await storageProvider.getSignedUrl(user.profilePhotoUrl, config.storage.signedUrlTtlSeconds)
+    : undefined,
   tenant: user.tenant
     ? {
         companyName: user.tenant.companyName,
@@ -182,7 +184,7 @@ export const login = async (req: Request, res: Response) => {
     return res.json({
       success: true,
       data: {
-        user: serializeUser(user),
+        user: await serializeUser(user),
         tokens: {
           token,
           refreshToken,
@@ -316,7 +318,7 @@ export const getCurrentUser = async (req: Request, res: Response) => {
 
     return res.json({
       success: true,
-      data: serializeUser(user),
+      data: await serializeUser(user),
     });
   } catch (error: any) {
     console.error('Get current user error:', error);
@@ -404,7 +406,7 @@ export const updateCurrentUserProfile = async (req: Request, res: Response) => {
 
     return res.json({
       success: true,
-      data: serializeUser(updatedUser || user),
+      data: await serializeUser(updatedUser || user),
     });
   } catch (error: any) {
     console.error('Update current user profile error:', error);
@@ -516,7 +518,7 @@ export const uploadProfilePhoto = async (req: Request, res: Response) => {
 
     return res.json({
       success: true,
-      data: serializeUser(user),
+      data: await serializeUser(user),
     });
   } catch (error: any) {
     console.error('Upload profile photo error:', error);

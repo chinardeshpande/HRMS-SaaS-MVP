@@ -13,24 +13,24 @@ describe('External payroll partner operations', () => {
     expect(res.body.data.boundary).toMatch(/does not calculate payroll/i);
   });
 
-  it('runs HR approval, partner, bank and payslip milestones with history', async () => {
-    const hr = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
-    const owner = await loginAs(TEST_ACCOUNTS.SYSTEM_ADMIN);
+  it('runs HR Admin approval, Payroll Partner handoff, HR Leader payment and payslip milestones with history', async () => {
+    const hrAdmin = await loginAs(TEST_ACCOUNTS.HR_ADMIN);
+    const hrLeader = await loginAs(TEST_ACCOUNTS.SYSTEM_ADMIN);
     const payrollPartner = await loginAs(TEST_ACCOUNTS.PAYROLL_PARTNER);
-    requireAuth(hr, 'HR admin');
-    requireAuth(owner, 'Owner');
+    requireAuth(hrAdmin, 'HR admin');
+    requireAuth(hrLeader, 'HR leader');
     requireAuth(payrollPartner, 'Payroll partner');
 
-    const created = await authPost('/payroll-operations/cycles', hr.token).send({
+    const created = await authPost('/payroll-operations/cycles', hrAdmin.token).send({
       month: 8, year: 2026, partnerName: 'Synthetic Payroll Partner', employeeCount: 4,
       grossTotal: 400000, deductionTotal: 40000, netTotal: 360000,
     });
     expect(created.status).toBe(201);
     const cycleId = created.body.data.payrollCycleId;
 
-    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, hr.token)
+    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, hrAdmin.token)
       .send({ status: PayrollCycleStatus.UNDER_REVIEW })).status).toBe(200);
-    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, hr.token)
+    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, hrAdmin.token)
       .send({ status: PayrollCycleStatus.APPROVED_FOR_PARTNER })).status).toBe(200);
     expect((await authPost('/payroll-operations/cycles', payrollPartner.token).send({
       month: 9, year: 2026, partnerName: 'Synthetic Payroll Partner', employeeCount: 4,
@@ -41,12 +41,12 @@ describe('External payroll partner operations', () => {
       .send({ status: PayrollCycleStatus.BANK_APPROVAL_PENDING })).status).toBe(200);
     expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, payrollPartner.token)
       .send({ status: PayrollCycleStatus.PAID, bankReference: 'PARTNER-BANK-SYNTHETIC-1' })).status).toBe(403);
-    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, owner.token)
+    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, hrLeader.token)
       .send({ status: PayrollCycleStatus.PAID, bankReference: 'BANK-SYNTHETIC-1' })).status).toBe(200);
-    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, hr.token)
+    expect((await authPost(`/payroll-operations/cycles/${cycleId}/transitions`, hrAdmin.token)
       .send({ status: PayrollCycleStatus.PAYSLIPS_PUBLISHED, payslipSummary: { published: 4, pending: 0 } })).status).toBe(200);
 
-    const detail = await authGet(`/payroll-operations/cycles/${cycleId}`, hr.token);
+    const detail = await authGet(`/payroll-operations/cycles/${cycleId}`, hrAdmin.token);
     expect(detail.status).toBe(200);
     expect(detail.body.data.cycle.status).toBe(PayrollCycleStatus.PAYSLIPS_PUBLISHED);
     expect(detail.body.data.timeline).toHaveLength(7);

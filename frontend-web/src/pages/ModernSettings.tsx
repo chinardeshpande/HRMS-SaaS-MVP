@@ -10,24 +10,21 @@ import {
   CreditCardIcon,
   UserGroupIcon,
   DocumentTextIcon,
-  UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import SubscriptionTab from '../components/settings/SubscriptionTab';
 import OrganizationTab from '../components/settings/OrganizationTab';
 import PaymentsTab from '../components/settings/PaymentsTab';
 import UserManagementTab from '../components/settings/UserManagementTab';
 import BusinessRulesTab from '../components/settings/BusinessRulesTab';
-import EmployeeSettingsTab from '../components/settings/EmployeeSettingsTab';
-import BiometricAttendanceTab from '../components/settings/BiometricAttendanceTab';
+import ModernMasterData from './ModernMasterData';
 
 type SettingsTab =
-  | 'employee-preferences'
   | 'subscription'
   | 'organization'
   | 'payments'
   | 'user-management'
   | 'business-rules'
-  | 'attendance-import';
+  | 'masters';
 
 function ModernSettingsContent() {
   const { user } = useAuth();
@@ -84,13 +81,6 @@ function ModernSettingsContent() {
   // Define all possible tabs with roles
   const allTabs = [
     {
-      id: 'employee-preferences' as SettingsTab,
-      name: 'My Preferences',
-      icon: UserCircleIcon,
-      description: 'Personal settings and notifications',
-      roles: [UserRole.EMPLOYEE, UserRole.MANAGER, UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
-    },
-    {
       id: 'subscription' as SettingsTab,
       name: 'Subscription',
       icon: CreditCardIcon,
@@ -126,10 +116,10 @@ function ModernSettingsContent() {
       roles: [UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
     },
     {
-      id: 'attendance-import' as SettingsTab,
-      name: 'Attendance Import',
-      icon: DocumentTextIcon,
-      description: 'Configure biometric file mappings',
+      id: 'masters' as SettingsTab,
+      name: 'Masters',
+      icon: BuildingOfficeIcon,
+      description: 'Manage departments and designations',
       roles: [UserRole.HR_ADMIN, UserRole.SYSTEM_ADMIN],
     },
   ];
@@ -184,13 +174,12 @@ function ModernSettingsContent() {
           {/* Tab Content */}
           <div className="p-6">
             <ErrorBoundary>
-              {activeTab === 'employee-preferences' && <EmployeeSettingsTab />}
               {activeTab === 'subscription' && <SubscriptionTab />}
               {activeTab === 'organization' && <OrganizationTab />}
               {activeTab === 'payments' && <PaymentsTab />}
               {activeTab === 'user-management' && <UserManagementTab />}
               {activeTab === 'business-rules' && <BusinessRulesTab />}
-              {activeTab === 'attendance-import' && <BiometricAttendanceTab />}
+              {activeTab === 'masters' && <ModernMasterData embedded />}
             </ErrorBoundary>
           </div>
         </div>

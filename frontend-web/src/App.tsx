@@ -28,13 +28,10 @@ const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
 const SetupPassword = lazy(() => import('./pages/SetupPassword'));
 const Welcome = lazy(() => import('./pages/Welcome'));
 const ModernDashboard = lazy(() => import('./pages/ModernDashboard'));
-const ACVReadinessDashboard = lazy(() => import('./pages/ACVReadinessDashboard'));
 const ModernEmployees = lazy(() => import('./pages/ModernEmployees'));
 const ModernEmployeeDetail = lazy(() => import('./pages/ModernEmployeeDetail'));
-const MyProfile = lazy(() => import('./pages/MyProfile'));
 const ModernAttendance = lazy(() => import('./pages/ModernAttendance'));
 const ModernLeave = lazy(() => import('./pages/ModernLeave'));
-const ModernMasterData = lazy(() => import('./pages/ModernMasterData'));
 const ModernDepartments = lazy(() => import('./pages/ModernDepartments'));
 const ModernDesignations = lazy(() => import('./pages/ModernDesignations'));
 const ModernPerformanceDashboard = lazy(() => import('./pages/ModernPerformanceDashboard'));
@@ -149,11 +146,8 @@ function App() {
 
                 {/* Protected routes */}
                 <Route path="/dashboard" element={protectedElement('/dashboard', <ModernDashboard />)} />
-                <Route path="/my-profile" element={protectedElement('/my-profile', <MyProfile />)} />
-                <Route path="/acv-readiness" element={protectedElement('/acv-readiness', <ACVReadinessDashboard />)} />
                 <Route path="/employees" element={protectedElement('/employees', <ModernEmployees />)} />
                 <Route path="/employees/:id" element={protectedElement('/employees/:id', <ModernEmployeeDetail />)} />
-                <Route path="/master-data" element={protectedElement('/master-data', <ModernMasterData />)} />
                 <Route path="/departments" element={protectedElement('/departments', <ModernDepartments />)} />
                 <Route path="/designations" element={protectedElement('/designations', <ModernDesignations />)} />
                 <Route path="/attendance" element={protectedElement('/attendance', <ModernAttendance />)} />

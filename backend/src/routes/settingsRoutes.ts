@@ -19,6 +19,7 @@ router.post('/subscription/upgrade', ownerOnly, settingsController.upgradePlan);
 router.post('/subscription/cancel', ownerOnly, settingsController.cancelSubscription);
 
 // ==================== ORGANIZATION SETTINGS ROUTES ====================
+router.get('/identity', settingsController.getTenantIdentity);
 router.get('/organization', ownerOnly, settingsController.getOrganizationSettings);
 router.put('/organization', ownerOnly, settingsController.updateOrganizationSettings);
 
