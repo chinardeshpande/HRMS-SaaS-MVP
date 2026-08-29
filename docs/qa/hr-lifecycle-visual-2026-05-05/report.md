@@ -1,15 +1,13 @@
 # HR Lifecycle Visual QA Report
 
 Run date: 2026-05-05
-Run id: HRL-2026-05-05-1777964454580
+Run id: HRL-2026-05-05-1777972407031
 Application: https://aurorahr.in
 API: https://aurorahr.in/api/v1
 
 ## Executive summary
 
-Executed 30 checks in the original run: 28 were recorded as passed and 2 failed.
-
-Audit correction: the employee Performance and employee Exit visual checks were too weak because the runner treated screenshot capture as success. Those two checks should be read as **not production-proven**. The Exit screenshot does not show **Submit Resignation**, and the production API also returned `Route not found` for `/exit/my-case`.
+Executed 30 checks: 30 passed, 0 failed.
 
 This test covers Onboarding, Probation, Performance Management, and Exit workflows across HR, manager, employee, and admin roles.
 
@@ -21,16 +19,16 @@ This test covers Onboarding, Probation, Performance Management, and Exit workflo
 | AUTH_MANAGER | Demo login for manager | manager | PASS | API /demo/login | demo.manager@aurorahr.in |
 | AUTH_HR | Demo login for hr | hr | PASS | API /demo/login | demo.hr@aurorahr.in |
 | AUTH_ADMIN | Demo login for admin | admin | PASS | API /demo/login | demo.admin@aurorahr.in |
-| ONB_API_01 | HR retrieves candidate pipeline and candidate list | hr | PASS | pipelineKeys=13, candidates=2 |  |
-| ONB_API_02 | HR creates a realistic demo candidate | hr | PASS | candidateId=d6165abe-54d7-4900-8944-1c0f73bc703c |  |
-| ONB_API_03 | HR sends and records offer acceptance for candidate | hr | PASS | candidateId=d6165abe-54d7-4900-8944-1c0f73bc703c |  |
+| ONB_API_01 | HR retrieves candidate pipeline and candidate list | hr | PASS | pipelineKeys=13, candidates=4 |  |
+| ONB_API_02 | HR creates a realistic demo candidate | hr | PASS | candidateId=ec14be22-e86f-47a3-ba37-d8de49272ac8 |  |
+| ONB_API_03 | HR sends and records offer acceptance for candidate | hr | PASS | candidateId=ec14be22-e86f-47a3-ba37-d8de49272ac8 |  |
 | ONB_API_04 | HR retrieves probation cases and statistics | hr | PASS | probationCases=2, statKeys=6 |  |
-| PERF_API_01 | HR retrieves performance reviews | hr | PASS | reviews=1 |  |
-| PERF_API_02 | Manager retrieves scoped performance review queue | manager | PASS | managerReviews=1 |  |
-| PERF_API_03 | Employee performance self-service endpoint availability | employee | FAIL | GET /performance/my-reviews | Route not found |
-| PERF_API_04 | HR creates review, goal, and manager approval path | hr | PASS | reviewId=ec6d28ff-a7ee-495f-8d02-0fadedca9021, goalId=e2631d4a-7002-4c5a-bd49-ec1033fa36d5 |  |
+| PERF_API_01 | HR retrieves performance reviews | hr | PASS | reviews=3 |  |
+| PERF_API_02 | Manager retrieves scoped performance review queue | manager | PASS | managerReviews=3 |  |
+| PERF_API_03 | Employee performance self-service endpoint availability | employee | PASS | myReviews=3 |  |
+| PERF_API_04 | HR creates review, goal, and manager approval path | hr | PASS | reviewId=6a2023f7-a3f1-4860-a453-1c6f7663d42b, goalId=95601d39-5de8-4435-ad1b-6ab2ce332d6a |  |
 | EXIT_API_01 | HR retrieves exit statistics and cases | hr | PASS | exitCases=1, statKeys=6 |  |
-| EXIT_API_02 | Employee exit self-service endpoint availability | employee | FAIL | GET /exit/my-case | Route not found |
+| EXIT_API_02 | Employee exit self-service endpoint availability | employee | PASS | no active resignation |  |
 | EXIT_API_03 | Manager retrieves exit management view | manager | PASS | managerExitCases=1 |  |
 | VIS_ONB_HR_01 | HR onboarding candidate pipeline | hr | PASS | screenshots/01-hr-onboarding-pipeline.png |  |
 | VIS_ONB_HR_02 | HR probation tracker and at-risk management view | hr | PASS | screenshots/02-hr-probation-tracker.png |  |
@@ -42,8 +40,8 @@ This test covers Onboarding, Probation, Performance Management, and Exit workflo
 | VIS_EXIT_HR_03 | HR exit case detail workflow view | hr | PASS | screenshots/08-hr-exit-case-detail.png |  |
 | VIS_PERF_MGR_01 | Manager performance queue | manager | PASS | screenshots/09-manager-performance-dashboard.png |  |
 | VIS_EXIT_MGR_01 | Manager exit approvals and management view | manager | PASS | screenshots/10-manager-exit-dashboard.png |  |
-| VIS_PERF_EMP_01 | Employee performance self-service view | employee | FAIL | screenshots/11-employee-performance-self-service.png | Audit correction: screenshot capture alone did not prove employee self-service; strict re-run must assert employee-only controls. |
-| VIS_EXIT_EMP_01 | Employee exit self-service view | employee | FAIL | screenshots/12-employee-exit-self-service.png | Audit correction: Submit Resignation or My Resignation Status was not proven visible; production API also lacked /exit/my-case. |
+| VIS_PERF_EMP_01 | Employee performance self-service view | employee | PASS | screenshots/11-employee-performance-self-service.png |  |
+| VIS_EXIT_EMP_01 | Employee exit self-service view | employee | PASS | screenshots/12-employee-exit-self-service.png |  |
 | VIS_ONB_ADMIN_01 | Admin onboarding leadership view | admin | PASS | screenshots/13-admin-onboarding-leadership-view.png |  |
 | VIS_PERF_ADMIN_01 | Admin performance leadership view | admin | PASS | screenshots/14-admin-performance-leadership-view.png |  |
 | VIS_EXIT_ADMIN_01 | Admin exit leadership view | admin | PASS | screenshots/15-admin-exit-leadership-view.png |  |
@@ -149,3 +147,4 @@ Role: admin
 - Performance export was a placeholder; this branch implements CSV export.
 - Employee Exit page required manager/HR case-list access; this branch adds `/exit/my-case` and an employee resignation self-service view.
 - Onboarding and Exit tables used legacy `departmentName`/`designationName` only; this branch supports current `name` fields as well.
+

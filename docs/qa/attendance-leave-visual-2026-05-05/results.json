@@ -1,5 +1,5 @@
 {
-  "runId": "ALV-2026-05-05-1777961049976",
+  "runId": "ALV-2026-05-05-1777973171724",
   "runDate": "2026-05-05",
   "baseUrl": "https://aurorahr.in",
   "apiBaseUrl": "https://aurorahr.in/api/v1",
@@ -41,7 +41,7 @@
       "title": "Employee applies casual leave for manager approval",
       "role": "employee",
       "status": "passed",
-      "evidence": "leaveId=3723231a-036b-413e-8076-648007f0a877",
+      "evidence": "leaveId=52657904-f8ee-4af4-86a9-680e980be679",
       "notes": ""
     },
     {
@@ -49,7 +49,7 @@
       "title": "Employee applies sick leave for rejection path",
       "role": "employee",
       "status": "passed",
-      "evidence": "leaveId=33383ca9-639e-4514-8ce6-cda382e5fdc1",
+      "evidence": "leaveId=3d02e996-841d-42a0-9f31-749d07bde2e6",
       "notes": ""
     },
     {
@@ -57,7 +57,7 @@
       "title": "Manager approves one pending leave request",
       "role": "manager",
       "status": "passed",
-      "evidence": "approved leaveId=3723231a-036b-413e-8076-648007f0a877",
+      "evidence": "approved leaveId=52657904-f8ee-4af4-86a9-680e980be679",
       "notes": ""
     },
     {
@@ -65,7 +65,7 @@
       "title": "HR rejects one pending leave request",
       "role": "hr",
       "status": "passed",
-      "evidence": "rejected leaveId=33383ca9-639e-4514-8ce6-cda382e5fdc1",
+      "evidence": "rejected leaveId=3d02e996-841d-42a0-9f31-749d07bde2e6",
       "notes": ""
     },
     {
@@ -73,7 +73,7 @@
       "title": "Employee creates attendance regularization request",
       "role": "employee",
       "status": "passed",
-      "evidence": "editId=444a0bad-fef0-47af-8867-757e5ee74012",
+      "evidence": "editId=1080c4ff-e6a9-44c0-a6b3-7ae9dc5c9ddf",
       "notes": ""
     },
     {
@@ -81,7 +81,7 @@
       "title": "Manager approves one attendance regularization",
       "role": "manager",
       "status": "passed",
-      "evidence": "approved editId=444a0bad-fef0-47af-8867-757e5ee74012",
+      "evidence": "approved editId=1080c4ff-e6a9-44c0-a6b3-7ae9dc5c9ddf",
       "notes": ""
     },
     {
@@ -89,7 +89,7 @@
       "title": "Employee creates second attendance regularization request",
       "role": "employee",
       "status": "passed",
-      "evidence": "editId=19390238-01aa-450f-9ceb-74426e62b6f5",
+      "evidence": "editId=58151d8c-f3e1-411a-a2ad-6d9bd711a0e1",
       "notes": ""
     },
     {
@@ -97,7 +97,7 @@
       "title": "HR rejects one attendance regularization",
       "role": "hr",
       "status": "passed",
-      "evidence": "rejected editId=19390238-01aa-450f-9ceb-74426e62b6f5",
+      "evidence": "rejected editId=58151d8c-f3e1-411a-a2ad-6d9bd711a0e1",
       "notes": ""
     },
     {
@@ -120,9 +120,9 @@
       "id": "REPORT_DATA_01",
       "title": "HR retrieves attendance and leave reporting APIs",
       "role": "hr",
-      "status": "failed",
-      "evidence": "runtime/API error",
-      "notes": "GET /attendance/by-department?startDate=2026-05-05&endDate=2026-05-05 failed: column department.departmentname does not exist"
+      "status": "passed",
+      "evidence": "attendanceStats=10, departmentStats=1, leaveStats=7",
+      "notes": ""
     },
     {
       "id": "VIS_ATT_EMP_01",
@@ -202,7 +202,7 @@
       "role": "hr",
       "status": "passed",
       "evidence": "screenshots/10-hr-attendance-sync-modal.png",
-      "notes": "Current UI uses mock preview/save behavior."
+      "notes": "File sync modal captured; CSV-backed save path uses backend bulk update."
     },
     {
       "id": "VIS_ATT_HR_04",
@@ -218,6 +218,14 @@
       "role": "hr",
       "status": "passed",
       "evidence": "screenshots/12-hr-leave-all-requests.png",
+      "notes": ""
+    },
+    {
+      "id": "VIS_REPORT_HR_01",
+      "title": "HR attendance and leave reports view",
+      "role": "hr",
+      "status": "passed",
+      "evidence": "screenshots/15-hr-attendance-leave-reports.png",
       "notes": ""
     },
     {
@@ -309,6 +317,12 @@
       "title": "HR all leave requests and intervention view",
       "role": "hr",
       "path": "screenshots/12-hr-leave-all-requests.png"
+    },
+    {
+      "id": "VIS_REPORT_HR_01",
+      "title": "HR attendance and leave reports view",
+      "role": "hr",
+      "path": "screenshots/15-hr-attendance-leave-reports.png"
     },
     {
       "id": "VIS_ATT_ADMIN_01",
